@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2017",
+    "skipLibCheck": true,
+    "types": ["node"],
     "lib": [
       "dom",
       "dom.iterable",
@@ -38,6 +40,8 @@
   "exclude": [
     "node_modules",
     "out", // ビルド出力先
-    "public" // 静的ファイル
+    "public", // 静的ファイル
+    "dist",
+    "main.js"
   ]
 }
