@@ -1,0 +1,31 @@
+image: node:20-alpine # Node.jsのLTSバージョンを使用することを推奨
+
+stages:
+  - build
+  - deploy # GitLab Pagesなどにデプロイする場合
+
+build-static-job:
+  stage: build
+  script:
+    - npm install # または yarn install
+    # next.config.js で output: 'export' を設定済みの場合は `npm run build` のみ
+    - npm run build 
+    # output: 'export' を設定していない場合は、package.json の export スクリプトを実行
+    # - npm run static-build
+  artifacts:
+    paths:
+      - out # 静的ファイルが生成されるデフォルトのディレクトリ
+    expire_in: 1 week
+
+# GitLab Pagesへのデプロイ例 (必要に応じて)
+#pages:
+#  stage: deploy
+#  image: alpine:latest
+#  script:
+#    - mv out public # GitLab Pagesのデフォルトの公開ディレクトリに移動
+#  artifacts:
+#    paths:
+#      - public
+#    expire_in: 1 day
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
