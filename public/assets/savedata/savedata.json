@@ -1,0 +1,63 @@
+{
+    "infomation": "セーブデータ",
+    "playerData": {
+        "PlayerMapKey": "0001",
+        "PlayerPosition": {
+            "x": 1504,
+            "y": 320
+        },
+        "initStandKey": "stand_down",
+        "status": {
+            "Lv": 1,
+            "HP": 50,
+            "MP": 20,
+            "MaxHP": 50,
+            "MaxMP": 20,
+            "Attack": 30,
+            "Guard": 5,
+            "Speed": 10
+        },
+        "Equip": {
+            "Weapon": "短剣",
+            "Armor": "スカーフ"
+        },
+        "Skill": {
+            "normalSkill": "切り付け",
+            "specialSkill": "防御,回避,投石",
+            "MagicSkill": "火の玉,回復"
+        },
+        "Item": {
+            "やくそう": 10,
+            "おにぎり": 1,
+            "ばんそうこう": 1
+        }
+    },
+    "GameSetting": {
+        "EventWindow": {
+            "fontFamily": "Arial",
+            "fontColor": "#e0ffff",
+            "fontSize": 20,
+            "lineSpaceValue": 10,
+            "textLine": 2
+        },
+        "BubbleWindow": {
+            "fontFamily": "Arial",
+            "fontColor": "#e0ffff",
+            "fontSize": 16,
+            "lineSpaceValue": 10,
+            "textLine": 2
+        },
+        "MessageWindow": {
+            "backColor": "0x191970",
+            "alphaValue": 0.7,
+            "lineColor": "0xFFFFFF"
+        }
+    },
+    "EventFlag": {
+        "EVENT0001": true,
+        "EVENT0002": true,
+        "EVENT0003": false,
+        "EVENT0004": false,
+        "EVENT0102": true
+    }
+}
