@@ -1,0 +1,13 @@
+{
+    "infomation": "名前データ",
+    "FieldNameData": {
+        "player": "メイナ",
+        "grandpa": "じいちゃん",
+        "lamy": "ラミア娘"
+    },
+    "EnemyNameData": {
+        "enemy00": "ラミア娘",
+        "enemy01": "ラミア",
+        "enemy02": "いらすとやのスライム"
+    }
+}
