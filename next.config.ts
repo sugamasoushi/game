@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
 
   /* 静的エクスポート設定 (これで out フォルダが作成されます) */
-  output: "export",
+  //output: "export",
 
   /* 画像最適化の無効化 (export時は必須) */
   images: { unoptimized: true },
@@ -33,4 +33,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
