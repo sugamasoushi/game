@@ -1,4 +1,15 @@
 import type { NextConfig } from "next";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  workboxOptions: {
+    skipWaiting: true,
+    clientsClaim: true,
+  },
+});
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
@@ -10,6 +21,8 @@ const nextConfig: NextConfig = {
 
   /* 画像最適化の無効化 (export時は必須) */
   images: { unoptimized: true },
+
+  trailingSlash: true,
 
   /* Turbopack / 実験的機能の設定 */
   experimental: {
