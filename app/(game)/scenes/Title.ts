@@ -37,6 +37,14 @@ export class Title extends Scene {
 
     create() {
 
+        setTimeout(() => {
+            if (window.innerWidth < window.innerHeight) {
+                alert("お願い、横画面で遊んでぇ(´;ω;｀)")
+            }
+        }, 100);
+
+
+
         //状態管理クラス
         const manager = GameStateManager.getInstance();
 

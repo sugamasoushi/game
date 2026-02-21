@@ -50,3 +50,14 @@ npm run electron:dev
 ```
 
 ## PWA：スマホインストール形式
+
+```bash
+# githubにプロジェクトをプッシュ
+https://github.com/sugamasoushi/game/tree/main
+
+# vercelに紐づけ
+https://vercel.com/sugamasoushis-projects
+
+# githubにプッシュ
+githubにプッシュすると自動でデプロイされる
+```

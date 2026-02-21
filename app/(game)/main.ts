@@ -16,37 +16,17 @@ let phaserGame: Phaser.Game | null = null;
 // 画面が縦向きの場合は幅と高さを入れ替える
 const baseWidth = 1280;
 const baseHeight = 720;
-let gameWidth = baseWidth;
-let gameHeight = baseHeight;
-
-if (window.innerWidth < window.innerHeight) {
-    gameWidth = baseHeight;
-    gameHeight = baseWidth;
-}
-
-// 画面回転に合わせてゲーム画面を再起動
-window.addEventListener('orientationchange', () => {
-    setTimeout(() => {
-        if (phaserGame) {
-            // 新しい向きに対応したサイズを計算
-            const newWidth = window.innerWidth < window.innerHeight ? baseHeight : baseWidth;
-            const newHeight = window.innerWidth < window.innerHeight ? baseWidth : baseHeight;
-            phaserGame.scale.setGameSize(newWidth, newHeight);
-            console.log('Screen updated to:', newWidth, 'x', newHeight);
-        }
-    }, 100);
-});
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
-    width: gameWidth,
-    height: gameHeight,
+    width: baseWidth,
+    height: baseHeight,
     parent: 'game-container',
     // backgroundColor: '#028af8',
     scale: {
         mode: Phaser.Scale.FIT,//画面をブラウザ表示域に合わせる
-        width: gameWidth,  // ベースとなる解像度（アスペクト比の基準）
-        height: gameHeight,
+        width: baseWidth,  // ベースとなる解像度（アスペクト比の基準）
+        height: baseHeight,
     },
     physics: {
         default: 'arcade',

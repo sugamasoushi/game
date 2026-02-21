@@ -13,6 +13,7 @@ export class Boot extends Scene {
     }
 
     create() {
+
         this.scene.start('SceneController');
     }
 }
