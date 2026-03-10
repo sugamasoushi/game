@@ -3,7 +3,7 @@ import { FieldMapModel } from "../model/FieldMapModel";
 import { TileMap } from "../view/TileMap";
 import { MapObject } from "../view/MapObject";
 import { MenuButton } from "../view/MenuButton";
-import { TestButton } from "../view/SaveButton";
+import { SaveButton } from "../view/SaveButton";
 import { FieldData } from "../../lib/types";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
 import { Npc } from "../view/character/Npc";
@@ -21,7 +21,7 @@ export class FieldPresenter {
         private tileMap: TileMap,
         private mapObject: MapObject,
         private menuButton: MenuButton,
-        private testButton: TestButton,
+        private testButton: SaveButton,
         private cameraManager: CameraManager,
         private inputManager: InputManager
     ) {
