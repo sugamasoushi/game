@@ -3,6 +3,7 @@ import { FieldMapModel } from "../model/FieldMapModel";
 import { TileMap } from "../view/TileMap";
 import { MapObject } from "../view/MapObject";
 import { MenuButton } from "../view/MenuButton";
+import { TestButton } from "../view/SaveButton";
 import { FieldData } from "../../lib/types";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
 import { Npc } from "../view/character/Npc";
@@ -20,6 +21,7 @@ export class FieldPresenter {
         private tileMap: TileMap,
         private mapObject: MapObject,
         private menuButton: MenuButton,
+        private testButton: TestButton,
         private cameraManager: CameraManager,
         private inputManager: InputManager
     ) {
@@ -28,6 +30,7 @@ export class FieldPresenter {
         this.tileMap = tileMap;
         this.mapObject = mapObject;
         this.menuButton = menuButton;
+        this.testButton = testButton;
     }
 
     public async create(sceneKey: string) {
@@ -59,6 +62,7 @@ export class FieldPresenter {
         this.tileMap.execute(this.fieldMapModel.getFieldData());
         this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData());
         this.menuButton.execute();
+        this.testButton.execute();
 
         //オブジェクト作成、各種設定
         this.inputManager.execute();

@@ -9,6 +9,7 @@ import { FieldMapModel } from '../gamemain/model/FieldMapModel';
 import { TileMap } from '../gamemain/view/TileMap';
 import { MapObject } from '../gamemain/view/MapObject';
 import { MenuButton } from '../gamemain/view/MenuButton';
+import { SaveButton } from '../gamemain/view/SaveButton';
 import { Player } from '../gamemain/view/character/Player';
 
 import { GameStateManager } from '../GameAllState/GameStateManager';
@@ -45,6 +46,7 @@ export class Game extends Scene implements GameScene {
     gameText: Phaser.GameObjects.Text;
 
     private menuButton: MenuButton;
+    private testButton: SaveButton
 
     constructor() { super('Game'); }
 
@@ -53,6 +55,7 @@ export class Game extends Scene implements GameScene {
         this.tileMap = new TileMap(this);
         this.mapObject = new MapObject(this);
         this.menuButton = new MenuButton(this);
+        this.testButton = new SaveButton(this, this.mapObject);
         this.inputManager = new InputManager(this);
         this.cameraManager = new CameraManager(this);
 
@@ -63,6 +66,7 @@ export class Game extends Scene implements GameScene {
             this.tileMap,
             this.mapObject,
             this.menuButton,
+            this.testButton,
             this.cameraManager,
             this.inputManager
         );

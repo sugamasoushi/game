@@ -3,6 +3,7 @@ import { State } from '../lib/types';
 import { EventBus } from '../EventBus';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 import { DataDefinition } from '../Data/DataDefinition';
+import { SaveDataManager } from '../core/SaveDataManager';
 
 export class Title extends Scene {
     game: Phaser.Game;
@@ -14,6 +15,7 @@ export class Title extends Scene {
     private newGameStart: GameObjects.Text;
     private ContinueStart: GameObjects.Text;
     private logoTween: Phaser.Tweens.Tween | null;
+    private saveDataManager: SaveDataManager;
 
     constructor() { super('Title'); }
 
@@ -44,7 +46,6 @@ export class Title extends Scene {
         }, 100);
 
 
-
         //状態管理クラス
         const manager = GameStateManager.getInstance();
 
@@ -52,6 +53,9 @@ export class Title extends Scene {
         const gameHeight = Number(this.game.config.height)
 
         this.add.image(gameWidth / 2, gameHeight / 2, 'LondonBridge');
+
+        //セーブデータ
+        this.saveDataManager = new SaveDataManager();
 
         //タイトルテキスト
         this.titleText = this.add.text(
@@ -103,6 +107,9 @@ export class Title extends Scene {
         this.ContinueStart.on('pointerdown', () => {
             this.ContinueStart.disableInteractive();
 
+            //ローカルストレージのデータを読み込み
+            this.saveDataManager.loadSaveData(this);
+
             //状態を更新
             manager.updateState({
                 state: State.LOAD,
@@ -135,4 +142,5 @@ export class Title extends Scene {
         console.log("Title changeScene")
         this.scene.start('MainMenu');
     }
+
 }
