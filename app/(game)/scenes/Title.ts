@@ -5,6 +5,8 @@ import { GameStateManager } from '../GameAllState/GameStateManager';
 import { DataDefinition } from '../Data/DataDefinition';
 import { SaveDataManager } from '../core/SaveDataManager';
 
+import { PlayerViewData } from '../core/PlayerViewData';
+
 export class Title extends Scene {
     game: Phaser.Game;
     private gameConfigWidth: number;
@@ -16,6 +18,8 @@ export class Title extends Scene {
     private ContinueStart: GameObjects.Text;
     private logoTween: Phaser.Tweens.Tween | null;
     private saveDataManager: SaveDataManager;
+
+    private reDrow: GameObjects.Text;
 
     constructor() { super('Title'); }
 
@@ -135,6 +139,29 @@ export class Title extends Scene {
 
 
         //this.scene.start('MainMenu');
+
+
+
+        const playerViewData = new PlayerViewData();
+
+
+
+        this.reDrow = this.add.text(
+            gameWidth / 2 - 100, gameHeight / 2 - 100,
+            "再描画", { fontFamily: "Arial Black", fontSize: 30, color: "#00a6ed" });
+        this.reDrow.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
+        this.reDrow.setDepth(gameHeight);
+
+        this.reDrow.setInteractive({
+            useHandCursor: true  // マウスオーバーでカーソルが指マークになる
+        });
+        this.reDrow.on('pointerdown', () => {
+            this.reDrow.disableInteractive();
+            
+            console.log("再描画");
+            this.scene.restart();
+
+        });
     }
 
     //EventBus経由で外部から参照され、シーン切替が可能
