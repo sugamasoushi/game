@@ -13,7 +13,7 @@ export class PlayerViewData {
      */
 
     constructor() {
-        this.getViewInfomation();//現状、2回取得してるが改修すべき
+        this.getViewInfomation();
         window.addEventListener("orientationchange", () => {
             console.log("画面が回転しました");
             this.redraw = true;
