@@ -157,9 +157,11 @@ export class Title extends Scene {
         });
         this.reDrow.on('pointerdown', () => {
             this.reDrow.disableInteractive();
-            
+
             console.log("再描画");
-            this.scene.restart();
+            // モードをFITに変え、基準サイズを1280x720に再設定する
+            this.game.scale.setGameSize(1280, 720);
+            this.game.scale.scaleMode = Phaser.Scale.FIT
 
         });
     }
