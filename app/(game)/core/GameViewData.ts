@@ -1,4 +1,4 @@
-export class PlayerViewData {
+export class GameViewData {
 
     public playerViewWidth: number;
     public playerViewHeight: number;

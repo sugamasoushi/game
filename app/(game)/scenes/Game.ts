@@ -86,6 +86,14 @@ export class Game extends Scene implements GameScene {
 
     create(data: { sceneKey: string }) {
 
+        //スマホの画面回転時、100ミリ秒後に画面更新。
+        this.scale.on('resize', () => {
+            setTimeout(() => {
+                this.scale.setGameSize(1280, 720);
+                this.scale.scaleMode = Phaser.Scale.FIT;
+            }, 100);
+        });
+
         //状態管理クラス
         const manager = GameStateManager.getInstance();
 

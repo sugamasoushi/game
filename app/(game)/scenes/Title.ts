@@ -4,8 +4,7 @@ import { EventBus } from '../EventBus';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 import { DataDefinition } from '../Data/DataDefinition';
 import { SaveDataManager } from '../core/SaveDataManager';
-
-import { PlayerViewData } from '../core/PlayerViewData';
+import DebugMessage from './../util/DebugMessage';
 
 export class Title extends Scene {
     game: Phaser.Game;
@@ -18,8 +17,6 @@ export class Title extends Scene {
     private ContinueStart: GameObjects.Text;
     private logoTween: Phaser.Tweens.Tween | null;
     private saveDataManager: SaveDataManager;
-
-    private reDrow: GameObjects.Text;
 
     constructor() { super('Title'); }
 
@@ -36,6 +33,7 @@ export class Title extends Scene {
 
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
+        this.load.image('alertImage', '/img/CharaStand/20240713_2.png');
 
         this.load.image('logo', 'logo.png');
         this.load.image('star', 'star.png');
@@ -45,9 +43,19 @@ export class Title extends Scene {
 
         setTimeout(() => {
             if (window.innerWidth < window.innerHeight) {
-                alert("お願い、横画面で遊んでぇ(´;ω;｀)")
+                const debugMessage = new DebugMessage(this);
+                debugMessage.viewAlert();
             }
-        }, 100);
+        }, 200);
+
+
+        //スマホの画面回転時、100ミリ秒後に画面更新。
+        this.scale.on('resize', () => {
+            setTimeout(() => {
+                this.scale.setGameSize(1280, 720);
+                this.scale.scaleMode = Phaser.Scale.FIT;
+            }, 100);
+        });
 
 
         //状態管理クラス
@@ -136,35 +144,7 @@ export class Title extends Scene {
         //EventBusにシーンを登録するとuseEffect経由で外部から操作できる
         EventBus.emit('current-scene-ready', this);
 
-
-
         //this.scene.start('MainMenu');
-
-
-
-        const playerViewData = new PlayerViewData();
-
-
-
-        this.reDrow = this.add.text(
-            gameWidth / 2 - 100, gameHeight / 2 - 100,
-            "再描画", { fontFamily: "Arial Black", fontSize: 30, color: "#00a6ed" });
-        this.reDrow.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
-        this.reDrow.setDepth(gameHeight);
-
-        this.reDrow.setInteractive({
-            useHandCursor: true  // マウスオーバーでカーソルが指マークになる
-        });
-        this.reDrow.on('pointerdown', () => {
-            this.reDrow.disableInteractive();
-
-            console.log("再描画");
-            
-            // モードをFITに変え、基準サイズを1280x720に再設定する
-            this.scale.setGameSize(1280, 720);
-            this.scale.scaleMode = Phaser.Scale.FIT;
-
-        });
     }
 
     //EventBus経由で外部から参照され、シーン切替が可能

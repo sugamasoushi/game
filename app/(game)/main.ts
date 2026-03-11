@@ -10,7 +10,7 @@ import Menu from './scenes/Menu';
 import { Event } from './scenes/Event';
 import { Battle } from './scenes/Battle';
 import { Sound } from './scenes/Sound';
-import { PlayerViewData } from './core/PlayerViewData';
+import { GameViewData } from './core/GameViewData';
 
 let phaserGame: Phaser.Game | null = null;
 
@@ -19,15 +19,15 @@ let phaserGame: Phaser.Game | null = null;
 * PC画面とスマホ画面に対応するが、スマホ画面については端末により変化する
 * 楽天BIGではブラウザのヘッダ部を覗いて縦画面は424×830、横画面は925×329となる
 */
-const playerViewData = new PlayerViewData();
+//const gameViewData = new GameViewData();
 
-//スマホの画面回転に対応。回転開始直後は回転前の画面サイズが取得されてしまうため、100ミリ秒後に取得する。
-window.addEventListener("orientationchange", () => {
-    setTimeout(() => {
-        playerViewData.getViewInfomation();
-        //phaserGame!.scale.setGameSize(playerViewData.playerViewWidth, playerViewData.playerViewHeight);//ゲーム内部の画面を変更した後にFITさせる
-    }, 100);
-});
+// //スマホの画面回転に対応。回転開始直後は回転前の画面サイズが取得されてしまうため、100ミリ秒後に取得する。
+// window.addEventListener("orientationchange", () => {
+//     setTimeout(() => {
+//         gameViewData.getViewInfomation();
+//         //phaserGame!.scale.setGameSize(gameViewData.playerViewWidth, gameViewData.playerViewHeight);//ゲーム内部の画面を変更した後にFITさせる
+//     }, 100);
+// });
 
 // 画面が縦向きの場合は幅と高さを入れ替える
 const baseWidth = 1280;

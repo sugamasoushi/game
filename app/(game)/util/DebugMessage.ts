@@ -30,4 +30,28 @@ export default class DebugMessage {
             noGimicWindow.destroy();
         }, 4000);
     }
+
+    viewAlert() {
+        const setText = ['横画面で遊んでね！'];
+        const messageObjectInstance = new MessageObject();
+        messageObjectInstance.init(this.scene);
+
+        const noGimicText = messageObjectInstance.createTextObject(this.scene, 500, 150, setText);
+        noGimicText.setFontSize(50);
+        const noGimicImage = this.scene.add.image(noGimicText.x - 100, noGimicText.y + 300, 'alertImage');
+        const noGimicWindow = new MessageWindow(this.scene);
+
+        noGimicWindow.init();
+        noGimicWindow.createBubbleWindow(noGimicText, -50 + 500, 80 + 200, 'right', undefined);
+        noGimicWindow.lineStyle(20, 0xff0000);
+
+        noGimicText.setDepth(Number(this.scene.game.config.height) + 2);
+        noGimicImage.setDepth(Number(this.scene.game.config.height));
+        noGimicWindow.setDepth(Number(this.scene.game.config.height) + 1);
+        setTimeout(() => {
+            noGimicText.destroy();
+            noGimicImage.destroy();
+            noGimicWindow.destroy();
+        }, 4000);
+    }
 }
