@@ -8,10 +8,7 @@ import DebugMessage from './../util/DebugMessage';
 
 export class Title extends Scene {
     game: Phaser.Game;
-    private gameConfigWidth: number;
-    private gameConfigHeight: number;
-    private background: GameObjects.Image;
-    private logo: GameObjects.Image;
+
     private titleText: GameObjects.Text;
     private newGameStart: GameObjects.Text;
     private ContinueStart: GameObjects.Text;
@@ -50,12 +47,12 @@ export class Title extends Scene {
 
 
         //スマホの画面回転時、100ミリ秒後に画面更新。
-        this.scale.on('resize', () => {
-            setTimeout(() => {
-                this.scale.setGameSize(1280, 720);
-                this.scale.scaleMode = Phaser.Scale.FIT;
-            }, 100);
-        });
+        // this.scale.on('resize', () => {
+        //     setTimeout(() => {
+        //         this.scale.setGameSize(1280, 720);
+        //         this.scale.scaleMode = Phaser.Scale.FIT;
+        //     }, 100);
+        // });
 
 
         //状態管理クラス

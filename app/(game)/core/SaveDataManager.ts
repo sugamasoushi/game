@@ -22,7 +22,7 @@ export class SaveDataManager {
 
             const savedata = localStorage.getItem('savedata');
             console.log(JSON.parse(savedata!))
-
+            scene.cache.json.get('savedata').playerData.PlayerMapKey = JSON.parse(savedata!).playerData.PlayerMapKey;
             scene.cache.json.get('savedata').playerData.PlayerPosition.x = JSON.parse(savedata!).playerData.PlayerPosition.x;
             scene.cache.json.get('savedata').playerData.PlayerPosition.y = JSON.parse(savedata!).playerData.PlayerPosition.y;
         }

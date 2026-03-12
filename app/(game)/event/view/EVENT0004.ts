@@ -85,7 +85,6 @@ export class EVENT0004 extends BaseEvent {
             }),
             //キャラ移動・配置
             this.player.state = CharacterState.event,
-            this.player.setStandFrame(this.player.getAnimationKey().standDown),
             this.characterMovingUP(this.player, 384, 300, false)
         ]);
 
@@ -97,6 +96,7 @@ export class EVENT0004 extends BaseEvent {
         await Promise.all([
             this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'player', playerImageKey, 1000, 0.6, 200),
             this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamy', lamyImageKey, 200, 1, 200),
+            this.player.setStandFrame(this.player.getAnimationKey().standDown)
         ]);
 
         await this.eventTalk.execTalk([
@@ -141,22 +141,36 @@ export class EVENT0004 extends BaseEvent {
         messageObject.y = (Number(this.eventScene.game.config.height) - messageObject.height) / 2;
 
         //フェード
-        await new Promise<void>(resolve => {
-            const fadeout = setInterval(//一定時間毎にメソッドを実行する
-                () => {
-                    messageObject.alpha += 0.2;
-                    maskRect.alpha += 0.1;
-                    if (maskRect.alpha >= 0.5) {
-                        clearInterval(fadeout);//setInterval()をクリア
+        await Promise.all([
+            new Promise<void>(resolve => {
+                this.eventScene.tweens.add({
+                    targets: maskRect,
+                    alpha: 0.5,
+                    duration: 1000,
+                    ease: 'Power1',
+                    onComplete: () => {
                         resolve();
                     }
-                }, 50)
-        })
+                });
+            }),
+            new Promise<void>(resolve => {
+                this.eventScene.tweens.add({
+                    targets: messageObject,
+                    alpha: 1,
+                    duration: 1000,
+                    ease: 'Power1',
+                    onComplete: () => {
+                        resolve();
+                    }
+                });
+            }),
+        ])
 
+        //一定時間待機
         await new Promise<void>(resolve => {
-            setTimeout(() => {
+            this.eventScene.time.delayedCall(2000, () => {
                 resolve();
-            }, 2000);
+            }, [], this.eventScene);
         })
 
         //エンディング
@@ -191,43 +205,47 @@ export class EVENT0004 extends BaseEvent {
         endMessage.x = (Number(this.eventScene.game.config.width) - endMessage.width) / 2;
         endMessage.y = Number(this.eventScene.game.config.height);
 
-        // 一定時間待機またはクリックで終了
+        // 一定時間待機
         await new Promise<void>(resolve => {
-            const stoptime = setInterval(
-                () => {
-                    clearInterval(stoptime);//setInterval()をクリア
-                    resolve();
-                }, 2000)
+            this.eventScene.time.delayedCall(2000, () => {
+                resolve();
+            }, [], this.eventScene);
         })
 
         // エンドロール
         await new Promise<void>(resolve => {
-            const scroll = setInterval(//一定時間毎にメソッドを実行する
-                () => {
-                    messageObject.y -= 1;//0.5
-                    endMessage.y -= 1;//0.5
+            this.eventScene.time.addEvent({
+                delay: 50,                // 1000ミリ秒（1秒）ごとに実行
+                callback: () => {
+                    messageObject.y -= 1;
+                    endMessage.y -= 1;
                     if (endMessage.y < -1 * (endMessage.height)) {
-                        clearInterval(scroll);//setInterval()をクリア
                         resolve();
                     }
-                }, 10)
+                },
+                callbackScope: this,
+                loop: true
+            });
+
+            //クリックで次のフェードアウトを実行
+            this.eventScene.input.once('pointerdown', () => {
+                resolve();
+            });
         })
 
         // テキストを全てフェードアウト
         await new Promise<void>(resolve => {
-            const fadeout = setInterval(//一定時間毎にメソッドを実行する
-                () => {
-                    // maskRect.alpha -= 0.1;
-                    messageObject.alpha -= 0.2;
-                    endMessage.alpha -= 0.2;
-                    if (endMessage.alpha <= 0) {
-                        clearInterval(fadeout);//setInterval()をクリア
-                        messageObject.destroy();
-                        // maskRect.destroy();
-                        endMessage.destroy();
-                        resolve();
-                    }
-                }, 100)
+            this.eventScene.tweens.add({
+                targets: [messageObject, endMessage],
+                alpha: 0,
+                duration: 500,
+                ease: 'Power1',
+                onComplete: () => {
+                    messageObject.destroy();
+                    endMessage.destroy();
+                    resolve();
+                }
+            });
         })
 
 
@@ -240,14 +258,15 @@ export class EVENT0004 extends BaseEvent {
 
         //フェード
         await new Promise<void>(resolve => {
-            const fadeout = setInterval(//一定時間毎にメソッドを実行する
-                () => {
-                    titleText.alpha += 0.1;
-                    if (titleText.alpha >= 1) {
-                        clearInterval(fadeout);//setInterval()をクリア
-                        resolve();
-                    }
-                }, 100)
+            this.eventScene.tweens.add({
+                targets: titleText,
+                alpha: 1,
+                duration: 1000,
+                ease: 'Power1',
+                onComplete: () => {
+                    resolve();
+                }
+            });
         })
 
         // //会話シーン終了のチェック

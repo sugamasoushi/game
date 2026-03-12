@@ -67,10 +67,11 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
 
         return new Promise<void>(resolve => {
             this.setVisible(true);
-            setTimeout(() => {
+            this.scene.time.delayedCall(time, () => {
                 this.setVisible(false);
                 resolve();
-            }, time);
+            }, [], this.scene);
+
         })
     }
 }

@@ -1,6 +1,7 @@
 import { GameScene } from "../../lib/types";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { MapObject } from "./MapObject";
+import { GameStateManager } from "../../GameAllState/GameStateManager";
 
 export class SaveButton {
     private saveDataManager: SaveDataManager;
@@ -24,7 +25,7 @@ export class SaveButton {
 
         const MenuText = this.gameScene.add.text(
             gameConfigWidth - 100, gameConfigHeight - 200,
-            "TEST", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
+            "SAVE", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
         MenuText.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
         MenuText.setDepth(999999);
         MenuText.setScrollFactor(0);//スクロールに影響されなくなる
@@ -40,7 +41,10 @@ export class SaveButton {
                 this.gameScene.scene.resume();
             }, 100);
 
+            const manager = GameStateManager.getInstance();
+
             this.gameScene.cache.json.get('savedata').infomation = "中断セーブデータ";
+            this.gameScene.cache.json.get('savedata').playerData.PlayerMapKey = manager.currentFieldData.mapKey;
             this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.x = this.mapObject.getPlayer().x;
             this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.y = this.mapObject.getPlayer().y;
             this.saveDataManager.setSaveData(this.gameScene);

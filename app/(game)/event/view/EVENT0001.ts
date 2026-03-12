@@ -90,18 +90,18 @@ export class EVENT0001 extends BaseEvent {
 
         //フェードアウト
         await new Promise<void>(resolve => {
-            const fadeout = setInterval(//一定時間毎にメソッドを実行する
-                () => {
-                    maskRect.alpha -= 0.1;
-                    textObject.alpha -= 0.2;
-                    if (maskRect.alpha <= 0) {
-                        clearInterval(fadeout);//setInterval()をクリア
-                        textObject.destroy();
-                        maskRect.destroy();
-                        resolve();
-                    }
-                }, 100)
-        })
+            this.eventScene.tweens.add({
+                targets: [maskRect, textObject], 
+                alpha: 0,
+                duration: 1500,
+                ease: 'Power1',
+                onComplete: () => {
+                    textObject.destroy();
+                    maskRect.destroy();
+                    resolve();
+                }
+            });
+        });
 
         this.eventEnd();
     }
