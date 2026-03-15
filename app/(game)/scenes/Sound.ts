@@ -2,7 +2,7 @@ import { Scene } from 'phaser';
 
 export class Sound extends Scene {
     private debugFlg: boolean | undefined;
-    
+
     gameScene: Phaser.Scene | null;
 
     //BGM
@@ -65,7 +65,7 @@ export class Sound extends Scene {
 
         this.game.events.on('BGM_BATTLE', (key: string) => {
             if (this.debugFlg) return;
-            
+
             console.log('BGM_BATTLE')
             this.stopAllBgm();
             this.battleBgm.play();

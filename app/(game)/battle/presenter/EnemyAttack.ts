@@ -43,9 +43,9 @@ export default class EnemyAttack {
                 this.attacker.setData('BattleTarget', undefined);
 
                 await new Promise<void>(resolve => {
-                    setTimeout(() => {
+                    this.battleScene.time.delayedCall(500, () => {
                         resolve();
-                    }, 500);
+                    }, [], this.battleScene);
                 })
 
                 resolve();
@@ -77,10 +77,9 @@ export default class EnemyAttack {
         this.soundScene.SE_punch.play();
         return new Promise<void>(resolve => {
             this.battleScene.cameras.main.shake(100, 0.02);
-            setTimeout(() => {
-                // this.soundScene.punchSE.stop();
+            this.battleScene.time.delayedCall(500, () => {
                 resolve();
-            }, 500);
+            }, [], this.battleScene);
         });
     }
 

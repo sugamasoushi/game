@@ -12,7 +12,6 @@ export class SaveButton {
     }
 
     public async execute() {
-
         this.createTestButton();
     }
 
@@ -33,13 +32,8 @@ export class SaveButton {
         MenuText.setInteractive({
             useHandCursor: true  // マウスオーバーでカーソルが指マークになる
         });
-        MenuText.on('pointerdown', () => {
-
-            //画面更新を一定時間停止（ボタンの下のマップクリックが処理されるため）
-            this.gameScene.scene.pause();
-            setTimeout(() => {
-                this.gameScene.scene.resume();
-            }, 100);
+        MenuText.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            pointer.reset();//入力状態をリセット、リセットしないと押下中に連続で処理される
 
             const manager = GameStateManager.getInstance();
 
@@ -49,24 +43,14 @@ export class SaveButton {
             this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.y = this.mapObject.getPlayer().y;
             this.saveDataManager.setSaveData(this.gameScene);
 
-
             //zone.removeInteractive();//クリック後、クリック操作を削除
             console.log(this.gameScene.getPlayer());
-            console.log(this.gameScene);
-            console.log(this.gameScene.children.getChildren())
             const list: Phaser.GameObjects.GameObject[] = [];
             this.gameScene.children.getChildren().map(obj => {
                 if (obj.type === "Sprite") {
                     list.push(obj)
                 }
             })
-            console.log(list);
-
-            //画面更新を停止
-            //this.scene.scene.pause();
-            // this.talkScene = this.scene.scene.get('BattleScene');
-            //this.scene.scene.launch('BattleScene');
-
         });
     }
 

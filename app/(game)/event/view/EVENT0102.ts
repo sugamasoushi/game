@@ -88,7 +88,8 @@ export class EVENT0102 extends BaseEvent {
                 // });
             }),
             //キャラ移動
-            this.characterMovingDOWN(this.grandpa, 1450, 100, true),
+            //this.characterMovingDOWN(this.grandpa, 1450, 100, true),
+            this.characterMoving(this.grandpa, this.player.x, 1450, 'walk_down'),
             this.player.setStandFrame(this.player.getAnimationKey().standUp),
         ]);
 
@@ -121,8 +122,10 @@ export class EVENT0102 extends BaseEvent {
         }
 
         //npcを移動
-        await this.characterMovingUP(this.grandpa, 1370, 100, true);
-        await this.characterMovingRIGHT(this.grandpa, 470, 100, true);
+        await this.characterMovingUP(this.grandpa, 100);
+        this.characterMovingRIGHT(this.grandpa, 400);
+
+        await this.stopAnyTime(200);
 
         /*会話---------------------------------------------------------------------------------*/
 

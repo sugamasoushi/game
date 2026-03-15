@@ -33,6 +33,9 @@ let phaserGame: Phaser.Game | null = null;
 const baseWidth = 1280;
 const baseHeight = 720;
 
+// 開発環境 (npm run dev) の時だけ true になる
+const isDebug = process.env.NODE_ENV === 'development';
+
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
     width: baseWidth,
@@ -47,7 +50,7 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,//当たり判定とかを表示してくれる
+            debug: isDebug,//当たり判定とかを表示してくれる
             gravity: { x: 0, y: 0 }
         },
     },

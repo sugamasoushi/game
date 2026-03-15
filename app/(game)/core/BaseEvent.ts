@@ -61,149 +61,166 @@ export class BaseEvent implements Eventer {
         })
     }
 
-    //キャラクターを目標Y座標まで移動する
-    // protected characterMovingY(sprite: Player | Npc, moveY: number, velocityY: number, animation: boolean) {
-
-    //     return new Promise<void>(resolve => {
-
-    //         //移動
-    //         sprite.moveY(moveY, velocityY, animation);
-
-
-    //         let deirection = '';
-    //         if (moveY - sprite.y < 0) {
-    //             deirection = 'up';
-    //         } else {
-    //             deirection = 'down';
-    //         }
-
-    //         //座標をチェック
-    //         const check = setInterval(//一定時間毎にメソッドを実行する
-    //             () => {
-    //                 //移動先座標との差が1未満の場合は停止
-    //                 if (Phaser.Math.Difference(moveY, sprite.y) < 4) {
-    //                     sprite.body.setVelocity(0, 0);
-    //                     sprite.stopAnimation();
-    //                     clearInterval(check);//setInterval()をクリア
-    //                     resolve();
-    //                 }
-
-    //             }, 10)//10/1000ミリ秒毎（最低値）
-    //     })
-    // }
-
     //キャラクターを目標Y座標まで上方向に移動する
-    protected characterMovingUP(sprite: Player | Npc, moveY: number, velocityY: number, animation: boolean) {
+    protected characterMovingUP(sprite: Player | Npc, distanceY: number, speed?: number | undefined, animationFlg?: boolean | undefined) {
+        // 移動スピード（1秒間に動くピクセル数）
+        const moveSpeed = speed ? speed : 100;
 
-        //移動先座標がスプライト位置より上の場合
-        if (moveY - sprite.y < 0) {
-            return new Promise<void>(resolve => {
+        // アニメーションフラグ
+        const defaultAnimationFlg = animationFlg !== undefined ? animationFlg : true;
 
-                sprite.setVelocityY(-1 * velocityY);
-                if (animation === true) {
-                    sprite.setAnimDirection('walk_up');
+        // 距離をスピードで割って、必要な時間（ミリ秒）を算出
+        const duration = (distanceY / moveSpeed) * 1000;
+
+        return new Promise<void>(resolve => {
+            this.eventScene.tweens.add({
+                targets: sprite,
+                y: sprite.y - distanceY,
+                duration: duration,
+                ease: 'Linear', // 等速移動
+                onStart: () => {
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_up'); }
+                },
+                onComplete: () => {
+                    sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
+                    sprite.stopAnimation();   // アニメーション停止
+                    resolve();
                 }
-
-                //座標をチェック
-                const check = setInterval(//一定時間毎にメソッドを実行する
-                    () => {
-                        //移動先座標を超えたら停止
-                        if (moveY > sprite.y) {
-                            sprite.setVelocityY(0);
-                            sprite.stopAnimation();
-                            clearInterval(check);//setInterval()をクリア
-                            resolve();
-                        }
-                    }, 10)//10/1000ミリ秒毎（最低値）
-            })
-        } else {
-            console.log('座標位置エラー')
-        }
+            });
+        });
     }
 
     //キャラクターを目標Y座標まで下方向に移動する
-    protected characterMovingDOWN(sprite: Player | Npc, moveY: number, velocityY: number, animation: boolean) {
-        //移動先座標がスプライト位置より上の場合
-        if (moveY - sprite.y > 0) {
-            return new Promise<void>(resolve => {
+    protected characterMovingDOWN(sprite: Player | Npc, distanceY: number, speed?: number | undefined, animationFlg?: boolean | undefined) {
 
-                sprite.setVelocityY(1 * velocityY);
-                if (animation === true) {
-                    sprite.setAnimDirection('walk_down');
+        // 移動スピード（1秒間に動くピクセル数）
+        const moveSpeed = speed ? speed : 100;
+
+        // アニメーションフラグ
+        const defaultAnimationFlg = animationFlg !== undefined ? animationFlg : true;
+
+        // 距離をスピードで割って、必要な時間（ミリ秒）を算出
+        const duration = (distanceY / moveSpeed) * 1000;
+
+        return new Promise<void>(resolve => {
+            this.eventScene.tweens.add({
+                targets: sprite,
+                y: sprite.y + distanceY,
+                duration: duration,
+                ease: 'Linear', // これで完全等速になる
+                onStart: () => {
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_down'); }
+                },
+                onComplete: () => {
+                    sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
+                    sprite.stopAnimation();   // アニメーション停止
+                    resolve();
                 }
-
-                //座標をチェック
-                const check = setInterval(//一定時間毎にメソッドを実行する
-                    () => {
-                        //移動先座標を超えたら停止
-                        if (moveY < sprite.y) {
-                            sprite.setVelocityY(0);
-                            sprite.stopAnimation();
-                            clearInterval(check);//setInterval()をクリア
-                            resolve();
-                        }
-                    }, 10)//10/1000ミリ秒毎（最低値）
-            })
-        } else {
-            console.log('座標位置エラー')
-        }
+            });
+        });
     }
 
     //キャラクターを目標X座標まで左方向に移動する
-    protected characterMovingLEFT(sprite: Player | Npc, moveX: number, velocityX: number, animation: boolean) {
+    protected characterMovingLEFT(sprite: Player | Npc, distanceX: number, speed?: number | undefined, animationFlg?: boolean | undefined) {
 
-        //移動先座標がスプライト位置より右の場合
-        if (moveX - sprite.x < 0) {
-            return new Promise<void>(resolve => {
+        // 移動スピード（1秒間に動くピクセル数）
+        const moveSpeed = speed ? speed : 100;
 
-                sprite.setVelocityX(-1 * velocityX);
-                if (animation === true) {
-                    sprite.setAnimDirection('walk_left');
+        // アニメーションフラグ
+        const defaultAnimationFlg = animationFlg !== undefined ? animationFlg : true;
+
+        // 距離をスピードで割って、必要な時間（ミリ秒）を算出
+        const duration = (distanceX / moveSpeed) * 1000;
+
+        return new Promise<void>(resolve => {
+            this.eventScene.tweens.add({
+                targets: sprite,
+                x: sprite.x - distanceX,
+                duration: duration,
+                ease: 'Linear', // これで完全等速になる
+                onStart: () => {
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_left'); }
+                },
+                onComplete: () => {
+                    sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
+                    sprite.stopAnimation();   // アニメーション停止
+                    resolve();                // 移動完了を通知
                 }
-
-                //座標をチェック
-                const check = setInterval(//一定時間毎にメソッドを実行する
-                    () => {
-                        //移動先座標を超えたら停止
-                        if (moveX > sprite.x) {
-                            sprite.setVelocityX(0);
-                            sprite.stopAnimation();
-                            clearInterval(check);//setInterval()をクリア
-                            resolve();
-                        }
-                    }, 10)//10/1000ミリ秒毎（最低値）
-            })
-        } else {
-            console.log('座標位置エラー')
-        }
+            });
+        });
     }
 
     //キャラクターを目標X座標まで左方向に移動する
-    protected characterMovingRIGHT(sprite: Player | Npc, moveX: number, velocityX: number, animation: boolean) {
+    protected characterMovingRIGHT(sprite: Player | Npc, distanceX: number, speed?: number | undefined, animationFlg?: boolean | undefined) {
 
-        //移動先座標がスプライト位置より左の場合
-        if (moveX - sprite.x > 0) {
-            return new Promise<void>(resolve => {
+        // 移動スピード（1秒間に動くピクセル数）
+        const moveSpeed = speed ? speed : 100;
 
-                sprite.setVelocityX(1 * velocityX);
-                if (animation === true) {
-                    sprite.setAnimDirection('walk_right');
+        // アニメーションフラグ
+        const defaultAnimationFlg = animationFlg !== undefined ? animationFlg : true;
+
+        // 距離をスピードで割って、必要な時間（ミリ秒）を算出
+        const duration = (distanceX / moveSpeed) * 1000;
+
+        return new Promise<void>(resolve => {
+            this.eventScene.tweens.add({
+                targets: sprite,
+                x: sprite.x + distanceX,
+                duration: duration,
+                ease: 'Linear', // これで完全等速になる
+                onStart: () => {
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_right'); }
+                },
+                onComplete: () => {
+                    sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
+                    sprite.stopAnimation();   // アニメーション停止
+                    resolve();                // 移動完了を通知
                 }
+            });
+        });
+    }
 
-                //座標をチェック
-                const check = setInterval(//一定時間毎にメソッドを実行する
-                    () => {
-                        //移動先座標を超えたら停止
-                        if (moveX < sprite.x) {
-                            sprite.setVelocityX(0);
-                            sprite.stopAnimation();
-                            clearInterval(check);//setInterval()をクリア
-                            resolve();
-                        }
-                    }, 10)//10/1000ミリ秒毎（最低値）
-            })
-        } else {
-            console.log('座標位置エラー')
-        }
+    //キャラクターを目標座標まで移動する
+    protected characterMoving(sprite: Player | Npc, targetX: number, targetY: number, animationKey: string, speed?: number | undefined) {
+        // walk_up
+        // walk_down
+        // walk_left
+        // walk_right
+
+        // 移動スピード（1秒間に動くピクセル数）
+        const moveSpeed = speed ? speed : 100;
+
+        // 現在地から目的地までの距離を計算
+        const distance = Phaser.Math.Distance.Between(sprite.x, sprite.y, targetX, targetY);
+
+        // 距離をスピードで割って、必要な時間（ミリ秒）を算出
+        const duration = (distance / moveSpeed) * 1000;
+
+        return new Promise<void>(resolve => {
+            this.eventScene.tweens.add({
+                targets: sprite,
+                x: targetX,
+                y: targetY,
+                duration: duration,
+                ease: 'Linear', // これで完全等速になる
+                onStart: () => {
+                    sprite.setAnimDirection(animationKey); // アニメーション開始
+                },
+                onComplete: () => {
+                    sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
+                    sprite.stopAnimation();   // アニメーション停止
+                    resolve();                // 移動完了を通知
+                }
+            });
+        });
+    }
+
+
+    protected stopAnyTime(duration: number) {
+        return new Promise<void>(resolve => {
+            this.eventScene.time.delayedCall(duration, () => {
+                resolve();
+            }, [], this.eventScene);
+        });
     }
 }

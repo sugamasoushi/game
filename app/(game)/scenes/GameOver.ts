@@ -36,10 +36,9 @@ export class GameOver extends Scene {
         this.scene.stop('Battle');
         this.scene.stop('Game');
 
-
-        setTimeout(() => {
+        this.time.delayedCall(2000, () => {
             this.backTitleScene();
-        }, 2000);
+        }, [], this);
     }
 
     backTitleScene() {

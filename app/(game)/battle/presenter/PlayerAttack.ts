@@ -59,9 +59,9 @@ export default class PlayerAttack {
                 this.attacker.setData('BattleTarget', undefined);
 
                 await new Promise<void>(resolve => {
-                    setTimeout(() => {
+                    this.battleScene.time.delayedCall(600, () => {
                         resolve();
-                    }, 600);
+                    }, [], this.battleScene);
                 })
 
                 resolve();

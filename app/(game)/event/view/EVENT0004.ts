@@ -85,7 +85,7 @@ export class EVENT0004 extends BaseEvent {
             }),
             //キャラ移動・配置
             this.player.state = CharacterState.event,
-            this.characterMovingUP(this.player, 384, 300, false)
+            this.characterMovingUP(this.player, 96, 300, false)
         ]);
 
         //キャラの画像キーを取得
@@ -215,7 +215,7 @@ export class EVENT0004 extends BaseEvent {
         // エンドロール
         await new Promise<void>(resolve => {
             this.eventScene.time.addEvent({
-                delay: 50,                // 1000ミリ秒（1秒）ごとに実行
+                delay: 10,// 1000ミリ秒（1秒）ごとに実行
                 callback: () => {
                     messageObject.y -= 1;
                     endMessage.y -= 1;
@@ -248,6 +248,12 @@ export class EVENT0004 extends BaseEvent {
             });
         })
 
+        // 一定時間待機
+        await new Promise<void>(resolve => {
+            this.eventScene.time.delayedCall(1000, () => {
+                resolve();
+            }, [], this.eventScene);
+        })
 
         //Thank you for playing!!
         const titleText = this.eventScene.add.text(
@@ -271,30 +277,29 @@ export class EVENT0004 extends BaseEvent {
 
         // //会話シーン終了のチェック
         await new Promise<void>(resolve => {
-            const backscene = setInterval(//一定時間毎にメソッドを実行する
-                () => {
-                    const pixelated = this.eventScene.cameras.main.postFX.addPixelate(-1);
-                    const endTween = this.eventScene.add.tween({
-                        targets: pixelated,
-                        duration: 700,
-                        amount: 40,
-                        onComplete: () => {
-                            this.eventScene.cameras.main.fadeOut(100);
-                            this.eventScene.scene.moveAbove('Event', 'Title');
 
-                            this.eventScene.scene.start('Title');
+            this.eventScene.time.delayedCall(2000, () => {
+                const pixelated = this.eventScene.cameras.main.postFX.addPixelate(-1);
+                const endTween = this.eventScene.add.tween({
+                    targets: pixelated,
+                    duration: 700,
+                    amount: 40,
+                    onComplete: () => {
+                        this.eventScene.cameras.main.fadeOut(100);
+                        this.eventScene.scene.moveAbove('Event', 'Title');
 
-                            this.eventScene.scene.stop('Game');
-                            this.eventScene.scene.stop('Event');
+                        this.eventScene.scene.start('Title');
 
-                            this.eventScene.game.events.emit('BGM_ALL_STOP');
+                        this.eventScene.scene.stop('Game');
+                        this.eventScene.scene.stop('Event');
 
-                            clearInterval(backscene);
-                            endTween.destroy();
-                            resolve();
-                        }
-                    });
-                }, 2000)
+                        this.eventScene.game.events.emit('BGM_ALL_STOP');
+
+                        endTween.destroy();
+                        resolve();
+                    }
+                });
+            }, [], this.eventScene);
         })
 
         //イベント終了時の処理

@@ -24,11 +24,12 @@ export default class DebugMessage {
         noGimicText.setDepth(Number(this.scene.game.config.height) + 2);
         noGimicImage.setDepth(Number(this.scene.game.config.height));
         noGimicWindow.setDepth(Number(this.scene.game.config.height) + 1);
-        setTimeout(() => {
+
+        this.scene.time.delayedCall(4000, () => {
             noGimicText.destroy();
             noGimicImage.destroy();
             noGimicWindow.destroy();
-        }, 4000);
+        }, [], this.scene);
     }
 
     viewAlert() {
@@ -48,10 +49,11 @@ export default class DebugMessage {
         noGimicText.setDepth(Number(this.scene.game.config.height) + 2);
         noGimicImage.setDepth(Number(this.scene.game.config.height));
         noGimicWindow.setDepth(Number(this.scene.game.config.height) + 1);
-        setTimeout(() => {
+        
+        this.scene.time.delayedCall(4000, () => {
             noGimicText.destroy();
             noGimicImage.destroy();
             noGimicWindow.destroy();
-        }, 4000);
+        }, [], this.scene);
     }
 }

@@ -10,8 +10,28 @@ import { GameStateManager } from '../GameAllState/GameStateManager';
 export class SceneController extends Scene {
     constructor() { super('SceneController'); }
 
+    preload() {
+        //オープニング用ファイル読み込み
+        //※Phaserやブラウザが読み込み完了を待ってくれないため、事前に読み込んでおく必要がある
+        this.load.audio('opening', 'assets/audio/opening.mp3');
+
+        this.load.image('meinaOpImage', 'assets/img/CharaStand/メイナOP画像.png');
+        this.load.image('meinaOpImageHome', 'assets/img/background/ComfyUI_temp_xsgbd_00098_.png');
+        this.load.image('lamyOpImage', 'assets/img/CharaStand/ラミィOP画像.png');
+        this.load.image('lamyOpImageHome', 'assets/img/background/ComfyUI_temp_xsgbd_00071_.png');
+        this.load.image('spark', 'assets/img/effect/elec3.png');
+    }
+
     create() {
         console.log("SceneController")
+
+        //スマホの画面回転時、100ミリ秒後に画面更新。
+        this.scale.on('resize', () => {
+            setTimeout(() => {
+                this.scale.setGameSize(1280, 720);
+                this.scale.scaleMode = Phaser.Scale.FIT;
+            }, 100);
+        });
 
         gameAllStateModel.isInitialize(this.registry, this.cache);
 

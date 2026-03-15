@@ -73,7 +73,7 @@ export class EVENT0002 extends BaseEvent {
                 cam.pan(this.player.x, this.player.y, 500, 'Linear', false);
             }),
             //キャラ移動・配置
-            this.characterMovingDOWN(this.player, 336, 300, false),
+            this.characterMovingDOWN(this.player, 64, 300, false),
             this.lamy.setStandFrame(this.lamy.getAnimationKey().standDown),
             this.lamy.setMapPosition(this.player.x, 272)
         ]);
@@ -98,7 +98,7 @@ export class EVENT0002 extends BaseEvent {
         ], this.characterGameObject);
 
         //キャラ移動
-        await this.characterMovingDOWN(this.player, 368, 100, true);
+        await this.characterMovingDOWN(this.player, 32);
 
         //会話002
         await this.eventTalk.execTalk([
@@ -106,7 +106,7 @@ export class EVENT0002 extends BaseEvent {
         ], this.characterGameObject);
 
         //キャラ移動
-        await this.characterMovingUP(this.player, 336, 300, true);
+        await this.characterMovingUP(this.player, 32, 300);
 
         //会話003
         await this.eventTalk.execTalk([
