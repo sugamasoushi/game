@@ -110,10 +110,12 @@ export class SceneController extends Scene {
 
             // 標準的な判定
             const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            const isfullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
+
             // iOS Safari 用の判定
             const isIOSStandalone = nav.standalone === true;
 
-            return isStandalone || isIOSStandalone;
+            return isStandalone || isIOSStandalone || isfullscreen;
         };
 
         const isAppMode = isPWA();
