@@ -4,6 +4,7 @@ import { EVENT0002 } from "./view/EVENT0002";
 import { EVENT0003 } from "./view/EVENT0003";
 import { EVENT0004 } from "./view/EVENT0004";
 import { EVENT0102 } from "./view/EVENT0102";
+import { EVENT010202 } from "./view/EVENT010202";
 
 export class SerchEvent {
 
@@ -15,5 +16,6 @@ export class SerchEvent {
         if (eventObj.name === 'EVENT0003') { return new EVENT0003(eventScene, eventObj); }
         if (eventObj.name === 'EVENT0004') { return new EVENT0004(eventScene, eventObj); }
         if (eventObj.name === 'EVENT0102') { return new EVENT0102(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT010202') { return new EVENT010202(eventScene, eventObj); }
     }
 }

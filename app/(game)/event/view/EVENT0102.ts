@@ -31,11 +31,13 @@ export class EVENT0102 extends BaseEvent {
                 { player: ['う～ん、どうしようかな\n', 'もう行こうかな？\n'] },
                 { question: ['はい\n', 'いいえ'] },//選択肢
             ],
+            //はいを選んだ場合
             talk002: [
-                { grandpa: ['ふふふ、楽しみだぜ・・・\n', 'お前さんの未来が\n'] }
+                { grandpa: ['ここ最近ラミア族が増えている\n', '見たら逃げるんじゃよ\n'] }
             ],
+            //いいえを選んだ場合
             talk003: [
-                { grandpa: ['そこ危ないから\n', '外回りした方が良い\n', '気を付けるんじゃぞ～\n'] }
+                { grandpa: ['あまり遠くに行きすぎんようにな\n', 'そうそう、最近ラミア族が増えている\n', '絶対逃げるんじゃよ\n'] }
             ]
         }
     }
@@ -57,6 +59,10 @@ export class EVENT0102 extends BaseEvent {
 
         //キャッシュのイベントフラグを更新
         this.settingData.updateEventFlg(this.eventScene, 'EVENT0102', false);
+
+        //関連イベントのフラグと当たり判定を更新
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010202', false);
+        this.serchEventObj('EVENT010202', true);
 
         //プレイヤー設定
         this.player = this.gameScene.getPlayer();
@@ -154,6 +160,15 @@ export class EVENT0102 extends BaseEvent {
 
             //設定を戻す
             this.gameScene.events.emit('EVENT_END');
+
+            //フラグ更新のためマップリスタート
+            this.gameScene.events.emit('FIELD_RESTART', {
+                gameMode: 'updateFlg',
+                x: this.player.x,
+                y: this.player.y,
+                mapKey: '0102',
+                initStandKey: 'stand_down'
+            });
 
             resolve();
         })

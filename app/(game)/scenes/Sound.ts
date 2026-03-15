@@ -63,7 +63,7 @@ export class Sound extends Scene {
             }
         })
 
-        this.game.events.on('BGM_BATTLE', (key: string) => {
+        this.game.events.on('BGM_BATTLE', () => {//(key: string)
             if (this.debugFlg) return;
 
             console.log('BGM_BATTLE')

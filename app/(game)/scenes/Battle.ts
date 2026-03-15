@@ -41,7 +41,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
     constructor() { super('Battle'); }
 
-    init(data: { sceneKey: string }) {//dataはマップ上の敵キャラ接触で連携されるデータ
+    init() {//dataはマップ上の敵キャラ接触で連携されるデータ
         this.gameScene = (this.scene.get('Game') as GameScene);
 
         //rxjsのフラグを更新

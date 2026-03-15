@@ -8,7 +8,13 @@ import { gameAllStateModel } from '../GameAllState/GameAllState';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 
 export class SceneController extends Scene {
+    private debugFlg: boolean | undefined;
+
     constructor() { super('SceneController'); }
+
+    init() {
+        this.debugFlg = this.game.config.physics.arcade?.debug;
+    }
 
     preload() {
         //オープニング用ファイル読み込み
@@ -91,20 +97,27 @@ export class SceneController extends Scene {
     }
 
     async alert() {
+        if (this.debugFlg) return;
 
         const gameWidth = Number(this.game.config.width)
         const gameHeight = Number(this.game.config.height)
 
         const isPWA = (): boolean => {
-            if (typeof window === 'undefined') {
-                return false;
-            } else {
-                return true;
-            }
+            // 1. SSR（サーバーサイド）対策
+            if (typeof window === 'undefined') return false;
+
+            const nav = window.navigator as Navigator & { standalone?: boolean };
+
+            // 標準的な判定
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            // iOS Safari 用の判定
+            const isIOSStandalone = nav.standalone === true;
+
+            return isStandalone || isIOSStandalone;
         };
 
         //ブラウザ版の場合は注記を表示
-        if (isPWA()) {
+        if (!isPWA()) {
             const gameStartAlert = this.add.image(gameWidth / 2, gameHeight / 2, 'GameStartAlert');
 
             const tapStart = this.add.text(

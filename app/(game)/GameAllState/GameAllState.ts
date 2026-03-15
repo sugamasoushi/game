@@ -17,8 +17,8 @@ export class GameAllState {
         this.registry = registry;
         this.cache = cache;
 
-        console.log(registry);
-        console.log(cache);
+        // console.log(registry);
+        // console.log(cache);
 
         this.isInitialized = true; // 完了フラグを立てる
     }

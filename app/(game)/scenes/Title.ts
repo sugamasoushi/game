@@ -4,9 +4,10 @@ import { EventBus } from '../EventBus';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 import { DataDefinition } from '../Data/DataDefinition';
 import { SaveDataManager } from '../core/SaveDataManager';
-import DebugMessage from './../util/DebugMessage';
 
 export class Title extends Scene {
+    private debugFlg: boolean | undefined;
+
     game: Phaser.Game;
 
     private manager: GameStateManager;
@@ -18,7 +19,10 @@ export class Title extends Scene {
 
     constructor() { super('Title'); }
 
-    init() { console.log("Title scene") }
+    init() {
+        console.log("Title scene")
+        this.debugFlg = this.game.config.physics.arcade?.debug;
+    }
 
     preload() {
         this.load.json('savedata', 'assets/savedata/savedata.json');
@@ -36,13 +40,6 @@ export class Title extends Scene {
 
     async create() {
 
-        // this.time.delayedCall(200, () => {
-        //     if (window.innerWidth < window.innerHeight) {
-        //         const debugMessage = new DebugMessage(this);
-        //         debugMessage.viewAlert();
-        //     }
-        // }, [], this);
-
         //状態管理クラス
         this.manager = GameStateManager.getInstance();
 
@@ -53,7 +50,6 @@ export class Title extends Scene {
         await this.title();
         this.newGame();
         this.continue();
-
 
         //EventBusにシーンを登録するとuseEffect経由で外部から操作できる
         EventBus.emit('current-scene-ready', this);
@@ -68,6 +64,7 @@ export class Title extends Scene {
     }
 
     async opening() {
+        if (this.debugFlg) return;
 
         const opening = this.sound.add('opening', { loop: true }) as Phaser.Sound.HTML5AudioSound;
         opening.setVolume(0.5);
@@ -154,7 +151,6 @@ export class Title extends Scene {
             ]);
 
             timeline.once('complete', () => {
-                console.log('完了！');
                 resolve();
             });
 

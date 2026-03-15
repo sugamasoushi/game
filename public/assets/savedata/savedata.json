@@ -58,6 +58,7 @@
         "EVENT0002": true,
         "EVENT0003": false,
         "EVENT0004": false,
-        "EVENT0102": true
+        "EVENT0102": true,
+        "EVENT010202": true
     }
 }

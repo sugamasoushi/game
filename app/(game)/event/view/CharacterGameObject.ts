@@ -89,7 +89,7 @@ export class CharacterGameObject {
         return new Promise<void>(resolve => {
             //このtweenはオブジェクトをターゲットとせず、内部で値を更新し続ける
             //※削除処理は考えるべき
-            const updateTween = characterImage!.scene.tweens.addCounter({
+            characterImage!.scene.tweens.addCounter({
                 from: lightDownRGB,
                 to: lightUpRGB,
                 duration: 100,
@@ -120,7 +120,7 @@ export class CharacterGameObject {
                 return new Promise<void>(resolve => {
                     //このtweenは値を保持し更新し続ける。
                     //※削除処理は考えるべき
-                    const updateTween = image.scene.tweens.addCounter({
+                    image.scene.tweens.addCounter({
                         from: lightUpRGB,
                         to: lightDownRGB,
                         duration: 100,
