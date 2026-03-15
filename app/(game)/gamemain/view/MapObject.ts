@@ -164,6 +164,8 @@ export class MapObject {
         //状態設定
         obj.state = this.dataDefinition.getEventFlgFromSaveDataInfomation(this.gameScene, obj.name);
 
+        obj.setDepth(-1000);
+
         //イベントステータスがfalseの場合
         if (obj.state === EventObjState.false) {
 
@@ -247,6 +249,9 @@ export class MapObject {
     }
 
     private settingMapMoveObject(obj: Phaser.Physics.Arcade.Sprite): void {
+
+        const tileSize = 2;
+
         const moveMapKey = obj.name.substring(0, 4);
         let moveMapX = Number(obj.name.substring(5, 9));
         let moveMapY = Number(obj.name.substring(10, 14));
@@ -265,7 +270,7 @@ export class MapObject {
             moveMapX += moveCorrection;
 
             //サイズを変更
-            obj.body!.setSize(2, obj.body!.height);
+            obj.body!.setSize(tileSize, obj.body!.height);
 
             //右向き
             initStandKey = 'stand_right';
@@ -274,7 +279,7 @@ export class MapObject {
             moveMapX += -(moveCorrection);
 
             //サイズを変更
-            obj.body!.setSize(2, obj.body!.height);
+            obj.body!.setSize(tileSize, obj.body!.height);
 
             //左向き
             initStandKey = 'stand_left'
@@ -283,7 +288,7 @@ export class MapObject {
             moveMapY += -(moveCorrection);
 
             //サイズを変更
-            obj.body!.setSize(obj.body!.width, 2);
+            obj.body!.setSize(obj.body!.width, tileSize);
 
             //上向き
             initStandKey = 'stand_up'
@@ -292,7 +297,7 @@ export class MapObject {
             moveMapY += moveCorrection;
 
             //サイズを変更
-            obj.body!.setSize(obj.body!.width, 2);
+            obj.body!.setSize(obj.body!.width, tileSize);
 
             //右向き
             initStandKey = 'stand_down';

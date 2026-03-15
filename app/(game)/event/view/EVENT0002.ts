@@ -128,7 +128,7 @@ export class EVENT0002 extends BaseEvent {
         });
 
         this.lamy.setData('name', CaharacterNameData['lamy' as keyof typeof CaharacterNameData])
-        console.log(this.lamy.getData('name'))
+        //console.log(this.lamy.getData('name'))
 
         //イベントバトル開始
         this.gameScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.lamy, canNotRunaway: true });

@@ -12,7 +12,7 @@ export class CameraManager {
     public execute(makeTilemap: Phaser.Tilemaps.Tilemap, player: Player,) {
         this.player = player;
         this.mainCamera.startFollow(this.player, true);//プレイヤーに追従
-        this.mainCamera.setBounds(0, 0, makeTilemap.widthInPixels, makeTilemap.heightInPixels);//マップの最大値
+        this.mainCamera.setBounds(-64, -64, makeTilemap.widthInPixels + 128, makeTilemap.heightInPixels + 128);//マップの最大値
     }
 
     public execFadeIn() {
@@ -20,7 +20,7 @@ export class CameraManager {
             this.gameScene.events.emit('FADE_IN_COMPLETE');
         });
 
-         this.mainCamera.fadeIn(200);
+        this.mainCamera.fadeIn(200);
     }
 
     public execFadeOut() {

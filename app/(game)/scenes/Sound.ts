@@ -33,7 +33,7 @@ export class Sound extends Scene {
         this.battleBgm.setVolume(0.15);
 
         //環境音
-        this.SE_waterFall = this.sound.add('SE_waterFall', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_waterFall = this.sound.add('SE_waterFall', { loop: true }) as Phaser.Sound.HTML5AudioSound;
         this.SE_waterFall.volume = 0.15;
 
         this.SE_fire = this.sound.add('SE_fire', { loop: true }) as Phaser.Sound.HTML5AudioSound;
@@ -51,7 +51,7 @@ export class Sound extends Scene {
 
         this.game.events.on('BGM_FIELD', (sceneKey: string, seKey: string) => {
             if (this.debugFlg) return;
-
+            
             if (sceneKey !== 'FieldMove') {
                 this.stopAllBgm();
                 this.bgm1.play();

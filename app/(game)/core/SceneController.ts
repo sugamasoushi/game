@@ -22,7 +22,7 @@ export class SceneController extends Scene {
         this.load.image('spark', 'assets/img/effect/elec3.png');
     }
 
-    create() {
+    async create() {
         console.log("SceneController")
 
         //スマホの画面回転時、100ミリ秒後に画面更新。
@@ -33,7 +33,9 @@ export class SceneController extends Scene {
             }, 100);
         });
 
-        gameAllStateModel.isInitialize(this.registry, this.cache);
+        gameAllStateModel.isInitialize(this.registry, this.cache);//まだ使えてない
+
+        await this.alert();
 
         //状態管理クラス
         const manager = GameStateManager.getInstance();
@@ -85,6 +87,87 @@ export class SceneController extends Scene {
             case State.BUBBLE_TALK:
                 console.log('BubbleTalk')
                 break;
+        }
+    }
+
+    async alert() {
+
+        const gameWidth = Number(this.game.config.width)
+        const gameHeight = Number(this.game.config.height)
+
+        const isPWA = (): boolean => {
+            if (typeof window === 'undefined') {
+                return false;
+            } else {
+                return true;
+            }
+        };
+
+        //ブラウザ版の場合は注記を表示
+        if (isPWA()) {
+            const gameStartAlert = this.add.image(gameWidth / 2, gameHeight / 2, 'GameStartAlert');
+
+            const tapStart = this.add.text(
+                gameWidth / 2, gameHeight / 2 - 128,
+                "▼TAP!!", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
+            tapStart.setOrigin(0.5).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
+
+            const button = this.add.text(
+                gameWidth / 2, gameHeight / 2,
+                "◎", { fontFamily: "Arial Black", fontSize: 256, color: "#00a6ed" });
+            button.setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true).setAlpha(0.5);
+            button.setOrigin(0.5);
+
+            //ボタンは非表示
+            tapStart.setVisible(false);
+            button.setVisible(false);
+
+            return new Promise<void>(resolve => {
+                this.input.once('pointerdown', () => {
+                    gameStartAlert.destroy();
+                    tapStart.destroy();
+                    button.destroy();
+                    resolve();
+                });
+
+                //2秒後にボタンを表示
+                this.time.delayedCall(2000, () => {
+
+                    tapStart.setVisible(true);
+                    button.setVisible(true);
+
+                    // 中心を基準にする（必須）
+                    button.setOrigin(0.5);
+
+                    this.tweens.add({
+                        targets: tapStart,
+                        y: tapStart.y - 15,       // 15ピクセル上に持ち上げる
+                        duration: 400,          // 素早く（0.4秒）
+                        yoyo: true,             // 元に戻る
+                        repeat: -1,             // 無限に繰り返す
+                        ease: 'Bounce.easeOut'  // 着地時に少し弾む動き（重要！）
+                    });
+
+                    this.tweens.add({
+                        targets: button,
+                        alpha: 0.1,             // 半透明まで薄くする
+                        duration: 800,          // 0.8秒かけて薄く
+                        yoyo: true,             // 元に戻る
+                        repeat: -1,             // 無限に繰り返す
+                        ease: 'Sine.easeInOut'  // 滑らかな動き（重要！）
+                    });
+
+                    this.tweens.add({
+                        targets: button,
+                        scale: 1.1,             // 1.1倍（110%）の大きさに
+                        duration: 600,          // 0.6秒かけて大きく
+                        yoyo: true,             // 元に戻る
+                        repeat: -1,             // 無限に繰り返す
+                        ease: 'Quad.easeInOut'  // 滑らかな伸縮
+                    });
+
+                }, [], this);
+            })
         }
     }
 }

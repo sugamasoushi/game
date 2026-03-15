@@ -144,7 +144,7 @@ export class FieldPresenter {
             manager.updateState({
                 state: State.BATTLE,
                 battleData: { usePatern: battleData.usePatern, fieldHitEnemy: battleData.fieldHitEnemy, canNotRunaway: battleData.canNotRunaway }
-            }, 'Battle');
+            }, battleData.usePatern);
 
         });
 

@@ -90,7 +90,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
         this.input.setDefaultCursor('default');//カーソルを初期化
     }
 
-    async create() {
+    async create(data: { sceneKey: string }) {
 
         //Phaserのイベントエミッター
         this.events.on('BattleEnd', () => {
@@ -100,7 +100,11 @@ export class Battle extends Phaser.Scene implements BattleScene {
         }, this);
 
         //背景画像
-        this.add.image(Number(this.game.config.width) / 2, Number(this.game.config.height) / 2, 'hill_ComfyUI');
+        if (data.sceneKey === 'event') {
+            this.add.image(Number(this.game.config.width) / 2, Number(this.game.config.height) / 2, 'lamyOpImageHome');
+        } else {
+            this.add.image(Number(this.game.config.width) / 2, Number(this.game.config.height) / 2, 'hill_ComfyUI');
+        }
 
         this.battlePresenter.create(
             this.events,
@@ -118,12 +122,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
         //rxjsのフラグを更新
         gameStateManager.endBattle();
-
-        //逃げるを選択した場合
-        // if (this.battleModel.getFieldHitEnemy()) {
-        //     this.battleModel.getFieldHitEnemy().deleteCharacter();
-        //     this.battleModel.deleteEnemy();
-        // }
 
         // FX
         const pixelated = this.cameras.main.postFX.addPixelate(-1);

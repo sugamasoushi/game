@@ -165,7 +165,7 @@ export class TileMap extends Phaser.GameObjects.Container {
 
             //背景画像のスクロールを遅らせるよう設定
             if (tilemap.layers[i].name === 'background') {
-                tilemap.layers[i].tilemapLayer.setScrollFactor(0.5)
+                tilemap.layers[i].tilemapLayer.setScrollFactor(1, 0.5)
             }
             // console.log("getIndexList = " + scene.tilemap.layers[i].tilemapLayer.getIndexList());
         }

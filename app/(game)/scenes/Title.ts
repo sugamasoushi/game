@@ -36,22 +36,12 @@ export class Title extends Scene {
 
     async create() {
 
-        this.time.delayedCall(200, () => {
-            if (window.innerWidth < window.innerHeight) {
-                const debugMessage = new DebugMessage(this);
-                debugMessage.viewAlert();
-            }
-        }, [], this);
-
-
-        // //スマホの画面回転時、100ミリ秒後に画面更新。
-        // this.scale.on('resize', () => {
-        //     setTimeout(() => {
-        //         this.scale.setGameSize(1280, 720);
-        //         this.scale.scaleMode = Phaser.Scale.FIT;
-        //     }, 100);
-        // });
-
+        // this.time.delayedCall(200, () => {
+        //     if (window.innerWidth < window.innerHeight) {
+        //         const debugMessage = new DebugMessage(this);
+        //         debugMessage.viewAlert();
+        //     }
+        // }, [], this);
 
         //状態管理クラス
         this.manager = GameStateManager.getInstance();
