@@ -116,8 +116,10 @@ export class SceneController extends Scene {
             return isStandalone || isIOSStandalone;
         };
 
+        const isAppMode = isPWA();
+
         //ブラウザ版の場合は注記を表示
-        if (!isPWA()) {
+        if (!isAppMode) {
             const gameStartAlert = this.add.image(gameWidth / 2, gameHeight / 2, 'GameStartAlert');
 
             const tapStart = this.add.text(
