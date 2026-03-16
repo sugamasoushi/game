@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "My Next App",
-  description: "My App created with Next.js",
+  title: "ちょっとだけRPG",
+  description: "Phaser3+Next.jsで作成したちっちゃいRPG",
   manifest: "/manifest.json",
   themeColor: "#000000",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "My Next App",
+    title: "ちょっとだけRPG",
   },
 };
 

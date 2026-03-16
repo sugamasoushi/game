@@ -1,5 +1,5 @@
 {
-  "name": "gamenextjs",
+  "name": "tyottodakerpg",
   "version": "0.1.0",
   "main": "main.js",
   "private": true,
@@ -12,7 +12,7 @@
     "electron:build": "next build && electron-builder"
   },
   "build": {
-    "appId": "com.example.myapp",
+    "appId": "com.tyottodakerpg",
     "files": [
       "out/**/*",
       "main.js",
