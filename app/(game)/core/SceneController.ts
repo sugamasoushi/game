@@ -6,6 +6,7 @@ import { Scene } from 'phaser';
 import { State } from '../lib/types';
 import { gameAllStateModel } from '../GameAllState/GameAllState';
 import { GameStateManager } from '../GameAllState/GameStateManager';
+import { ExecutionEnvironment } from './ExecutionEnvironment';
 
 export class SceneController extends Scene {
     private debugFlg: boolean | undefined;
@@ -99,29 +100,13 @@ export class SceneController extends Scene {
     async alert() {
         if (this.debugFlg) return;
 
+        const executionEnvironment = new ExecutionEnvironment();
+
         const gameWidth = Number(this.game.config.width)
         const gameHeight = Number(this.game.config.height)
 
-        const isPWA = (): boolean => {
-            // 1. SSR（サーバーサイド）対策
-            if (typeof window === 'undefined') return false;
-
-            const nav = window.navigator as Navigator & { standalone?: boolean };
-
-            // 標準的な判定
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-            const isfullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
-
-            // iOS Safari 用の判定
-            const isIOSStandalone = nav.standalone === true;
-
-            return isStandalone || isIOSStandalone || isfullscreen;
-        };
-
-        const isAppMode = isPWA();
-
         //ブラウザ版の場合は注記を表示
-        if (!isAppMode) {
+        if (!executionEnvironment.isPWA() && !executionEnvironment.isElectron()) {
             const gameStartAlert = this.add.image(gameWidth / 2, gameHeight / 2, 'GameStartAlert');
 
             const tapStart = this.add.text(

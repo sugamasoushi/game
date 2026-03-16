@@ -42,7 +42,10 @@ Next.js アプリをデプロイする最も簡単な方法は、Next.js の作�
 # インストール（済なら不要）
 npm install electron-serve
 
-# ビルド
+# next.config.ts の output: "export"を有効
+npm run build
+
+# ビルド ※事前にnpm run buildする事
 npm run electron:build
 
 # 実行確認のみ
