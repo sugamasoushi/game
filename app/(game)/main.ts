@@ -6,7 +6,7 @@ import { GameOver } from './scenes/GameOver';
 import { Game as MainGame } from './scenes/Game';
 import { MainMenu } from './scenes/MainMenu';
 import { AUTO, Game } from 'phaser';
-import Menu from './scenes/Menu';
+import { Menu } from './scenes/Menu';
 import { Event } from './scenes/Event';
 import { Battle } from './scenes/Battle';
 import { Sound } from './scenes/Sound';

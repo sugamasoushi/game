@@ -41,11 +41,11 @@ export class MessageObject {
         }
     }
 
-    public createTextObject(scene: Phaser.Scene, x: number, y: number, text: string[] | string): Phaser.GameObjects.Text {
+    public createTextObject(scene: Phaser.Scene, x: number, y: number, text: string[] | string, fontsize?: number): Phaser.GameObjects.Text {
         const textObject: Phaser.GameObjects.Text = scene.add.text(x, y, text);
         textObject.setFontFamily(this.fontFamily);
         textObject.setColor(this.fontColor);
-        textObject.setFontSize(this.fontSize);
+        textObject.setFontSize(fontsize !== undefined ? fontsize : this.fontSize);
         textObject.setLineSpacing(this.lineSpaceValue);
         textObject.setData('textLine', this.textLine);
 

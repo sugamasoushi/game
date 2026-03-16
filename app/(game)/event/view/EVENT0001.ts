@@ -63,7 +63,7 @@ export class EVENT0001 extends BaseEvent {
             + '長続きしないタイプ。\n'
             + '\n'
             + '彼女の今日の物語はどんなものだろうか。\n'
-        );
+            , 24);
         textObject.setDepth(Number(this.eventScene.game.config.height) + 1);
 
         //メッセージウィンドウ作成
@@ -91,7 +91,7 @@ export class EVENT0001 extends BaseEvent {
         //フェードアウト
         await new Promise<void>(resolve => {
             this.eventScene.tweens.add({
-                targets: [maskRect, textObject], 
+                targets: [maskRect, textObject],
                 alpha: 0,
                 duration: 1000,
                 ease: 'Power1',

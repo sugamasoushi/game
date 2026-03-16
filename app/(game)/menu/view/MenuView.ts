@@ -1,0 +1,74 @@
+import { GameScene } from "../../lib/types";
+import { MenuModel } from "../model/MenuModel";
+import { MainColumnWindow } from "./MainColumnWindow";
+import { CharacterStatusWindow } from "./CharacterStatusWindow";
+import { ItemWindow } from "./ItemWindow";
+import { EquipWindow } from "./EquipWindow";
+import { SkillWindow } from "./SkillWindow";
+import { CharStatusWindow } from "./CharStatusWindow";
+import { SaveWindow } from "./SaveWindow";
+import { OptionWindow } from "./OptionWindow";
+
+export class MenuView {
+
+    private scene: Phaser.Scene;
+    private gameScene: GameScene;
+    private menuModel: MenuModel;
+
+    public mainColumnWindow: MainColumnWindow;
+    public characterStatusWindow: CharacterStatusWindow;
+    public itemWindow: ItemWindow;
+    public equipWindow: EquipWindow;
+    public skillWindow: SkillWindow;
+    public charStatusWindow: CharStatusWindow;
+    public saveWindow: SaveWindow;
+    public optionWindow: OptionWindow;
+
+    constructor(scene: Phaser.Scene, gameScene: GameScene, menuModel: MenuModel) {
+        this.scene = scene;
+        this.gameScene = gameScene;
+        this.menuModel = menuModel;
+
+        this.mainColumnWindow = new MainColumnWindow(this.scene, this.gameScene, this.menuModel);
+        this.characterStatusWindow = new CharacterStatusWindow(this.scene, this.menuModel);
+        this.itemWindow = new ItemWindow(this.scene, this.menuModel);
+        this.equipWindow = new EquipWindow(this.scene, this.menuModel);
+        this.skillWindow = new SkillWindow(this.scene, this.menuModel);
+        this.charStatusWindow = new CharStatusWindow(this.scene, this.menuModel);
+        this.saveWindow = new SaveWindow(this.scene, this.menuModel);
+        this.optionWindow = new OptionWindow(this.scene, this.menuModel);
+    }
+
+    public create() {
+        // 大枠とタブを作成
+        this.mainColumnWindow.create();
+
+        // 各タブのコンテナを作成
+        this.characterStatusWindow.create(this.mainColumnWindow);
+        this.itemWindow.create(this.mainColumnWindow);
+        this.equipWindow.create(this.mainColumnWindow);
+        this.skillWindow.create(this.mainColumnWindow);
+        this.charStatusWindow.create(this.mainColumnWindow);
+        this.saveWindow.create(this.mainColumnWindow);
+        this.optionWindow.create(this.mainColumnWindow);
+
+        // 各コンテナをMainColumnWindowへ登録し、Tweenアニメーションで動かせるようにする
+        this.mainColumnWindow.setContainers([
+            this.characterStatusWindow.container,
+            this.itemWindow.container,
+            this.equipWindow.container,
+            this.skillWindow.container,
+            this.charStatusWindow.container,
+            this.saveWindow.container,
+            this.optionWindow.container,
+        ]);
+    }
+
+    public update() {
+        this.mainColumnWindow.update();
+    }
+
+    public executeEndAnimation(onComplete: () => void) {
+        this.mainColumnWindow.executeEndAnimation(onComplete);
+    }
+}

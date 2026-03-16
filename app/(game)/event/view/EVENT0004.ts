@@ -197,7 +197,7 @@ export class EVENT0004 extends BaseEvent {
             + '\n'
             + '\n'
             + 'おしり\n'
-        );
+            , 24);
 
 
         endMessage.setAlign('center');

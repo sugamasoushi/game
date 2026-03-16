@@ -42,6 +42,6 @@ export class MenuButton {
         //画面更新を停止
         this.gameScene.scene.pause();
         //このシーンを消さずにメニューシーンを表示する
-        this.gameScene.scene.launch('Main');
+        this.gameScene.scene.launch('Menu');
     }
 }

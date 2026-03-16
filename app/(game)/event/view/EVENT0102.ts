@@ -19,9 +19,7 @@ export class EVENT0102 extends BaseEvent {
 
     private characterGameObject: CharacterGameObject;
     private player: Player;
-    private playerImage: Phaser.GameObjects.Image;
     private grandpa: Npc;
-    private grandpaImage: Phaser.GameObjects.Image;
 
     eventTalkData: TalkData = {
         //外部化を検討すべき

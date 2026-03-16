@@ -36,14 +36,14 @@
         "EventWindow": {
             "fontFamily": "Arial",
             "fontColor": "#e0ffff",
-            "fontSize": 20,
+            "fontSize": 32,
             "lineSpaceValue": 10,
             "textLine": 2
         },
         "BubbleWindow": {
             "fontFamily": "Arial",
             "fontColor": "#e0ffff",
-            "fontSize": 16,
+            "fontSize": 24,
             "lineSpaceValue": 10,
             "textLine": 2
         },
