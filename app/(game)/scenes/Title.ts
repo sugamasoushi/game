@@ -283,11 +283,11 @@ export class Title extends Scene {
         this.ContinueStart.setDepth(gameHeight);
 
         this.ContinueStart.setInteractive({ useHandCursor: true });
-        this.ContinueStart.on('pointerdown', () => {
+        this.ContinueStart.on('pointerdown', async () => {
             this.ContinueStart.disableInteractive();
 
-            //ローカルストレージのデータを読み込み
-            this.saveDataManager.loadSaveData(this);
+            //ローカルストレージ等のデータを読み込み
+            await this.saveDataManager.loadSaveData(this);
 
             //状態を更新
             this.manager.updateState({

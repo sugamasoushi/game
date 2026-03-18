@@ -2710,7 +2710,7 @@
                  "x":0,
                  "y":0
                 }],
-         "name":"water",
+         "name":"PO_water",
          "opacity":1,
          "type":"group",
          "visible":true,
@@ -3166,7 +3166,7 @@
          "name":"collision",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0

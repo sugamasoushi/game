@@ -35,7 +35,7 @@ export class SaveButton {
             useHandCursor: true  // マウスオーバーでカーソルが指マークになる
         });
 
-        MenuText.on(Phaser.Input.Events.POINTER_UP, (
+        MenuText.on(Phaser.Input.Events.POINTER_UP, async (
             pointer: Phaser.Input.Pointer,
             localX: number,
             localY: number,
@@ -63,7 +63,10 @@ export class SaveButton {
             this.gameScene.cache.json.get('savedata').playerData.PlayerMapKey = manager.currentFieldData.mapKey;
             this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.x = this.mapObject.getPlayer().x;
             this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.y = this.mapObject.getPlayer().y;
-            this.saveDataManager.setSaveData(this.gameScene);
+            this.gameScene.cache.json.get('savedata').playerData.status.HP = this.mapObject.getPlayer().getData('HP');
+            this.gameScene.cache.json.get('savedata').playerData.status.MP = this.mapObject.getPlayer().getData('MP');
+
+            await this.saveDataManager.setSaveData(this.gameScene);
 
             //zone.removeInteractive();//クリック後、クリック操作を削除
             console.log(this.gameScene.getPlayer());
@@ -86,11 +89,11 @@ export class SaveButton {
             frame: 'white',
             color: [0xfacc22, 0xf89800, 0xf83600, 0x9f0404],
             colorEase: 'quad.out',
-            lifespan: 2400,
+            lifespan: 1400,
             angle: { min: -100, max: -80 },
-            scale: { start: 0.70, end: 0, ease: 'sine.out' },
+            scale: { start: 0.50, end: 0, ease: 'sine.out' },
             speed: 100,
-            advance: 2000,
+            advance: 1000,
             blendMode: 'ADD'
         });
 

@@ -6,25 +6,43 @@
 export class SaveDataManager {
     constructor() { }
 
-    //セーブデータをローカルストレージに書き込み
-    public setSaveData(scene: Phaser.Scene) {
+    //セーブデータをローカルストレージまたはElectronに書き込み
+    public async setSaveData(scene: Phaser.Scene) {
         const savedata = scene.cache.json.get('savedata');
-        localStorage.setItem('savedata', JSON.stringify(savedata));
+        if (window.electronAPI) {
+            await window.electronAPI.saveData(savedata);
+        } else {
+            localStorage.setItem('savedata', JSON.stringify(savedata));
+        }
     }
 
-    //セーブデータをローカルストレージから読み込み
-    public loadSaveData(scene: Phaser.Scene) {
+    //セーブデータをローカルストレージまたはElectronから読み込み
+    public async loadSaveData(scene: Phaser.Scene) {
+        let savedata;
+        if (window.electronAPI) {
+            savedata = await window.electronAPI.loadData();
+            if (typeof savedata === 'string') {
+                try {
+                    savedata = JSON.parse(savedata);
+                } catch(e) {}
+            }
+        } else {
+            const localData = localStorage.getItem('savedata');
+            if (localData) {
+                savedata = JSON.parse(localData);
+            }
+        }
 
-        //console.log(localStorage.getItem('savedata'))
-
-        //ローカルストレージにデータが存在する場合
-        if (localStorage.getItem('savedata')) {
-
-            const savedata = localStorage.getItem('savedata');
-            console.log(JSON.parse(savedata!))
-            scene.cache.json.get('savedata').playerData.PlayerMapKey = JSON.parse(savedata!).playerData.PlayerMapKey;
-            scene.cache.json.get('savedata').playerData.PlayerPosition.x = JSON.parse(savedata!).playerData.PlayerPosition.x;
-            scene.cache.json.get('savedata').playerData.PlayerPosition.y = JSON.parse(savedata!).playerData.PlayerPosition.y;
+        //データが存在する場合
+        if (savedata) {
+            console.log("Loaded Savedata: ", savedata);
+            // 既存のキャッシュデータを取得
+            const currentSaveData = scene.cache.json.get('savedata');
+            
+            // ローカルストレージ または JSON から読み込んだデータをゲーム内のメモリに完全に上書き（マージ）する
+            if (currentSaveData) {
+                Object.assign(currentSaveData, savedata);
+            }
         }
     }
 
