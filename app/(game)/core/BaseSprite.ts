@@ -31,16 +31,12 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
     protected moveDefaultTime: number = 1000;//速度
     protected moveStopCount: number = 0;
 
-    protected spriteContainer: Phaser.GameObjects.Container;
-
     constructor(gameScene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
         super(gameScene, x, y, spriteSheetKey);
         this.gameScene = gameScene;
         this.animationKeySetting(spriteSheetKey, initStandKey);
         this.addToUpdateList();
         this.addToDisplayList();
-
-        this.spriteContainer = this.scene.add.container();
     }
 
     preUpdate(time: number, delta: number) {
@@ -257,45 +253,6 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    //キャラクターを目標Y座標まで移動する
-    // public moveY(moveY: number, velocity: number, animation: boolean) {
-    //     if (!this.body) return;
-    //     this.moveToPositionY = moveY;
-
-    //     //座標位置によって移動方向を決定
-    //     if (this.moveToPositionY - this.y < 0) {
-    //         this.setVelocityY(-1 * velocity);
-    //         if (animation === true) {
-    //             this.setAnimDirection('walk_up');
-    //         }
-    //     } else {
-    //         this.setVelocityY(velocity);
-    //         //this.body.velocity.y = velocity;
-    //         if (animation === true) {
-    //             this.setAnimDirection('walk_down');
-    //         }
-    //     }
-    // }
-
-    //キャラクターを目標Y座標まで移動する
-    // public moveX(moveX: number, velocity: number, animation: boolean) {
-    //     if (!this.body) return;
-    //     this.moveToPositionX = moveX;
-
-    //     //座標位置によって移動方向を決定
-    //     if (this.moveToPositionX - this.x < 0) {
-    //         this.setVelocityX(-1 * velocity);
-    //         if (animation === true) {
-    //             this.setAnimDirection('walk_left');
-    //         }
-    //     } else {
-    //         this.setVelocityX(velocity);
-    //         if (animation === true) {
-    //             this.setAnimDirection('walk_right');
-    //         }
-    //     }
-    // }
-
     public getDirection() {
         let operatorX: number = 0;
         let operatorY: number = 0;
@@ -309,10 +266,6 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
             operatorY = 1;
         }
         return { operatorX: operatorX, operatorY: operatorY }
-    }
-
-    public setSpriteContainer(sprite: Phaser.GameObjects.Sprite) {
-        this.spriteContainer.add(sprite);
     }
 }
 
