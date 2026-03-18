@@ -102,7 +102,7 @@ export class Player extends BaseSprite {
         if (!this.moveToPositionX && !this.moveToPositionY) return;
 
         //移動先座標との差が1未満の場合は停止
-        if (Phaser.Math.Difference(this.moveToPositionX!, this.x) < 1 && Phaser.Math.Difference(this.moveToPositionY!, this.y) < 1) {
+        if (Phaser.Math.Difference(this.moveToPositionX!, this.x) < 10 && Phaser.Math.Difference(this.moveToPositionY!, this.y) < 10) {
             this.body.setVelocity(0, 0);
             this.moveDirection = this.walkStop;
             this.moveToPositionX = null;//移動先の値をnullに設定

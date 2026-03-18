@@ -118,17 +118,8 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
     public setMoveToPosition(x: number, y: number, velocity?: number, moveDefaultTime?: number) {
         if (this.state !== CharacterState.normal) return;
 
-        // 現在地と目的地の距離を計算
-        const distance = Phaser.Math.Distance.Between(this.x, this.y, x, y);
-
-        // あまりに近い場所（例: 10px以内）をタップした場合は無視する（チャタリング防止）
-        if (distance < 10) {
-            return;
-        }
-
         const v: number = velocity ? velocity : this.moveVelocity;//速度
         const mt: number = moveDefaultTime ? moveDefaultTime : this.moveDefaultTime;//1000ミリ秒内に目標に到達するように調整される
-        //※プレイヤーの場合、継承先でthis.body.setMaxVelocity(400);を設定すること
 
         //移動先座標を設定
         this.moveToPositionX = x;
