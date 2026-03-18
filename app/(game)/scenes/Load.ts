@@ -55,6 +55,9 @@ export class Load extends Scene {
         this.load.image('Icon_ossan', 'assets/img/charIcon/Icon_ossan.png');
         this.load.image('hill_ComfyUI', 'assets/img/background/ComfyUI_temp_izzuc_00031_.png');
         this.load.image('20250603', 'assets/img/eventpicture/20250603.jpg');
+
+        this.load.atlas('flares', 'assets/img/effect/flares.png', 'assets/img/effect/flares.json');
+
         this.load.spritesheet('girl', 'assets/img/spritesheet/char_45_75.png',
             { frameWidth: 45, frameHeight: 75 }
         );

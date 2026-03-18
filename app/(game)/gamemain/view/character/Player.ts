@@ -18,7 +18,7 @@ export class Player extends BaseSprite {
         super(scene, x, y, spriteSheetKey, initStandKey);
         this.gameScene = scene;
         this.name = 'player';
-        
+
         //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
         this.gameScene.physics.add.existing(this);
         //(this.body as Phaser.Physics.Arcade.Body)!.setImmovable(true);//衝突処理されなくなる。
@@ -29,6 +29,9 @@ export class Player extends BaseSprite {
         this.setDisplayOrigin(16, 24);//当たり判定の中心位置を変更
 
         this._animationSetting(spriteSheetKey);
+
+        //this.body.setMaxVelocity(500); // 想定速度の2倍以上は出さない
+
     }
 
     //オブジェクトのアニメーションを更新
@@ -106,13 +109,17 @@ export class Player extends BaseSprite {
             this.moveToPositionY = null;
         }
 
-        //移動不能状態の時間をカウント
+        //壁に当たってこれ以上移動できない状態の場合は移動を停止する
+        //x方向またはy方向の速度が0の場合、移動不能状態と判定する
         if (this.body.velocity.x === 0 || this.body.velocity.y === 0) {
+
+            //移動不能状態の時間をカウント
             this.moveStopCount++;
-            //1000ミリ秒内に目標に到達するように調整される
+
+            //壁を滑って移動可能になった場合を考慮し、再度移動先を設定する。1000ミリ秒内に目標に到達するように調整される。
             this.scene.physics.moveTo(this, this.moveToPositionX!, this.moveToPositionY!, this.moveVelocity, this.moveDefaultTime / 2);
 
-            //一定時間移動していない場合は停止
+            //移動不能状態が一定時間続いた場合は停止
             if (this.moveStopCount > 50) {
                 this.moveStopCount = 0;
                 this.initMoveToPosition();

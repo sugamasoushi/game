@@ -120,6 +120,7 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
 
         const v: number = velocity ? velocity : this.moveVelocity;//速度
         const mt: number = moveDefaultTime ? moveDefaultTime : this.moveDefaultTime;//1000ミリ秒内に目標に到達するように調整される
+        //※プレイヤーの場合、継承先でthis.body.setMaxVelocity(400);を設定すること
 
         //移動先座標を設定
         this.moveToPositionX = x;
@@ -130,6 +131,8 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
 
         //移動
         this.scene.physics.moveTo(this, this.moveToPositionX, this.moveToPositionY, v, mt);
+
+        // console.log(this.body!.velocity.x, this.body!.velocity.y)
     }
 
     /**
@@ -256,43 +259,43 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
     }
 
     //キャラクターを目標Y座標まで移動する
-    public moveY(moveY: number, velocity: number, animation: boolean) {
-        if (!this.body) return;
-        this.moveToPositionY = moveY;
+    // public moveY(moveY: number, velocity: number, animation: boolean) {
+    //     if (!this.body) return;
+    //     this.moveToPositionY = moveY;
 
-        //座標位置によって移動方向を決定
-        if (this.moveToPositionY - this.y < 0) {
-            this.setVelocityY(-1 * velocity);
-            if (animation === true) {
-                this.setAnimDirection('walk_up');
-            }
-        } else {
-            this.setVelocityY(velocity);
-            //this.body.velocity.y = velocity;
-            if (animation === true) {
-                this.setAnimDirection('walk_down');
-            }
-        }
-    }
+    //     //座標位置によって移動方向を決定
+    //     if (this.moveToPositionY - this.y < 0) {
+    //         this.setVelocityY(-1 * velocity);
+    //         if (animation === true) {
+    //             this.setAnimDirection('walk_up');
+    //         }
+    //     } else {
+    //         this.setVelocityY(velocity);
+    //         //this.body.velocity.y = velocity;
+    //         if (animation === true) {
+    //             this.setAnimDirection('walk_down');
+    //         }
+    //     }
+    // }
 
     //キャラクターを目標Y座標まで移動する
-    public moveX(moveX: number, velocity: number, animation: boolean) {
-        if (!this.body) return;
-        this.moveToPositionX = moveX;
+    // public moveX(moveX: number, velocity: number, animation: boolean) {
+    //     if (!this.body) return;
+    //     this.moveToPositionX = moveX;
 
-        //座標位置によって移動方向を決定
-        if (this.moveToPositionX - this.x < 0) {
-            this.setVelocityX(-1 * velocity);
-            if (animation === true) {
-                this.setAnimDirection('walk_left');
-            }
-        } else {
-            this.setVelocityX(velocity);
-            if (animation === true) {
-                this.setAnimDirection('walk_right');
-            }
-        }
-    }
+    //     //座標位置によって移動方向を決定
+    //     if (this.moveToPositionX - this.x < 0) {
+    //         this.setVelocityX(-1 * velocity);
+    //         if (animation === true) {
+    //             this.setAnimDirection('walk_left');
+    //         }
+    //     } else {
+    //         this.setVelocityX(velocity);
+    //         if (animation === true) {
+    //             this.setAnimDirection('walk_right');
+    //         }
+    //     }
+    // }
 
     public getDirection() {
         let operatorX: number = 0;

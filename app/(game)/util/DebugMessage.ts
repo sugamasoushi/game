@@ -32,8 +32,8 @@ export default class DebugMessage {
         }, [], this.scene);
     }
 
-    viewAlert() {
-        const setText = ['横画面で遊んでね！'];
+    saveComment() {
+        const setText = ['セーブ完了！'];
         const messageObjectInstance = new MessageObject();
         messageObjectInstance.init(this.scene);
 
@@ -49,7 +49,7 @@ export default class DebugMessage {
         noGimicText.setDepth(Number(this.scene.game.config.height) + 2);
         noGimicImage.setDepth(Number(this.scene.game.config.height));
         noGimicWindow.setDepth(Number(this.scene.game.config.height) + 1);
-        
+
         this.scene.time.delayedCall(4000, () => {
             noGimicText.destroy();
             noGimicImage.destroy();
