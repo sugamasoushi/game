@@ -30,7 +30,7 @@ export class Player extends BaseSprite {
 
         this._animationSetting(spriteSheetKey);
 
-        //this.body.setMaxVelocity(500); // 想定速度の2倍以上は出さない
+        this.body.setMaxVelocity(800); // 想定速度の2倍以上は出さない
 
     }
 

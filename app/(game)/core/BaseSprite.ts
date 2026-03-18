@@ -116,6 +116,7 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
 
         const v: number = velocity ? velocity : this.moveVelocity;//速度
         const mt: number = moveDefaultTime ? moveDefaultTime : this.moveDefaultTime;//1000ミリ秒内に目標に到達するように調整される
+        //※プレイヤーの場合、すり抜け防止のためthis.body.setMaxVelocity();を設定すること
 
         //移動先座標を設定
         this.moveToPositionX = x;
