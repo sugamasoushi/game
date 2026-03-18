@@ -35,7 +35,7 @@ const config: Phaser.Types.Core.GameConfig = {
         default: 'arcade',
         arcade: {
             debug: isDebug,//当たり判定とかを表示してくれる
-            fps: 120, // 高速移動時のすり抜け防止。60より増やすことで、1フレームの移動幅を短くする
+            fps: 60, // 高速移動時のすり抜け防止。60より増やすことで、1フレームの移動幅を短くする
             gravity: { x: 0, y: 0 }
         },
     },
