@@ -1,4 +1,4 @@
-import {BaseSprite} from "../core/BaseSprite";
+import { BaseSprite } from "../core/BaseSprite";
 
 type ObjectPosition = {
     object1XPosition: string;
@@ -94,22 +94,20 @@ export class FieldObjectCheck {
         // standRight
         // standUp
         // standDown
-        if (this.object1YPosition === 'down' && this.object1.getAnimationKey().standframe !== this.object1.getAnimationKey().standUp) {
-            //クリックイベントオブジェクトの下で向きが上ではない場合はfalse
-            return false;
-        } else if (this.object1YPosition === 'up' && this.object1.getAnimationKey().standframe !== this.object1.getAnimationKey().standDown) {
-            //クリックイベントオブジェクトの上で向きが下ではない場合はfalse
-            return false;
-        } else if (this.object1YPosition === 'left' && this.object1.getAnimationKey().standframe !== this.object1.getAnimationKey().standRight) {
-            //クリックイベントオブジェクトの左で向きが右ではない場合はfalse
-            return false;
-        } else if (this.object1YPosition === 'right' && this.object1.getAnimationKey().standframe !== this.object1.getAnimationKey().standLeft) {
-            //クリックイベントオブジェクトの右で向きが左ではない場合はfalse
-            return false;
-        } else {
-            return true;
-        }
 
+        //クリックイベントオブジェクトの下で向きが上
+        if (this.object1Direction === 'up' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standUp) return true;
+
+        //クリックイベントオブジェクトの上で向きが下
+        if (this.object1Direction === 'down' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standDown) return true;
+
+        //クリックイベントオブジェクトの左で向きが右
+        if (this.object1Direction === 'right' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standRight) return true;
+
+        //クリックイベントオブジェクトの右で向きが左
+        if (this.object1Direction === 'left' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standLeft) return true;
+
+        return false;
     }
 
     public getObjectPosition(): ObjectPosition {

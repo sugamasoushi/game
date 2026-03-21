@@ -1,5 +1,6 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
+import { MessageObject } from "../../util/MessageObject";
 
 export class EquipWindow {
 
@@ -21,45 +22,28 @@ export class EquipWindow {
 
         this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 2, mainColumn.containtsY);
 
+        const messageObject = new MessageObject();
+        messageObject.init(this.scene);
+
         const playerData = this.menuModel.getPlayerData();
         const array = [playerData.Weapon, playerData.Armor];
 
         for (let i = 0; i < array.length; i++) {
             if (i % 2 === 0) {
                 const j = i > 0 ? i - 1 : i;
-                const Label = this.scene.add.text(equipX, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                const Label = messageObject.createTextObject(this.scene, equipX, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-                const charEquip = this.scene.add.text(equipX + 50, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
+                const charEquip = messageObject.createTextObject(this.scene, equipX + 50, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
                     array[i]
-                ], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
                 this.container.add([Label, charEquip]).setDepth(this.mainWindowDepth + 50);
             } else {
                 const j = i > 0 ? i - 1 : i;
-                const Label = this.scene.add.text(equipX + rightValue, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                const Label = messageObject.createTextObject(this.scene, equipX + rightValue, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-                const charEquip = this.scene.add.text(equipX + rightValue + 50, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
+                const charEquip = messageObject.createTextObject(this.scene, equipX + rightValue + 50, equipY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
                     array[i]
-                ], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
                 this.container.add([Label, charEquip]).setDepth(this.mainWindowDepth + 50);
             }
         }

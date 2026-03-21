@@ -50,7 +50,7 @@ export class GameOver extends Scene {
             onComplete: () => {
                 this.cameras.main.fadeOut(100);
                 this.scene.moveAbove('GameOver', 'Title');
-                this.scene.start('Title');
+                this.scene.start('Boot');
 
                 this.game.events.emit('BGM_ALL_STOP');
             }

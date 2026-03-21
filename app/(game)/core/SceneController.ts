@@ -40,7 +40,7 @@ export class SceneController extends Scene {
             }, 100);
         });
 
-        gameAllStateModel.isInitialize(this.registry, this.cache);//まだ使えてない
+        //gameAllStateModel.isInitialize(this.registry, this.cache);//まだ使えてない
 
         await this.alert();
 

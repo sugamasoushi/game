@@ -146,7 +146,8 @@ export class TileMap extends Phaser.GameObjects.Container {
 
             } else {
                 //描画のみ
-                tilemap.createLayer(tilemap.layers[i].name, tilesetName);
+                //tilemap.createLayer(tilemap.layers[i].name, tilesetName)!.setPipeline('Light2D');
+                tilemap.createLayer(tilemap.layers[i].name, tilesetName)
                 tilemap.layers[i].tilemapLayer.setDepth(i);
             }
 

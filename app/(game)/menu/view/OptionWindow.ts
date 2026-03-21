@@ -1,5 +1,6 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
+import { MessageObject } from "../../util/MessageObject";
 
 export class OptionWindow {
 
@@ -20,24 +21,17 @@ export class OptionWindow {
 
         this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 6, mainColumn.containtsY);
 
+        const messageObject = new MessageObject();
+        messageObject.init(this.scene);
+
         const array = ['テキストスピード', 'ゲーム終了'];
 
         for (let i = 0; i < array.length; i++) {
-            const Label = this.scene.add.text(optionX, optionY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['　'], {
-                fontFamily: this.menuModel.fontFamily,
-                fontSize: this.menuModel.fontSize,
-                lineSpacing: this.menuModel.lineSpaceValue,
-                color: this.menuModel.fontColor
-            }).setDepth(this.mainWindowDepth + 50);
+            const Label = messageObject.createTextObject(this.scene, optionX, optionY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['　'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-            const option = this.scene.add.text(optionX + 10, optionY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
+            const option = messageObject.createTextObject(this.scene, optionX + 10, optionY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
                 array[i]
-            ], {
-                fontFamily: this.menuModel.fontFamily,
-                fontSize: this.menuModel.fontSize,
-                lineSpacing: this.menuModel.lineSpaceValue,
-                color: this.menuModel.fontColor
-            }).setDepth(this.mainWindowDepth + 50);
+            ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
             this.container.add([Label, option]).setDepth(this.mainWindowDepth + 50);
         }
 

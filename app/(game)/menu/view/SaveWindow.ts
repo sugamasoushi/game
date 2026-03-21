@@ -1,5 +1,6 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
+import { MessageObject } from "../../util/MessageObject";
 
 export class SaveWindow {
 
@@ -20,24 +21,17 @@ export class SaveWindow {
 
         this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 5, mainColumn.containtsY);
 
+        const messageObject = new MessageObject();
+        messageObject.init(this.scene);
+
         const array = ['空き', '空き'];
 
         for (let i = 0; i < array.length; i++) {
-            const Label = this.scene.add.text(saveX, saveY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['セーブスロット ' + i], {
-                fontFamily: this.menuModel.fontFamily,
-                fontSize: this.menuModel.fontSize,
-                lineSpacing: this.menuModel.lineSpaceValue,
-                color: this.menuModel.fontColor
-            }).setDepth(this.mainWindowDepth + 50);
+            const Label = messageObject.createTextObject(this.scene, saveX, saveY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['セーブスロット ' + i], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-            const skill = this.scene.add.text(saveX + 200, saveY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
+            const skill = messageObject.createTextObject(this.scene, saveX + 200, saveY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
                 array[i]
-            ], {
-                fontFamily: this.menuModel.fontFamily,
-                fontSize: this.menuModel.fontSize,
-                lineSpacing: this.menuModel.lineSpaceValue,
-                color: this.menuModel.fontColor
-            }).setDepth(this.mainWindowDepth + 50);
+            ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
             this.container.add([Label, skill]).setDepth(this.mainWindowDepth + 50);
         }
 

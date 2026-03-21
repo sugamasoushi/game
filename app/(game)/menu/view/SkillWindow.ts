@@ -1,5 +1,6 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
+import { MessageObject } from "../../util/MessageObject";
 
 export class SkillWindow {
 
@@ -21,44 +22,27 @@ export class SkillWindow {
 
         this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 3, mainColumn.containtsY);
 
+        const messageObject = new MessageObject();
+        messageObject.init(this.scene);
+
         const array = ['切り付け', '悪口'];
 
         for (let i = 0; i < array.length; i++) {
             if (i % 2 === 0) {
                 const j = i > 0 ? i - 1 : i;
-                const Label = this.scene.add.text(skillX, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                const Label = messageObject.createTextObject(this.scene, skillX, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-                const skill = this.scene.add.text(skillX + 50, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
+                const skill = messageObject.createTextObject(this.scene, skillX + 50, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
                     array[i]
-                ], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
                 this.container.add([Label, skill]).setDepth(this.mainWindowDepth + 50);
             } else {
                 const j = i > 0 ? i - 1 : i;
-                const Label = this.scene.add.text(skillX + rightValue, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                const Label = messageObject.createTextObject(this.scene, skillX + rightValue, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-                const skill = this.scene.add.text(skillX + rightValue + 50, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
+                const skill = messageObject.createTextObject(this.scene, skillX + rightValue + 50, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
                     array[i]
-                ], {
-                    fontFamily: this.menuModel.fontFamily,
-                    fontSize: this.menuModel.fontSize,
-                    lineSpacing: this.menuModel.lineSpaceValue,
-                    color: this.menuModel.fontColor
-                }).setDepth(this.mainWindowDepth + 50);
+                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
                 this.container.add([Label, skill]).setDepth(this.mainWindowDepth + 50);
             }
         }

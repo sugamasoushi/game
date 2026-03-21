@@ -4,6 +4,7 @@ import { TileMap } from "../view/TileMap";
 import { MapObject } from "../view/MapObject";
 import { MenuButton } from "../view/MenuButton";
 import { SaveButton } from "../view/SaveButton";
+import { FireButton } from "../view/FireButton";
 import { FieldData } from "../../lib/types";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
 import { Npc } from "../view/character/Npc";
@@ -21,7 +22,8 @@ export class FieldPresenter {
         private tileMap: TileMap,
         private mapObject: MapObject,
         private menuButton: MenuButton,
-        private testButton: SaveButton,
+        private saveButton: SaveButton,
+        private fireButton: FireButton,
         private cameraManager: CameraManager,
         private inputManager: InputManager
     ) {
@@ -30,7 +32,8 @@ export class FieldPresenter {
         this.tileMap = tileMap;
         this.mapObject = mapObject;
         this.menuButton = menuButton;
-        this.testButton = testButton;
+        this.saveButton = saveButton;
+        this.fireButton = fireButton;
     }
 
     public async create(sceneKey: string) {
@@ -43,13 +46,13 @@ export class FieldPresenter {
 
         // オブジェクト配置完了後、100ミリ秒待機
         // await new Promise<void>(resolve => {
-        this.gameScene.events.once('addedtoscene',
-            () => {
-                console.log('ADDED_TO_SCENE');
-                // resolve();
-                // setInterval(() => { resolve(); }, 100)
-            }
-        );
+        // this.gameScene.events.once('addedtoscene',
+        //     () => {
+        //         console.log('ADDED_TO_SCENE');
+        //         // resolve();
+        //         // setInterval(() => { resolve(); }, 100)
+        //     }
+        // );
         // });
 
         // イベントエミッター設定
@@ -62,7 +65,8 @@ export class FieldPresenter {
         this.tileMap.execute(this.fieldMapModel.getFieldData());
         this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData());
         this.menuButton.execute();
-        this.testButton.execute();
+        this.saveButton.execute();
+        this.fireButton.execute();
 
         //オブジェクト作成、各種設定
         this.inputManager.execute();

@@ -127,7 +127,7 @@ export class EVENT0102 extends BaseEvent {
 
         //npcを移動
         await this.characterMovingUP(this.grandpa, 100);
-        this.characterMovingRIGHT(this.grandpa, 400);
+        this.characterMovingRIGHT(this.grandpa, 1000);
 
         await this.stopAnyTime(200);
 

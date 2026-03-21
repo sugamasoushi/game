@@ -145,6 +145,13 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
             point2Y = height - rectR;
             point3X = pointX - textObject.x - adjustX;//下点
             point3Y = pointY - textObject.y - adjustY;
+        } else {
+            point1X = Math.floor(width / 7);//左点
+            point1Y = height - rectR;
+            point2X = Math.floor((width / 7) * 2);//右点
+            point2Y = height - rectR;
+            point3X = pointX - textObject.x;//下点
+            point3Y = pointY - textObject.y - adjustY / 2;
         }
 
         this.fillTriangle(point1X!, point1Y!, point2X!, point2Y!, point3X!, point3Y!);

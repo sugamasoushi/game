@@ -57,14 +57,7 @@ export class SaveButton {
             //下層のオブジェクトのイベントを止める
             event.stopPropagation();
 
-            const manager = GameStateManager.getInstance();
-
-            this.gameScene.cache.json.get('savedata').infomation = "中断セーブデータ";
-            this.gameScene.cache.json.get('savedata').playerData.PlayerMapKey = manager.currentFieldData.mapKey;
-            this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.x = this.mapObject.getPlayer().x;
-            this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.y = this.mapObject.getPlayer().y;
-            this.gameScene.cache.json.get('savedata').playerData.status.HP = this.mapObject.getPlayer().getData('HP');
-            this.gameScene.cache.json.get('savedata').playerData.status.MP = this.mapObject.getPlayer().getData('MP');
+            this.setSaveData();
 
             await this.saveDataManager.setSaveData(this.gameScene);
 
@@ -78,50 +71,19 @@ export class SaveButton {
             })
         });
 
+    }
 
+    private setSaveData() {
+        const manager = GameStateManager.getInstance();
 
-        const flameX = 100;
-        const flameY = 650;
-        const flameDepth = 999999;
-        this.fieldAttack = new FieldAttack(this.mapObject.getPlayer(), this.mapObject.getPlayer().x, this.mapObject.getPlayer().y);
+        this.gameScene.cache.json.get('savedata').infomation = "中断セーブデータ";
+        this.gameScene.cache.json.get('savedata').playerData.PlayerMapKey = manager.currentFieldData.mapKey;
+        this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.x = this.mapObject.getPlayer().x;
+        this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.y = this.mapObject.getPlayer().y;
+        this.gameScene.cache.json.get('savedata').playerData.status.HP = this.mapObject.getPlayer().getData('HP');
+        this.gameScene.cache.json.get('savedata').playerData.status.MP = this.mapObject.getPlayer().getData('MP');
 
-        const flame = this.gameScene.add.particles(flameX, flameY, 'flares', {
-            frame: 'white',
-            color: [0xfacc22, 0xf89800, 0xf83600, 0x9f0404],
-            colorEase: 'quad.out',
-            lifespan: 1400,
-            angle: { min: -100, max: -80 },
-            scale: { start: 0.50, end: 0, ease: 'sine.out' },
-            speed: 100,
-            advance: 1000,
-            blendMode: 'ADD'
-        });
-
-        flame.setScrollFactor(0);
-        flame.setDepth(flameDepth);
-
-        const tapText = this.gameScene.add.text(
-            flameX, flameY,
-            "FIRE!", { fontFamily: "Arial Black", fontSize: 24, color: "#df5757ff" });
-        tapText.setOrigin(0.5, 0.5).setStroke('#582a2aff', 12).setShadow(4, 4, '#582a2aff', 8, false, true);
-        tapText.setDepth(flame.depth + 1);
-        tapText.setScrollFactor(0);
-
-        const hitZone = this.gameScene.add.zone(flameX, flameY, 100, 100)
-            .setInteractive({ useHandCursor: true })
-            .setScrollFactor(0)
-            .setDepth(tapText.depth + 1);
-
-        hitZone.on(Phaser.Input.Events.POINTER_UP, (
-            pointer: Phaser.Input.Pointer) => {
-
-            //右クリック判定。クリック後、ボタンを離した後の判定となる。rightButtonDown()は押下中の判定となる。
-            if (pointer.rightButtonReleased()) return;
-            pointer.reset();//入力状態をリセット、リセットしないと押下中に連続で処理される
-            this.fieldAttack.frameBullet(this.mapObject.getPlayer().x, this.mapObject.getPlayer().y);
-
-        })
-
+        this.gameScene.cache.json.get('savedata').playerData.Item['やくそう'] = this.mapObject.getPlayer().getData('やくそう');
     }
 
 }

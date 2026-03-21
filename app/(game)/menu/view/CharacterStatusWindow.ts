@@ -1,6 +1,7 @@
 import { GameScene } from "../../lib/types";
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
+import { MessageObject } from "../../util/MessageObject";
 
 export class CharacterStatusWindow {
 
@@ -24,25 +25,18 @@ export class CharacterStatusWindow {
         this.container = this.scene.add.container(mainColumn.containtsX, mainColumn.containtsY);
         const charImage = this.scene.add.image(150, 650, '20250609').setScale(0.6).setDepth(this.mainWindowDepth + 50);
 
-        const Label = this.scene.add.text(leftLabelX, leftLabelY, ['LV', 'HP', 'MP'], {
-            fontFamily: this.menuModel.fontFamily,
-            fontSize: this.menuModel.fontSize,
-            lineSpacing: this.menuModel.lineSpaceValue,
-            color: this.menuModel.fontColor
-        }).setDepth(this.mainWindowDepth + 50);
+        const messageObject = new MessageObject();
+        messageObject.init(this.scene);
+
+        const Label = messageObject.createTextObject(this.scene, leftLabelX, leftLabelY, ['LV', 'HP', 'MP'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
         const playerData = this.menuModel.getPlayerData();
 
-        const charCondition = this.scene.add.text(rightValueX, rightValueY, [
-            playerData.Lv,
+        const charCondition = messageObject.createTextObject(this.scene, rightValueX, rightValueY, [
+            String(playerData.Lv),
             playerData.HP + " / " + playerData.MaxHP,
             playerData.MP + " / " + playerData.MaxMP,
-        ], {
-            fontFamily: this.menuModel.fontFamily,
-            fontSize: this.menuModel.fontSize,
-            lineSpacing: this.menuModel.lineSpaceValue,
-            color: this.menuModel.fontColor
-        }).setDepth(this.mainWindowDepth + 50);
+        ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
         this.container.add([charImage, Label, charCondition]).setDepth(this.mainWindowDepth + 50);
         this.container.setMask(mainColumn.cropRectMask.createGeometryMask());

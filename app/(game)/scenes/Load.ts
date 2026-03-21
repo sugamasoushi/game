@@ -96,6 +96,22 @@ export class Load extends Scene {
             { frameWidth: 160, frameHeight: 192 }
         );
 
+        this.load.spritesheet('tree_image_key', 'assets/img/tilesets/testtree.png',
+            { frameWidth: 96, frameHeight: 128 }
+        );
+
+        this.load.spritesheet('tree_glass_image_key', 'assets/img/tilesets/tree_glass.png',
+            { frameWidth: 96, frameHeight: 96 }
+        );
+        this.load.spritesheet('tree_stem_image_key', 'assets/img/tilesets/tree_stem.png',
+            { frameWidth: 96, frameHeight: 160 }
+        );
+
+        this.load.spritesheet('itemBox_image_key', 'assets/img/tilesets/Chests.png',
+            { frameWidth: 32, frameHeight: 32 }
+        );
+
+
 
         this.load.spritesheet({
             key: 'boy',

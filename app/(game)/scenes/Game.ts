@@ -10,6 +10,7 @@ import { TileMap } from '../gamemain/view/TileMap';
 import { MapObject } from '../gamemain/view/MapObject';
 import { MenuButton } from '../gamemain/view/MenuButton';
 import { SaveButton } from '../gamemain/view/SaveButton';
+import { FireButton } from '../gamemain/view/FireButton';
 import { Player } from '../gamemain/view/character/Player';
 
 import { GameStateManager } from '../GameAllState/GameStateManager';
@@ -46,7 +47,8 @@ export class Game extends Scene implements GameScene {
     gameText: Phaser.GameObjects.Text;
 
     private menuButton: MenuButton;
-    private testButton: SaveButton
+    private testButton: SaveButton;
+    private fireButton: FireButton;
 
     constructor() { super('Game'); }
 
@@ -56,6 +58,7 @@ export class Game extends Scene implements GameScene {
         this.mapObject = new MapObject(this);
         this.menuButton = new MenuButton(this);
         this.testButton = new SaveButton(this, this.mapObject);
+        this.fireButton = new FireButton(this, this.mapObject);
         this.inputManager = new InputManager(this);
         this.cameraManager = new CameraManager(this);
 
@@ -67,6 +70,7 @@ export class Game extends Scene implements GameScene {
             this.mapObject,
             this.menuButton,
             this.testButton,
+            this.fireButton,
             this.cameraManager,
             this.inputManager
         );

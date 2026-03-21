@@ -1,5 +1,6 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
+import { MessageObject } from "../../util/MessageObject";
 
 export class CharStatusWindow {
 
@@ -22,29 +23,22 @@ export class CharStatusWindow {
 
         this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 4, mainColumn.containtsY);
 
-        const Label = this.scene.add.text(leftLabelX, leftLabelY, ['Lv', 'HP', 'MP', '性格', '攻撃力', '防御力', '運'], {
-            fontFamily: this.menuModel.fontFamily,
-            fontSize: this.menuModel.fontSize,
-            lineSpacing: this.menuModel.lineSpaceValue,
-            color: this.menuModel.fontColor
-        }).setDepth(this.mainWindowDepth + 50);
+        const messageObject = new MessageObject();
+        messageObject.init(this.scene);
+
+        const Label = messageObject.createTextObject(this.scene, leftLabelX, leftLabelY, ['Lv', 'HP', 'MP', '性格', '攻撃力', '防御力', '運'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
         const playerData = this.menuModel.getPlayerData();
 
-        const charStatus = this.scene.add.text(rightValueX, rightValueY, [
-            playerData.Lv,
-            playerData.MaxHP,
-            playerData.MaxMP,
+        const charStatus = messageObject.createTextObject(this.scene, rightValueX, rightValueY, [
+            String(playerData.Lv),
+            String(playerData.MaxHP),
+            String(playerData.MaxMP),
             '能天気',
-            10,
-            5,
-            0
-        ], {
-            fontFamily: this.menuModel.fontFamily,
-            fontSize: this.menuModel.fontSize,
-            lineSpacing: this.menuModel.lineSpaceValue,
-            color: this.menuModel.fontColor
-        }).setDepth(this.mainWindowDepth + 50);
+            '10',
+            '5',
+            '0'
+        ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
         this.container.add([Label, charStatus]).setDepth(this.mainWindowDepth + 50);
 

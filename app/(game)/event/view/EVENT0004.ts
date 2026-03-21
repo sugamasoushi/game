@@ -288,7 +288,7 @@ export class EVENT0004 extends BaseEvent {
                         this.eventScene.cameras.main.fadeOut(100);
                         this.eventScene.scene.moveAbove('Event', 'Title');
 
-                        this.eventScene.scene.start('Title');
+                        this.eventScene.scene.start('Boot');
 
                         this.eventScene.scene.stop('Game');
                         this.eventScene.scene.stop('Event');
