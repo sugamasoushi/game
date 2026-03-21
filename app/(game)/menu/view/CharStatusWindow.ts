@@ -28,7 +28,7 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
 
         const Label = messageObject.createTextObject(this.scene, leftLabelX, leftLabelY, ['Lv', 'HP', 'MP', '性格', '攻撃力', '防御力', '運'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-        const playerData = this.menuModel.getPlayerData();
+        const playerData = this.menuModel.getPlayerDataList();
 
         const charStatus = messageObject.createTextObject(this.scene, rightValueX, rightValueY, [
             String(playerData.Lv),

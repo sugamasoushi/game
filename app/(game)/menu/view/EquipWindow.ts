@@ -25,7 +25,7 @@ export class EquipWindow extends Phaser.GameObjects.Container {
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
-        const playerData = this.menuModel.getPlayerData();
+        const playerData = this.menuModel.getPlayerDataList();
         const array = [playerData.Weapon, playerData.Armor];
 
         // 装備リストは2列で表示する

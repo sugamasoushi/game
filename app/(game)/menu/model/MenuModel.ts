@@ -38,6 +38,10 @@ export class MenuModel {
     }
 
     public getPlayerData() {
+        return this.gameScene.getPlayer().data;
+    }
+
+    public getPlayerDataList() {
         return this.gameScene.getPlayer().data.list;
     }
 
@@ -52,7 +56,7 @@ export class MenuModel {
     // アイテムリストから表示不要なステータス項目を除外して返す
     public getValidItemList(): string[] {
         const itemList: string[] = [];
-        const playerData = this.getPlayerData();
+        const playerData = this.getPlayerDataList();
 
         /**
          * setData()で設定しているキーが増えるたびに条件を追加していく

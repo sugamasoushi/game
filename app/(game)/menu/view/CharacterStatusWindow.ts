@@ -1,4 +1,3 @@
-import { GameScene } from "../../lib/types";
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
@@ -35,7 +34,7 @@ export class CharacterStatusWindow extends Phaser.GameObjects.Container {
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
-        const playerData = this.menuModel.getPlayerData();
+        const playerData = this.menuModel.getPlayerDataList();
 
         const labels = ['LV', 'HP', 'MP'];
         const values = [
@@ -75,12 +74,12 @@ export class CharacterStatusWindow extends Phaser.GameObjects.Container {
         this.scene.events.on('UPDATE_CONDITION', this.updateConditionHandler, this);
     }
 
-    private updateConditionHandler(playerData: any) {
+    private updateConditionHandler(playerData: Phaser.Data.DataManager) {
         if (this.charConditionHP && this.charConditionHP.active) {
-            this.charConditionHP.setText([playerData.HP + " / " + playerData.MaxHP]);
+            this.charConditionHP.setText([playerData.get('HP') + " / " + playerData.get('MaxHP')]);
         }
         if (this.charConditionMP && this.charConditionMP.active) {
-            this.charConditionMP.setText([playerData.MP + " / " + playerData.MaxMP]);
+            this.charConditionMP.setText([playerData.get('MP') + " / " + playerData.get('MaxMP')]);
         }
     }
 
