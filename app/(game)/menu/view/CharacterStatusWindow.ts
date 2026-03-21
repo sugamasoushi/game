@@ -2,18 +2,24 @@ import { GameScene } from "../../lib/types";
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
+import { MenuTab } from "../MenuTypes";
 
-export class CharacterStatusWindow {
+export class CharacterStatusWindow extends Phaser.GameObjects.Container {
 
-    private scene: Phaser.Scene;
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;
 
-    public container: Phaser.GameObjects.Container;
+    private charConditionHP: Phaser.GameObjects.Text;
+    private charConditionMP: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
-        this.scene = scene;
+        super(scene);
         this.menuModel = menuModel;
+        this.scene.add.existing(this);
+
+        this.once('destroy', () => {
+            this.scene.events.off('UPDATE_CONDITION', this.updateConditionHandler, this);
+        });
     }
 
     public create(mainColumn: MainColumnWindow) {
@@ -22,23 +28,60 @@ export class CharacterStatusWindow {
         const rightValueX = leftLabelX + 100;
         const rightValueY = leftLabelY;
 
-        this.container = this.scene.add.container(mainColumn.containtsX, mainColumn.containtsY);
+        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Condition;
+        this.y = mainColumn.containtsY;
         const charImage = this.scene.add.image(150, 650, '20250609').setScale(0.6).setDepth(this.mainWindowDepth + 50);
 
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
-        const Label = messageObject.createTextObject(this.scene, leftLabelX, leftLabelY, ['LV', 'HP', 'MP'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-
         const playerData = this.menuModel.getPlayerData();
 
-        const charCondition = messageObject.createTextObject(this.scene, rightValueX, rightValueY, [
+        const labels = ['LV', 'HP', 'MP'];
+        const values = [
             String(playerData.Lv),
             playerData.HP + " / " + playerData.MaxHP,
             playerData.MP + " / " + playerData.MaxMP,
-        ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
+        ];
 
-        this.container.add([charImage, Label, charCondition]).setDepth(this.mainWindowDepth + 50);
-        this.container.setMask(mainColumn.cropRectMask.createGeometryMask());
+        for (let i = 0; i < labels.length; i++) {
+            const yOffset = i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
+
+            const labelObj = messageObject.createTextObject(
+                this.scene,
+                leftLabelX,
+                leftLabelY + yOffset,
+                [labels[i]],
+                this.menuModel.fontSize
+            ).setDepth(this.mainWindowDepth + 50);
+
+            const valueObj = messageObject.createTextObject(
+                this.scene,
+                rightValueX,
+                rightValueY + yOffset,
+                [values[i]],
+                this.menuModel.fontSize
+            ).setDepth(this.mainWindowDepth + 50);
+
+            this.add([labelObj, valueObj]);
+
+            if (labels[i] === 'HP') this.charConditionHP = valueObj;
+            if (labels[i] === 'MP') this.charConditionMP = valueObj;
+        }
+
+        this.add(charImage).setDepth(this.mainWindowDepth + 50);
+        this.setMask(mainColumn.cropRectMask.createGeometryMask());
+
+        this.scene.events.on('UPDATE_CONDITION', this.updateConditionHandler, this);
     }
+
+    private updateConditionHandler(playerData: any) {
+        if (this.charConditionHP && this.charConditionHP.active) {
+            this.charConditionHP.setText([playerData.HP + " / " + playerData.MaxHP]);
+        }
+        if (this.charConditionMP && this.charConditionMP.active) {
+            this.charConditionMP.setText([playerData.MP + " / " + playerData.MaxMP]);
+        }
+    }
+
 }

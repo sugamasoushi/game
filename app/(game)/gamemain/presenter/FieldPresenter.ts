@@ -12,6 +12,7 @@ import { Npc } from "../view/character/Npc";
 import { Subscription } from "rxjs";
 import { InputManager } from "../../core/input/InputManager";
 import { CameraManager } from "../view/CameraManager";
+import { FieldMessageWindow } from "../view/FieldMessageWindow";
 
 export class FieldPresenter {
     private subs = new Subscription(); // 購読をまとめる箱
@@ -25,7 +26,8 @@ export class FieldPresenter {
         private saveButton: SaveButton,
         private fireButton: FireButton,
         private cameraManager: CameraManager,
-        private inputManager: InputManager
+        private inputManager: InputManager,
+        private fieldMessageWindow: FieldMessageWindow
     ) {
         this.gameScene = gameScene;
         this.fieldMapModel = fieldMapModel;
@@ -34,26 +36,19 @@ export class FieldPresenter {
         this.menuButton = menuButton;
         this.saveButton = saveButton;
         this.fireButton = fireButton;
+        this.cameraManager = cameraManager;
+        this.inputManager = inputManager;
+        this.fieldMessageWindow = fieldMessageWindow;
     }
 
     public async create(sceneKey: string) {
 
+        //マップ情報の判定、検索処理とか実装する必要がある
         if (this.fieldMapModel.getFieldData().mapKey === '0102') {
             this.gameScene.game.events.emit('BGM_FIELD', sceneKey, 'waterFall');
         } else {
             this.gameScene.game.events.emit('BGM_FIELD', sceneKey, '');
         }
-
-        // オブジェクト配置完了後、100ミリ秒待機
-        // await new Promise<void>(resolve => {
-        // this.gameScene.events.once('addedtoscene',
-        //     () => {
-        //         console.log('ADDED_TO_SCENE');
-        //         // resolve();
-        //         // setInterval(() => { resolve(); }, 100)
-        //     }
-        // );
-        // });
 
         // イベントエミッター設定
         this.setEventEmitter();
@@ -67,11 +62,11 @@ export class FieldPresenter {
         this.menuButton.execute();
         this.saveButton.execute();
         this.fireButton.execute();
+        this.fieldMessageWindow.init();
 
         //オブジェクト作成、各種設定
         this.inputManager.execute();
         this.cameraManager.execute(this.tileMap.getMakeTilemap(), this.mapObject.getPlayer());
-
         this.fieldMapModel.execute(this.mapObject);
     }
 
@@ -84,6 +79,10 @@ export class FieldPresenter {
             if (manager.currentState !== State.EVENT) {
                 this.inputManager.setState(true);
             }
+        });
+
+        this.gameScene.events.on('FREE_MESSAGE_WINDOW', (message: string, time: number) => {
+            this.fieldMessageWindow.messageOutput(message, time);
         });
 
         this.gameScene.events.on('GAME_INPUT_TRUE', () => {
@@ -153,6 +152,7 @@ export class FieldPresenter {
         });
 
         // シーン終了時にイベントを破棄
+        //適切に破棄しないとエミッターが残り続け、次回描画時にエラーとなる
         this.gameScene.events.once('shutdown', () => {
             //this.gameScene.events.off(Phaser.Scenes.Events.ADDED_TO_SCENE);
             this.gameScene.events.off('FADE_IN_COMPLETE');
@@ -163,6 +163,7 @@ export class FieldPresenter {
             this.gameScene.events.off('EVENT');
             this.gameScene.events.off('EVENT_END');
             this.gameScene.events.off('BATTLE');
+            this.gameScene.events.off('FREE_MESSAGE_WINDOW');
             this.subs.unsubscribe();
             this.inputManager.destroy();
         });

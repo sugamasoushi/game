@@ -29,7 +29,7 @@ export class MenuView {
         this.gameScene = gameScene;
         this.menuModel = menuModel;
 
-        this.mainColumnWindow = new MainColumnWindow(this.scene, this.gameScene, this.menuModel);
+        this.mainColumnWindow = new MainColumnWindow(this.scene, this.menuModel);
         this.characterStatusWindow = new CharacterStatusWindow(this.scene, this.menuModel);
         this.itemWindow = new ItemWindow(this.scene, this.menuModel);
         this.equipWindow = new EquipWindow(this.scene, this.menuModel);
@@ -54,18 +54,14 @@ export class MenuView {
 
         // 各コンテナをMainColumnWindowへ登録し、Tweenアニメーションで動かせるようにする
         this.mainColumnWindow.setContainers([
-            this.characterStatusWindow.container,
-            this.itemWindow.container,
-            this.equipWindow.container,
-            this.skillWindow.container,
-            this.charStatusWindow.container,
-            this.saveWindow.container,
-            this.optionWindow.container,
+            this.characterStatusWindow,
+            this.itemWindow,
+            this.equipWindow,
+            this.skillWindow,
+            this.charStatusWindow,
+            this.saveWindow,
+            this.optionWindow,
         ]);
-    }
-
-    public update() {
-        this.mainColumnWindow.update();
     }
 
     public executeEndAnimation(onComplete: () => void) {

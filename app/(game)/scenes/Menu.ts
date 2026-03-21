@@ -30,8 +30,4 @@ export class Menu extends Phaser.Scene {
     create() {
         this.menuPresenter.create();
     }
-
-    update() {
-        this.menuPresenter.update();
-    }
 }

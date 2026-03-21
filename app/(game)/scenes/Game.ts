@@ -17,6 +17,7 @@ import { GameStateManager } from '../GameAllState/GameStateManager';
 
 import { InputManager } from '../core/input/InputManager';
 import { CameraManager } from '../gamemain/view/CameraManager';
+import { FieldMessageWindow } from '../gamemain/view/FieldMessageWindow';
 
 export class Game extends Scene implements GameScene {
     private ReadyEventsKey: ReadyEvents = {
@@ -49,6 +50,7 @@ export class Game extends Scene implements GameScene {
     private menuButton: MenuButton;
     private testButton: SaveButton;
     private fireButton: FireButton;
+    private fieldMessageWindow: FieldMessageWindow;
 
     constructor() { super('Game'); }
 
@@ -61,6 +63,7 @@ export class Game extends Scene implements GameScene {
         this.fireButton = new FireButton(this, this.mapObject);
         this.inputManager = new InputManager(this);
         this.cameraManager = new CameraManager(this);
+        this.fieldMessageWindow = new FieldMessageWindow(this);
 
         // Presenterに依存関係を注入 (DI)
         this.fieldPresenter = new FieldPresenter(
@@ -72,7 +75,8 @@ export class Game extends Scene implements GameScene {
             this.testButton,
             this.fireButton,
             this.cameraManager,
-            this.inputManager
+            this.inputManager,
+            this.fieldMessageWindow
         );
 
         this.playerPresenter = new PlayerPresenter(

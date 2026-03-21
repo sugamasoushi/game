@@ -1,19 +1,17 @@
-import { GameScene } from "../../lib/types";
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
+import { MenuTab } from "../MenuTypes";
+import { SelectAllow } from "../../util/SelectAllow";
+import DebugMessage from '../../util/DebugMessage';
 
-export class ItemWindow {
-
-    private scene: Phaser.Scene;
-    private menuModel: MenuModel;
+export class ItemWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
+    public selectAllow: SelectAllow;
 
-    public container: Phaser.GameObjects.Container;
-
-    constructor(scene: Phaser.Scene, menuModel: MenuModel) {
-        this.scene = scene;
-        this.menuModel = menuModel;
+    constructor(scene: Phaser.Scene, private menuModel: MenuModel) {
+        super(scene);
+        this.scene.add.existing(this);
     }
 
     public create(mainColumn: MainColumnWindow) {
@@ -21,40 +19,82 @@ export class ItemWindow {
         const itemY = 0;
         const rightValue = 300;
 
-        // 初期配置時は右にずらしておく (scrollValue * 1など。mainColumnで上書きされるが初期位置として)
-        this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue, mainColumn.containtsY);
+        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Item;
+        this.y = mainColumn.containtsY;
 
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
         const itemList = this.menuModel.getValidItemList();
 
+        // アイテムリストは2列で表示する
         for (let i = 0; i < itemList.length; i++) {
-            if (i % 2 === 0) {
-                const j = i > 0 ? i - 1 : i;
-                const itemName = messageObject.createTextObject(this.scene, itemX, itemY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
-                    itemList[i],
-                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-                this.container.add([itemName]);
-                
-                const itemValue = messageObject.createTextObject(this.scene, itemX + 200, itemY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
-                    this.menuModel.getPlayerItemCount(itemList[i]).toString(),
-                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-                this.container.add([itemValue]);
-            } else {
-                const j = i > 0 ? i - 1 : i;
-                const itemName = messageObject.createTextObject(this.scene, itemX + rightValue, itemY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
-                    itemList[i],
-                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-                this.container.add([itemName]);
-                
-                const itemValue = messageObject.createTextObject(this.scene, itemX + rightValue + 200, itemY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
-                    this.menuModel.getPlayerItemCount(itemList[i]).toString(),
-                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-                this.container.add([itemValue]);
-            }
+            const row = Math.floor(i / 2);
+            const col = i % 2;
+            const xOffset = col * rightValue;
+            const yOffset = row * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
+
+            //左　項目
+            const itemName = messageObject.createTextObject(
+                this.scene,
+                itemX + xOffset,
+                itemY + yOffset,
+                [itemList[i]],
+                this.menuModel.fontSize
+            ).setDepth(this.mainWindowDepth + 50);
+
+            //右　個数
+            const itemValue = messageObject.createTextObject(
+                this.scene,
+                itemX + xOffset + 200,
+                itemY + yOffset,
+                [this.menuModel.getPlayerItemCount(itemList[i]).toString()],
+                this.menuModel.fontSize
+            ).setDepth(this.mainWindowDepth + 50);
+
+            this.add([itemName, itemValue]);
+
+            // マウスオーバーで選択位置を更新
+            itemName.setInteractive({ useHandCursor: true });
+            itemName.on('pointerover', () => {
+                this.selectAllow.updatePosition(itemName);
+            });
+
+            // クリックでアイテムを使用
+            itemName.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+                if (pointer.leftButtonDown()) {
+                    pointer.reset();
+
+                    //アイテムが0以上かチェック
+                    const count = this.menuModel.getItemData().values[itemName.text];
+                    if (count <= 0) {
+                        const debugMessage = new DebugMessage(this.scene);
+                        debugMessage.NotImplemented('もう無いよ！');
+                        return;
+                    }
+
+                    // 使用後の個数を反映
+                    itemValue.setText(this.useItem(itemName.text).toString());
+                }
+            });
         }
-        this.container.setDepth(this.mainWindowDepth + 50);
-        this.container.setMask(mainColumn.cropRectMask.createGeometryMask());
+
+        this.selectAllow = new SelectAllow(this.scene);
+        this.selectAllow.init(0, 0);
+        this.selectAllow.createAllow();
+        this.selectAllow.setVisible(false);
+        this.add(this.selectAllow);
+
+        this.setDepth(this.mainWindowDepth + 50);
+        this.setMask(mainColumn.cropRectMask.createGeometryMask());
+    }
+
+    useItem(itemName: string): number {
+        const count = this.menuModel.getItemData().values[itemName] -= 1;
+        console.log(count);
+
+        this.scene.events.emit('USE_ITEM', itemName, count);
+
+        return count;
     }
 }

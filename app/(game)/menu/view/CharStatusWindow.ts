@@ -1,18 +1,17 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
+import { MenuTab } from "../MenuTypes";
 
-export class CharStatusWindow {
+export class CharStatusWindow extends Phaser.GameObjects.Container {
 
-    private scene: Phaser.Scene;
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;
 
-    public container: Phaser.GameObjects.Container;
-
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
-        this.scene = scene;
+        super(scene);
         this.menuModel = menuModel;
+        this.scene.add.existing(this);
     }
 
     public create(mainColumn: MainColumnWindow) {
@@ -21,7 +20,8 @@ export class CharStatusWindow {
         const rightValueX = leftLabelX + 100;
         const rightValueY = leftLabelY;
 
-        this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 4, mainColumn.containtsY);
+        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Status;
+        this.y = mainColumn.containtsY;
 
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
@@ -40,8 +40,8 @@ export class CharStatusWindow {
             '0'
         ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
 
-        this.container.add([Label, charStatus]).setDepth(this.mainWindowDepth + 50);
+        this.add([Label, charStatus]).setDepth(this.mainWindowDepth + 50);
 
-        this.container.setMask(mainColumn.cropRectMask.createGeometryMask());
+        this.setMask(mainColumn.cropRectMask.createGeometryMask());
     }
 }

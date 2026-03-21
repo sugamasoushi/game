@@ -1,52 +1,81 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
+import { MenuTab } from "../MenuTypes";
+import { SelectAllow } from "../../util/SelectAllow";
+import DebugMessage from '../../util/DebugMessage';
 
-export class SkillWindow {
-
-    private scene: Phaser.Scene;
-    private menuModel: MenuModel;
+export class SkillWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
+    public selectAllow: SelectAllow;
 
-    public container: Phaser.GameObjects.Container;
-
-    constructor(scene: Phaser.Scene, menuModel: MenuModel) {
-        this.scene = scene;
-        this.menuModel = menuModel;
+    constructor(scene: Phaser.Scene, private menuModel: MenuModel) {
+        super(scene);
+        this.scene.add.existing(this);
     }
 
     public create(mainColumn: MainColumnWindow) {
+        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Skill;
+        this.y = mainColumn.containtsY;
+
         const skillX = 430;
         const skillY = 0;
         const rightValue = 200;
-
-        this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 3, mainColumn.containtsY);
 
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
         const array = ['切り付け', '悪口'];
 
+        // スキルリストは2列で表示する
         for (let i = 0; i < array.length; i++) {
-            if (i % 2 === 0) {
-                const j = i > 0 ? i - 1 : i;
-                const Label = messageObject.createTextObject(this.scene, skillX, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
+            const row = Math.floor(i / 2);
+            const col = i % 2;
+            const xOffset = col * rightValue;
+            const yOffset = row * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
 
-                const skill = messageObject.createTextObject(this.scene, skillX + 50, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
-                    array[i]
-                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-                this.container.add([Label, skill]).setDepth(this.mainWindowDepth + 50);
-            } else {
-                const j = i > 0 ? i - 1 : i;
-                const Label = messageObject.createTextObject(this.scene, skillX + rightValue, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), ['E'], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
+            //左　項目
+            const Label = messageObject.createTextObject(
+                this.scene,
+                skillX + xOffset,
+                skillY + yOffset,
+                ['E'],
+                this.menuModel.fontSize
+            ).setDepth(this.mainWindowDepth + 50);
 
-                const skill = messageObject.createTextObject(this.scene, skillX + rightValue + 50, skillY + j * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
-                    array[i]
-                ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-                this.container.add([Label, skill]).setDepth(this.mainWindowDepth + 50);
-            }
+            const skill = messageObject.createTextObject(
+                this.scene,
+                skillX + xOffset + 50,
+                skillY + yOffset,
+                [array[i]],
+                this.menuModel.fontSize
+            ).setDepth(this.mainWindowDepth + 50);
+
+            this.add([Label, skill]);
+
+            // マウスオーバーで選択位置を更新
+            skill.setInteractive({ useHandCursor: true });
+            skill.on('pointerover', () => {
+                this.selectAllow.updatePosition(skill);
+            });
+
+            // クリックでスキルを使用
+            skill.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+                if (pointer.leftButtonDown()) {
+                    pointer.reset();
+                    const debugMessage = new DebugMessage(this.scene);
+                    debugMessage.NotImplemented(undefined);
+                }
+            });
         }
 
-        this.container.setMask(mainColumn.cropRectMask.createGeometryMask());
+        this.selectAllow = new SelectAllow(this.scene);
+        this.selectAllow.init(0, 0);
+        this.selectAllow.createAllow();
+        this.selectAllow.setVisible(false);
+        this.add(this.selectAllow);
+
+        this.setDepth(this.mainWindowDepth + 50);
+        this.setMask(mainColumn.cropRectMask.createGeometryMask());
     }
 }

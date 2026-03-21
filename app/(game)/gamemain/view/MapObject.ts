@@ -10,6 +10,7 @@ import { SpriteType_3x4 } from './character/SpriteType_3x4';
 import { SpriteType_4x4 } from './character/SpriteType_4x4';
 import { FieldObjectCheck } from '@/app/(game)/util/FieldObjectCheck';
 import { CaharacterNameData } from "../../Data/NameData";
+import { Sound } from "../../scenes/Sound";
 
 export class MapObject extends Phaser.GameObjects.Container {
     private fieldData: FieldData;
@@ -31,10 +32,13 @@ export class MapObject extends Phaser.GameObjects.Container {
     private treeGlassSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
     private treeStemSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
 
+    private soundScene: Sound;
+
     constructor(scene: GameScene) {
         super(scene);
         this.gameScene = scene;
         this.dataDefinition = new DataDefinition();
+        this.soundScene = this.gameScene.scene.get('Sound') as Sound;
     }
 
     preUpdate(time: number) { }
@@ -393,13 +397,17 @@ export class MapObject extends Phaser.GameObjects.Container {
             const getItemName = obj.getData('itemName');
             const getItemNum = obj.getData('value');
 
+            let bubbleTalk: BubbleTalk | undefined;
+
             //吹き出し会話を設定
-            const bubbleTalk = new BubbleTalk(this.gameScene, undefined, bubbleTalkKey);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
-            bubbleTalk.init();
+            if (bubbleTalkKey) {
+                bubbleTalk = new BubbleTalk(this.gameScene, undefined, bubbleTalkKey);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
+                bubbleTalk.init();
+            }
 
             obj.setInteractive({ useHandCursor: true });//クリック可能にする
 
-            obj.on('pointerdown', () => {
+            obj.on('pointerdown', async () => {
                 if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
 
                     //プレイヤーとオブジェクトのチェック
@@ -408,11 +416,30 @@ export class MapObject extends Phaser.GameObjects.Container {
                     //キャラ向きとオブジェクト位置からイベント発生可否をチェック
                     if (fieldPlayerChk.checkPlayerClickEvent()) {
 
-                        bubbleTalk!.execTalk();
+                        //メッセージ表示
+                        new Promise<void>(resolve => {
+                            const time = 1500
+                            this.gameScene.time.delayedCall(time, () => {
+
+                                //待機時間後、吹き出しメッセージがある場合は開始
+                                if (bubbleTalk) { bubbleTalk.execTalk(); }
+                                this.gameScene.events.emit('GAME_INPUT_TRUE');
+                                resolve();
+                            }, [], this.scene);
+                            this.gameScene.events.emit('GAME_INPUT_FALSE');
+                            this.gameScene.events.emit('FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
+                        });
+
                         obj.play('itembox_open');
+                        this.soundScene.SE_chestOpen.play();
 
                         //プレイヤーの持ち物を更新
                         this.gameScene.getPlayer().stopAnimation();
+
+                        //アイテムが未設定の場合、初期化
+                        if (!this.gameScene.getPlayer().getData(getItemName)) {
+                            this.gameScene.getPlayer().setData(getItemName, 0);
+                        }
                         this.gameScene.getPlayer().data.values[getItemName] += Number(getItemNum);
 
                         //セーブデータ更新

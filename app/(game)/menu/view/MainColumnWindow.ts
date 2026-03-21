@@ -1,13 +1,11 @@
-import { GameScene } from "../../lib/types";
 import { MenuModel } from "../model/MenuModel";
-import DebugMessage from '../../util/DebugMessage';
 import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
+import { MenuTab } from "../MenuTypes";
 
 export class MainColumnWindow {
 
     private scene: Phaser.Scene;
-    private gameScene: GameScene;
     private menuModel: MenuModel;
 
     public BackButton: Phaser.GameObjects.Text;
@@ -24,21 +22,17 @@ export class MainColumnWindow {
 
     public cropRectMask: Phaser.GameObjects.Graphics;
 
-    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'スキル', 'ステータス', 'セーブ', 'オプション'];
-    public nowMainColumnNo = 0;
-    public nextMainColumnNo = 0;
+    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'スキル', 'ステータス', 'MOVIE', 'オプション'];
+    public nowMainColumnNo: MenuTab = MenuTab.Condition;
+    public nextMainColumnNo: MenuTab = MenuTab.Condition;
 
     public mainColumnLabelText: Phaser.GameObjects.Text[] = [];
     public mainColumnLabelWindow: MessageWindow[] = [];
 
-    public allowObj: Phaser.GameObjects.Graphics;
-    public allowTween: Phaser.Tweens.Tween;
-
     private containerArray: Phaser.GameObjects.Container[] = []; //他のViewのコンテナを登録してもらう
 
-    constructor(scene: Phaser.Scene, gameScene: GameScene, menuModel: MenuModel) {
+    constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         this.scene = scene;
-        this.gameScene = gameScene;
         this.menuModel = menuModel;
 
         this.displayWidth = Number(this.scene.game.config.width);
@@ -48,12 +42,6 @@ export class MainColumnWindow {
     public create() {
         this.createBackButton();
         this.createMainWindow();
-        this.createAllow();
-    }
-
-    public update() {
-        this.updateMainColumnLabelWindow();
-        this._updateAllow();
     }
 
     // 各Windowのコンテナを受け取るためのメソッド
@@ -155,21 +143,37 @@ export class MainColumnWindow {
         this.containtsX = this.cropRectMask.x;
         this.containtsY = this.cropRectMask.y;
 
+        //初期表示はコンディションを選択状態にする
+        this.mainColumnLabelText[MenuTab.Condition].setTint(Phaser.Display.Color.GetColor(255, 255, 255));
+
         this.windowTween();
 
     }
 
+    //クリックした項目に対応するコンテンツをスライド表示させる
     private windowTween() {
-        //クリック選択中のラベル番号を更新
         const duration = 200;
+
         for (let i = 0; i < this.mainColumnLabelText.length; i++) {
             this.mainColumnLabelText[i].on('pointerdown', () => {
-                // コンテナ配列が空の場合は（まだセットされていなければ）何もしない
+
+                // コンテナ配列が空の場合は何もしない（エラー防止）
                 if (this.containerArray.length === 0) return;
 
-                //現在の項目から右の項目がクリックされた場合
+                // 全てのラベルの色を灰色に戻す
+                for (const ColumnLabelText of this.mainColumnLabelText) {
+                    ColumnLabelText.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+                }
+                // クリックしたラベルの色を白くする
+                this.mainColumnLabelText[i].setTint(Phaser.Display.Color.GetColor(255, 255, 255));
+
+                //選択中の項目と異なる項目がクリックされた場合
                 if (i !== this.nowMainColumnNo) {
+
+                    //選択中の項目より右の項目がクリックされた場合
                     if ((i - this.nowMainColumnNo) > 0) {
+
+                        //表示するコンテンツを右に配置
                         this.containerArray[i].x = this.containtsX + this.scrollValue;
 
                         //現在のコンテンツを左に移動
@@ -183,7 +187,7 @@ export class MainColumnWindow {
                             }
                         });
 
-                        //表示するコンテンツを右に配置後、移動する
+                        //表示するコンテンツを左に移動する
                         this.scene.tweens.add({
                             targets: this.containerArray[i],
                             x: this.containerArray[i].x - this.scrollValue,
@@ -196,8 +200,10 @@ export class MainColumnWindow {
                         });
                     };
 
-                    //現在の項目から左の項目がクリックされた場合
+                    //選択中の項目より左の項目がクリックされた場合
                     if ((i - this.nowMainColumnNo) < 0) {
+
+                        //表示するコンテンツを左に配置
                         this.containerArray[i].x = this.containtsX - this.scrollValue;
 
                         //現在のコンテンツを右に移動
@@ -211,7 +217,7 @@ export class MainColumnWindow {
                             }
                         });
 
-                        //表示するコンテンツを左に配置後、移動する
+                        //表示するコンテンツを左に移動する
                         this.scene.tweens.add({
                             targets: this.containerArray[i],
                             x: this.containerArray[i].x + this.scrollValue,
@@ -224,123 +230,8 @@ export class MainColumnWindow {
                         });
                     };
                 }
-                this.nowMainColumnNo = i;
+                this.nowMainColumnNo = i as MenuTab;
             }, this.scene);
-        }
-    }
-
-    //クリック選択中のラベルの色を白、それ以外を灰色に変更
-    private updateMainColumnLabelWindow() {
-        for (let i = 0; i < this.mainColumnLabelText.length; i++) {
-            if (this.nowMainColumnNo === i) {
-                this.mainColumnLabelText[i].setTint(Phaser.Display.Color.GetColor(255, 255, 255));
-            } else {
-                this.mainColumnLabelText[i].setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-            }
-        }
-    }
-
-    private createAllow() {
-        this.allowObj = this.scene.add.graphics();
-
-        this.allowObj.x = this.containtsX;
-        this.allowObj.y = this.containtsY;
-        const pointX = 0;
-        const pointY = 0 + this.menuModel.fontSize / 2;
-        this.allowObj.fillStyle(this.menuModel.lineColor, 1).setAlpha(this.menuModel.alphaValue);
-        this.allowObj.fillTriangle(pointX, pointY, pointX - this.menuModel.fontSize / 2, pointY - this.menuModel.fontSize / 2, pointX - this.menuModel.fontSize / 2, pointY + this.menuModel.fontSize / 2);
-        this.allowObj.setDepth(this.mainWindowDepth + 1);
-        this.allowObj.name = "allow"
-
-        this.allowTween = this.scene.tweens.add({
-            targets: this.allowObj,
-            x: this.containtsX + 3,
-            ease: 'sine.inout',
-            duration: 500,
-            repeat: -1,
-            yoyo: true
-        });
-        this.allowObj.setVisible(false);
-    }
-
-    private _updateAllow() {
-        if (this.containerArray.length === 0) return;
-        if (this.nextMainColumnNo === this.nowMainColumnNo) return;
-        this.allowObj.setVisible(false);
-
-        //選択中のメニューがアイテムの場合
-        if (this.nowMainColumnNo === 1) {
-
-            //テキストをクリック可能にする
-            for (let i = 0; i < this.containerArray[this.nowMainColumnNo].list.length; i++) {
-
-                //コンテナには、0番目は項目名、1番目は個数、2番目は項目名、3番目は個数・・・
-                if (i % 2 === 0 && this.containerArray[this.nowMainColumnNo].list[i].type === "Text") {
-                    this.containerArray[this.nowMainColumnNo].list[i].setInteractive({ useHandCursor: true });
-                    this.containerArray[this.nowMainColumnNo].list[i].on('pointerover', () => {
-                        this.allowObj.setVisible(true);
-
-                        this.allowObj.x = (this.containerArray[this.nowMainColumnNo].list[i] as Phaser.GameObjects.Container).x + this.containtsX - 5;
-                        this.allowObj.y = (this.containerArray[this.nowMainColumnNo].list[i] as Phaser.GameObjects.Container).y + this.containtsY;
-
-                        this.allowTween.destroy();
-                        this.allowTween = this.scene.tweens.add({
-                            targets: this.allowObj,
-                            x: this.allowObj.x + 3,
-                            ease: 'sine.inout',
-                            duration: 500,
-                            repeat: -1,
-                            yoyo: true
-                        });
-                    }, this.scene)
-
-                    //クリック時の処理
-                    this.containerArray[this.nowMainColumnNo].list[i].on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-                        if (pointer.leftButtonDown()) {
-                            pointer.reset();
-                            const debugMessage = new DebugMessage(this.scene);
-                            debugMessage.NotImplemented(undefined);
-                            this.gameScene.events.emit('GAME_INPUT_TRUE');
-                        }
-                    }, this.scene)
-                }
-            }
-
-            //選択中のメニューが装備、スキル、セーブ、オプションの場合
-        } else if (this.nowMainColumnNo === 2 || this.nowMainColumnNo === 3 || this.nowMainColumnNo === 5 || this.nowMainColumnNo === 6) {
-
-            //テキストをクリック可能にする
-            for (let i = 0; i < this.containerArray[this.nowMainColumnNo].list.length; i++) {
-                if (this.containerArray[this.nowMainColumnNo].list[i].type === "Text") {
-                    if (i % 2 !== 0) {
-                        this.containerArray[this.nowMainColumnNo].list[i].setInteractive({ useHandCursor: true });
-                    }
-                    this.containerArray[this.nowMainColumnNo].list[i].on('pointerover', () => {
-                        this.allowObj.setVisible(true);
-
-                        this.allowObj.x = (this.containerArray[this.nowMainColumnNo].list[i] as Phaser.GameObjects.Container).x + this.containtsX - 5;
-                        this.allowObj.y = (this.containerArray[this.nowMainColumnNo].list[i] as Phaser.GameObjects.Container).y + this.containtsY;
-
-                        this.allowTween.destroy();
-                        this.allowTween = this.scene.tweens.add({
-                            targets: this.allowObj,
-                            x: this.allowObj.x + 3,
-                            ease: 'sine.inout',
-                            duration: 500,
-                            repeat: -1,
-                            yoyo: true
-                        });
-                    }, this.scene)
-                    this.containerArray[this.nowMainColumnNo].list[i].on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-                        if (pointer.leftButtonDown()) {
-                            pointer.reset();
-                            const debugMessage = new DebugMessage(this.scene);
-                            debugMessage.NotImplemented(undefined);
-                            this.gameScene.events.emit('GAME_INPUT_TRUE');
-                        }
-                    }, this.scene)
-                }
-            }
         }
     }
 
@@ -356,7 +247,7 @@ export class MainColumnWindow {
                 this.mainColumnLabelText = [];
                 this.mainColumnLabelWindow = [];
                 this.containerArray = [];
-                this.nowMainColumnNo = 0;
+                this.nowMainColumnNo = MenuTab.Condition;
                 onComplete();
             }
         });

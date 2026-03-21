@@ -192,7 +192,12 @@ export class Load extends Scene {
         this.load.audio('SE_attack', 'assets/sound/打撃3.mp3');
         this.load.audio('SE_victory', 'assets/sound/回復魔法4.mp3');
         this.load.audio('SE_message', 'assets/sound/メッセージ表示音3.mp3');
+        this.load.audio('SE_chestOpen', 'assets/sound/受話器を置く.mp3');
         //https://soundeffect-lab.info/sound/battle/
+
+        this.load.video('meina_video', 'assets/video/ComfyUI_00010_.mp4');
+        this.load.video('lamy1_video', 'assets/video/ComfyUI_00018_.mp4');
+        this.load.video('lamy2_video', 'assets/video/vidu-video-3213668993097372.mp4');
 
         //タイル画像のロード
         //データ内のタイルセット画像のURLの一部を書き換える。配置を変更する場合は注意。

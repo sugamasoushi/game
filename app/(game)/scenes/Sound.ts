@@ -17,6 +17,7 @@ export class Sound extends Scene {
     public SE_karuipunch: Phaser.Sound.HTML5AudioSound;
     public SE_message: Phaser.Sound.HTML5AudioSound;
     public SE_attack: Phaser.Sound.HTML5AudioSound;
+    public SE_chestOpen: Phaser.Sound.HTML5AudioSound;
 
     constructor() { super('Sound'); }
     init() {
@@ -48,10 +49,12 @@ export class Sound extends Scene {
         this.SE_karuipunch.volume = 0.7;
         this.SE_message = this.sound.add('SE_message', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_message.volume = 0.7;
+        this.SE_chestOpen = this.sound.add('SE_chestOpen', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_chestOpen.volume = 0.7;
 
         this.game.events.on('BGM_FIELD', (sceneKey: string, seKey: string) => {
             if (this.debugFlg) return;
-            
+
             if (sceneKey !== 'FieldMove') {
                 this.stopAllBgm();
                 this.bgm1.play();

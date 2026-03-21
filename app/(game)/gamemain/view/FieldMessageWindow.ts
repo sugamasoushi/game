@@ -1,19 +1,15 @@
 import { MessageWindow } from "../../util/MessageWindow";
 import { MessageObject } from "../../util/MessageObject";
-import { BattleScene } from "../../lib/types";
 
-export class BattleMessageWindow extends Phaser.GameObjects.Container {
-    //※選択リストは必ずテキストオブジェクトを格納したcolumnを参照する事。
-    //コンテナにはウィンドウオブジェクトも含まれているため、container.listを使用すると不要な番号を取得してしまう。
+export class FieldMessageWindow extends Phaser.GameObjects.Container {
     private messageObject: Phaser.GameObjects.Text;
     private messageWindow: MessageWindow;
 
-    constructor(battleScene: BattleScene) {
-        super(battleScene, 0, 0);
-        this.name = BattleMessageWindow.name;
+    constructor(scene: Phaser.Scene) {
+        super(scene, 0, 0);
+        this.name = FieldMessageWindow.name;
         this.scene.add.existing(this);
         this.addToUpdateList();
-
     }
 
     init() {
@@ -30,12 +26,14 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
         const messageObjectInstace = new MessageObject();
         messageObjectInstace.init(this.scene);
         this.messageObject = messageObjectInstace.createTextObject(this.scene, 20, 20, ['初期値']);
+        this.messageObject.setScrollFactor(0)
 
         //ウィンドウ作成
         this.messageWindow = new MessageWindow(this.scene);
         this.messageWindow.init();
         // createMessageWindow内で(rectR, rectR)の位置に描画されるため、-rectRして位置を合わせる
         this.messageWindow.createMessageWindow(-rectR, -rectR, width, height, rectR, undefined);
+        this.messageWindow.setScrollFactor(0)
 
         //コンテナ作成
         this.add(this.messageWindow);
@@ -43,24 +41,11 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
 
         //非表示
         this.setVisible(false);
-        this.disableSelect();
 
         // 左右の余白を等しく設定
         this.x = marginX;
         this.y = Number(this.scene.game.config.height) - height - 40;
         this.setDepth(9999999);
-    }
-
-    //テキストクリック可
-    enableSelect() {
-        // this.allow.lightUp();
-        // this.clickZone.setInteractive({ useHandCursor: true });//テキストをクリック可能にする
-    }
-
-    //テキストクリック不可
-    disableSelect() {
-        // this.allow.lightDown();
-        // this.clickZone.disableInteractive();
     }
 
     messageOutput(text: string, value: number | undefined) {

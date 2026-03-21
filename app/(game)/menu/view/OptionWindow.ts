@@ -1,25 +1,29 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
+import { MenuTab } from "../MenuTypes";
+import { SelectAllow } from "../../util/SelectAllow";
+import DebugMessage from '../../util/DebugMessage';
 
-export class OptionWindow {
+export class OptionWindow extends Phaser.GameObjects.Container {
 
-    private scene: Phaser.Scene;
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;
 
-    public container: Phaser.GameObjects.Container;
+    public selectAllow: SelectAllow;
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
-        this.scene = scene;
+        super(scene);
         this.menuModel = menuModel;
+        this.scene.add.existing(this);
     }
 
     public create(mainColumn: MainColumnWindow) {
         const optionX = 100;
         const optionY = 0;
 
-        this.container = this.scene.add.container(mainColumn.containtsX + mainColumn.scrollValue * 6, mainColumn.containtsY);
+        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Option;
+        this.y = mainColumn.containtsY;
 
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
@@ -32,9 +36,27 @@ export class OptionWindow {
             const option = messageObject.createTextObject(this.scene, optionX + 10, optionY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize), [
                 array[i]
             ], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
-            this.container.add([Label, option]).setDepth(this.mainWindowDepth + 50);
+            this.add([Label, option]).setDepth(this.mainWindowDepth + 50);
+
+            option.setInteractive({ useHandCursor: true });
+            option.on('pointerover', () => {
+                this.selectAllow.updatePosition(option);
+            });
+            option.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+                if (pointer.leftButtonDown()) {
+                    pointer.reset();
+                    const debugMessage = new DebugMessage(this.scene);
+                    debugMessage.NotImplemented(undefined);
+                }
+            });
         }
 
-        this.container.setMask(mainColumn.cropRectMask.createGeometryMask());
+        this.selectAllow = new SelectAllow(this.scene);
+        this.selectAllow.init(0, 0);
+        this.selectAllow.createAllow();
+        this.selectAllow.setVisible(false);
+        this.add(this.selectAllow);
+
+        this.setMask(mainColumn.cropRectMask.createGeometryMask());
     }
 }
