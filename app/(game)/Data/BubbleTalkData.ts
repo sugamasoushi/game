@@ -4,6 +4,7 @@ type TalkGroup = Record<string, TalkLine[]>;
 type TalkData = Record<string, TalkGroup>;
 
 export class BubbleTalkData {
+
     private bubbletalkKey: string;
     constructor(bubbletalkKey: string) {
         this.bubbletalkKey = bubbletalkKey;
@@ -76,6 +77,11 @@ export class BubbleTalkData {
         }
     }
 
+    /**
+     * Jsonファイルを使用する前のコード、現在は未使用。
+     * モジュール化すると簡単な修正のたびにデプロイが必要になるため、Jsonファイルを使用するように変更した。
+     * @returns 
+     */
     public getBubbleTalkData(): TalkLine[] | null {
         const bubbletalkKey = this.bubbletalkKey;
         const bubbleKey: string = bubbletalkKey.split('.')[0];
@@ -87,6 +93,28 @@ export class BubbleTalkData {
         }
 
         return this.bubbleTalkData[bubbleKey]?.[talkKey] ?? null;
+    }
+
+    /**
+     * JSONファイルから会話データを取得する
+     * @param scene 
+     * @returns 
+     */
+    public getBubbleTalkDataJson(scene: Phaser.Scene): TalkLine[] | null {
+
+        //Jsonファイルから会話データを取得する
+        const bubbleTalkData = scene.cache.json.get('bubbleTalkData').bubbleTalkData;
+
+        const bubbletalkKey = this.bubbletalkKey;
+        const bubbleKey: string = bubbletalkKey.split('.')[0];
+        const talkKey: string = bubbletalkKey.split('.')[1];
+
+        //検索の結果が無しの場合
+        if (!bubbleTalkData[bubbleKey]?.[talkKey]) {
+            return bubbleTalkData['bubbleTalk0000']?.['talk000'] ?? null;
+        }
+
+        return bubbleTalkData[bubbleKey]?.[talkKey] ?? null;
     }
 
 }

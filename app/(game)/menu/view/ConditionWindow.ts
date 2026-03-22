@@ -3,7 +3,7 @@ import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../MenuTypes";
 
-export class CharacterStatusWindow extends Phaser.GameObjects.Container {
+export class ConditionWindow extends Phaser.GameObjects.Container {
 
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;

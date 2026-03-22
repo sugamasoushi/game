@@ -38,6 +38,19 @@ function createWindow() {
     }
   });
 
+  ipcMain.handle('clear-save-data', async (event) => {
+    const filePath = path.join(app.getPath('userData'), 'savedata.json');
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to clear save data:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
   ipcMain.handle('load-data', async (event) => {
     const filePath = path.join(app.getPath('userData'), 'savedata.json');
     try {

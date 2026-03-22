@@ -64,8 +64,15 @@ export class EquipWindow extends Phaser.GameObjects.Container {
             charEquip.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
                 if (pointer.leftButtonDown()) {
                     pointer.reset();
+
+                    let text = '';
+                    if (array[i] === '短剣') {
+                        text = 'オンボロの短剣らしいよ';
+                    } else if (array[i] === 'マント') {
+                        text = 'ぷぷ～、ダサいマント笑';
+                    }
                     const debugMessage = new DebugMessage(this.scene);
-                    debugMessage.NotImplemented(undefined);
+                    debugMessage.NotImplemented(text, 2000);
                 }
             });
         }

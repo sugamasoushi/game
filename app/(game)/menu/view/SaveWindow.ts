@@ -3,17 +3,19 @@ import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../MenuTypes";
 import { SelectAllow } from "../../util/SelectAllow";
+import { Sound } from "../../scenes/Sound";
 
 export class SaveWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;
-
     public selectAllow: SelectAllow;
+    private soundScene: Sound;
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
         this.menuModel = menuModel;
         this.scene.add.existing(this);
+        this.soundScene = this.scene.scene.get('Sound') as Sound;
     }
 
     public create(mainColumn: MainColumnWindow) {
@@ -74,6 +76,9 @@ export class SaveWindow extends Phaser.GameObjects.Container {
             const time = 1000;
             switch (key) {
                 case 'メイナ':
+                    this.soundScene.sound.pauseAll();
+                    this.scene.events.emit('GAME_INPUT_FALSE');
+                    this.selectAllow.setVisible(false);
                     const video = this.scene.add.video(gameWidth / 2, gameHeight / 2, 'meina_video');
                     video.setDepth(this.mainWindowDepth + 50);
                     video.setScale(0.6);
@@ -81,11 +86,17 @@ export class SaveWindow extends Phaser.GameObjects.Container {
                     video.once('complete', () => {
                         this.scene.time.delayedCall(time, () => {
                             video.destroy();
+                            this.soundScene.sound.resumeAll();
+                            this.scene.events.emit('GAME_INPUT_TRUE');
+                            this.selectAllow.setVisible(true);
                             resolve();
                         }, [], this.scene);
                     });
                     break;
                 case 'ラミィ１':
+                    this.soundScene.sound.pauseAll();
+                    this.scene.events.emit('GAME_INPUT_FALSE');
+                    this.selectAllow.setVisible(false);
                     const video1 = this.scene.add.video(gameWidth / 2, gameHeight / 2, 'lamy1_video');
                     video1.setDepth(this.mainWindowDepth + 50);
                     video1.setScale(0.8);
@@ -93,11 +104,17 @@ export class SaveWindow extends Phaser.GameObjects.Container {
                     video1.once('complete', () => {
                         this.scene.time.delayedCall(time, () => {
                             video1.destroy();
+                            this.soundScene.sound.resumeAll();
+                            this.scene.events.emit('GAME_INPUT_TRUE');
+                            this.selectAllow.setVisible(true);
                             resolve();
                         }, [], this.scene);
                     });
                     break;
                 case 'ラミィ２':
+                    this.soundScene.sound.pauseAll();
+                    this.scene.events.emit('GAME_INPUT_FALSE');
+                    this.selectAllow.setVisible(false);
                     const video2 = this.scene.add.video(gameWidth / 2, gameHeight / 2, 'lamy2_video');
                     video2.setDepth(this.mainWindowDepth + 50);
                     video2.setScale(0.5);
@@ -105,6 +122,9 @@ export class SaveWindow extends Phaser.GameObjects.Container {
                     video2.once('complete', () => {
                         this.scene.time.delayedCall(time, () => {
                             video2.destroy();
+                            this.soundScene.sound.resumeAll();
+                            this.scene.events.emit('GAME_INPUT_TRUE');
+                            this.selectAllow.setVisible(true);
                             resolve();
                         }, [], this.scene);
                     });

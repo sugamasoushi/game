@@ -35,6 +35,11 @@ export class MenuPresenter {
         this.menuView.create();
 
         // Viewからのイベント受信設定
+        this.scene.events.on('GAME_INPUT_TRUE', () => { this.scene.input.enabled = true; });
+        this.scene.events.on('GAME_INPUT_FALSE', () => {
+            this.scene.input.enabled = false;
+            this.scene.input.setDefaultCursor('default');
+        });
         this.scene.events.on('MenuCloseClick', this.onCloseMenu, this);
         this.scene.events.on('USE_ITEM', this.onUseItem, this);
     }
@@ -51,6 +56,8 @@ export class MenuPresenter {
             this.scene.scene.stop();
             this.gameScene.resumeScene();
             // イベントリスナーの解除
+            this.scene.events.off('GAME_INPUT_TRUE');
+            this.scene.events.off('GAME_INPUT_FALSE');
             this.scene.events.off('MenuCloseClick');
             this.scene.events.off('USE_ITEM');
             this.scene.events.off('UPDATE_CONDITION');

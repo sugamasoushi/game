@@ -57,7 +57,7 @@ export class SaveButton {
             //下層のオブジェクトのイベントを止める
             event.stopPropagation();
 
-            this.setSaveData();
+            this.phaserCacheDataUpdate();
 
             await this.saveDataManager.setSaveData(this.gameScene);
 
@@ -73,17 +73,47 @@ export class SaveButton {
 
     }
 
-    private setSaveData() {
+    private phaserCacheDataUpdate() {
         const manager = GameStateManager.getInstance();
+        const savedata = this.gameScene.cache.json.get('savedata');
+        const player = this.mapObject.getPlayer();
 
-        this.gameScene.cache.json.get('savedata').infomation = "中断セーブデータ";
-        this.gameScene.cache.json.get('savedata').playerData.PlayerMapKey = manager.currentFieldData.mapKey;
-        this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.x = this.mapObject.getPlayer().x;
-        this.gameScene.cache.json.get('savedata').playerData.PlayerPosition.y = this.mapObject.getPlayer().y;
-        this.gameScene.cache.json.get('savedata').playerData.status.HP = this.mapObject.getPlayer().getData('HP');
-        this.gameScene.cache.json.get('savedata').playerData.status.MP = this.mapObject.getPlayer().getData('MP');
+        console.log(savedata);
+        console.log(player.data);
 
-        this.gameScene.cache.json.get('savedata').playerData.Item['やくそう'] = this.mapObject.getPlayer().getData('やくそう');
+        savedata.infomation = "中断セーブデータ";
+        savedata.playerData.PlayerMapKey = manager.currentFieldData.mapKey;
+        savedata.playerData.PlayerPosition.x = player.x;
+        savedata.playerData.PlayerPosition.y = player.y;
+        //savedata.playerData.initStandKey = player.getAnimationKey().standframe;
+
+        // ステータスを同期
+        const status = savedata.playerData.status;
+        for (const key in status) {
+            if (player.data.has(key)) {
+                status[key] = player.data.get(key);
+            }
+        }
+
+        // アイテムを同期（削除状態を反映）
+        const items = savedata.playerData.Item;
+        for (const key in items) {
+            if (player.data.has(key)) {
+                items[key] = player.data.get(key);
+            } else {
+                // player.data に存在しない（個数0で削除された）場合はセーブデータからも削除
+                delete items[key];
+            }
+        }
+
+        // cache.savedataのItemに存在しない項目を追加
+        for (const key in player.data.list) {
+            if (!items.hasOwnProperty(key)) {
+                if (this.saveDataManager.checkItemListData(key)) {
+                    items[key] = player.data.get(key);
+                }
+            }
+        }
     }
 
 }

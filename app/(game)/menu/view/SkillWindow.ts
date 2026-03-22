@@ -25,7 +25,8 @@ export class SkillWindow extends Phaser.GameObjects.Container {
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
-        const array = ['切り付け', '悪口'];
+        const playerData = this.menuModel.getPlayerDataList();
+        const array = [playerData.normalSkill, playerData.MagicSkill];
 
         // スキルリストは2列で表示する
         for (let i = 0; i < array.length; i++) {
@@ -63,8 +64,16 @@ export class SkillWindow extends Phaser.GameObjects.Container {
             skill.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
                 if (pointer.leftButtonDown()) {
                     pointer.reset();
+
+                    let text = '';
+                    if (array[i] === '切り付け') {
+                        text = '恐っ！！';
+                    } else if (array[i] === '火の玉') {
+                        text = 'メラメラ～';
+                    }
+
                     const debugMessage = new DebugMessage(this.scene);
-                    debugMessage.NotImplemented(undefined);
+                    debugMessage.NotImplemented(text, 2000);
                 }
             });
         }

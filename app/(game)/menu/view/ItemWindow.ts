@@ -67,7 +67,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
 
                     //アイテムが0以上かチェック
                     const count = this.menuModel.getItemData().values[itemName.text];
-                    if (count <= 0) {
+                    if (count <= 0 || count == undefined) {
                         const debugMessage = new DebugMessage(this.scene);
                         debugMessage.NotImplemented('もう無いよ！');
                         return;
@@ -91,7 +91,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
 
     useItem(itemName: string): number {
         const count = this.menuModel.getItemData().values[itemName] -= 1;
-        console.log(count);
+        //console.log(count);
 
         this.scene.events.emit('USE_ITEM', itemName, count);
 

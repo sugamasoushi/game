@@ -1,4 +1,3 @@
-import { ReadyEvents } from '../../lib/typesGamescene';
 import { GameScene } from "../../lib/types";
 
 export class MenuButton {
@@ -7,11 +6,7 @@ export class MenuButton {
     constructor(scene: GameScene) { this.gameScene = scene; }
 
     public async execute() {
-
-
         this.createMenuButton();
-        //this.gameScene.events.emit(this.ReadyEventsKey.MENUBUTTON);
-
     }
 
     private createMenuButton() {
@@ -27,9 +22,18 @@ export class MenuButton {
         MenuText.setInteractive({
             useHandCursor: true  // マウスオーバーでカーソルが指マークになる
         });
-        MenuText.on('pointerdown', () => {
-            //this.scene.MenuText.disableInteractive();
+
+        MenuText.on(Phaser.Input.Events.POINTER_UP, async (
+            pointer: Phaser.Input.Pointer,
+            localX: number,
+            localY: number,
+            event: Phaser.Types.Input.EventData) => {
+
+            //下層のオブジェクトのイベントを止める
+            event.stopPropagation();
+
             this.openMenu();
+            this.test();
         });
     }
 
@@ -43,5 +47,11 @@ export class MenuButton {
         this.gameScene.scene.pause();
         //このシーンを消さずにメニューシーンを表示する
         this.gameScene.scene.launch('Menu');
+    }
+
+    private test() {
+        //テスト処理
+
+
     }
 }

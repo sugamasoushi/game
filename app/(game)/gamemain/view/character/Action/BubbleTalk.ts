@@ -75,7 +75,8 @@ export class BubbleTalk {
             (async () => {
 
                 //会話データを検索
-                const talkdata = this.bubbleTalkData.getBubbleTalkData();
+                //const talkdata = this.bubbleTalkData.getBubbleTalkData();
+                const talkdata = this.bubbleTalkData.getBubbleTalkDataJson(this.gameScene);
 
                 //配列ごとに台詞を描画
                 for (const obj of talkdata!) {
@@ -180,7 +181,7 @@ export class BubbleTalk {
             this.bubblePosition = npcPosition;
             textY = this.npc.y - 150;
         }
-        
+
         //テキストオブジェクトの位置を更新
         this.textObject.x = textX;
         this.textObject.y = textY;

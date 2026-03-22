@@ -85,6 +85,7 @@ export class FieldPresenter {
             this.fieldMessageWindow.messageOutput(message, time);
         });
 
+        //フィールドの入力はオブジェクト毎に制御したいため、scene.input.enabledは使用せず、オブジェクト毎のフラグ管理としている
         this.gameScene.events.on('GAME_INPUT_TRUE', () => {
             this.inputManager.setState(true);
         });

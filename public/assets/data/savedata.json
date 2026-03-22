@@ -19,12 +19,12 @@
         },
         "Equip": {
             "Weapon": "短剣",
-            "Armor": "スカーフ"
+            "Armor": "マント"
         },
         "Skill": {
             "normalSkill": "切り付け",
             "specialSkill": "防御,回避,投石",
-            "MagicSkill": "火の玉,回復"
+            "MagicSkill": "火の玉"
         },
         "Item": {
             "おにぎり": 1,

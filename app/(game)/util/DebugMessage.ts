@@ -9,7 +9,8 @@ export default class DebugMessage {
         this.scene = scene;
     }
 
-    NotImplemented(text: string | undefined) {
+    NotImplemented(text: string | undefined, time?: number) {
+        const delayTime = time ? time : 4000;
         const setText = text ? text : this.defaultText;
         const messageObjectInstance = new MessageObject();
         messageObjectInstance.init(this.scene);
@@ -25,7 +26,7 @@ export default class DebugMessage {
         noGimicImage.setDepth(Number(this.scene.game.config.height));
         noGimicWindow.setDepth(Number(this.scene.game.config.height) + 1);
 
-        this.scene.time.delayedCall(4000, () => {
+        this.scene.time.delayedCall(delayTime, () => {
             noGimicText.destroy();
             noGimicImage.destroy();
             noGimicWindow.destroy();

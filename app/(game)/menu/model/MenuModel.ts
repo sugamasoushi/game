@@ -1,4 +1,5 @@
 import { GameScene } from "../../lib/types";
+import { SaveDataManager } from "../../core/SaveDataManager";
 
 export class MenuModel {
 
@@ -15,6 +16,8 @@ export class MenuModel {
     public backColor: number;
     public alphaValue: number;
     public lineColor: number;
+
+    private saveDataManager: SaveDataManager;
 
     constructor(scene: Phaser.Scene, gameScene: GameScene) {
         this.scene = scene;
@@ -35,6 +38,8 @@ export class MenuModel {
         this.backColor = settingBubbleData.backColor;
         this.alphaValue = settingBubbleData.alphaValue;
         this.lineColor = settingBubbleData.lineColor;
+
+        this.saveDataManager = new SaveDataManager();
     }
 
     public getPlayerData() {
@@ -58,19 +63,9 @@ export class MenuModel {
         const itemList: string[] = [];
         const playerData = this.getPlayerDataList();
 
-        /**
-         * setData()で設定しているキーが増えるたびに条件を追加していく
-         * Phaserの処理をそのまま使用する前提のためこのような処理になっている
-         * 将来的には別途管理処理を作成するかもしれない
-         */
+        // Lvやスキル等、アイテム以外の項目を除外
         Object.keys(playerData).forEach(array => {
-            if (array !== 'Lv' && array !== 'HP' && array !== 'MP' && array !== 'MaxHP' && array !== 'MaxMP' &&
-                array !== 'Attack' && array !== 'Guard' && array !== 'Speed' &&
-                array !== 'Weapon' && array !== 'Armor' &&
-                array !== 'normalSkill' && array !== 'specialSkill' && array !== 'MagicSkill' &&
-                array !== 'name' && array !== 'ImageKey' && array !== 'NpcType' && array !== 'BattleTarget' &&
-                array !== 'BattleTargetIcon'
-            ) {
+            if (this.saveDataManager.checkItemListData(array)) {
                 itemList.push(array);
             }
         });
@@ -80,8 +75,9 @@ export class MenuModel {
     public useItem(itemName: string, count: number) {
 
         // 更新後のアイテム数が0以下なら登録情報を削除
-        if (count <= 0) {
+        if (count <= 0 || count == undefined) {
             this.gameScene.getPlayer().data.remove(itemName);
+            console.log(itemName, this.gameScene.getPlayer().data);
         }
 
         // アイテムごとの回復処理

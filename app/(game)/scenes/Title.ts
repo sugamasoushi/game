@@ -25,7 +25,7 @@ export class Title extends Scene {
     }
 
     preload() {
-        this.load.json('savedata', 'assets/savedata/savedata.json');
+        this.load.json('savedata', 'assets/data/savedata.json');
 
         //ここでは文字列ベースのデータのみロードし、次のLoadSceneで画像などの重いデータをロードする
         this.load.tilemapTiledJSON({ key: '0001', url: 'assets/tiled/0001_testtile.json' });

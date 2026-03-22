@@ -1,7 +1,7 @@
 import { GameScene } from "../../lib/types";
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
-import { CharacterStatusWindow } from "./CharacterStatusWindow";
+import { ConditionWindow } from "./ConditionWindow";
 import { ItemWindow } from "./ItemWindow";
 import { EquipWindow } from "./EquipWindow";
 import { SkillWindow } from "./SkillWindow";
@@ -16,7 +16,7 @@ export class MenuView {
     private menuModel: MenuModel;
 
     public mainColumnWindow: MainColumnWindow;
-    public characterStatusWindow: CharacterStatusWindow;
+    public conditionWindow: ConditionWindow;
     public itemWindow: ItemWindow;
     public equipWindow: EquipWindow;
     public skillWindow: SkillWindow;
@@ -30,7 +30,7 @@ export class MenuView {
         this.menuModel = menuModel;
 
         this.mainColumnWindow = new MainColumnWindow(this.scene, this.menuModel);
-        this.characterStatusWindow = new CharacterStatusWindow(this.scene, this.menuModel);
+        this.conditionWindow = new ConditionWindow(this.scene, this.menuModel);
         this.itemWindow = new ItemWindow(this.scene, this.menuModel);
         this.equipWindow = new EquipWindow(this.scene, this.menuModel);
         this.skillWindow = new SkillWindow(this.scene, this.menuModel);
@@ -44,7 +44,7 @@ export class MenuView {
         this.mainColumnWindow.create();
 
         // 各タブのコンテナを作成
-        this.characterStatusWindow.create(this.mainColumnWindow);
+        this.conditionWindow.create(this.mainColumnWindow);
         this.itemWindow.create(this.mainColumnWindow);
         this.equipWindow.create(this.mainColumnWindow);
         this.skillWindow.create(this.mainColumnWindow);
@@ -54,7 +54,7 @@ export class MenuView {
 
         // 各コンテナをMainColumnWindowへ登録し、Tweenアニメーションで動かせるようにする
         this.mainColumnWindow.setContainers([
-            this.characterStatusWindow,
+            this.conditionWindow,
             this.itemWindow,
             this.equipWindow,
             this.skillWindow,

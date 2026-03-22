@@ -35,8 +35,8 @@ export class Load extends Scene {
             this.progress.destroy();
         });
 
-        this.load.text('testtext', 'assets/talktext/testtext.txt');
-        this.load.text('Character_text', 'assets/talktext/Character.txt');
+        this.load.json('bubbleTalkData', 'assets/data/bubbleTalkData.json');
+        this.load.text('Character_text', 'assets/data/Character.txt');
         this.load.image('enemy00', 'assets/img/CharaStand/enemy00.png');
         this.load.image('enemy01', 'assets/img/CharaStand/enemy01.png');
         this.load.image('enemy02', 'assets/img/CharaStand/enemy02.png');
