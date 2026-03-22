@@ -50,6 +50,7 @@ export class SaveDataManager {
     }
 
     /**
+     * アイテムリストのチェック
      * セーブデータはsavedata.jsonの形式となるが、setData()でGameObjectに設定すると階層構造が変わってしまう。
      * そのため、全項目参照するような処理する際には必ずチェックする事。
      * 

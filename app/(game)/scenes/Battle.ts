@@ -92,6 +92,8 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
     async create(data: { sceneKey: string }) {
 
+        console.log('Battle Scene Start')
+
         //Phaserのイベントエミッター
         this.events.on('BattleEnd', () => {
 

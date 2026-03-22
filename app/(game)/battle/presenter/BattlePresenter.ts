@@ -88,17 +88,35 @@ export class BattlePresenter {
         this.enemySelectWindow.setDepth(80);
         this.battleMessageWindow.setDepth(500);
 
-        /* ------------------履歴管理------------------ */
-        this.stateMachine = new StateMachine(views);
-
-
-        /* ------------------状態定義------------------ */
-
+        //冒頭メッセージ
         await this.battleMessageWindow.messageOutput('敵が現れた！', 1000);
 
+        //ステートマシンの設定
+        await this.setStateMachine(views);
+
+        //コマンド選択時のイベント設定
+        this.setCommandEvent(views);
+
+        // 初期遷移
+        this.stateMachine.push('BATTLE_SELECT');
+
+        //コマンド選択モデルのイベント設定
+        this.setCommandSelectModel();
+
+        //ターンモデルのイベント設定
+        this.setTurnModel();
+    }
+
+    //ステートマシンの設定
+    private async setStateMachine(views: ViewsContainer) {
+
+        //履歴を管理し、戻る操作の際に履歴通りのウィンドウを表示するための機能
+        this.stateMachine = new StateMachine(views);
+
+        //設定：BattleSelectWindow
         this.stateMachine.addState('BATTLE_SELECT', {
             enter: (v) => {
-                v.battleSelect.show();//ここでスプライトを渡してスキルとか選択させるとか
+                v.battleSelect.show();
                 v.playerPartyWindow.show();
                 v.attackSelect.hide();
             },
@@ -111,6 +129,7 @@ export class BattlePresenter {
         //     exit: (v) => v.main.hide()
         // });
 
+        //設定：AttackSelectWindow
         this.stateMachine.addState('ATTACK_SELECT', {
             enter: (v, data) => {
                 // console.log("キャラクター:", data);
@@ -119,6 +138,7 @@ export class BattlePresenter {
             exit: (v) => v.attackSelect.hide()
         });
 
+        //設定：EnemySelectWindow
         this.stateMachine.addState('ENEMY_SELECT', {
             enter: (v) => {
                 v.enemySelectWindow.show(undefined);
@@ -126,6 +146,7 @@ export class BattlePresenter {
             exit: (v) => v.enemySelectWindow.hide()
         });
 
+        //設定：ItemSelectWindow
         // this.stateMachine.addState('ITEM_SELECT', {
         //     enter: (v, data) => {
         //         console.log("アイテムリスト受信:", data);
@@ -133,9 +154,10 @@ export class BattlePresenter {
         //     },
         //     exit: (v) => v.item.hide()
         // });
+    }
 
-
-        /* ------------------イベントの購読------------------ */
+    //ビューのイベント設定
+    private setCommandEvent(views: ViewsContainer) {
 
         //【戦闘選択】【戦う】
         views.battleSelect.on('Battle_Select_Submit', () => {//コールバック
@@ -146,7 +168,8 @@ export class BattlePresenter {
             this.attackSelectWindow.setNowCharacterIcon(characterIcon);
             this.playerPartyWindow.lightUpDown(character);
 
-            this.stateMachine.push('ATTACK_SELECT', this.commandSelectModel.getCurrentCharacter());//攻撃方法の選択に移動
+            //攻撃方法選択ウィンドウに移動
+            this.stateMachine.push('ATTACK_SELECT', this.commandSelectModel.getCurrentCharacter());
         });
 
         //【攻撃方法選択】【攻撃】
@@ -178,7 +201,6 @@ export class BattlePresenter {
             this.stateMachine.pop();
         });
 
-
         // 【アイテム】
         // views.battleSelect.on('Battle_Item_Submit', () => {
         //     this.stateMachine.push('ITEM', ["ポーション", "エリクサー"]);
@@ -189,14 +211,22 @@ export class BattlePresenter {
             this.stateMachine.pop(); // 履歴を使って戻る
         });
 
-        // 初期遷移
-        this.stateMachine.push('BATTLE_SELECT');
+        // シーン終了時にイベントを破棄
+        this.battleScene.events.once('shutdown', () => {
+            views.battleSelect.off('Battle_Select_Submit');
+            views.attackSelect.off('Attack_Select_Submit');
+            views.enemySelectWindow.off('Enemy_Select_Submit');
+            views.attackSelect.off('Select_back_Submit');
+            views.enemySelectWindow.off('Select_back_Submit');
 
+        });
+    }
 
+    //敵キャラクター選択時のプレイヤーパーティの順序を管理
+    private setCommandSelectModel() {
 
-        //---------コマンド選択-----------
+        //次キャラクターのコマンド選択
         this.commandSelectModel.on('CommandSelect', () => {
-            console.log(`次キャラクターのコマンド選択`);
 
             //次のコマンド選択キャラクターを取得しアイコンを点滅
             const character = this.commandSelectModel.getCurrentCharacter().name;
@@ -207,42 +237,50 @@ export class BattlePresenter {
             this.stateMachine.push('ATTACK_SELECT');
         });
 
+        //戦闘開始
         this.commandSelectModel.on('CommandSelectFinish', () => {
-            console.log('戦闘開始')
 
             //敵の攻撃対象を設定
             this.battleModel.setEnemyAttackTarget(this.playerPartyWindow.getCharacterIcon('player'));
             this.turnModel.setupTurnOrder(this.battleModel.getBattlerList());
 
-            this.battle2(this.turnModel.getCurrentCharacter());
-
-            // this.stateMachine.push('BATTLE_SELECT', undefined);
+            //戦闘処理
+            this.battle(this.turnModel.getCurrentCharacter());
         });
 
-        //---------ターン-----------
-        this.turnModel.on('TurnChange', (currentActive: Phaser.GameObjects.GameObject) => {
+        //イベントの破棄
+        this.commandSelectModel.on('shutdown', () => {
+            this.commandSelectModel.off('CommandSelect');
+            this.commandSelectModel.off('CommandSelectFinish');
+        });
 
-            this.battle2(currentActive);
+    }
+
+    //戦闘開始後の敵味方のターン順序を管理
+    private setTurnModel() {
+
+        //次キャラクターのターンへ変更
+        this.turnModel.on('TurnChange', (currentActive: Phaser.GameObjects.GameObject) => {
+            this.battle(currentActive);
         })
 
+        //全てのキャラクターのターンが終了
         this.turnModel.on('TurnFinish', () => {
 
             //最初のコマンドに戻る
             this.stateMachine.push('BATTLE_SELECT');
         })
 
-        //シーン終了時にイベントをoff
-        this.battleScene.events.once('shutdown', () => {
-            views.battleSelect.off('Battle_Select_Submit');
-            views.attackSelect.off('Attack_Select_Submit');
-            views.attackSelect.off('Select_back_Submit');
-            views.enemySelectWindow.off('Enemy_Select_Submit');
-            views.enemySelectWindow.off('Select_back_Submit');
+        //イベントの破棄
+        this.turnModel.on('shutdown', () => {
             this.turnModel.off('TurnChange');
-        })
+            this.turnModel.off('TurnFinish');
+        });
+
     }
 
-    async battle2(battler: Phaser.GameObjects.GameObject) {
+    //現在ターンのキャラクターの攻撃処理
+    async battle(battler: Phaser.GameObjects.GameObject) {
         gameStateManager.damage(100);
         let winner = '';
 
@@ -270,7 +308,7 @@ export class BattlePresenter {
             winner = 'player';
         }
 
-
+        //勝利
         if (winner === 'player') {
             gameStateManager.addMoney(10);
             this.soundScene.SE_victory.play({ loop: false });
@@ -285,8 +323,15 @@ export class BattlePresenter {
             this.endEvents.emit('BattleEnd');
 
         } else if (winner === 'enemy') {
+
+            //フィールドの敵を消去
+            if (this.battleModel.getUsePatern() === 'normal') {
+                this.battleModel.getFieldHitEnemy().deleteCharacter();
+            }
+
             await this.battleMessageWindow.messageOutput('ゲームオーバー', 1000);
             this.battleScene.scene.launch('GameOver');
+            this.endEvents.emit('BattleEnd');
         }
 
         //ターンを更新
@@ -314,5 +359,7 @@ export class BattlePresenter {
         })
         return continueFlag;
     }
+
+
 
 }

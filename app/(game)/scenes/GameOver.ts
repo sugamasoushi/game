@@ -1,5 +1,7 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
+import { GameStateManager } from '../GameAllState/GameStateManager';
+import { State } from '../lib/types';
 
 export class GameOver extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -50,6 +52,11 @@ export class GameOver extends Scene {
             onComplete: () => {
                 this.cameras.main.fadeOut(100);
                 this.scene.moveAbove('GameOver', 'Title');
+
+                //状態をスタートに更新
+                const manager = GameStateManager.getInstance();
+                manager.updateState({ state: State.NOSTATE }, '')
+
                 this.scene.start('Boot');
 
                 this.game.events.emit('BGM_ALL_STOP');

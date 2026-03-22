@@ -10,7 +10,7 @@ export class TurnModel extends Phaser.Events.EventEmitter {
         // console.log(this.actionQueue)
     }
 
-    // 次のターンへ進める
+    // 次キャラクターのターンへ進める
     nextTurn() {
         this.currentCharacterIndex++;
 

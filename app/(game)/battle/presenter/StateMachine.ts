@@ -25,6 +25,7 @@ export class StateMachine {
 
     constructor(private views: ViewsContainer) { }
 
+    //キーとウィンドウをセットで管理
     addState(key: string, definition: StateDefinition) {
         this.states.set(key, definition);
     }

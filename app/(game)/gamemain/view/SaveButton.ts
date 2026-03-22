@@ -2,11 +2,9 @@ import { GameScene } from "../../lib/types";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { MapObject } from "./MapObject";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
-import { FieldAttack } from "./character/Action/FieldAttack";
 
 export class SaveButton {
     private saveDataManager: SaveDataManager;
-    private fieldAttack: FieldAttack;
 
     constructor(
         private gameScene: GameScene,
@@ -78,8 +76,8 @@ export class SaveButton {
         const savedata = this.gameScene.cache.json.get('savedata');
         const player = this.mapObject.getPlayer();
 
-        console.log(savedata);
-        console.log(player.data);
+        // console.log(savedata);
+        // console.log(player.data);
 
         savedata.infomation = "中断セーブデータ";
         savedata.playerData.PlayerMapKey = manager.currentFieldData.mapKey;

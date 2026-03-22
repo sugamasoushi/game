@@ -122,7 +122,6 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
         this.setVisible(false);
     }
 
-    //オーバーライドする？
     private updateSelectNo() {
 
         const minNo = 0;
