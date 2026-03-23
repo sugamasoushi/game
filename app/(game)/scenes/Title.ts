@@ -1,5 +1,5 @@
 import { GameObjects, Scene } from 'phaser';
-import { State } from '../lib/types';
+import { State } from '../lib/StateTypes';
 import { EventBus } from '../EventBus';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 import { DataDefinition } from '../Data/DataDefinition';

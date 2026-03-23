@@ -1,7 +1,7 @@
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
-import { MenuTab } from "../MenuTypes";
+import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
 
@@ -66,7 +66,7 @@ export class SkillWindow extends Phaser.GameObjects.Container {
                     pointer.reset();
 
                     let text = '';
-                    if (array[i] === '切り付け') {
+                    if (array[i] === '殴る') {
                         text = '恐っ！！';
                     } else if (array[i] === '火の玉') {
                         text = 'メラメラ～';

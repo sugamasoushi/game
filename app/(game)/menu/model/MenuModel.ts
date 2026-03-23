@@ -1,4 +1,4 @@
-import { GameScene } from "../../lib/types";
+import { GameScene } from '../../lib/SceneTypes';
 import { SaveDataManager } from "../../core/SaveDataManager";
 
 export class MenuModel {

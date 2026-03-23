@@ -1,6 +1,7 @@
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
-import { GameScene, State } from "@/app/(game)/lib/types";
-import { CharacterState } from "@/app/(game)/lib/types";
+import { GameScene } from "@/app/(game)/lib/SceneTypes";
+import { State } from "@/app/(game)/lib/StateTypes";
+import { CharacterState } from "@/app/(game)/lib/FieldTypes";
 import { GameStateManager } from '../../../GameAllState/GameStateManager';
 
 export class Player extends BaseSprite {

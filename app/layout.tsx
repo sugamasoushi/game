@@ -25,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <body>
+        <div style={{ fontFamily: 'MyRPGFont', opacity: 0, height: 0, overflow: 'hidden', position: 'absolute', pointerEvents: 'none' }}>.</div>
         {children}
       </body>
     </html>

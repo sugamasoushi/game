@@ -143,7 +143,7 @@ export class BattleModel {
         const key = lamy.name;
         const name = FieldEnemyNameData[key as keyof typeof FieldEnemyNameData];
         lamy.setData('name', name);
-        
+
         this.enemyPartyMap.get(this.fieldHitEnemy.getData('ImageKey'))?.setName(name);
     }
 

@@ -1,4 +1,4 @@
-import { EventScene } from "../lib/types";
+import { EventScene } from '../lib/SceneTypes';
 import { SerchEvent } from "../event/SearchEvent";
 import { GameStateManager } from "../GameAllState/GameStateManager";
 

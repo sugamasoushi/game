@@ -1,7 +1,7 @@
 import { MenuModel } from "../model/MenuModel";
 import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
-import { MenuTab } from "../MenuTypes";
+import { MenuTab } from "../../lib/types";
 
 export class MainColumnWindow {
 

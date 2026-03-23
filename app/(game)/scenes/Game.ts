@@ -1,6 +1,8 @@
 import { Scene } from 'phaser';
 import { EventBus } from '../EventBus';
-import { GameScene, FieldData, GameKeys } from '../lib/types';
+import { GameScene } from '../lib/SceneTypes';
+import { FieldData } from '../lib/FieldTypes';
+import { GameKeys } from '../lib/CommonTypes';
 import { ReadyEvents } from '../lib/typesGamescene';
 import { FieldPresenter } from '../gamemain/presenter/FieldPresenter';
 import { PlayerPresenter } from '../gamemain/presenter/PlayerPresenter';

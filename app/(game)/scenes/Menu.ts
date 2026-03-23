@@ -1,4 +1,4 @@
-import { GameScene } from "../lib/types";
+import { GameScene } from '../lib/SceneTypes';
 import { MenuModel } from "../menu/model/MenuModel";
 import { MenuView } from "../menu/view/MenuView";
 import { MenuPresenter } from "../menu/presenter/MenuPresenter";

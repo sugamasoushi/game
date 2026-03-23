@@ -3,7 +3,8 @@
  * LoadSceneを挟むことで全シーンのインスタンス作成後の画面遷移で自作メソッドが実行される。これはjavascriptそのものやphaserやsocket.ioの実行順序の問題だと思う
  */
 import { Scene } from 'phaser';
-import { tilesets, State } from '../lib/types';
+import { tilesets } from '../lib/FieldTypes';
+import { State } from '../lib/StateTypes';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 
 export class Load extends Scene {

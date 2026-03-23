@@ -1,4 +1,5 @@
-import { GameScene, CharacterState } from "@/app/(game)/lib/types";
+import { GameScene } from "@/app/(game)/lib/SceneTypes";
+import { CharacterState } from "@/app/(game)/lib/FieldTypes";
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
 import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { BubbleTalk } from './Action/BubbleTalk';

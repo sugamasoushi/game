@@ -1,4 +1,5 @@
-import { GameState, State, FieldData } from '../lib/types';
+import { FieldData } from '../lib/FieldTypes';
+import { State, GameState } from '../lib/StateTypes';
 import { BehaviorSubject, Observable, distinctUntilChanged } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 
@@ -60,7 +61,11 @@ export class GameStateManager {
     constructor() { }
 
     public static getInstance() {
-        if (!this.instance) { this.instance = new GameStateManager(); } return this.instance;
+        if (!this.instance) {
+            console.log('new GameStateManager()');
+            this.instance = new GameStateManager();
+        }
+        return this.instance;
     }
 
     // 状態更新用メソッド
@@ -138,7 +143,7 @@ export class GameStateManager {
 }
 
 // 唯一のインスタンスを公開（シングルトン）
-export const gameStateManager = new GameStateManager();
+export const gameStateManager = GameStateManager.getInstance();
 
 
 /**NPCとの衝突で更新する */

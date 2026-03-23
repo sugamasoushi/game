@@ -33,14 +33,14 @@
     },
     "GameSetting": {
         "EventWindow": {
-            "fontFamily": "Arial",
+            "fontFamily": "MyRPGFont",
             "fontColor": "#e0ffff",
             "fontSize": 32,
             "lineSpaceValue": 10,
             "textLine": 2
         },
         "BubbleWindow": {
-            "fontFamily": "Arial",
+            "fontFamily": "MyRPGFont",
             "fontColor": "#e0ffff",
             "fontSize": 24,
             "lineSpaceValue": 10,

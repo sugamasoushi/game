@@ -1,5 +1,5 @@
-import { animationKey, CharacterState } from "../lib/types";
-import { GameScene } from "../lib/types";
+import { animationKey, CharacterState } from '../lib/FieldTypes';
+import { GameScene } from '../lib/SceneTypes';
 
 /**
  * キャラクタースプライトの共通クラス

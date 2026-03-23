@@ -1,10 +1,10 @@
-import { GameScene, EventObjState, ObjState, CharacterState } from "../../lib/types";
+import { GameScene } from "../../lib/SceneTypes";
+import { EventObjState, ObjState, CharacterState, FieldData } from "../../lib/FieldTypes";
 import { TileMap } from "./TileMap";
 import { DataDefinition } from '../../Data/DataDefinition';
 import { Npc } from "./character/Npc";
 import { BaseSprite } from "../../core/BaseSprite";
 import { BubbleTalk } from "./character/Action/BubbleTalk";
-import { FieldData } from "../../lib/types";
 import { Player } from './character/Player';
 import { SpriteType_3x4 } from './character/SpriteType_3x4';
 import { SpriteType_4x4 } from './character/SpriteType_4x4';

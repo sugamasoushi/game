@@ -1,4 +1,5 @@
-import { BattleScene, GameScene, State } from "../lib/types";
+import { BattleScene, GameScene } from "../lib/SceneTypes";
+import { State } from "../lib/StateTypes";
 
 import { BattleModel } from "../battle/model/BattleModel";
 import { CommandSelectModel } from "../battle/model/CommandSelectModel";
@@ -91,8 +92,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
     }
 
     async create(data: { sceneKey: string }) {
-
-        console.log('Battle Scene Start')
 
         //Phaserのイベントエミッター
         this.events.on('BattleEnd', () => {

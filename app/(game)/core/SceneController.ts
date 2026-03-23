@@ -3,13 +3,14 @@
  */
 
 import { Scene } from 'phaser';
-import { State } from '../lib/types';
-import { gameAllStateModel } from '../GameAllState/GameAllState';
+import { State } from '../lib/StateTypes';
+import { Subscription } from 'rxjs';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 import { ExecutionEnvironment } from './ExecutionEnvironment';
 
 export class SceneController extends Scene {
     private debugFlg: boolean | undefined;
+    private stateSubscription: Subscription | undefined;
 
     constructor() { super('SceneController'); }
 
@@ -47,9 +48,22 @@ export class SceneController extends Scene {
         //状態管理クラス
         const manager = GameStateManager.getInstance();
 
+        // 既存インスタンスが存在する場合は購読を解除（念押しチェック）
+        if (this.stateSubscription) {
+            this.stateSubscription.unsubscribe();
+        }
+
         // 状態の切り替わりを購読
-        manager.state$.subscribe(({ state, sceneKey }) => {
+        this.stateSubscription = manager.state$.subscribe(({ state, sceneKey }) => {
             this.handleStateChange(state, sceneKey);
+        });
+
+        // シーン終了時に購読を解除
+        this.events.once('shutdown', () => {
+            if (this.stateSubscription) {
+                this.stateSubscription.unsubscribe();
+                this.stateSubscription = undefined;
+            }
         });
 
         //状態をスタートに更新

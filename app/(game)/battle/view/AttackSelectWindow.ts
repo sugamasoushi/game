@@ -39,8 +39,8 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
     private createWindow(column: string[]) {
         //戻るボタン
         this.backButton = this.scene.add.text(
-            20, -40,
-            "✖", { fontFamily: "Arial Black", fontSize: 16, color: "#00a6ed" });
+            60, -40,
+            "✖", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
         this.backButton.setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
         this.backButton.setInteractive({ useHandCursor: true });
         this.backButton.on('pointerdown', () => {
@@ -123,8 +123,6 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         this.setVisible(true);
         this.enableSelect();
 
-        console.log(this)
-
         //コンテナ配置（キャラクターアイコンの近くに配置）
         this.x = this.characterIcon.parentContainer.x + 200;
         this.y = this.characterIcon.parentContainer.y - 75;
@@ -138,11 +136,7 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         this.setVisible(false);
     }
 
-    //オーバーライドする？
-    //このメソッドはウィンドウによるため各自実装する事
     private updateSelectNo() {
-        // if (this.battlePresenter.getSelectContainerNo() !== BattleViewNo.BattleSelectWindow) return;//更新しない方法を実装する事
-
         const minNo = 0;
         const maxNo = this.selectList.length;
         let selectText = null;

@@ -1,7 +1,7 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 import { GameStateManager } from '../GameAllState/GameStateManager';
-import { State } from '../lib/types';
+import { State } from '../lib/StateTypes';
 
 export class GameOver extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
