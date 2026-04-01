@@ -1,6 +1,8 @@
 import { Sound } from "../../scenes/Sound";
 import { MagicFrame } from "../../util/Effect/MagicFrame";
+import { SkillDetail } from "../../lib/SkillDataTypes";
 import { BattleMessageWindow } from "../view/BattleMessageWindow";
+import { NormalAttack } from "../../util/Effect/NormalAttack";
 
 export default class PlayerAttack {
     private battleScene: Phaser.Scene;
@@ -22,6 +24,7 @@ export default class PlayerAttack {
     //攻撃者のデータから目標を取得して処理する
     public attack(battleMessageWindow: BattleMessageWindow, attacker: Phaser.GameObjects.Sprite) {
         return new Promise<void>(resolve => {
+
             if (attacker.data.values.HP <= 0) return resolve();
             this.attacker = attacker;
             this.targetEnemy = attacker.getData('BattleTarget');
@@ -30,13 +33,35 @@ export default class PlayerAttack {
             const targetX = worldPoint.x + (this.targetEnemy.width / 2);
             const targetY = worldPoint.y + (this.targetEnemy.height / 2);
 
-            const effect = new MagicFrame(this.battleScene, targetX, targetY, this.attackDuration, undefined);
+            const skillType = this.attacker.getData('SkillType');
+            const skillDetail: SkillDetail = this.attacker.getData('UseSkill');
 
             (async () => {
                 await Promise.all([
                     battleMessageWindow.messageOutput(this.attacker.getData('name') + 'の攻撃！', undefined),
-                    effect.attackAnimation(),
-                    this.attackTween(effect),
+
+                    (() => {
+                        if (skillType) {
+                            switch (skillType) {
+                                case 'special':
+
+                                case 'magic':
+                                    const effect = new MagicFrame(this.battleScene, targetX, targetY, this.attackDuration, undefined);
+                                    return Promise.all([
+                                        effect.attackAnimation(),
+                                        this.attackTween(effect),
+                                    ])
+                                default:
+                                    return Promise.resolve();
+                            }
+                        } else {
+                            const effect = new NormalAttack(this.battleScene, targetX, targetY, this.attackDuration, undefined);
+                            return Promise.all([
+                                effect.attackAnimation(),
+                                this.normalAttackTween(effect),
+                            ])
+                        }
+                    })(),
 
                     this.leanBack(this.targetEnemy)
                 ]);
@@ -83,6 +108,24 @@ export default class PlayerAttack {
                 onComplete: () => {
                     resolve();
                     this.soundScene.SE_fire.stop();
+                    tween.destroy();
+                }
+            });
+        })
+    }
+
+    private normalAttackTween(effect: Phaser.GameObjects.Sprite) {
+        this.soundScene.SE_attack6.play({ loop: true });
+        return new Promise<void>(resolve => {
+            const tween = this.battleScene.tweens.add({
+                targets: effect,
+                scale: 2,
+                ease: 'sine.inout',
+                repeat: 1,
+                duration: 180,
+                onComplete: () => {
+                    resolve();
+                    this.soundScene.SE_attack6.stop();
                     tween.destroy();
                 }
             });

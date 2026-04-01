@@ -22,13 +22,67 @@
             "Armor": "マント"
         },
         "Skill": {
-            "normalSkill": "切り付け",
-            "specialSkill": "防御,回避,投石",
-            "MagicSkill": "火の玉"
+            "special": [
+                "02",
+                "01"
+            ],
+            "magic": [
+                "01"
+            ]
         },
         "Item": {
             "おにぎり": 1,
             "ばんそうこう": 1
+        }
+    },
+    "playerData2": {
+        "PartyMember": true,
+        "status": {
+            "Lv": 1,
+            "HP": 40,
+            "MP": 30,
+            "MaxHP": 40,
+            "MaxMP": 30,
+            "Attack": 20,
+            "Guard": 5,
+            "Speed": 8
+        },
+        "Equip": {
+            "Weapon": "素手",
+            "Armor": "蛇肌（？）"
+        },
+        "Skill": {
+            "special": [
+                "01"
+            ],
+            "magic": [
+                "02"
+            ]
+        }
+    },
+    "playerData3": {
+        "PartyMember": false,
+        "status": {
+            "Lv": 1,
+            "HP": 40,
+            "MP": 30,
+            "MaxHP": 40,
+            "MaxMP": 30,
+            "Attack": 20,
+            "Guard": 5,
+            "Speed": 8
+        },
+        "Equip": {
+            "Weapon": "無",
+            "Armor": "無"
+        },
+        "Skill": {
+            "special": [
+                "01"
+            ],
+            "magic": [
+                "02"
+            ]
         }
     },
     "GameSetting": {

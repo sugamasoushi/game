@@ -285,18 +285,22 @@ export class EVENT0004 extends BaseEvent {
                     duration: 700,
                     amount: 40,
                     onComplete: () => {
-                        this.eventScene.cameras.main.fadeOut(100);
-                        this.eventScene.scene.moveAbove('Event', 'Title');
+                        this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
 
-                        this.eventScene.scene.start('Boot');
+                            this.eventScene.scene.moveAbove('Event', 'Title');
 
-                        this.eventScene.scene.stop('Game');
-                        this.eventScene.scene.stop('Event');
+                            this.eventScene.scene.start('Boot');
 
-                        this.eventScene.game.events.emit('BGM_ALL_STOP');
+                            this.eventScene.scene.stop('Game');
+                            this.eventScene.scene.stop('Event');
 
-                        endTween.destroy();
-                        resolve();
+                            this.eventScene.game.events.emit('BGM_ALL_STOP');
+
+                            endTween.destroy();
+                            resolve();
+                        });
+
+                        this.eventScene.cameras.main.fadeOut(200);
                     }
                 });
             }, [], this.eventScene);

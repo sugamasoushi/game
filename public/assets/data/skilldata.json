@@ -1,0 +1,65 @@
+{
+    "infomation": "スキルデータ",
+    "none": {
+        "00": {
+            "name": "No Data",
+            "type": "none",
+            "description": "No Data",
+            "mpCost": 0,
+            "effect": "No Data",
+            "value": 0
+        }
+    },
+    "special": {
+        "01": {
+            "name": "防御",
+            "type": "guard",
+            "description": "がっちりガード！",
+            "mpCost": 0,
+            "effect": "",
+            "value": 20
+        },
+        "02": {
+            "name": "回避",
+            "type": "avoid",
+            "description": "避けるな！",
+            "mpCost": 0,
+            "effect": "",
+            "value": 0
+        },
+        "03": {
+            "name": "投石",
+            "type": "attack",
+            "description": "恐っ！",
+            "mpCost": 0,
+            "effect": "",
+            "value": 10
+        }
+    },
+    "magic": {
+        "01": {
+            "name": "火の玉",
+            "type": "attack",
+            "description": "メラメラ～",
+            "mpCost": 10,
+            "effect": "",
+            "value": 30
+        },
+        "02": {
+            "name": "風の刃",
+            "type": "attack",
+            "description": "ヒューン！",
+            "mpCost": 10,
+            "effect": "",
+            "value": 25
+        },
+        "03": {
+            "name": "氷の塊",
+            "type": "attack",
+            "description": "ばしゃ～！",
+            "mpCost": 10,
+            "effect": "",
+            "value": 20
+        }
+    }
+}

@@ -167,19 +167,24 @@ export class EVENT0002 extends BaseEvent {
 
         await new Promise<void>(resolve => {
 
-            //プレイヤーの状態を更新
-            this.player.state = CharacterState.normal;
+            this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
 
-            //イベント後のキャラに吹き出し会話を設定
-            this.lamy.setBubbleTalkKey('bubbleTalk0001.talk002');
-            this.lamy.talkSetting();
-            (this.lamy as SpriteType_3x4).setBubble();
-            this.lamy.state = CharacterState.normal;
+                //プレイヤーの状態を更新
+                this.player.state = CharacterState.normal;
 
-            //設定を戻す
-            this.gameScene.events.emit('EVENT_END')
+                //イベント後のキャラに吹き出し会話を設定
+                this.lamy.setBubbleTalkKey('bubbleTalk0001.talk002');
+                this.lamy.talkSetting();
+                (this.lamy as SpriteType_3x4).setBubble();
+                this.lamy.state = CharacterState.normal;
 
-            resolve();
+                //設定を戻す
+                this.gameScene.events.emit('EVENT_END')
+
+                resolve();
+            });
+
+            this.eventScene.cameras.main.fadeOut(200);
         })
         this.eventScene.scene.stop();
     }

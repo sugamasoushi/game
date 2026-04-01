@@ -15,10 +15,17 @@ export class Player extends BaseSprite {
     private cropRectMask: Phaser.GameObjects.Graphics;
     private cropRectMask2: Phaser.Display.Masks.GeometryMask;
 
-    constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
+    private player1: Player;
+
+    constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string, player?: boolean | undefined) {
         super(scene, x, y, spriteSheetKey, initStandKey);
         this.gameScene = scene;
-        this.name = 'player';
+
+        if (player) {
+            this.name = 'player';
+        } else {
+            this.name = spriteSheetKey;
+        }
 
         //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
         this.gameScene.physics.add.existing(this);
@@ -40,13 +47,24 @@ export class Player extends BaseSprite {
         super.preUpdate(time, delta);
         this._updateKeyWalk();
         this._updateStopWalk();
+
+
+        this.depthValue = this.y + (32 / 2) * this.scale
+        if (this.name === 'player') {
+            this.setDepth(this.depthValue);
+        } else {
+            this.setDepth(this.depthValue - 1);
+        }
+
         this._updateRectMask();
     }
 
     //キー入力による移動
     //※本来はinputmanagerのキー管理を通したいが、難しそうなのでこのまま使用
     _updateKeyWalk() {
+
         if (!this.body) return;
+        if (!this.cursors) return;
         if (this.state !== CharacterState.normal) return;
 
         //状態管理クラス
@@ -183,8 +201,7 @@ export class Player extends BaseSprite {
 
     //キャラの一部を非表示にするマスク
     _updateRectMask() {
-        this.depthValue = this.y + (32 / 2) * this.scale
-        this.setDepth(this.depthValue);
+
         const makeTilemap: Phaser.Tilemaps.Tilemap = this.gameScene.getTilemap().getMakeTilemap();
 
         const playerWithDepthMapName: Array<string> = this.gameScene.getTilemap().getPlayerWithDepthMapName();
@@ -250,6 +267,10 @@ export class Player extends BaseSprite {
 
     public setCursors(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
         this.cursors = cursors;
+    }
+
+    public setPlayer1(player: Player) {
+        this.player1 = player;
     }
 }
 

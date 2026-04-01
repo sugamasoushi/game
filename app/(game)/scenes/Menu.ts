@@ -12,6 +12,9 @@ export class Menu extends Phaser.Scene {
     private menuView: MenuView;
     private menuPresenter: MenuPresenter;
 
+    private cursorsKeys: Phaser.Types.Input.Keyboard.CursorKeys;//キーボード設定
+    private mainCamera: Phaser.Cameras.Scene2D.Camera;
+
     constructor() { super('Menu'); }
 
     init() {
@@ -25,9 +28,20 @@ export class Menu extends Phaser.Scene {
 
         // Presenter経由での初期設定呼び出し
         this.menuPresenter.init();
+
+        //キーボード設定
+        this.cursorsKeys = this.input.keyboard!.createCursorKeys();//キーボード設定
     }
 
     create() {
         this.menuPresenter.create();
+    }
+
+    public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {
+        return this.cursorsKeys;
+    }
+
+    public getMainCamera(): Phaser.Cameras.Scene2D.Camera {
+        return this.mainCamera;
     }
 }

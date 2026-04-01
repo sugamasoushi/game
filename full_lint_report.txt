@@ -1,0 +1,96 @@
+
+> tyottodakerpg@0.1.0 lint
+> eslint
+
+
+C:\Users\soushi\Desktop\game\app\(game)\Data\CharacterDefinition.ts
+   3:6  warning  'TextInfomation' is defined but never used           @typescript-eslint/no-unused-vars
+  11:6  warning  'MessageWindowInfomation' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\GameAllState\PlayerStatus.ts
+  2:10  warning  'filter' is defined but never used  @typescript-eslint/no-unused-vars
+  2:23  warning  'take' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\model\BattleModel.ts
+  212:65  warning  'key' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\presenter\BattlePresenter.ts
+  189:61  warning  'skillType' is defined but never used           @typescript-eslint/no-unused-vars
+  213:67  warning  'nowSelectCharacter' is defined but never used  @typescript-eslint/no-unused-vars
+  225:65  warning  'nowSelectCharacter' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\presenter\EnemyAttack.ts
+  78:19  warning  'tween' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\presenter\PlayerAttack.ts
+  37:19  warning  'skillDetail' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\view\AttackSelectWindow.ts
+  5:8  warning  'DebugMessage' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\view\MagicSkillSelectWindow.ts
+  88:33  warning  'fontSize' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\view\PlayerPartyWindow.ts
+  88:21  warning  'index' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\battle\view\SpecialSkillSelectWindow.ts
+  88:33  warning  'fontSize' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\core\SaveDataManager.ts
+  30:26  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\core\input\InputManager.ts
+  3:36  warning  'Observable' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\event\presenters\EventTalk.ts
+  185:15  warning  'height' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\event\view\EVENT0001.ts
+  75:19  warning  'textScroll' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\gamemain\presenter\NpcPresenter.ts
+  1:21  warning  'State' is defined but never used           @typescript-eslint/no-unused-vars
+  6:10  warning  'DataDefinition' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\gamemain\view\FireButton.ts
+  20:15  warning  'gameConfigWidth' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\gamemain\view\MapObject.ts
+  44:15  warning  'time' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\menu\view\ItemWindow.ts
+   2:10  warning  'Menu' is defined but never used                      @typescript-eslint/no-unused-vars
+  95:29  error    'partyname' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\soushi\Desktop\game\app\(game)\menu\view\MenuListWindow.ts
+  4:8  warning  'DebugMessage' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\scenes\Game.ts
+  6:10  warning  'ReadyEvents' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\util\CharacterGameObject.ts
+   75:19  warning  'updateTween' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  106:27  warning  'updateTween' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\util\EnergyGauge.ts
+  22:15  warning  'time' is defined but never used   @typescript-eslint/no-unused-vars
+  22:29  warning  'delta' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\app\(game)\util\ListWindow.ts
+  85:15  warning  'time' is defined but never used   @typescript-eslint/no-unused-vars
+  85:29  warning  'delta' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\global.d.ts
+  3:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\soushi\Desktop\game\main.js
+  41:44  warning  'event' is defined but never used  @typescript-eslint/no-unused-vars
+  54:38  warning  'event' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\soushi\Desktop\game\preload.js
+  1:40  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+笨・36 problems (3 errors, 33 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

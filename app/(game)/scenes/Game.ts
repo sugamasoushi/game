@@ -22,12 +22,12 @@ import { CameraManager } from '../gamemain/view/CameraManager';
 import { FieldMessageWindow } from '../gamemain/view/FieldMessageWindow';
 
 export class Game extends Scene implements GameScene {
-    private ReadyEventsKey: ReadyEvents = {
-        TILEMAP: 'Tilemap:create',
-        MAPOBJECT: 'MapObject:create',
-        MENUBUTTON: 'MenuButton:create',
-        FIELDPRESENTER_READY: 'FieldPresenter:Ready'
-    }
+    // private ReadyEventsKey: ReadyEvents = {
+    //     TILEMAP: 'Tilemap:create',
+    //     MAPOBJECT: 'MapObject:create',
+    //     MENUBUTTON: 'MenuButton:create',
+    //     FIELDPRESENTER_READY: 'FieldPresenter:Ready'
+    // }
     private fieldMapModel: FieldMapModel;
 
     private tileMap: TileMap;
@@ -45,9 +45,9 @@ export class Game extends Scene implements GameScene {
     private keys!: GameKeys;
     private player: Player;
 
-    camera: Phaser.Cameras.Scene2D.Camera;
-    background: Phaser.GameObjects.Image;
-    gameText: Phaser.GameObjects.Text;
+    // camera: Phaser.Cameras.Scene2D.Camera;
+    // background: Phaser.GameObjects.Image;
+    // gameText: Phaser.GameObjects.Text;
 
     private menuButton: MenuButton;
     private testButton: SaveButton;

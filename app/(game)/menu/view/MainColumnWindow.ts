@@ -10,6 +10,9 @@ export class MainColumnWindow {
 
     public BackButton: Phaser.GameObjects.Text;
 
+    private backButton: Phaser.GameObjects.Text;
+    private backButtonWindow: MessageWindow;
+
     private displayWidth: number;
     private displayHeight: number;
 
@@ -22,7 +25,7 @@ export class MainColumnWindow {
 
     public cropRectMask: Phaser.GameObjects.Graphics;
 
-    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'スキル', 'ステータス', 'MOVIE', 'オプション'];
+    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'フィールドスキル', 'ステータス', 'MOVIE'];
     public nowMainColumnNo: MenuTab = MenuTab.Condition;
     public nextMainColumnNo: MenuTab = MenuTab.Condition;
 
@@ -40,7 +43,8 @@ export class MainColumnWindow {
     }
 
     public create() {
-        this.createBackButton();
+        //this.createBackButton();
+        this.backButtonCreate(1150, 50);
         this.createMainWindow();
     }
 
@@ -60,6 +64,35 @@ export class MainColumnWindow {
         this.BackButton.on('pointerdown', () => {
             // プレゼンター側にイベントを通知
             this.scene.events.emit('MenuCloseClick');
+        }, this);
+    }
+
+    private backButtonCreate(x: number, y: number) {
+
+        const messageObjectInstance = new MessageObject();
+        messageObjectInstance.init(this.scene);
+        messageObjectInstance.getTextInfomation();
+
+        this.backButton = messageObjectInstance.createTextObject(this.scene, x, y + 16, "✖");
+        this.backButton.setDepth(Number(this.scene.game.config.height) + 1);
+
+        //ウィンドウ作成
+        this.backButtonWindow = new MessageWindow(this.scene);
+        this.backButtonWindow.init();
+        // createMessageWindow内で(rectR, rectR)の位置に描画されるため、-rectRして位置を合わせる
+        this.backButtonWindow.createOneColumnOneWindow(this.backButton, 16);
+
+        // 左右の余白を等しく設定
+        this.backButtonWindow.x = x;
+        this.backButtonWindow.y = y + 16;
+        this.backButtonWindow.setDepth(Number(this.scene.game.config.height));
+
+        this.backButton.setDepth(this.backButtonWindow.depth + 1);
+        this.backButton.setInteractive({ useHandCursor: true });
+        this.backButton.on('pointerdown', () => {
+            // プレゼンター側にイベントを通知
+            this.scene.events.emit('MenuCloseClick');
+
         }, this);
     }
 

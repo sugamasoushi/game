@@ -5,6 +5,7 @@ export * from './StateTypes';
 export * from './EventTypes';
 export * from './CommonTypes';
 export * from './MenuTypes';
+export * from './SkillDataTypes';
 
 /**
  * この types.ts の記述は、TypeScript（およびモダンな JavaScript）における**「バレル（Barrel）」**と呼ばれるパターンです。

@@ -4,6 +4,7 @@ import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
+import { SearchSkill } from "../../Data/SearchSkill";
 
 export class SkillWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
@@ -26,56 +27,49 @@ export class SkillWindow extends Phaser.GameObjects.Container {
         messageObject.init(this.scene);
 
         const playerData = this.menuModel.getPlayerDataList();
-        const array = [playerData.normalSkill, playerData.MagicSkill];
 
-        // スキルリストは2列で表示する
-        for (let i = 0; i < array.length; i++) {
-            const row = Math.floor(i / 2);
+        // --- 特技セクション ---
+        const specialLabelY = skillY;
+        const specialSkillsY = specialLabelY + 40;
+        const specialLabel = messageObject.createTextObject(
+            this.scene,
+            skillX,
+            specialLabelY,
+            ['【 特技 】'],
+            this.menuModel.fontSize
+        ).setDepth(this.mainWindowDepth + 50);
+        this.add(specialLabel);
+
+        const specialSkills = playerData.special || [];
+        for (const [i, skillId] of specialSkills.entries()) {
             const col = i % 2;
+            const row = Math.floor(i / 2);
             const xOffset = col * rightValue;
             const yOffset = row * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
 
-            //左　項目
-            const Label = messageObject.createTextObject(
-                this.scene,
-                skillX + xOffset,
-                skillY + yOffset,
-                ['E'],
-                this.menuModel.fontSize
-            ).setDepth(this.mainWindowDepth + 50);
+            this.createSkillElement(messageObject, skillX + xOffset, specialSkillsY + yOffset, 'special', skillId);
+        }
 
-            const skill = messageObject.createTextObject(
-                this.scene,
-                skillX + xOffset + 50,
-                skillY + yOffset,
-                [array[i]],
-                this.menuModel.fontSize
-            ).setDepth(this.mainWindowDepth + 50);
+        // --- 魔法セクション ---
+        const magicLabelY = 250; // 下半分
+        const magicSkillsY = magicLabelY + 40;
+        const magicLabel = messageObject.createTextObject(
+            this.scene,
+            skillX,
+            magicLabelY,
+            ['【 魔法 】'],
+            this.menuModel.fontSize
+        ).setDepth(this.mainWindowDepth + 50);
+        this.add(magicLabel);
 
-            this.add([Label, skill]);
+        const magicSkills = playerData.magic || [];
+        for (const [i, skillId] of magicSkills.entries()) {
+            const col = i % 2;
+            const row = Math.floor(i / 2);
+            const xOffset = col * rightValue;
+            const yOffset = row * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
 
-            // マウスオーバーで選択位置を更新
-            skill.setInteractive({ useHandCursor: true });
-            skill.on('pointerover', () => {
-                this.selectAllow.updatePosition(skill);
-            });
-
-            // クリックでスキルを使用
-            skill.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-                if (pointer.leftButtonDown()) {
-                    pointer.reset();
-
-                    let text = '';
-                    if (array[i] === '殴る') {
-                        text = '恐っ！！';
-                    } else if (array[i] === '火の玉') {
-                        text = 'メラメラ～';
-                    }
-
-                    const debugMessage = new DebugMessage(this.scene);
-                    debugMessage.NotImplemented(text, 2000);
-                }
-            });
+            this.createSkillElement(messageObject, skillX + xOffset, magicSkillsY + yOffset, 'magic', skillId);
         }
 
         this.selectAllow = new SelectAllow(this.scene);
@@ -86,5 +80,49 @@ export class SkillWindow extends Phaser.GameObjects.Container {
 
         this.setDepth(this.mainWindowDepth + 50);
         this.setMask(mainColumn.cropRectMask.createGeometryMask());
+    }
+
+    /**
+     * スキル要素（ラベルとスキル名）を作成して追加する
+     */
+    private createSkillElement(messageObject: MessageObject, x: number, y: number, skillType: string, skillId: string) {
+        // console.log(skillId);
+        const skilldata = this.scene.cache.json.get('skilldata');
+        const searchSkill = new SearchSkill(skilldata);
+        const skillData = searchSkill.getSkillData(skillType, skillId);
+
+        const label = messageObject.createTextObject(
+            this.scene,
+            x,
+            y,
+            ['E'],
+            this.menuModel.fontSize
+        ).setDepth(this.mainWindowDepth + 50);
+
+        const skill = messageObject.createTextObject(
+            this.scene,
+            x + 50,
+            y,
+            [skillData!.name],
+            this.menuModel.fontSize
+        ).setDepth(this.mainWindowDepth + 50);
+
+        this.add([label, skill]);
+
+        // マウスオーバーで選択位置を更新
+        skill.setInteractive({ useHandCursor: true });
+        skill.on('pointerover', () => {
+            this.selectAllow.updatePosition(skill);
+        });
+
+        // クリックでスキルを使用
+        skill.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            if (pointer.leftButtonDown()) {
+                pointer.reset();
+
+                const debugMessage = new DebugMessage(this.scene);
+                debugMessage.NotImplemented(skillData!.description, 2000);
+            }
+        });
     }
 }

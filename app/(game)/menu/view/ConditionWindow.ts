@@ -8,8 +8,8 @@ export class ConditionWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;
 
-    private charConditionHP: Phaser.GameObjects.Text;
-    private charConditionMP: Phaser.GameObjects.Text;
+    private charConditionHPs: Phaser.GameObjects.Text[] = [];
+    private charConditionMPs: Phaser.GameObjects.Text[] = [];
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
@@ -22,64 +22,89 @@ export class ConditionWindow extends Phaser.GameObjects.Container {
     }
 
     public create(mainColumn: MainColumnWindow) {
-        const leftLabelX = 430;
-        const leftLabelY = 0;
+        const leftLabelX = 350;
+        const leftLabelY = 20;
         const rightValueX = leftLabelX + 100;
-        const rightValueY = leftLabelY;
 
         this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Condition;
         this.y = mainColumn.containtsY;
-        const charImage = this.scene.add.image(150, 650, '20250609').setScale(0.6).setDepth(this.mainWindowDepth + 50);
 
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
-        const playerData = this.menuModel.getPlayerDataList();
+        // パーティメンバー最大3人分を表示
+        const partyList = this.menuModel.getPlayerPartyList().slice(0, 3);
+        const personHeight = 160;
 
-        const labels = ['LV', 'HP', 'MP'];
-        const values = [
-            String(playerData.Lv),
-            playerData.HP + " / " + playerData.MaxHP,
-            playerData.MP + " / " + playerData.MaxMP,
-        ];
+        for (const [index, sprite] of partyList.entries()) {
+            const yBase = leftLabelY + index * personHeight;
 
-        for (let i = 0; i < labels.length; i++) {
-            const yOffset = i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
+            // アイコン画像のマッピング
+            const portraitKey = this.getPortraitKey(sprite.name);
+            const charImage = this.scene.add.image(150, yBase + 10, portraitKey).setOrigin(0, 0);
+            this.add(charImage);
 
-            const labelObj = messageObject.createTextObject(
-                this.scene,
-                leftLabelX,
-                leftLabelY + yOffset,
-                [labels[i]],
-                this.menuModel.fontSize
-            ).setDepth(this.mainWindowDepth + 50);
+            const playerData = sprite.data.list;
+            const labels = ['LV', 'HP', 'MP'];
+            const values = [
+                String(playerData.Lv),
+                playerData.HP + " / " + playerData.MaxHP,
+                playerData.MP + " / " + playerData.MaxMP,
+            ];
 
-            const valueObj = messageObject.createTextObject(
-                this.scene,
-                rightValueX,
-                rightValueY + yOffset,
-                [values[i]],
-                this.menuModel.fontSize
-            ).setDepth(this.mainWindowDepth + 50);
+            for (const [i, label] of labels.entries()) {
+                const yOffset = i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
 
-            this.add([labelObj, valueObj]);
+                const labelObj = messageObject.createTextObject(
+                    this.scene,
+                    leftLabelX,
+                    yBase + yOffset,
+                    [label],
+                    this.menuModel.fontSize
+                );
 
-            if (labels[i] === 'HP') this.charConditionHP = valueObj;
-            if (labels[i] === 'MP') this.charConditionMP = valueObj;
+                const valueObj = messageObject.createTextObject(
+                    this.scene,
+                    rightValueX,
+                    yBase + yOffset,
+                    [values[i]],
+                    this.menuModel.fontSize
+                );
+
+                this.add([labelObj, valueObj]);
+
+                if (label === 'HP') this.charConditionHPs[index] = valueObj;
+                if (label === 'MP') this.charConditionMPs[index] = valueObj;
+            }
         }
 
-        this.add(charImage).setDepth(this.mainWindowDepth + 50);
         this.setMask(mainColumn.cropRectMask.createGeometryMask());
-
+        this.setDepth(this.mainWindowDepth + 50);
         this.scene.events.on('UPDATE_CONDITION', this.updateConditionHandler, this);
     }
 
-    private updateConditionHandler(playerData: Phaser.Data.DataManager) {
-        if (this.charConditionHP && this.charConditionHP.active) {
-            this.charConditionHP.setText([playerData.get('HP') + " / " + playerData.get('MaxHP')]);
-        }
-        if (this.charConditionMP && this.charConditionMP.active) {
-            this.charConditionMP.setText([playerData.get('MP') + " / " + playerData.get('MaxMP')]);
+    private getPortraitKey(name: string): string {
+        const mapping: { [key: string]: string } = {
+            'player': 'Icon_20250609',
+            'grandpa': 'Icon_20250609',
+            'lamy': 'Icon_20240908',
+            'player2': 'Icon_20240908'
+        };
+        return mapping[name] || 'Icon_20250609';
+    }
+
+    private updateConditionHandler() {
+        // 全パーティメンバーのステータスを再読み込みして更新
+        const partyList = this.menuModel.getPlayerPartyList().slice(0, 3);
+
+        for (const [index, sprite] of partyList.entries()) {
+            const playerData = sprite.data;
+            if (this.charConditionHPs[index] && this.charConditionHPs[index].active) {
+                this.charConditionHPs[index].setText([playerData.get('HP') + " / " + playerData.get('MaxHP')]);
+            }
+            if (this.charConditionMPs[index] && this.charConditionMPs[index].active) {
+                this.charConditionMPs[index].setText([playerData.get('MP') + " / " + playerData.get('MaxMP')]);
+            }
         }
     }
 

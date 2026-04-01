@@ -251,7 +251,7 @@ export class Npc extends BaseSprite {
             }
         }
         //console.log("NPC" + checkX, checkY)
-        this.setMoveToPosition(checkX!, checkY!, 300, 2000);
+        this.setMoveToPosition(checkX!, checkY!, 300, true, 2000);
     }
 
     //オーバーライド

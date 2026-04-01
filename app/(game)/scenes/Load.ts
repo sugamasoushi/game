@@ -37,7 +37,9 @@ export class Load extends Scene {
         });
 
         this.load.json('bubbleTalkData', 'assets/data/bubbleTalkData.json');
-        this.load.text('Character_text', 'assets/data/Character.txt');
+        this.load.json('namedata', 'assets/data/namedata.json');
+        this.load.json('skilldata', 'assets/data/skilldata.json');
+        this.load.json('ImageKeyData', 'assets/data/ImageKeyData.json');
         this.load.image('enemy00', 'assets/img/CharaStand/enemy00.png');
         this.load.image('enemy01', 'assets/img/CharaStand/enemy01.png');
         this.load.image('enemy02', 'assets/img/CharaStand/enemy02.png');
@@ -167,6 +169,19 @@ export class Load extends Scene {
         });
 
         this.load.spritesheet({
+            key: 'normalAttack',
+            url: "/assets/img/spritesheet/pipo-btleffect002.png",
+            frameConfig: {
+                frameWidth: 120,  //横幅
+                frameHeight: 120, //縦幅　指定が無い場合は横幅の値が使用される
+                startFrame: 0,   //解析の最初のフレーム
+                endFrame: 8,    //最後のフレーム　指定無しの場合はフレーム幅で分割計算される
+                margin: 0,       //余白　フレームの端のスペース
+                spacing: 0 //各フレームの間隔。
+            }
+        });
+
+        this.load.spritesheet({
             key: 'flames32',
             url: "/assets/img/spritesheet/flames32.png",
             frameConfig: {
@@ -188,9 +203,11 @@ export class Load extends Scene {
         this.load.audio('SE_waterFall', 'assets/sound/滝1.mp3');
         this.load.audio('SE_doukutu', 'assets/sound/薄青い洞窟.mp3');
         this.load.audio('SE_fire', 'assets/sound/火炎魔法1.mp3');
+        this.load.audio('SE_smallPunch', 'assets/sound/小パンチ.mp3');
         this.load.audio('SE_punch', 'assets/sound/重いパンチ1.mp3');
         this.load.audio('SE_karuipunch', 'assets/sound/軽いパンチ1.mp3');
         this.load.audio('SE_attack', 'assets/sound/打撃3.mp3');
+        this.load.audio('SE_attack6', 'assets/sound/打撃6.mp3');
         this.load.audio('SE_victory', 'assets/sound/回復魔法4.mp3');
         this.load.audio('SE_message', 'assets/sound/メッセージ表示音3.mp3');
         this.load.audio('SE_chestOpen', 'assets/sound/受話器を置く.mp3');

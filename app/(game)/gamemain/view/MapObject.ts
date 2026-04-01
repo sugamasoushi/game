@@ -60,7 +60,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         const initStandKey = this.fieldData.initStandKey;
 
         //プレイヤー作成
-        const player: Player = new Player(this.gameScene, playerX, playerY, 'meina', initStandKey)
+        const player: Player = new Player(this.gameScene, playerX, playerY, 'meina', initStandKey, true)
         player.state = CharacterState.normal;
         player.setData('name', CaharacterNameData[player.name as keyof typeof CaharacterNameData])
 
@@ -79,6 +79,43 @@ export class MapObject extends Phaser.GameObjects.Container {
 
         this.player = player;
         this.playerPartyList.push(player);
+
+        //プレイヤー2作成
+        if (this.gameScene.cache.json.get('savedata').playerData2.PartyMember) {
+
+            const player2: Player = new Player(this.gameScene, playerX, playerY, 'lamy', initStandKey)
+            player2.state = CharacterState.normal;
+            player2.setData('name', CaharacterNameData[player2.name as keyof typeof CaharacterNameData])
+
+            //各種設定
+            player2.setDataEnabled();
+            player2.setData(this.gameScene.cache.json.get('savedata').playerData2.status);
+            player2.setData(this.gameScene.cache.json.get('savedata').playerData2.Equip);
+            player2.setData(this.gameScene.cache.json.get('savedata').playerData2.Skill);
+
+            //プレイヤーと衝突判定の設定
+            if (this.TileMap.getCollisionLayer()) {
+                this.gameScene.physics.add.collider(player2, this.TileMap.getCollisionLayer());
+            }
+
+            this.playerPartyList.push(player2);
+        }
+
+        //プレイヤー3作成
+        if (this.gameScene.cache.json.get('savedata').playerData3.PartyMember) {
+
+            const player3: Player = new Player(this.gameScene, playerX, playerY, 'lamy', initStandKey)
+            player3.state = CharacterState.normal;
+            player3.setData('name', CaharacterNameData[player3.name as keyof typeof CaharacterNameData])
+
+            //各種設定
+            player3.setDataEnabled();
+            player3.setData(this.gameScene.cache.json.get('savedata').playerData3.status);
+            player3.setData(this.gameScene.cache.json.get('savedata').playerData3.Equip);
+            player3.setData(this.gameScene.cache.json.get('savedata').playerData3.Skill);
+
+            this.playerPartyList.push(player3);
+        }
     }
 
     private createNPC() {
@@ -484,7 +521,7 @@ export class MapObject extends Phaser.GameObjects.Container {
     public getPlayer(): Player {
         return this.player;
     }
-    public getPlayerPartyList(): Phaser.GameObjects.Sprite[] {
+    public getPlayerPartyList(): Phaser.Physics.Arcade.Sprite[] {
         return this.playerPartyList;
     }
     public getFieldEnemyList(): Npc[] {

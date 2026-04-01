@@ -2,8 +2,9 @@
     "infomation": "名前データ",
     "FieldNameData": {
         "player": "メイナ",
+        "lamy": "ラミィ",
         "grandpa": "じいちゃん",
-        "lamy": "ラミア娘"
+        "lamiaDaughter": "ラミア娘"
     },
     "EnemyNameData": {
         "enemy00": "ラミア娘",

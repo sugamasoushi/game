@@ -5,6 +5,8 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
     private lineColor: number;
     private fontSize: number;
     private rectR = 16;//一旦デフォルトは16
+    public width: number = 0;
+    public height: number = 0;
 
     constructor(scene: Phaser.Scene) {
         super(scene);
@@ -43,6 +45,8 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
         //初期位置を設定
         this.x = x;
         this.y = y;
+        this.width = w;
+        this.height = h;
 
         this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
         this.lineStyle(2, this.lineColor);
@@ -60,6 +64,9 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
         // lebelWindow = this.scene.add.graphics();
         this.x = colmun.x;//座標初期値はテキストの左上
         this.y = colmun.y;
+        this.width = width;
+        this.height = height;
+
         this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
         this.lineStyle(2, this.lineColor);
         this.strokeRoundedRect(-1 * rectR, -1 * rectR, width, height, rectR);
@@ -86,6 +93,9 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
         const y = -1 * rectR;
         const width = objWidth + rectR * 2 + allowSpace;
         const height = objHeight + rectR * 2;
+
+        this.width = width;
+        this.height = height;
 
         this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
         this.lineStyle(2, this.lineColor);
@@ -120,6 +130,9 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
 
         this.x = textObject.x;//座標初期値はテキストの左上
         this.y = textObject.y;
+        this.width = width;
+        this.height = height;
+
         this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
         this.lineStyle(2, this.lineColor);
         this.strokeRoundedRect(-1 * rectR, -1 * rectR, width, height, rectR);

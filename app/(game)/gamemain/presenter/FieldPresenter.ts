@@ -8,6 +8,7 @@ import { FireButton } from "../view/FireButton";
 import { FieldData } from "../../lib/types";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
 import { Npc } from "../view/character/Npc";
+import { Player } from "../view/character/Player";
 
 import { Subscription } from "rxjs";
 import { InputManager } from "../../core/input/InputManager";
@@ -94,22 +95,34 @@ export class FieldPresenter {
         this.gameScene.events.on('FIELD_RESTART', (fieldData: FieldData) => {
 
             this.inputManager.setState(false);
-            this.cameraManager.execFadeOut();
+            // this.cameraManager.execFadeOut();
 
-            this.gameScene.events.once('FADE_OUT_COMPLETE', () => {
+            // this.gameScene.events.once('FADE_OUT_COMPLETE', () => {
 
-                //状態更新
-                manager.updateState({
-                    state: State.FIELD_RESTART,
-                    fieldData: {
-                        gameMode: fieldData.gameMode,
-                        mapKey: fieldData.mapKey,
-                        x: fieldData.x,
-                        y: fieldData.y,
-                        initStandKey: fieldData.initStandKey,
-                    }
-                }, 'FieldMove');
-            });
+            //     //状態更新
+            //     manager.updateState({
+            //         state: State.FIELD_RESTART,
+            //         fieldData: {
+            //             gameMode: fieldData.gameMode,
+            //             mapKey: fieldData.mapKey,
+            //             x: fieldData.x,
+            //             y: fieldData.y,
+            //             initStandKey: fieldData.initStandKey,
+            //         }
+            //     }, 'FieldMove');
+            // });
+
+            //状態更新
+            manager.updateState({
+                state: State.FIELD_RESTART,
+                fieldData: {
+                    gameMode: fieldData.gameMode,
+                    mapKey: fieldData.mapKey,
+                    x: fieldData.x,
+                    y: fieldData.y,
+                    initStandKey: fieldData.initStandKey,
+                }
+            }, 'FieldMove');
 
         })
 
@@ -144,6 +157,12 @@ export class FieldPresenter {
 
         this.gameScene.events.on('BATTLE', (battleData: { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }) => {
 
+            //戦闘開始時に停止
+            for (const sprite of this.fieldMapModel.getPlayerPartyList()) {
+                (sprite as Player).stopAnimation();
+                (sprite as Player).setVelocity(0);//念のため
+            }
+
             //状態更新
             manager.updateState({
                 state: State.BATTLE,
@@ -172,6 +191,10 @@ export class FieldPresenter {
 
     public getPlayer() {
         return this.mapObject.getPlayer();
+    }
+
+    public getPlayerPartyList() {
+        return this.mapObject.getPlayerPartyList();
     }
 
     public getTilemap(): TileMap {

@@ -25,6 +25,7 @@ export class FieldMapModel {
     public execute(mapObject: MapObject) {
         this.mapObject = mapObject;
         this.player = mapObject.getPlayer();
+        this.playerPartyList = mapObject.getPlayerPartyList();
         this.npcNormalList = mapObject.getFieldNpclList();
         this.npcEnemyList = mapObject.getFieldEnemyList();
     }

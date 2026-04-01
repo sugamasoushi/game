@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
   /* 基本設定 */
   devIndicators: false,
 
+
   /* 静的エクスポート設定 (これで out フォルダが作成されます) */
   output: "export",
 
@@ -25,11 +26,9 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
 
   /* Turbopack / 実験的機能の設定 */
-  experimental: {
-    turbo: {
-      resolveAlias: {},
-      rules: {},
-    },
+  turbopack: {
+    resolveAlias: {},
+    rules: {},
   },
 };
 

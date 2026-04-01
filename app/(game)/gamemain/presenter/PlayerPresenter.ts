@@ -9,6 +9,7 @@ import { FieldMapModel } from "../model/FieldMapModel";
 
 export class PlayerPresenter {
     private player: Player;
+    private playerPartyList: Phaser.Physics.Arcade.Sprite[] = [];
     private fieldAttack: FieldAttack;
 
     constructor(
@@ -22,8 +23,23 @@ export class PlayerPresenter {
         this.execClickMove();
         this.execKeyMove();
         this.execFieldAttack();
+
+        //プレイヤーを作成
         this.player = this.fieldPresenter.getPlayer();
         this.player.setCursors(this.inputManager.phaserCursors);
+
+        //プレイヤーのパーティメンバーを作成
+        this.playerPartyList = this.fieldPresenter.getPlayerPartyList();
+        if (this.playerPartyList[1]) {
+            (this.playerPartyList[1] as Player).setCursors(this.inputManager.phaserCursors);
+            //this.player.setPlayer1(this.player);
+        }
+
+        //プレイヤーのパーティメンバーを作成
+        if (this.playerPartyList[2]) {
+            (this.playerPartyList[2] as Player).setCursors(this.inputManager.phaserCursors);
+        }
+
         this.setAnyObject();
         this.fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
     }
@@ -46,7 +62,24 @@ export class PlayerPresenter {
             if (pointer.leftButtonReleased()) {
 
                 //移動先座標を設定する
-                this.player.setMoveToPosition(this.inputManager.phaserInput.activePointer.worldX, this.inputManager.phaserInput.activePointer.worldY);
+                this.player.setMoveToPosition(
+                    this.inputManager.phaserInput.activePointer.worldX,
+                    this.inputManager.phaserInput.activePointer.worldY,
+                    0, false, 50, 1000);
+
+                if (this.playerPartyList[1]) {
+                    (this.playerPartyList[1] as Player).setMoveToPosition(
+                        this.inputManager.phaserInput.activePointer.worldX,
+                        this.inputManager.phaserInput.activePointer.worldY,
+                        1, false, 40, 1100);
+                }
+
+                if (this.playerPartyList[2]) {
+                    (this.playerPartyList[2] as Player).setMoveToPosition(
+                        this.inputManager.phaserInput.activePointer.worldX,
+                        this.inputManager.phaserInput.activePointer.worldY,
+                        2, false, 40, 1100);
+                }
             }
         });
     }

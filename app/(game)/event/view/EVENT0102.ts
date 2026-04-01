@@ -150,25 +150,30 @@ export class EVENT0102 extends BaseEvent {
         //以下はイベントごとに設定
         await new Promise<void>(resolve => {
 
-            //プレイヤーの状態を更新
-            this.player.state = CharacterState.normal;
+            this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
 
-            //NPC削除
-            this.grandpa.deleteCharacter();
+                //プレイヤーの状態を更新
+                this.player.state = CharacterState.normal;
 
-            //設定を戻す
-            this.gameScene.events.emit('EVENT_END');
+                //NPC削除
+                this.grandpa.deleteCharacter();
 
-            //フラグ更新のためマップリスタート
-            this.gameScene.events.emit('FIELD_RESTART', {
-                gameMode: 'updateFlg',
-                x: this.player.x,
-                y: this.player.y,
-                mapKey: '0102',
-                initStandKey: 'stand_down'
+                //設定を戻す
+                this.gameScene.events.emit('EVENT_END');
+
+                //フラグ更新のためマップリスタート
+                this.gameScene.events.emit('FIELD_RESTART', {
+                    gameMode: 'updateFlg',
+                    x: this.player.x,
+                    y: this.player.y,
+                    mapKey: '0102',
+                    initStandKey: 'stand_down'
+                });
+
+                resolve();
             });
 
-            resolve();
+            this.eventScene.cameras.main.fadeOut(200);
         })
 
         this.eventScene.scene.stop();

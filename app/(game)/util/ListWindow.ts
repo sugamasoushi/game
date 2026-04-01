@@ -2,9 +2,10 @@ import { EventScene, GameScene } from "../lib/types";
 import { MessageObject } from "./MessageObject";
 import { MessageWindow } from "./MessageWindow";
 import { DataDefinition } from "../Data/DataDefinition";
+import { Menu } from "../scenes/Menu";
 
 export class ListWindow extends Phaser.GameObjects.Graphics {
-    protected fromScene: GameScene | EventScene;
+    protected fromScene: GameScene | EventScene | Menu;
     private messageObject: MessageObject;
     private messageWindowInstance: MessageWindow;
     private cursorObj: Phaser.GameObjects.Graphics;
@@ -21,21 +22,22 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
 
     protected textObjectList: Phaser.GameObjects.Text[];
 
-    private messageWidth: number;
-    private messageHeight: number;
+    public messageWidth: number;
+    public messageHeight: number;
     protected keyCode: string;
     protected nowChoiceNo: number = 0;
     protected nextChoiceNo: number;
 
-    private selectList: string[];
-    choicetList = ['はい', 'いいえ']//デフォルト
+    private choicetList = ['はい', 'いいえ']//デフォルト
 
-    constructor(scene: GameScene | EventScene, x: number, y: number, list: string[]) {
+    constructor(scene: GameScene | EventScene | Menu, x: number, y: number, list: string[]) {
         super(scene);
         this.x = x;
         this.y = y;
         this.fromScene = scene;
-        this.selectList = list;
+        if (list) {
+            this.choicetList = list;
+        }
         this.addToUpdateList();
 
     }
@@ -66,7 +68,7 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
         this.createCursor(this.x, this.y);
 
         //メッセージウィンドウ
-        const rectR = 8;
+        const rectR = 16;
         this.messageWindowInstance = new MessageWindow(this.fromScene);
         this.messageWindowInstance.init();
         this.messageWindowInstance.createMessageWindow(
@@ -75,7 +77,8 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
             this.messageWidth + rectR * 2 + this.fontSize,
             this.messageHeight + rectR * 2,
             rectR,
-            undefined);
+            undefined
+        );
 
     }
 

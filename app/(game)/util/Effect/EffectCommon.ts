@@ -1,13 +1,14 @@
-export default class EffectCommon extends Phaser.GameObjects.Sprite {
+export class EffectCommon extends Phaser.GameObjects.Sprite {
     private depthValue: number;
-    protected fireAnimKey: string = 'fire';
+    protected textureKey: string;
+    protected startAnimKey: string = 'start';
     protected finishAnimKey: string = 'finish';
     private attackDuration: number;
     private deleteDuration: number = 1000;
     protected frameRateValue: number = 10;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, attackDuration: number, sprite: Phaser.GameObjects.Sprite | undefined) {
-        super(scene, x, y, texture);
+    constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string, attackDuration: number, sprite: Phaser.GameObjects.Sprite | undefined) {
+        super(scene, x, y, textureKey);
         //シーンとマップで使い分ける
         if (sprite !== undefined) {
             this.attackDuration = attackDuration;
@@ -15,14 +16,14 @@ export default class EffectCommon extends Phaser.GameObjects.Sprite {
             this.addToDisplayList();
             this.scene.physics.add.existing(this);//物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
             this.depthValue = sprite.depth;
-            this.animationSetting('flames32');
-            this.anims.play(this.fireAnimKey, true);
+            this.animationSetting(textureKey);
+            this.anims.play(this.startAnimKey, true);
             this.timerAnim();
         } else {
             this.attackDuration = attackDuration;
             this.addToUpdateList();
             this.addToDisplayList();
-            this.animationSetting('flames32');
+            this.animationSetting(textureKey);
         }
     }
 
@@ -49,7 +50,7 @@ export default class EffectCommon extends Phaser.GameObjects.Sprite {
     attackAnimation() {
         return new Promise<void>(resolve => {
             //発射時アニメーション
-            this.anims.play(this.fireAnimKey, true);
+            this.anims.play(this.startAnimKey, true);
 
             //指定秒後に発生
             this.scene.time.delayedCall(this.attackDuration, () => {

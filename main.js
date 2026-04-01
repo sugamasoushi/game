@@ -27,7 +27,7 @@ function createWindow() {
     },
   });
 
-  ipcMain.handle('save-data', async (event, data) => {
+  ipcMain.handle('save-data', async (_event, data) => {
     const filePath = path.join(app.getPath('userData'), 'savedata.json');
     try {
       fs.writeFileSync(filePath, typeof data === 'string' ? data : JSON.stringify(data));
@@ -38,7 +38,7 @@ function createWindow() {
     }
   });
 
-  ipcMain.handle('clear-save-data', async (event) => {
+  ipcMain.handle('clear-save-data', async (_event) => {
     const filePath = path.join(app.getPath('userData'), 'savedata.json');
     try {
       if (fs.existsSync(filePath)) {
@@ -51,7 +51,7 @@ function createWindow() {
     }
   });
 
-  ipcMain.handle('load-data', async (event) => {
+  ipcMain.handle('load-data', async (_event) => {
     const filePath = path.join(app.getPath('userData'), 'savedata.json');
     try {
       if (fs.existsSync(filePath)) {

@@ -5,7 +5,7 @@ import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import { Sound } from "../../scenes/Sound";
 
-export class SaveWindow extends Phaser.GameObjects.Container {
+export class MovieWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;
     public selectAllow: SelectAllow;
@@ -22,7 +22,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
         const saveX = 100;
         const saveY = 0;
 
-        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Save;
+        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Movie;
         this.y = mainColumn.containtsY;
 
         const messageObject = new MessageObject();

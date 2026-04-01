@@ -19,8 +19,6 @@ export class Boot extends Scene {
         this.load.image('LondonBridge', 'assets/img/LondonBridge/LondonBridge.bmp');
         this.load.image('GameStartAlert', 'assets/img/background/ゲームスタートお知らせ.png');
         this.load.json('savedata', 'assets/data/savedata.json');
-        this.load.json('namedata', 'assets/data/namedata.json');
-        this.load.json('ImageKeyData', 'assets/data/ImageKeyData.json');
 
     }
 

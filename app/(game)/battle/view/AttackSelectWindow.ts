@@ -15,6 +15,7 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
     private columnWindow: MessageWindow;
     private allow: SelectAllow;
     private backButton: Phaser.GameObjects.Text;
+    private backButtonWindow: MessageWindow;
 
     private characterIcon: Phaser.GameObjects.Image;
 
@@ -37,30 +38,34 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private createWindow(column: string[]) {
-        //戻るボタン
-        this.backButton = this.scene.add.text(
-            60, -40,
-            "✖", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
-        this.backButton.setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
+
+        const messageObjectInstance = new MessageObject();
+        messageObjectInstance.init(this.scene);
+        messageObjectInstance.getTextInfomation();
+
+        this.backButton = messageObjectInstance.createTextObject(this.scene, 80, -48, "✖");
+        this.backButton.setDepth(Number(this.scene.game.config.height) + 1);
         this.backButton.setInteractive({ useHandCursor: true });
         this.backButton.on('pointerdown', () => {
             this.emit('Select_back_Submit', 0);
             this.nowSelectNo = 0;
         }, this);
 
-        const messageOBjectInstance = new MessageObject();
-        messageOBjectInstance.init(this.scene);
+        this.backButtonWindow = new MessageWindow(this.scene);
+        this.backButtonWindow.init();
+        this.backButtonWindow.createOneColumnOneWindow(this.backButton, 16);
+
 
         //項目テキスト作成
         column.forEach(str => {
-            const messagaObject = messageOBjectInstance.createTextObject(this.scene, 0, 0, str)
+            const messagaObject = messageObjectInstance.createTextObject(this.scene, 0, 0, str)
             messagaObject.name = str;
             this.selectList.push(messagaObject);
         });
 
         //テキスト配置及びクリック時の動作を設定
         this.selectList.forEach((obj, index) => {
-            obj.y = index * (obj.height + messageOBjectInstance.getTextInfomation().lineSpaceValue);
+            obj.y = index * (obj.height + messageObjectInstance.getTextInfomation().lineSpaceValue);
 
             obj.on('pointerover', () => {
                 this.allow.updatePosition(obj);
@@ -82,12 +87,14 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         //カーソル作成配置
         this.allow = new SelectAllow(this.scene);
         this.allow.init(0, 0)
+        this.allow.createAllow();
         this.allow.updatePosition(this.selectList[this.nowSelectNo]);
 
         //コンテナ作成
         this.add(this.columnWindow);
         this.add(this.selectList);
         this.add(this.allow);
+        this.add(this.backButtonWindow);
         this.add(this.backButton);
 
         //クリック可能に設定
@@ -98,16 +105,17 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
 
     //選択実行
     private selectExec(index: number) {
-        if (index === 0) {//攻撃、敵キャラを選択
-            this.emit('Attack_Select_Submit', this.nowSelectCharacter);
 
-        } else if (index === 1) {//特技、次ウィンドウを開く
-            const debugMessage = new DebugMessage(this.scene);
-            debugMessage.NotImplemented(undefined);
-
-        } else if (index === 2) {//魔法、次ウィンドウを開く
-            const debugMessage = new DebugMessage(this.scene);
-            debugMessage.NotImplemented(undefined);
+        switch (index) {
+            case 0: //攻撃、敵キャラを選択
+                this.emit('Attack_Select_Submit', this.nowSelectCharacter);
+                break;
+            case 1: //特技、次ウィンドウを開く
+                this.emit('SpecialSkill_Select_Submit', this.nowSelectCharacter);
+                break;
+            case 2: //魔法、次ウィンドウを開く
+                this.emit('MagicSkill_Select_Submit', this.nowSelectCharacter);
+                break;
         }
     }
 

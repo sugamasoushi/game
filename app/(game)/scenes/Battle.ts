@@ -10,6 +10,8 @@ import { PlayerPartyWindow } from "../battle/view/PlayerPartyWindow";
 import { AttackSelectWindow } from '../battle/view/AttackSelectWindow';
 import { EnemySelectWindow } from "../battle/view/EnemySelectWindow";
 import { BattleMessageWindow } from "../battle/view/BattleMessageWindow";
+import { SpecialSkillSelectWindow } from "../battle/view/SpecialSkillSelectWindow";
+import { MagicSkillSelectWindow } from "../battle/view/MagicSkillSelectWindow";
 
 import { BattlePresenter } from "../battle/presenter/BattlePresenter";
 
@@ -33,6 +35,8 @@ export class Battle extends Phaser.Scene implements BattleScene {
     private attackSelectWindow: AttackSelectWindow;
     private enemySelectWindow: EnemySelectWindow;
     private battleMessageWindow: BattleMessageWindow;
+    private specialSkillSelectWindow: SpecialSkillSelectWindow;
+    private magicSkillSelectWindow: MagicSkillSelectWindow;
 
     //presenter
     private battlePresenter: BattlePresenter;
@@ -69,6 +73,8 @@ export class Battle extends Phaser.Scene implements BattleScene {
         this.attackSelectWindow = new AttackSelectWindow(this)
         this.enemySelectWindow = new EnemySelectWindow(this);
         this.battleMessageWindow = new BattleMessageWindow(this);
+        this.specialSkillSelectWindow = new SpecialSkillSelectWindow(this);
+        this.magicSkillSelectWindow = new MagicSkillSelectWindow(this);
 
         //presenter
         this.battlePresenter = new BattlePresenter(
@@ -80,7 +86,9 @@ export class Battle extends Phaser.Scene implements BattleScene {
             this.playerPartyWindow,
             this.attackSelectWindow,
             this.enemySelectWindow,
-            this.battleMessageWindow
+            this.battleMessageWindow,
+            this.specialSkillSelectWindow,
+            this.magicSkillSelectWindow
         );
         this.battlePresenter.init();
 
@@ -114,6 +122,8 @@ export class Battle extends Phaser.Scene implements BattleScene {
                 playerPartyWindow: this.playerPartyWindow,
                 attackSelect: this.attackSelectWindow,
                 enemySelectWindow: this.enemySelectWindow,
+                specialSkillSelect: this.specialSkillSelectWindow,
+                magicSkillSelect: this.magicSkillSelectWindow,
 
                 item: this.playerPartyWindow,//まだ使ってない
             });

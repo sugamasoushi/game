@@ -64,9 +64,10 @@ export class SaveDataManager {
         if (dataName !== 'Lv' && dataName !== 'HP' && dataName !== 'MP' && dataName !== 'MaxHP' && dataName !== 'MaxMP' &&
             dataName !== 'Attack' && dataName !== 'Guard' && dataName !== 'Speed' &&
             dataName !== 'Weapon' && dataName !== 'Armor' &&
-            dataName !== 'normalSkill' && dataName !== 'specialSkill' && dataName !== 'MagicSkill' &&
+            dataName !== 'special' && dataName !== 'magic' &&
             dataName !== 'name' && dataName !== 'ImageKey' && dataName !== 'NpcType' && dataName !== 'BattleTarget' &&
-            dataName !== 'BattleTargetIcon'
+            dataName !== 'BattleTargetIcon' && dataName !== 'skilldata' && dataName !== 'SkillType' && dataName !== 'UseSkill'
+
         ) {
             chekResult = true;
         }

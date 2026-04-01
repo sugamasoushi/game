@@ -77,21 +77,25 @@ export class EVENT0003 extends BaseEvent {
 
         //以下はイベントごとに設定
         await new Promise<void>(resolve => {
+            this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
 
-            //設定を戻す
-            this.gameScene.events.emit('EVENT_END', true)
+                //設定を戻す
+                this.gameScene.events.emit('EVENT_END', true)
 
-            //マップ移動はシーンの再描画で実施する
-            //FieldPresenterに通知
-            this.gameScene.events.emit('FIELD_RESTART', {
-                gameMode: 'FieldMove',
-                x: 816,
-                y: 490,
-                mapKey: '0101',
-                initStandKey: 'stand_up'
+                //マップ移動はシーンの再描画で実施する
+                //FieldPresenterに通知
+                this.gameScene.events.emit('FIELD_RESTART', {
+                    gameMode: 'FieldMove',
+                    x: 816,
+                    y: 490,
+                    mapKey: '0101',
+                    initStandKey: 'stand_up'
+                });
+
+                resolve();
             });
 
-            resolve();
+            this.eventScene.cameras.main.fadeOut(200);
         })
         this.eventScene.scene.stop();
     }

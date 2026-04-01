@@ -1,0 +1,85 @@
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+
+./app/(game)/battle/model/BattleModel.ts
+212:65  Warning: 'key' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/battle/presenter/BattlePresenter.ts
+189:61  Warning: 'skillType' is defined but never used.  @typescript-eslint/no-unused-vars
+213:67  Warning: 'nowSelectCharacter' is defined but never used.  @typescript-eslint/no-unused-vars
+225:65  Warning: 'nowSelectCharacter' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/battle/presenter/EnemyAttack.ts
+78:19  Warning: 'tween' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/battle/presenter/PlayerAttack.ts
+37:19  Warning: 'skillDetail' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/battle/view/AttackSelectWindow.ts
+5:8  Warning: 'DebugMessage' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/battle/view/MagicSkillSelectWindow.ts
+88:33  Warning: 'fontSize' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/battle/view/PlayerPartyWindow.ts
+88:21  Warning: 'index' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/battle/view/SpecialSkillSelectWindow.ts
+88:33  Warning: 'fontSize' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/core/input/InputManager.ts
+3:36  Warning: 'Observable' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/core/SaveDataManager.ts
+30:26  Warning: 'e' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/Data/CharacterDefinition.ts
+3:6  Warning: 'TextInfomation' is defined but never used.  @typescript-eslint/no-unused-vars
+11:6  Warning: 'MessageWindowInfomation' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/event/presenters/EventTalk.ts
+185:15  Warning: 'height' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/event/view/EVENT0001.ts
+75:19  Warning: 'textScroll' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/GameAllState/PlayerStatus.ts
+2:10  Warning: 'filter' is defined but never used.  @typescript-eslint/no-unused-vars
+2:23  Warning: 'take' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/gamemain/presenter/NpcPresenter.ts
+1:21  Warning: 'State' is defined but never used.  @typescript-eslint/no-unused-vars
+6:10  Warning: 'DataDefinition' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/gamemain/view/FireButton.ts
+20:15  Warning: 'gameConfigWidth' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/gamemain/view/MapObject.ts
+44:15  Warning: 'time' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/menu/view/ItemWindow.ts
+2:10  Warning: 'Menu' is defined but never used.  @typescript-eslint/no-unused-vars
+95:29  Error: 'partyname' is never reassigned. Use 'const' instead.  prefer-const
+
+./app/(game)/menu/view/MenuListWindow.ts
+4:8  Warning: 'DebugMessage' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/scenes/Game.ts
+6:10  Warning: 'ReadyEvents' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/util/CharacterGameObject.ts
+75:19  Warning: 'updateTween' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+106:27  Warning: 'updateTween' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/util/EnergyGauge.ts
+22:15  Warning: 'time' is defined but never used.  @typescript-eslint/no-unused-vars
+22:29  Warning: 'delta' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/(game)/util/ListWindow.ts
+85:15  Warning: 'time' is defined but never used.  @typescript-eslint/no-unused-vars
+85:29  Warning: 'delta' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

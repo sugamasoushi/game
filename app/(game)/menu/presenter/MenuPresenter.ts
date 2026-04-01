@@ -44,8 +44,11 @@ export class MenuPresenter {
         this.scene.events.on('USE_ITEM', this.onUseItem, this);
     }
 
-    private onUseItem(itemName: string, count: number) {
-        this.menuModel.useItem(itemName, count);
+    //アイテム使用
+    private onUseItem(itemName: string, count: number, memberIndex: number = 0) {
+        this.menuModel.useItem(itemName, count, memberIndex);
+
+        //コンディション画面のステータスを更新
         this.scene.events.emit('UPDATE_CONDITION', this.menuModel.getPlayerData());
     }
 

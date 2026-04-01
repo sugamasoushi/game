@@ -83,7 +83,7 @@ export class EVENT0001 extends BaseEvent {
             });
 
             this.eventScene.input.once('pointerdown', () => {
-                textScroll.pause();
+                //textScroll.pause();
                 resolve();
             });
         })
@@ -93,7 +93,7 @@ export class EVENT0001 extends BaseEvent {
             this.eventScene.tweens.add({
                 targets: [maskRect, textObject],
                 alpha: 0,
-                duration: 1000,
+                duration: 800,
                 ease: 'Power1',
                 onComplete: () => {
                     textObject.destroy();

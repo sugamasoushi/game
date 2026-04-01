@@ -34,7 +34,25 @@ export default class EnemyAttack {
                     this.blinking(targetIcon)
                 ]);
 
-                this.target.data.values.HP -= this.attacker.getData('Attack');
+                //回避チェック
+                if (this.target.getData('avoid')) {
+                    battleMessageWindow.messageOutput(this.target.getData('name') + 'は回避した！', 600);
+                    return;
+                }
+
+                //ガードチェック
+                if (this.target.getData('guardPoint') > 0) {
+                    battleMessageWindow.messageOutput(this.target.getData('name') + 'は防御した！', 600);
+                    // this.target.setData('guardPoint', 0);
+                }
+
+                //ダメージ計算
+                let GuardValue = 0;
+                if (this.target.getData('GuardValue')) {
+                    GuardValue = this.target.getData('GuardValue');
+                }
+                const damage = Math.max(this.attacker.getData('Attack') - GuardValue, 1);
+                this.target.data.values.HP -= damage;
                 if (this.target.data.values.HP <= 0) {
                     this.target.data.values.HP = 0;
                 }

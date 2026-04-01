@@ -10,6 +10,8 @@ export interface ViewsContainer {
   attackSelect: IWindowView;
   enemySelectWindow: IWindowView;
   item: IWindowView;
+  specialSkillSelect: IWindowView;
+  magicSkillSelect: IWindowView;
 }
 
 export interface CharacterStatus {

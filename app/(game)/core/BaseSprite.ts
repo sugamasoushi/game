@@ -111,7 +111,7 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
      * 移動先座標を設定する。
      * 他メソッドから呼び出すこと
      */
-    public setMoveToPosition(x: number, y: number, velocity?: number, moveDefaultTime?: number) {
+    public setMoveToPosition(x: number, y: number, partyNum: number, npcFlg: boolean, velocity?: number, moveDefaultTime?: number) {
         if (this.state !== CharacterState.normal) return;
 
         const v: number = velocity ? velocity : this.moveVelocity;//速度
@@ -121,6 +121,33 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
         //移動先座標を設定
         this.moveToPositionX = x;
         this.moveToPositionY = y;
+
+        if (!npcFlg && partyNum > 0) {
+            console.log(this.name)
+            // リーダーとの距離を計算（ピタゴラスの定理）
+            const distance = Phaser.Math.Distance.Between(this.x, this.y, x, y);
+
+            // 停止距離のしきい値（例：32px〜40px程度。キャラのサイズに合わせて調整）
+            const stopDistance = 32 * partyNum;
+
+            if (distance < stopDistance) {
+                // 十分に近い場合は移動せず、その場で停止
+                if (this.body) {
+                    (this.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                }
+                // 向きだけはリーダーの方を向かせる（必要であれば）
+                this.setMoveDirection();
+                return;
+            }
+
+            // 停止距離より遠い場合は、移動先を少しずらす
+            const angle = Phaser.Math.Angle.Between(x, y, this.x, this.y);
+            const offsetX = Math.cos(angle) * stopDistance;
+            const offsetY = Math.sin(angle) * stopDistance;
+
+            this.moveToPositionX = x + offsetX;
+            this.moveToPositionY = y + offsetY;
+        }
 
         //方向を設定
         this.setMoveDirection();

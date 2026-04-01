@@ -175,7 +175,7 @@ export class BattleModel {
 
     public getCanNotRunaway(): boolean { return this.canNotRunaway; }
 
-    public getPlayerParty(): Map<string, Phaser.GameObjects.Image> { return this.playerPartyMap; }
+    public getPlayerParty(): Map<string, Phaser.GameObjects.Sprite> { return this.playerPartyMap; }
     public getEnemyParty(): Map<string, Phaser.GameObjects.Image> { return this.enemyPartyMap; }
     public getFieldHitEnemy(): Npc { return this.fieldHitEnemy }
 
@@ -230,6 +230,17 @@ export class BattleModel {
 
     public getUsePatern() {
         return this.usePatern;
+    }
+
+    public resetBattleStatus() {
+        for (const partyMember of this.playerPartyMap.values()) {
+            partyMember.data.remove('GuardValue');
+            partyMember.data.remove('SkillType');
+            partyMember.data.remove('UseSkill');
+            partyMember.data.remove('BattleTarget');
+            partyMember.data.remove('BattleTargetIcon');
+            partyMember.data.remove('attackType');
+        }
     }
 
 }

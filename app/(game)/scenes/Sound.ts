@@ -12,11 +12,13 @@ export class Sound extends Scene {
     //SE
     public SE_waterFall: Phaser.Sound.HTML5AudioSound;
     public SE_fire: Phaser.Sound.HTML5AudioSound;
+    public SE_smallPunch: Phaser.Sound.HTML5AudioSound;
     public SE_punch: Phaser.Sound.HTML5AudioSound;
     public SE_victory: Phaser.Sound.HTML5AudioSound;
     public SE_karuipunch: Phaser.Sound.HTML5AudioSound;
     public SE_message: Phaser.Sound.HTML5AudioSound;
     public SE_attack: Phaser.Sound.HTML5AudioSound;
+    public SE_attack6: Phaser.Sound.HTML5AudioSound;
     public SE_chestOpen: Phaser.Sound.HTML5AudioSound;
 
     constructor() { super('Sound'); }
@@ -39,10 +41,14 @@ export class Sound extends Scene {
 
         this.SE_fire = this.sound.add('SE_fire', { loop: true }) as Phaser.Sound.HTML5AudioSound;
         this.SE_fire.volume = 0.3;
+        this.SE_smallPunch = this.sound.add('SE_smallPunch', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_smallPunch.volume = 0.7;
         this.SE_punch = this.sound.add('SE_punch', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_punch.volume = 0.7;
         this.SE_attack = this.sound.add('SE_attack', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_attack.volume = 0.7;
+        this.SE_attack6 = this.sound.add('SE_attack6', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_attack6.volume = 0.7;
         this.SE_victory = this.sound.add('SE_victory', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_victory.volume = 0.7;
         this.SE_karuipunch = this.sound.add('SE_karuipunch', { loop: false }) as Phaser.Sound.HTML5AudioSound;

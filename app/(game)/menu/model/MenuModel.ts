@@ -6,6 +6,8 @@ export class MenuModel {
     private gameScene: GameScene;
     private scene: Phaser.Scene;
 
+    private playerPartyList: Phaser.Physics.Arcade.Sprite[] = [];
+
     // Setting Data
     public fontFamily: string;
     public fontColor: string;
@@ -39,6 +41,8 @@ export class MenuModel {
         this.alphaValue = settingBubbleData.alphaValue;
         this.lineColor = settingBubbleData.lineColor;
 
+        this.playerPartyList = this.gameScene.getMapObject().getPlayerPartyList();
+
         this.saveDataManager = new SaveDataManager();
     }
 
@@ -58,6 +62,10 @@ export class MenuModel {
         return this.gameScene.getPlayer().getData(itemName);
     }
 
+    public getPlayerPartyList(): Phaser.Physics.Arcade.Sprite[] {
+        return this.playerPartyList;
+    }
+
     // アイテムリストから表示不要なステータス項目を除外して返す
     public getValidItemList(): string[] {
         const itemList: string[] = [];
@@ -72,7 +80,7 @@ export class MenuModel {
         return itemList;
     }
 
-    public useItem(itemName: string, count: number) {
+    public useItem(itemName: string, count: number, memberIndex: number = 0) {
 
         // 更新後のアイテム数が0以下なら登録情報を削除
         if (count <= 0 || count == undefined) {
@@ -80,27 +88,32 @@ export class MenuModel {
             console.log(itemName, this.gameScene.getPlayer().data);
         }
 
+        // 使用対象のメンバーデータを取得
+        const targetMember = this.playerPartyList[memberIndex];
+        if (!targetMember) return;
+        const memberData = targetMember.data.values;
+
         // アイテムごとの回復処理
         switch (itemName) {
             case 'やくそう':
-                this.gameScene.getPlayer().data.values['HP'] += 10;
+                memberData['HP'] += 10;
                 break;
             case 'おにぎり':
-                this.gameScene.getPlayer().data.values['HP'] += this.gameScene.getPlayer().data.values['MaxHP'];
+                memberData['HP'] += memberData['MaxHP'];
                 break;
             case 'ばんそうこう':
-                this.gameScene.getPlayer().data.values['MP'] += 10;
+                memberData['MP'] += 10;
                 break;
             default:
                 break;
         }
 
         // 回復後の最大値チェック
-        if (this.gameScene.getPlayer().data.values['HP'] > this.gameScene.getPlayer().data.values['MaxHP']) {
-            this.gameScene.getPlayer().data.values['HP'] = this.gameScene.getPlayer().data.values['MaxHP'];
+        if (memberData['HP'] > memberData['MaxHP']) {
+            memberData['HP'] = memberData['MaxHP'];
         }
-        if (this.gameScene.getPlayer().data.values['MP'] > this.gameScene.getPlayer().data.values['MaxMP']) {
-            this.gameScene.getPlayer().data.values['MP'] = this.gameScene.getPlayer().data.values['MaxMP'];
+        if (memberData['MP'] > memberData['MaxMP']) {
+            memberData['MP'] = memberData['MaxMP'];
         }
     }
 }
