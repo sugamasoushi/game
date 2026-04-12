@@ -3,6 +3,7 @@ import { MessageObject } from "../../util/MessageObject";
 import { EnergyGauge } from "../../util/EnergyGauge";
 import { CharacterGameObject } from '../../event/view/CharacterGameObject';
 import { DataDefinition } from '../../Data/DataDefinition';
+import { SearchCharacterData } from '../../Data/SearchCharacterData';
 
 export class PlayerPartyWindow extends Phaser.GameObjects.Container {
     private gameScene: GameScene;
@@ -69,36 +70,45 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
         }
     }
 
-    public createBattleCharacterIcon(partyList: string[], x: number, y: number) {
-        this.partyList = partyList;
+    public createBattleCharacterIcon(playerPartyList: Phaser.GameObjects.Sprite[], x: number, y: number) {
+        const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
+
         this.x = x;
         this.y = y;
-
-        const settingData = new DataDefinition();
 
         const msgObjInstance = new MessageObject();
         msgObjInstance.init(this.scene);
 
-        const gameScene = (this.scene.scene.get('Game') as GameScene);
-        const characterGameObjectInstance = new CharacterGameObject();
+        // 各種リストを初期化
+        this.partyList = [];
+        this.charIconList = [];
+        this.selectList = [];
+        this.nowHPColmunList = [];
+        this.nowMPColmunList = [];
+        this.characterObject = new Map();
 
         let nextCharacterX = 0;
         const nextCharacterY = 0;
 
-        for (const [index, character] of Object.entries(partyList)) {
+        for (const character of playerPartyList) {
 
-            //キャラクターデータを保持しているフィールドのスプライトを取得
-            const characterSprite: Phaser.Physics.Arcade.Sprite = characterGameObjectInstance.getSprite(gameScene, character);
+            //キャラクター名のリストを作成
+            this.partyList.push(character.name);
 
-            const imageKey = settingData.getCharacterImageKey(this.scene, character)!.normal;
-            const charIcon: Phaser.GameObjects.Image = this.scene.add.image(0, 0, 'Icon_' + imageKey);
-            charIcon.name = character;
+            //キャラの画像キーを取得
+            const iconImageKey = searchCharacterData.getCharacterData(character.name).icon;
+
+            const charIcon: Phaser.GameObjects.Image = this.scene.add.image(0, 0, iconImageKey);
+            charIcon.name = character.name;
             charIcon.setOrigin(0);
             charIcon.setPosition(nextCharacterX, nextCharacterY);
             this.charIconList.push(charIcon);
 
-            const columnX = charIcon.width + 10
+            const columnX = nextCharacterX + charIcon.width + 10;
             let columnWidth = 0;
+
+            // 各キャラクターごとの詳細情報のラベル（Lv, HP, MP）
+            const charLabels: Phaser.GameObjects.Text[] = [];
 
             //項目を作成
             for (const str of this.mainColumn) {
@@ -107,18 +117,19 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
                 msgObj.setDepth(100);
                 msgObj.setStroke('#2d2d2d', 5)
                 this.selectList.push(msgObj)
+                charLabels.push(msgObj);
                 if (columnWidth < msgObj.width) {
                     columnWidth = msgObj.width;
                 }
             };
             columnWidth += 5;//項目の右スペースを加算
 
-            const HP = characterSprite.data.get('HP');
-            const MaxHP = characterSprite.data.get('MaxHP');
-            const MP = characterSprite.data.get('MP');
-            const MaxMP = characterSprite.data.get('MaxMP');
+            const HP = character.data.get('HP');
+            const MaxHP = character.data.get('MaxHP');
+            const MP = character.data.get('MP');
+            const MaxMP = character.data.get('MaxMP');
 
-            const LvColumn = msgObjInstance.createTextObject(this.scene, 0, 0, characterSprite.data.get('Lv'));
+            const LvColumn = msgObjInstance.createTextObject(this.scene, 0, 0, character.data.get('Lv'));
             const nowHPColmun = msgObjInstance.createTextObject(this.scene, 0, 0, HP);
             const maxHPColmun = msgObjInstance.createTextObject(this.scene, 0, 0, '/ ' + MaxHP);
             const nowMPColmun = msgObjInstance.createTextObject(this.scene, 0, 0, MP);
@@ -138,13 +149,12 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
             let gaugeMP: EnergyGauge;
             let gaugeCaseMP: EnergyGauge;
 
-            //右下座標
-            let zoneWidth = columnX + columnWidth;
-            // const zoneHeight = charIcon.height;
+            // 右端の計算用
+            let currentCharacterWidth = (columnX - nextCharacterX) + columnWidth;
 
             //値配置及びゲージ作成配置。項目を基準に配置する。
-            this.selectList.forEach((obj, index) => {
-                obj.y = index * (obj.height + obj.lineSpacing);
+            charLabels.forEach((obj, index) => {
+                obj.y = nextCharacterY + index * (obj.height + obj.lineSpacing);
                 if (obj.name === 'Lv') {
                     LvColumn.x = obj.x + 40;
                     LvColumn.y = obj.y;
@@ -154,9 +164,9 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
                     nowHPColmun.y = obj.y;
                     maxHPColmun.x = nowHPColmun.x + 32;
                     maxHPColmun.y = nowHPColmun.y;
-                    gaugeCaseHP = new EnergyGauge(this.scene, characterSprite, 'MaxHP');
+                    gaugeCaseHP = new EnergyGauge(this.scene, character, 'MaxHP');
                     gaugeCaseHP.setPosition(obj.x + 40, obj.y + 2);
-                    gaugeHP = new EnergyGauge(this.scene, characterSprite, 'HP');
+                    gaugeHP = new EnergyGauge(this.scene, character, 'HP');
                     gaugeHP.setPosition(obj.x + 40, obj.y + 2);
                 }
                 if (obj.name === 'MP') {
@@ -164,12 +174,15 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
                     nowMPColmun.y = obj.y;
                     maxMPColmun.x = nowMPColmun.x + 32;
                     maxMPColmun.y = nowMPColmun.y;
-                    gaugeCaseMP = new EnergyGauge(this.scene, characterSprite, 'MaxMP');
+                    gaugeCaseMP = new EnergyGauge(this.scene, character, 'MaxMP');
                     gaugeCaseMP.setPosition(obj.x + 40, obj.y + 2);
-                    gaugeMP = new EnergyGauge(this.scene, characterSprite, 'MP');
+                    gaugeMP = new EnergyGauge(this.scene, character, 'MP');
                     gaugeMP.setPosition(obj.x + 40, obj.y + 2);
 
-                    zoneWidth += gaugeCaseMP.getWidth();
+                    const rightEdge = (obj.x - nextCharacterX) + 40 + gaugeCaseMP.getWidth();
+                    if (currentCharacterWidth < rightEdge) {
+                        currentCharacterWidth = rightEdge;
+                    }
                 }
             });
 
@@ -183,34 +196,23 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
                 nowHPColmun,
                 maxHPColmun,
                 nowMPColmun,
-                maxMPColmun];
+                maxMPColmun,
+                ...charLabels
+            ];
             this.add(columnlist);
 
-            //クリックゾーン作成
-            //※未使用だが一応残す。キャラ順番を選択する場合は使用する。
-            //const clickZone = this.scene.add.zone(0, 0, zoneWidth, zoneHeight).setName('charcterClickZone' + index);
-            //clickZone.setInteractive({ useHandCursor: true });
-            //clickZone.setOrigin(0);
-            //clickZone.x = 0;
-            //clickZone.y = 0;
-            //this.add(clickZone);
-
-            this.add(this.selectList);
-
-            //次キャラクターのx座標を更新
-            nextCharacterX = zoneWidth + 10;
-
-            this.characterObject = new Map();
-            this.characterObject.set(character, {
+            this.characterObject.set(character.name, {
                 obj: {
                     CharacterIcon: charIcon,
-                    // clickZone: clickZone,
                     nowHPText: nowHPColmun,
                     maxHPText: maxHPColmun,
                     nowMPText: nowMPColmun,
                     maxMPText: maxMPColmun
                 }
             })
+
+            // 次のキャラクターの表示用X座標を更新
+            nextCharacterX += currentCharacterWidth + 30; // キャラクター間の隙間を追加
         }
 
         this.setVisible(false);

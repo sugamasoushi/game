@@ -37,9 +37,10 @@ export class Load extends Scene {
         });
 
         this.load.json('bubbleTalkData', 'assets/data/bubbleTalkData.json');
-        this.load.json('namedata', 'assets/data/namedata.json');
+        this.load.json('enemydata', 'assets/data/enemydata.json');
         this.load.json('skilldata', 'assets/data/skilldata.json');
-        this.load.json('ImageKeyData', 'assets/data/ImageKeyData.json');
+        this.load.json('characterdata', 'assets/data/characterdata.json');
+
         this.load.image('enemy00', 'assets/img/CharaStand/enemy00.png');
         this.load.image('enemy01', 'assets/img/CharaStand/enemy01.png');
         this.load.image('enemy02', 'assets/img/CharaStand/enemy02.png');
@@ -64,56 +65,17 @@ export class Load extends Scene {
         this.load.spritesheet('girl', 'assets/img/spritesheet/char_45_75.png',
             { frameWidth: 45, frameHeight: 75 }
         );
-        this.load.spritesheet('amber', 'assets/img/spritesheet/amber.png',
-            { frameWidth: 28, frameHeight: 39 }
-        );
         this.load.spritesheet('meina', 'assets/img/spritesheet/meina2_32_40.png',
             { frameWidth: 32, frameHeight: 40 }
         );
-
         this.load.spritesheet('lamy', 'assets/img/spritesheet/lamy_32_40.png',
             { frameWidth: 32, frameHeight: 40 }
         );
 
-        this.load.spritesheet('mob01', 'assets/img/spritesheet/pipo-charachip030.png',
-            { frameWidth: 32, frameHeight: 32 }
-        );
-
-        this.load.spritesheet('mob02', 'assets/img/spritesheet/pipo-charachip029.png',
-            { frameWidth: 32, frameHeight: 32 }
-        );
-
-        this.load.spritesheet('whiteCat', 'assets/img/spritesheet/whiteCat.png',
-            { frameWidth: 32, frameHeight: 32 }
-        );
-
-        this.load.spritesheet('blackCat', 'assets/img/spritesheet/blackCat.png',
-            { frameWidth: 32, frameHeight: 32 }
-        );
-
-        this.load.spritesheet('slime', 'assets/img/spritesheet/slime.png',
-            { frameWidth: 32, frameHeight: 32 }
-        );
 
         this.load.spritesheet('waterfall', 'assets/img/tilesets/waterfall.png',
             { frameWidth: 160, frameHeight: 192 }
         );
-
-        this.load.spritesheet('tree_image_key', 'assets/img/tilesets/testtree.png',
-            { frameWidth: 96, frameHeight: 128 }
-        );
-
-        this.load.spritesheet('tree_glass_image_key', 'assets/img/tilesets/tree_glass.png',
-            { frameWidth: 96, frameHeight: 96 }
-        );
-        this.load.spritesheet('tree_stem_image_key', 'assets/img/tilesets/tree_stem.png',
-            { frameWidth: 96, frameHeight: 160 }
-        );
-
-        this.load.spritesheet('itemBox_image_key', 'assets/img/tilesets/Chests.png',
-            { frameWidth: 32, frameHeight: 32 }
-        );
-
 
 
         this.load.spritesheet({
@@ -129,18 +91,18 @@ export class Load extends Scene {
             }      //The spacing between each frame in the image.
         });
 
-        this.load.spritesheet({
-            key: 'chicken_walk',
-            url: "/assets/img/spritesheet/chicken_walk.png",
-            frameConfig: {
-                frameWidth: 32,  //横幅
-                frameHeight: 32, //縦幅　指定が無い場合は横幅の値が使用される
-                startFrame: 0,   //解析の最初のフレーム
-                endFrame: 15,    //最後のフレーム　指定無しの場合はフレーム幅で分割計算される
-                margin: 0,       //余白　フレームの端のスペース
-                spacing: 0
-            }      //各フレームの間隔。
-        });
+        // this.load.spritesheet({
+        //     key: 'chicken_walk',
+        //     url: "/assets/img/spritesheet/chicken_walk.png",
+        //     frameConfig: {
+        //         frameWidth: 32,  //横幅
+        //         frameHeight: 32, //縦幅　指定が無い場合は横幅の値が使用される
+        //         startFrame: 0,   //解析の最初のフレーム
+        //         endFrame: 15,    //最後のフレーム　指定無しの場合はフレーム幅で分割計算される
+        //         margin: 0,       //余白　フレームの端のスペース
+        //         spacing: 0
+        //     }      //各フレームの間隔。
+        // });
 
         this.load.spritesheet({
             key: 'chicken_shadow',
@@ -219,15 +181,15 @@ export class Load extends Scene {
 
         //タイル画像のロード
         //データ内のタイルセット画像のURLの一部を書き換える。配置を変更する場合は注意。
-        this.cache.tilemap.getKeys().forEach(key => {
-            // console.log(this.cache.tilemap.get(key).data.tilesets)
-            const tilesets: tilesets[] = this.cache.tilemap.get(key).data.tilesets;
-            tilesets.forEach(obj => {
-                const tileKey = obj.name;
-                const tileUrl = obj.image.replace('..', 'assets');
-                this.load.image({ key: tileKey, url: tileUrl });
-            })
-        })
+        // this.cache.tilemap.getKeys().forEach(key => {
+        //     // console.log(this.cache.tilemap.get(key).data.tilesets)
+        //     const tilesets: tilesets[] = this.cache.tilemap.get(key).data.tilesets;
+        //     tilesets.forEach(obj => {
+        //         const tileKey = obj.name;
+        //         const tileUrl = obj.image.replace('..', 'assets');
+        //         this.load.image({ key: tileKey, url: tileUrl });
+        //     })
+        // })
 
         //イベント管理マップをセーブデータから取得
         // const falgObj = this.cache.json.get('savedata').EventFlag;

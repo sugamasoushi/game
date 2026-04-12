@@ -26,7 +26,7 @@ export class EVENT0102 extends BaseEvent {
         eventTalk0102: {
             talk001: [
                 { grandpa: ['待て！！\n', '・・・・・・・\n', 'ついに行くのか？\n'] },
-                { player: ['う～ん、どうしようかな\n', 'もう行こうかな？\n'] },
+                { meina: ['う～ん、どうしようかな\n', 'もう行こうかな？\n'] },
                 { question: ['はい\n', 'いいえ'] },//選択肢
             ],
             //はいを選んだ場合
@@ -92,13 +92,14 @@ export class EVENT0102 extends BaseEvent {
                 // });
             }),
             //キャラ移動
+            this.grandpa.setVisible(true),
             //this.characterMovingDOWN(this.grandpa, 1450, 100, true),
             this.characterMoving(this.grandpa, this.player.x, 1450, 'walk_down'),
             this.player.setStandFrame(this.player.getAnimationKey().standUp),
         ]);
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).player.normal;
+        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
         const grandpaImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).grandpa.normal;
 
         //画像の設定
@@ -109,7 +110,7 @@ export class EVENT0102 extends BaseEvent {
 
         //キャラ画像を配置
         await Promise.all([
-            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'player', playerImageKey, 1000, 0.6, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
             this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'grandpa', grandpaImageKey, 200, 0.2, 200),
         ]);
 
@@ -139,7 +140,7 @@ export class EVENT0102 extends BaseEvent {
     //イベント終了処理
     override async eventEnd(): Promise<void> {
 
-        const playerImage = this.characterGameObject.getCharacterImage('player');
+        const playerImage = this.characterGameObject.getCharacterImage('meina');
         const grandpaImage = this.characterGameObject.getCharacterImage('grandpa');
 
         await Promise.all([

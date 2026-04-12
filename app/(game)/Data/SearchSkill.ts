@@ -3,8 +3,8 @@ import { SkillData } from "../lib/SkillDataTypes";
 export class SearchSkill {
     private skillData: SkillData;
 
-    constructor(skilldataJson: SkillData) {
-        this.skillData = skilldataJson;
+    constructor(cache: Phaser.Cache.BaseCache) {
+        this.skillData = cache.get('skilldata');
     }
 
     /**

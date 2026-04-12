@@ -5,6 +5,7 @@ import { CharacterGameObject } from './CharacterGameObject';
 import { Player } from "../../gamemain/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 
 
 export class EVENT010202 extends BaseEvent {
@@ -14,6 +15,7 @@ export class EVENT010202 extends BaseEvent {
 
     private characterGameObject: CharacterGameObject;
     private player: Player;
+    private searchCharacterData: SearchCharacterData;
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
@@ -41,23 +43,26 @@ export class EVENT010202 extends BaseEvent {
         this.player = this.gameScene.getPlayer();
         this.player.state = CharacterState.event;
         this.player.stopAnimation();
+
+        //画像キーデータ取得
+        this.searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
     }
 
     //イベント定義
     override async execEvent() {
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).player.normal;
+        const playerImageKey = this.searchCharacterData.getCharacterData('meina').normal;
 
         //キャラ画像を配置
         this.characterGameObject = new CharacterGameObject();
-        this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'player', playerImageKey, 1000, 0.6, 200)
+        this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200)
 
         /*会話---------------------------------------------------------------------------------*/
 
         await this.eventTalk.execTalk([
-            { player: ['ちょっと山を下りて散策しようかな\n', 'そういえば最近ラミア族が多いんだよね\n'] },
-            { player: ['まだ勝てなそうだから気を付けよう。。。\n'] }
+            { meina: ['ちょっと山を下りて散策しようかな\n', 'そういえば最近ラミア族が多いんだよね\n'] },
+            { meina: ['まだ勝てなそうだから気を付けよう。。。\n'] }
 
         ], this.characterGameObject);
 
@@ -69,7 +74,7 @@ export class EVENT010202 extends BaseEvent {
     //イベント終了処理
     override async eventEnd(): Promise<void> {
 
-        const playerImage = this.characterGameObject.getCharacterImage('player');
+        const playerImage = this.characterGameObject.getCharacterImage('meina');
         this.characterGameObject.scrollOutImage(playerImage, 2000, 200)
 
         //以下はイベントごとに設定

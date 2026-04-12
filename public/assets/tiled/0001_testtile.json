@@ -554,6 +554,32 @@
                  "height":0,
                  "id":66,
                  "name":"0101_0495_0337_D",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"D"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0101"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":495
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":337
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -565,6 +591,32 @@
                  "height":256,
                  "id":67,
                  "name":"0002_0000_0245_R",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"R"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0002"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":245
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -576,6 +628,32 @@
                  "height":0,
                  "id":68,
                  "name":"0102_0250_3200_U",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"U"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0102"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":250
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":3200
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -628,52 +706,178 @@
          "name":"NPC",
          "objects":[
                 {
-                 "height":0,
-                 "id":70,
-                 "name":"normal,0304,mob01,01,,20230427,bubbleTalk0001.talk001",
-                 "point":true,
+                 "gid":2542,
+                 "height":32,
+                 "id":82,
+                 "name":"\u304a\u3063\u3055\u3093",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0001.talk003"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":"ossan"
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"\u304a\u3063\u3055\u3093"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"normal"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"pipo-charachip029"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":1141,
-                 "y":531
+                 "width":32,
+                 "x":480,
+                 "y":576
                 }, 
                 {
-                 "height":0,
-                 "id":77,
-                 "name":"\u30ab\u30fc\u30bd\u30eb",
-                 "point":true,
+                 "gid":2554,
+                 "height":32,
+                 "id":83,
+                 "name":"\u5973\u6226\u58eb",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0001.talk001"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":"20230427"
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"\u5973\u6226\u58eb"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"normal"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"pipo-charachip030"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":1504,
-                 "y":320
+                 "width":32,
+                 "x":1152,
+                 "y":544
                 }, 
                 {
-                 "height":0,
-                 "id":78,
-                 "name":"event,0304,lamy,lamy,,20240908,",
-                 "point":true,
+                 "gid":2566,
+                 "height":40,
+                 "id":84,
+                 "name":"\u30e9\u30df\u30a2\u5a18",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":"20240908"
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"lamyNPC"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"event"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"lamy_32_40"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":false
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":1504,
-                 "y":128
-                }, 
-                {
-                 "height":0,
-                 "id":80,
-                 "name":"normal,0304,mob02,\u304a\u3063\u3055\u3093,,ossan,bubbleTalk0001.talk003",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":544,
-                 "y":578
+                 "width":32,
+                 "x":1488,
+                 "y":129
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -781,7 +985,7 @@
          "y":0
         }],
  "nextlayerid":53,
- "nextobjectid":81,
+ "nextobjectid":85,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
@@ -1651,6 +1855,45 @@
                         }],
                  "id":158
                 }],
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":2542,
+         "image":"..\/img\/spritesheet\/pipo-charachip029.png",
+         "imageheight":128,
+         "imagewidth":96,
+         "margin":0,
+         "name":"pipo-charachip029",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":2554,
+         "image":"..\/img\/spritesheet\/pipo-charachip030.png",
+         "imageheight":128,
+         "imagewidth":96,
+         "margin":0,
+         "name":"pipo-charachip030",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":2566,
+         "image":"..\/img\/spritesheet\/lamy_32_40.png",
+         "imageheight":160,
+         "imagewidth":96,
+         "margin":0,
+         "name":"lamy_32_40",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":40,
          "tilewidth":32
         }],
  "tilewidth":32,

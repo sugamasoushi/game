@@ -87,8 +87,7 @@ export class SkillWindow extends Phaser.GameObjects.Container {
      */
     private createSkillElement(messageObject: MessageObject, x: number, y: number, skillType: string, skillId: string) {
         // console.log(skillId);
-        const skilldata = this.scene.cache.json.get('skilldata');
-        const searchSkill = new SearchSkill(skilldata);
+        const searchSkill = new SearchSkill(this.scene.cache.json);
         const skillData = searchSkill.getSkillData(skillType, skillId);
 
         const label = messageObject.createTextObject(

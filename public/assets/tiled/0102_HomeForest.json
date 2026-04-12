@@ -3066,33 +3066,9 @@
          "name":"SPRITE",
          "objects":[
                 {
-                 "gid":11857,
-                 "height":160,
-                 "id":63,
-                 "name":"tree_stem",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":96,
-                 "x":64,
-                 "y":1312
-                }, 
-                {
-                 "gid":11856,
-                 "height":96,
-                 "id":62,
-                 "name":"tree_glass",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":96,
-                 "x":64,
-                 "y":1248
-                }, 
-                {
-                 "gid":11847,
+                 "gid":11907,
                  "height":32,
-                 "id":67,
+                 "id":86,
                  "name":"itembox",
                  "properties":[
                         {
@@ -3121,6 +3097,63 @@
                  "width":32,
                  "x":512,
                  "y":1248
+                }, 
+                {
+                 "gid":11907,
+                 "height":32,
+                 "id":88,
+                 "name":"itembox",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0102.talk003"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"1"
+                        }, 
+                        {
+                         "name":"itemName",
+                         "type":"string",
+                         "value":"\u3084\u304f\u305d\u3046"
+                        }, 
+                        {
+                         "name":"value",
+                         "type":"string",
+                         "value":"1"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1024,
+                 "y":2112
+                }, 
+                {
+                 "gid":11919,
+                 "height":96,
+                 "id":89,
+                 "name":"tree_glass",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":64,
+                 "y":1248
+                }, 
+                {
+                 "gid":11920,
+                 "height":160,
+                 "id":90,
+                 "name":"tree_stem",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":64,
+                 "y":1312
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -3165,9 +3198,9 @@
             0, 10214, 0, 0, 10214, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 10214, 10214, 10214, 10214, 10214, 10214, 10214, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 10214, 0, 0, 0, 10214, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 10214, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 10214, 10214, 10214, 10214, 10214, 10214, 0, 0, 0, 0, 0, 0,
+            10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 10214, 10214, 0, 0, 0, 0, 0, 10214, 10214, 10214, 10214, 10214, 10214, 0, 0, 0, 0, 0, 0,
             10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 10214, 10214, 0, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0,
-            10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 10214, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0,
+            10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0, 0, 0, 0,
             10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 10214, 10214, 10214, 0, 0, 0,
             10214, 0, 0, 10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0,
             10214, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10214, 0, 0, 0,
@@ -3234,7 +3267,7 @@
          "name":"collision",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
@@ -3245,76 +3278,412 @@
          "name":"NPC",
          "objects":[
                 {
-                 "height":0,
-                 "id":16,
-                 "name":"enemy,0304,slime,03,,enemy02,",
-                 "point":true,
+                 "gid":11843,
+                 "height":32,
+                 "id":74,
+                 "name":"character",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0102.talk005"
+                        }, 
+                        {
+                         "name":"filepath",
+                         "type":"file",
+                         "value":"..\/img\/spritesheet\/pipo-charachip030.png"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"link",
+                         "type":"object",
+                         "value":14
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"testmob"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"normal"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"pipo-charachip030"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":709.333333333333,
-                 "y":1446.66666666667
+                 "width":32,
+                 "x":674,
+                 "y":802
                 }, 
                 {
-                 "height":0,
-                 "id":14,
-                 "name":"normal,0304,blackCat,,stand_right,,bubbleTalk0102.talk001",
-                 "point":true,
+                 "gid":11855,
+                 "height":32,
+                 "id":77,
+                 "name":"kuroneko",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0102.talk002"
+                        }, 
+                        {
+                         "name":"filepath",
+                         "type":"file",
+                         "value":"..\/img\/spritesheet\/blackCat.png"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":1
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"link",
+                         "type":"object",
+                         "value":0
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"kuroneko"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"normal"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"blackCat"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":448,
+                 "width":32,
+                 "x":384,
                  "y":1088
                 }, 
                 {
-                 "height":0,
-                 "id":20,
-                 "name":"normal,0304,whiteCat,,,,bubbleTalk0102.talk002",
-                 "point":true,
+                 "gid":11867,
+                 "height":32,
+                 "id":78,
+                 "name":"sironeko",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0102.talk001"
+                        }, 
+                        {
+                         "name":"filepath",
+                         "type":"file",
+                         "value":"..\/img\/spritesheet\/whiteCat.png"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":2
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"link",
+                         "type":"object",
+                         "value":0
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"sironeko"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"normal"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"whiteCat"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":392,
-                 "y":1229.33333333333
+                 "width":32,
+                 "x":343,
+                 "y":1278
                 }, 
                 {
-                 "height":0,
-                 "id":21,
-                 "name":"enemy,0304,slime,03,,enemy02,",
-                 "point":true,
+                 "gid":11887,
+                 "height":32,
+                 "id":79,
+                 "name":"grandpa",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"filepath",
+                         "type":"file",
+                         "value":"..\/img\/spritesheet\/chicken_walk.png"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":3
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"link",
+                         "type":"object",
+                         "value":0
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"grandpa"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"event"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0404"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"chicken_walk"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":false
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":618.333333333333,
-                 "y":2408.33333333333
+                 "width":32,
+                 "x":626,
+                 "y":1101
                 }, 
                 {
-                 "height":0,
-                 "id":23,
-                 "name":"\u30ab\u30fc\u30bd\u30eb",
-                 "point":true,
+                 "gid":11896,
+                 "height":32,
+                 "id":83,
+                 "name":"slime",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"filepath",
+                         "type":"file",
+                         "value":"..\/img\/spritesheet\/enemy02.png"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":4
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":"enemy02"
+                        }, 
+                        {
+                         "name":"link",
+                         "type":"object",
+                         "value":0
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"slime"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"enemy"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"enemy02"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":688,
-                 "y":1251
+                 "width":32,
+                 "x":794,
+                 "y":1380
                 }, 
                 {
-                 "height":0,
-                 "id":24,
-                 "name":"event,0404,chicken_walk,grandpa,stand_down,,",
-                 "point":true,
+                 "gid":11896,
+                 "height":32,
+                 "id":84,
+                 "name":"slime",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"filepath",
+                         "type":"file",
+                         "value":"..\/img\/spritesheet\/enemy02.png"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":4
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":"enemy02"
+                        }, 
+                        {
+                         "name":"link",
+                         "type":"object",
+                         "value":0
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"slime"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"enemy"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"enemy02"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":598.666666666667,
-                 "y":1098.66666666667
+                 "width":32,
+                 "x":608,
+                 "y":2496
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -3386,6 +3755,32 @@
                  "height":0,
                  "id":2,
                  "name":"0101_0816_0512_U",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"U"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0101"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":816
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":512
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -3397,6 +3792,32 @@
                  "height":0,
                  "id":6,
                  "name":"0001_0120_0000_D",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"D"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0001"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":120
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -3411,7 +3832,7 @@
          "y":0
         }],
  "nextlayerid":58,
- "nextobjectid":72,
+ "nextobjectid":91,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
@@ -4900,22 +5321,74 @@
          "tilewidth":32
         }, 
         {
-         "columns":1,
+         "columns":3,
          "firstgid":11843,
-         "image":"..\/img\/tilesets\/testtree.png",
+         "image":"..\/img\/spritesheet\/pipo-charachip030.png",
          "imageheight":128,
          "imagewidth":96,
          "margin":0,
-         "name":"testtree",
+         "name":"pipo-charachip030",
          "spacing":0,
-         "tilecount":1,
-         "tileheight":128,
-         "tilewidth":96
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":11855,
+         "image":"..\/img\/spritesheet\/blackCat.png",
+         "imageheight":128,
+         "imagewidth":96,
+         "margin":0,
+         "name":"blackCat",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":11867,
+         "image":"..\/img\/spritesheet\/whiteCat.png",
+         "imageheight":128,
+         "imagewidth":96,
+         "margin":0,
+         "name":"whiteCat",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
         }, 
         {
          "columns":4,
-         "firstgid":11844,
-         "image":"..\/img\/tilesets\/lpc_objectspack\/Objects\/Storage\/Chests.png",
+         "firstgid":11879,
+         "image":"..\/img\/spritesheet\/chicken_walk.png",
+         "imageheight":128,
+         "imagewidth":128,
+         "margin":0,
+         "name":"chicken_walk",
+         "spacing":0,
+         "tilecount":16,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":11895,
+         "image":"..\/img\/spritesheet\/enemy02.png",
+         "imageheight":128,
+         "imagewidth":96,
+         "margin":0,
+         "name":"enemy02",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":4,
+         "firstgid":11907,
+         "image":"..\/img\/spritesheet\/Chests.png",
          "imageheight":96,
          "imagewidth":128,
          "margin":0,
@@ -4927,8 +5400,8 @@
         }, 
         {
          "columns":1,
-         "firstgid":11856,
-         "image":"..\/img\/tilesets\/tree_glass.png",
+         "firstgid":11919,
+         "image":"..\/img\/spritesheet\/tree_glass.png",
          "imageheight":96,
          "imagewidth":96,
          "margin":0,
@@ -4940,8 +5413,8 @@
         }, 
         {
          "columns":1,
-         "firstgid":11857,
-         "image":"..\/img\/tilesets\/tree_stem.png",
+         "firstgid":11920,
+         "image":"..\/img\/spritesheet\/tree_stem.png",
          "imageheight":160,
          "imagewidth":96,
          "margin":0,

@@ -20,6 +20,7 @@ export interface GameState {
   sceneKey?: string; // 更新元のキーを追加
   money: number;
   hp: number;
+  playerPartyList: Phaser.GameObjects.Sprite[];
   battleFlag: boolean;
   isGameOver: boolean;
   fieldData: FieldData;

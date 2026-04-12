@@ -8,6 +8,7 @@ const INITIAL_STATE: GameState = {
     sceneKey: 'string', // 更新元のキーを追加
     money: 100,
     hp: 100,
+    playerPartyList: [],
     battleFlag: false,
     isGameOver: false,
     fieldData: { gameMode: 'string', mapKey: 'string', x: 0, y: 0, initStandKey: 'string' },
@@ -26,22 +27,47 @@ export class GameStateManager {
     public readonly money$: Observable<number> = this.gameState$.pipe(map(gameState => gameState.money));
 
     // 外部公開用のObservable。
-    public readonly state$: Observable<{ state: State, sceneKey: string }> = this.gameState$.pipe(
-        // // distinctUntilChanged() を使うことで、同じ状態への遷移は通知しないようにする
-        // //前後の state を比較して、変化があった時だけ通す
-        //distinctUntilChanged((prev, curr) => prev.state === curr.state),
-        distinctUntilChanged((prev, curr) => {
-            // もし新しい状態が RESTART なら、強制的に「変更あり(false)」と判定して通知を通す
-            if (curr.state === State.FIELD_RESTART) { return false; }
-            // それ以外は通常通り、値が同じなら true（通知しない）を返す
-            return prev.state === curr.state;
-        }),
+    public readonly state$: Observable<{ state: State, fieldData: FieldData, sceneKey: string }> = this.gameState$.pipe(
 
+        //GameStateの中から、「シーンの切り替えに必要な情報だけ」を抽出
         map(gs => ({
             state: gs.state,
             fieldData: gs.fieldData,
             sceneKey: gs.sceneKey ?? 'unknown'
-        }))// 購読側が使いやすいように、GameStateオブジェクトから state だけを抽出
+        })),
+
+        // distinctUntilChanged() を使うことで、同じ状態への遷移は通知しないようにする
+        //前後の state を比較して、変化があった時だけ通す
+        distinctUntilChanged((prev, curr) => {
+            // もし新しい状態が RESTART なら、目的地(fieldData)やキーが同じ場合のみ「変更なし(true)」と判定
+            if (curr.state === State.FIELD_RESTART) {
+                return (
+                    /**
+                     * FIELD_RESTART時、state、fieldData、sceneKeyがすべて同じであれば、trueを返しフィールド移動となる。
+                     * 
+                     * ■処理内容
+                     * FIELD_RESTART 状態であっても、「移動先のマップデータ（fieldData）」や「シーンキー（sceneKey）」が前回と同一であれば、再起動の通知をブロックする
+                     * 
+                     * prev.state === curr.state
+                     * prev.sceneKey === curr.sceneKey
+                     * JSON.stringify(prev.fieldData) === JSON.stringify(curr.fieldData)
+                     * 前回と現在のデータが同じかどうかをチェックし、同じであれば次のステップには進まない
+                     * 
+                     * ■状況例
+                     * 外部からpushPlayerPartyList を呼び出し更新された場合、データ変更を検知してしまうため、
+                     * フィルタにより「目的地もシーンキーも前回と同じなので、この通知は不要」と判断し、処理をスキップする
+                     * 
+                     * ■効果
+                     * これにより、playerPartyList 以外にも「所持金（money）」や「HP」などのデータがシーン初期化中や実行中に更新されたとしても、不必要なシーン再起動が発生しなくなる。
+                     */
+                    prev.state === curr.state &&
+                    prev.sceneKey === curr.sceneKey &&
+                    JSON.stringify(prev.fieldData) === JSON.stringify(curr.fieldData)
+                );
+            }
+            // それ以外は通常通り、値が同じなら true（通知しない）を返す
+            return prev.state === curr.state;
+        }),
     );
 
     //ゲームの状態が『FIELD』になった瞬間を一度だけ検知し、実行信号を送る
@@ -122,6 +148,22 @@ export class GameStateManager {
         });
     }
 
+    public pushPlayerPartyList(playerPartyMember: Phaser.GameObjects.Sprite) {
+        const currentState = this.gameState$.value;
+        this.gameState$.next({
+            ...currentState,
+            playerPartyList: [...currentState.playerPartyList, playerPartyMember]
+        });
+    }
+
+    public setPlayerPartyList(playerPartyMemberList: Phaser.GameObjects.Sprite[]) {
+        const currentState = this.gameState$.value;
+        this.gameState$.next({
+            ...currentState,
+            playerPartyList: playerPartyMemberList
+        });
+    }
+
     //状態のリセットは必ず意識する事
     public reset(): void { this.gameState$.next(INITIAL_STATE); }
 
@@ -140,6 +182,7 @@ export class GameStateManager {
         }
     }
     public get currentEventObj(): Phaser.Physics.Arcade.Sprite { return this.gameState$.value.eventObj! }
+    public get currentPlayerPartyList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.playerPartyList; }
 }
 
 // 唯一のインスタンスを公開（シングルトン）

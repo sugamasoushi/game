@@ -76,7 +76,7 @@ export class BattlePresenter {
         this.battleSelectWindow.init();
         this.playerPartyWindow.init();
         this.attackSelectWindow.init();
-        this.enemySelectWindow.init(this.battleModel.getEnemyParty());
+        this.enemySelectWindow.init(this.battleModel.getEnemyPartyList());
         this.battleMessageWindow.init();
         this.specialSkillSelectWindow.init();
         this.magicSkillSelectWindow.init();
@@ -91,7 +91,7 @@ export class BattlePresenter {
 
         //各viewのcreateを実行
         this.battleSelectWindow.createBattleSelectWindow(100, Number(this.battleScene.game.config.height) - 200);
-        this.playerPartyWindow.createBattleCharacterIcon(this.battleModel.getPartyList(), 200, Number(this.battleScene.game.config.height) - 200);
+        this.playerPartyWindow.createBattleCharacterIcon(this.battleModel.getPlayerPartyList(), 200, Number(this.battleScene.game.config.height) - 200);
         //AttackSelectWindowはinitでcreate実施
         //EnemySelectWindowはinitでcreate実施
         //battleMessageWindowはinitでcreate実施
@@ -187,13 +187,6 @@ export class BattlePresenter {
 
         //【攻撃方法選択】【攻撃】
         this.views.attackSelect.on('Attack_Select_Submit', (skillType: string) => {
-            // switch (skillType) {
-            //     case 'guard':
-            //         break;
-            //     default:
-            //         this.stateMachine.push('ENEMY_SELECT');
-            //         break;
-            // }
             this.stateMachine.push('ENEMY_SELECT');
         });
 
@@ -211,7 +204,6 @@ export class BattlePresenter {
 
         //【攻撃方法選択】【特技】
         this.views.attackSelect.on('SpecialSkill_Select_Submit', (nowSelectCharacter: Phaser.GameObjects.Sprite) => {
-            console.log(this.commandSelectModel.getCurrentCharacter())
 
             //特技選択ウィンドウに渡すキャラクターアイコンを取得
             const character = this.commandSelectModel.getCurrentCharacter().name;
@@ -223,7 +215,6 @@ export class BattlePresenter {
 
         //【攻撃方法選択】【魔法】
         this.views.attackSelect.on('MagicSkill_Select_Submit', (nowSelectCharacter: Phaser.GameObjects.Sprite) => {
-            console.log(this.commandSelectModel.getCurrentCharacter())
 
             //魔法選択ウィンドウに渡すキャラクターアイコンを取得
             const character = this.commandSelectModel.getCurrentCharacter().name;
@@ -355,9 +346,9 @@ export class BattlePresenter {
         });
     }
 
+    //設定：ItemSelectWindow
     private settingItemSelectWindow() {
 
-        //設定：ItemSelectWindow
         // this.stateMachine.addState('ITEM_SELECT', {
         //     enter: (v, data) => {
         //         console.log("アイテムリスト受信:", data);
@@ -384,6 +375,7 @@ export class BattlePresenter {
 
     }
 
+    //キャラクターのコマンド選択順序を管理する
     private setCommandSelectModel() {
 
         //次キャラクターのコマンド選択
@@ -402,7 +394,7 @@ export class BattlePresenter {
         this.commandSelectModel.on('CommandSelectFinish', () => {
 
             //敵の攻撃対象を設定
-            this.battleModel.setEnemyAttackTarget(this.playerPartyWindow.getCharacterIcon('player'));
+            this.battleModel.setEnemyAttackTarget(this.playerPartyWindow.getCharacterIcon('meina'));
 
             //ターン順を設定
             this.turnModel.setupTurnOrder(this.battleModel.getBattlerList());
@@ -451,26 +443,33 @@ export class BattlePresenter {
         let winner = '';
 
         //攻撃
-        if (battler.getData('NpcType') !== 'enemy') {
-            const skillDetail: SkillDetail = battler.getData('UseSkill');
+        if (battler.getData('NpcType') !== 'enemy' && battler.data.values.HP > 0) {
 
-            if (skillDetail) {
-                switch (skillDetail.type) {
-                    case 'attack':
-                        const playerAttack = new PlayerAttack(this.battleScene);
-                        await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
-                        break;
-                    case 'guard':
-                        const playerGuard = new PlayerGuard(this.battleScene);
-                        await playerGuard.guard(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
-                        break;
-                    case 'heal':
-                        /**未実装 */
-                        break;
+            //攻撃対象のHPが0以上の場合は攻撃、0以下の場合は攻撃しない
+            if (battler.getData('BattleTarget').getData('HP') > 0) {
+
+                //スキル選択の場合はスキルを実行、選択していない場合は通常攻撃
+                const skillDetail: SkillDetail = battler.getData('UseSkill');
+                if (skillDetail) {
+                    switch (skillDetail.type) {
+                        case 'attack':
+                            const playerAttack = new PlayerAttack(this.battleScene);
+                            await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
+                            break;
+                        case 'guard':
+                            const playerGuard = new PlayerGuard(this.battleScene);
+                            await playerGuard.guard(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
+                            break;
+                        case 'heal':
+                            /**未実装 */
+                            break;
+                    }
+                } else {
+                    const playerAttack = new PlayerAttack(this.battleScene);
+                    await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
                 }
             } else {
-                const playerAttack = new PlayerAttack(this.battleScene);
-                await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
+                await this.battleMessageWindow.messageOutput('相手がいない！！', 1000);
             }
 
         } else if (battler.getData('NpcType') === 'enemy' && battler.data.values.HP > 0) {
@@ -526,21 +525,21 @@ export class BattlePresenter {
 
     private checkPlayerStatus() {
         let continueFlag = false;
-        this.battleModel.getPlayerParty().forEach(list => {
+        for (const list of this.battleModel.getPlayerPartyList()) {
             if (list.data.values.HP > 0) {
                 continueFlag = true;
             }
-        });
+        }
         return continueFlag;
     }
 
     private checkEnemyStatus() {
         let continueFlag = false;
-        this.battleModel.getEnemyParty().forEach(list => {
+        for (const list of this.battleModel.getEnemyPartyList()) {
             if (list.data.values.HP > 0) {
                 continueFlag = true;
             }
-        })
+        }
         return continueFlag;
     }
 

@@ -11,6 +11,9 @@ import { SpriteType_4x4 } from './character/SpriteType_4x4';
 import { FieldObjectCheck } from '@/app/(game)/util/FieldObjectCheck';
 import { CaharacterNameData } from "../../Data/NameData";
 import { Sound } from "../../scenes/Sound";
+import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
+import { SearchCharacterData } from '../../Data/SearchCharacterData';
+import { TiledObjectEntity } from './character/TiledObjectEntity';
 
 export class MapObject extends Phaser.GameObjects.Container {
     private fieldData: FieldData;
@@ -48,6 +51,11 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.fieldData = fieldData;
         this.TileMap = tileMap;
 
+        // リストを初期化
+        this.playerPartyList = [];
+        this.npcNormalList = [];
+        this.npcEnemyList = [];
+
         this.createPlayer();
         this.createNPC();
         this.createObject();
@@ -55,14 +63,18 @@ export class MapObject extends Phaser.GameObjects.Container {
     }
 
     private createPlayer() {
+        const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
         const playerX = this.fieldData.x;
         const playerY = this.fieldData.y;
         const initStandKey = this.fieldData.initStandKey;
 
+        //状態管理クラス
+        const gameStateManager = GameStateManager.getInstance();
+
         //プレイヤー作成
-        const player: Player = new Player(this.gameScene, playerX, playerY, 'meina', initStandKey, true)
+        const player: Player = new Player(this.gameScene, playerX, playerY, 'meina', initStandKey)
         player.state = CharacterState.normal;
-        player.setData('name', CaharacterNameData[player.name as keyof typeof CaharacterNameData])
+        player.setData('name', searchCharacterData.getCharacterData(player.name).name)
 
         //各種設定
         player.setDataEnabled();
@@ -85,7 +97,7 @@ export class MapObject extends Phaser.GameObjects.Container {
 
             const player2: Player = new Player(this.gameScene, playerX, playerY, 'lamy', initStandKey)
             player2.state = CharacterState.normal;
-            player2.setData('name', CaharacterNameData[player2.name as keyof typeof CaharacterNameData])
+            player2.setData('name', searchCharacterData.getCharacterData(player2.name).name)
 
             //各種設定
             player2.setDataEnabled();
@@ -106,7 +118,7 @@ export class MapObject extends Phaser.GameObjects.Container {
 
             const player3: Player = new Player(this.gameScene, playerX, playerY, 'lamy', initStandKey)
             player3.state = CharacterState.normal;
-            player3.setData('name', CaharacterNameData[player3.name as keyof typeof CaharacterNameData])
+            player3.setData('name', searchCharacterData.getCharacterData(player3.name).name)
 
             //各種設定
             player3.setDataEnabled();
@@ -116,7 +128,56 @@ export class MapObject extends Phaser.GameObjects.Container {
 
             this.playerPartyList.push(player3);
         }
+
+        // 状態管理クラスのパーティリストを更新
+        gameStateManager.setPlayerPartyList(this.playerPartyList);
     }
+
+    // private old_createNPC() {
+
+    //     //NPC作成
+    //     if (this.TileMap.getMakeTilemap().objects) {
+    //         for (const makeTilemapObj of this.TileMap.getMakeTilemap().objects) {
+    //             if (makeTilemapObj.name === 'NPC') {
+    //                 for (const npcObj of makeTilemapObj.objects) {
+    //                     const nameArray = npcObj.name.split(',');
+
+    //                     try {
+    //                         const npc = this.createSprite(
+    //                             nameArray[0], //npcType : npcのタイプ
+    //                             nameArray[1], //spritetype : spriteのタイプ
+    //                             this.gameScene,
+    //                             npcObj.x!,
+    //                             npcObj.y!,
+    //                             nameArray[2], //spriteSheetKey : タイル画像のキー
+    //                             nameArray[3], //name : ゲーム内変数としてのキャラ名、画像などで使用
+    //                             nameArray[4] ? nameArray[4] : 'stand_down',//指定されていなければ下向き配置
+    //                             nameArray[5] ? nameArray[5] : '', //imageKey : 立ち絵のキー、アイコンにも使用
+    //                             nameArray[6] ? nameArray[6] : ''//指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
+    //                         );
+
+    //                         npc!.init();
+
+    //                         if (nameArray[0] === 'normal') {
+    //                             this.npcNormalList.push(npc as Npc);
+    //                         } else {
+    //                             this.npcEnemyList.push(npc as Npc);
+    //                         }
+
+    //                         if (this.TileMap.getCollisionLayer()) {
+    //                             this.gameScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, this.TileMap.getCollisionLayer());
+    //                         }
+
+    //                     } catch {
+    //                         console.log('NPC作成エラー')
+    //                         console.log(nameArray)
+    //                     }
+
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     private createNPC() {
 
@@ -125,25 +186,28 @@ export class MapObject extends Phaser.GameObjects.Container {
             for (const makeTilemapObj of this.TileMap.getMakeTilemap().objects) {
                 if (makeTilemapObj.name === 'NPC') {
                     for (const npcObj of makeTilemapObj.objects) {
-                        const nameArray = npcObj.name.split(',');
 
                         try {
+                            const entity = new TiledObjectEntity(npcObj.properties);
+
                             const npc = this.createSprite(
-                                nameArray[0], //npcType : npcのタイプ
-                                nameArray[1], //spritetype : spriteのタイプ
+                                entity.npcType, //npcType : npcのタイプ
+                                entity.spriteType, //spritetype : spriteのタイプ
                                 this.gameScene,
                                 npcObj.x!,
                                 npcObj.y!,
-                                nameArray[2], //spriteSheetKey : タイル画像のキー
-                                nameArray[3], //name : ゲーム内変数としてのキャラ名、画像などで使用
-                                nameArray[4] ? nameArray[4] : 'stand_down',//指定されていなければ下向き配置
-                                nameArray[5] ? nameArray[5] : '', //imageKey : 立ち絵のキー、アイコンにも使用
-                                nameArray[6] ? nameArray[6] : ''//指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
+                                entity.spritesheetKey, //spriteSheetKey : タイル画像のキー
+                                entity.name, //name : ゲーム内変数としてのキャラ名、画像などで使用
+                                entity.standkey, //指定されていなければ下向き配置
+                                entity.imageKey, //imageKey : 立ち絵のキー、アイコンにも使用
+                                entity.bubbleTalkKey //指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
                             );
 
                             npc!.init();
 
-                            if (nameArray[0] === 'normal') {
+                            npc!.setVisible(entity.isVisible);
+
+                            if (entity.npcType === 'normal') {
                                 this.npcNormalList.push(npc as Npc);
                             } else {
                                 this.npcEnemyList.push(npc as Npc);
@@ -153,11 +217,14 @@ export class MapObject extends Phaser.GameObjects.Container {
                                 this.gameScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, this.TileMap.getCollisionLayer());
                             }
 
-                        } catch {
-                            console.log('NPC作成エラー')
-                            console.log(nameArray)
-                        }
+                            for (const player of this.playerPartyList) {
+                                this.gameScene.physics.add.collider(npc!, player);
+                            }
 
+                        } catch (e) {
+                            console.log('NPC作成エラー')
+                            console.log(e)
+                        }
                     }
                 }
             }
@@ -172,25 +239,39 @@ export class MapObject extends Phaser.GameObjects.Container {
     private createObject() {
         const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
 
-        // console.log(makeTileMap);
+        // オブジェクトレイヤーの存在チェックを行い、警告を回避する
+        let eventObjects: Phaser.GameObjects.GameObject[] = [];
+        let clickEventObjects: Phaser.GameObjects.GameObject[] = [];
+        let mapMoveObjects: Phaser.GameObjects.GameObject[] = [];
+        let itemboxSpriteObjects: Phaser.GameObjects.GameObject[] = [];
+        let treeGlassSpriteObjects: Phaser.GameObjects.GameObject[] = [];
+        let treeStemSpriteObjects: Phaser.GameObjects.GameObject[] = [];
 
-        const eventObjects: Phaser.GameObjects.GameObject[] = makeTileMap.createFromObjects('EVENT', {}, false);
-        const clickEventObjects: Phaser.GameObjects.GameObject[] = makeTileMap.createFromObjects('CLICKEVENT', {}, false);
-        const mapMoveObjects: Phaser.GameObjects.GameObject[] = makeTileMap.createFromObjects('MAPMOVE', {}, false);
+        if (makeTileMap.getObjectLayer('EVENT')) {
+            eventObjects = makeTileMap.createFromObjects('EVENT', {}, false);
+        }
+        if (makeTileMap.getObjectLayer('CLICKEVENT')) {
+            clickEventObjects = makeTileMap.createFromObjects('CLICKEVENT', {}, false);
+        }
+        if (makeTileMap.getObjectLayer('MAPMOVE')) {
+            mapMoveObjects = makeTileMap.createFromObjects('MAPMOVE', {}, false);
+        }
 
-        //スプライト系
-        const itemboxSpriteObjects: Phaser.GameObjects.GameObject[] = makeTileMap.createFromObjects('SPRITE', {
-            name: 'itembox',  // Tiledでオブジェクトに付けた「名前」を指定
-            key: 'itemBox_image_key' // preloadで指定した画像キー
-        });
-        const treeGlassSpriteObjects: Phaser.GameObjects.GameObject[] = makeTileMap.createFromObjects('SPRITE', {
-            name: 'tree_glass',  // Tiledでオブジェクトに付けた「名前」を指定
-            key: 'tree_glass_image_key' // preloadで指定した画像キー
-        });
-        const treeStemSpriteObjects: Phaser.GameObjects.GameObject[] = makeTileMap.createFromObjects('SPRITE', {
-            name: 'tree_stem',  // Tiledでオブジェクトに付けた「名前」を指定
-            key: 'tree_stem_image_key' // preloadで指定した画像キー
-        });
+        if (makeTileMap.getObjectLayer('SPRITE')) {
+            //同じ名前のオブジェクトをまとめて作成する。
+            itemboxSpriteObjects = makeTileMap.createFromObjects('SPRITE', {
+                name: 'itembox',  // Tiledでオブジェクトに付けた「名前」を指定
+                key: 'tex_Chests' // spritesheetKey
+            });
+            treeGlassSpriteObjects = makeTileMap.createFromObjects('SPRITE', {
+                name: 'tree_glass',  // Tiledでオブジェクトに付けた「名前」を指定
+                key: 'tex_tree_glass' // spritesheetKey
+            });
+            treeStemSpriteObjects = makeTileMap.createFromObjects('SPRITE', {
+                name: 'tree_stem',  // Tiledでオブジェクトに付けた「名前」を指定
+                key: 'tex_tree_stem' // spritesheetKey
+            });
+        }
 
 
         //静的オブジェクトに設定
@@ -198,16 +279,15 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.clickEventObjects = this.gameScene.physics.add.staticGroup(clickEventObjects);
         this.mapMoveObjects = this.gameScene.physics.add.staticGroup(mapMoveObjects);
 
-        //スプライト系
         this.itemboxSpriteObjects = this.gameScene.physics.add.staticGroup(itemboxSpriteObjects);
         this.treeGlassSpriteObjects = this.gameScene.physics.add.staticGroup(treeGlassSpriteObjects);
         this.treeStemSpriteObjects = this.gameScene.physics.add.staticGroup(treeStemSpriteObjects);
 
+        //静的オブジェクトの子要素を取得
         const eventObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.eventObjects.getChildren();
         const clickEventObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.clickEventObjects.getChildren();
         const mapMoveObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.mapMoveObjects.getChildren();
 
-        //スプライト系
         const itemboxSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.itemboxSpriteObjects.getChildren();
         const treeGlassSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.treeGlassSpriteObjects.getChildren();
         const treeStemSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.treeStemSpriteObjects.getChildren();
@@ -222,9 +302,8 @@ export class MapObject extends Phaser.GameObjects.Container {
             this.settingMapMoveObject(obj as Phaser.Physics.Arcade.Sprite);
         }
 
-        //スプライト系
         for (const obj of itemboxSpriteObjectStaticGroupChildren) {
-            this.settingItemboxSpriteObject(obj as Phaser.Physics.Arcade.Sprite);
+            this.settingItemboxSpriteObject(obj as Phaser.Physics.Arcade.Sprite, 'tex_Chests');
         }
         for (const obj of treeGlassSpriteObjectStaticGroupChildren) {
             this.settingTreeGlassSpriteObjects(obj as Phaser.Physics.Arcade.Sprite);
@@ -336,11 +415,15 @@ export class MapObject extends Phaser.GameObjects.Container {
 
         const tileSize = 2;
 
-        const moveMapKey = obj.name.substring(0, 4);
-        let moveMapX = Number(obj.name.substring(5, 9));
-        let moveMapY = Number(obj.name.substring(10, 14));
-        const direction = obj.name.substring(15, 16);
-        const moveCorrection = 32 / 2 + 2;//マップ切り替え時のキャラクター位置調整用
+        const moveMapKey = obj.getData('moveToMap');
+        let moveMapX = obj.getData('moveX');
+        let moveMapY = obj.getData('moveY');
+        const direction = obj.getData('direction');
+
+        //マップ切り替え時のキャラクター位置調整用
+        const moveCorrection = 32 / 2 + 2;
+
+        //初期立ち絵のキー
         let initStandKey: string;
 
         //有効状態に設定
@@ -411,22 +494,31 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
     }
 
-    private settingItemboxSpriteObject(obj: Phaser.Physics.Arcade.Sprite) {
+    private settingItemboxSpriteObject(obj: Phaser.Physics.Arcade.Sprite, imageKey: string) {
+
+        //衝突判定の追加
+        for (const player of this.playerPartyList) {
+            this.gameScene.physics.add.collider(player, obj);
+        }
+
+        //深度設定
         obj.setDepth(this.TileMap.getTilemapInPixels().heightInPixels);
 
+        //アニメーション設定
         obj.anims.create({
             key: 'itembox_open',
-            frames: this.gameScene.anims.generateFrameNumbers('itemBox_image_key', { start: 4, end: 4 }),
+            frames: this.gameScene.anims.generateFrameNumbers(imageKey, { start: 4, end: 4 }),
             frameRate: 1,
             repeat: 0
         });
         obj.anims.create({
             key: 'itembox_close',
-            frames: this.gameScene.anims.generateFrameNumbers('itemBox_image_key', { start: 0, end: 0 }),
+            frames: this.gameScene.anims.generateFrameNumbers(imageKey, { start: 0, end: 0 }),
             frameRate: 1,
             repeat: 0
         });
 
+        //配置時の状態設定
         if (obj.getData('value') === 0 || this.gameScene.cache.json.get('savedata').MAP0102.itembox.value === 0) {
             obj.play('itembox_open');
         } else {
@@ -442,8 +534,10 @@ export class MapObject extends Phaser.GameObjects.Container {
                 bubbleTalk.init();
             }
 
-            obj.setInteractive({ useHandCursor: true });//クリック可能にする
+            //クリック可能にする
+            obj.setInteractive({ useHandCursor: true });
 
+            //クリックイベント
             obj.on('pointerdown', async () => {
                 if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
 
@@ -479,7 +573,7 @@ export class MapObject extends Phaser.GameObjects.Container {
                         }
                         this.gameScene.getPlayer().data.values[getItemName] += Number(getItemNum);
 
-                        //セーブデータ更新
+                        //キャッシュのセーブデータ更新
                         obj.setData('value', 0);
                         this.gameScene.cache.json.get('savedata').MAP0102.itembox.value = 0;
 

@@ -63,7 +63,11 @@ export class Battle extends Phaser.Scene implements BattleScene {
         this.cursorsKeys = this.input.keyboard!.createCursorKeys();//キーボード設定
 
         //model
-        this.battleModel = new BattleModel(this, (battleData as { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }));
+        this.battleModel = new BattleModel(
+            this,
+            (battleData as { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }),
+            manager.currentPlayerPartyList
+        );
         this.commandSelectModel = new CommandSelectModel();
         this.turnModel = new TurnModel();
 

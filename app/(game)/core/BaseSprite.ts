@@ -123,7 +123,7 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
         this.moveToPositionY = y;
 
         if (!npcFlg && partyNum > 0) {
-            console.log(this.name)
+
             // リーダーとの距離を計算（ピタゴラスの定理）
             const distance = Phaser.Math.Distance.Between(this.x, this.y, x, y);
 

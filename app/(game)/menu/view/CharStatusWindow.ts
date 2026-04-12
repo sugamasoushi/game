@@ -27,7 +27,7 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
         this.y = mainColumn.containtsY;
         this.contentHeight = mainColumn.mainWindow.height - 80 - 16;
 
-        const partyList = this.menuModel.getPlayerPartyList().slice(0, 3);
+        const partyList = this.menuModel.getPlayerPartyList();
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
@@ -68,7 +68,7 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
         this.bringToTop(this.downArrow);
     }
 
-    private createCharacterContent(container: Phaser.GameObjects.Container, sprite: Phaser.Physics.Arcade.Sprite, messageObject: MessageObject): void {
+    private createCharacterContent(container: Phaser.GameObjects.Container, sprite: Phaser.GameObjects.Sprite, messageObject: MessageObject): void {
         const portraitKey = this.getPortraitKey(sprite.name);
 
         const charImage = this.scene.add.image(0, 0, portraitKey).setOrigin(0, 0).setScale(0.5);
@@ -97,8 +97,7 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
         container.add([labelObj, valueObj]);
 
         const skillX = 650;
-        const skilldata = this.scene.cache.json.get('skilldata');
-        const searchSkill = new SearchSkill(skilldata);
+        const searchSkill = new SearchSkill(this.scene.cache.json);
 
         container.add(messageObject.createTextObject(this.scene, skillX, statsY, ['【 特技 】'], this.menuModel.fontSize));
         const specialSkills = (playerData.special as string[]) || [];
@@ -156,7 +155,7 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
 
     private getPortraitKey(name: string): string {
         const mapping: { [key: string]: string } = {
-            'player': '20250609',
+            'meina': '20250609',
             'grandpa': '20240622_鶏',
             'lamy': '20240908',
             'player2': '20240908'

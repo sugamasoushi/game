@@ -22,12 +22,9 @@ import { CameraManager } from '../gamemain/view/CameraManager';
 import { FieldMessageWindow } from '../gamemain/view/FieldMessageWindow';
 
 export class Game extends Scene implements GameScene {
-    // private ReadyEventsKey: ReadyEvents = {
-    //     TILEMAP: 'Tilemap:create',
-    //     MAPOBJECT: 'MapObject:create',
-    //     MENUBUTTON: 'MenuButton:create',
-    //     FIELDPRESENTER_READY: 'FieldPresenter:Ready'
-    // }
+
+    private gameStateManager: GameStateManager;
+
     private fieldMapModel: FieldMapModel;
 
     private tileMap: TileMap;
@@ -45,10 +42,6 @@ export class Game extends Scene implements GameScene {
     private keys!: GameKeys;
     private player: Player;
 
-    // camera: Phaser.Cameras.Scene2D.Camera;
-    // background: Phaser.GameObjects.Image;
-    // gameText: Phaser.GameObjects.Text;
-
     private menuButton: MenuButton;
     private testButton: SaveButton;
     private fireButton: FireButton;
@@ -57,8 +50,12 @@ export class Game extends Scene implements GameScene {
     constructor() { super('Game'); }
 
     init() {//initはscene開始時にpreloadやcreateより先に実行される。
+
+        //状態管理クラス
+        this.gameStateManager = GameStateManager.getInstance();
+
         this.fieldMapModel = new FieldMapModel(this);
-        this.tileMap = new TileMap(this);
+        this.tileMap = new TileMap(this, this.gameStateManager.currentFieldData);
         this.mapObject = new MapObject(this);
         this.menuButton = new MenuButton(this);
         this.testButton = new SaveButton(this, this.mapObject);
@@ -94,13 +91,16 @@ export class Game extends Scene implements GameScene {
             this.inputManager);
     }
 
+    preload() {
+
+        //マップチップの読み込み
+        this.tileMap.loadTileSetFile(this.gameStateManager.currentFieldData);
+    }
+
     create(data: { sceneKey: string }) {
 
-        //状態管理クラス
-        const manager = GameStateManager.getInstance();
-
         // マップ設定
-        this.fieldMapModel.setFieldData(manager.currentFieldData)
+        this.fieldMapModel.setFieldData(this.gameStateManager.currentFieldData)
 
         //各種設定
         this.mainCamera = this.cameras.main;
@@ -112,21 +112,6 @@ export class Game extends Scene implements GameScene {
         this.npcPresenter.execute();
 
         EventBus.emit('current-scene-ready', this);
-    }
-
-    //画面黒塗りオブジェクトを返す
-    public setBlackScreenRect(): Phaser.GameObjects.Rectangle {
-        return this.add.rectangle(
-            0,
-            0,
-            this.scale.width,
-            this.scale.height,
-            0x000000,
-            1
-        ).setOrigin(0).setDepth(99999);
-
-        // 消すとき
-        // overlay.destroy();
     }
 
     //画面更新を再開。このメソッドは別シーンから参照される。

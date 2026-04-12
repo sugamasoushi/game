@@ -53,17 +53,17 @@ export class EVENT0003 extends BaseEvent {
         /*会話---------------------------------------------------------------------------------*/
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).player.normal;
+        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
 
         //キャラ画像を配置
         await Promise.all([
-            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'player', playerImageKey, 1000, 0.6, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
         ]);
 
         //会話
         await this.eventTalk.execTalk([
-            { player: ['なんか変わったラミア族だったな。\n'] },
-            { player: ['お腹すいたし、そろそろ帰ろうかな。\n'] }
+            { meina: ['なんか変わったラミア族だったな。\n'] },
+            { meina: ['お腹すいたし、そろそろ帰ろうかな。\n'] }
         ], this.characterGameObject);
 
         /*会話---------------------------------------------------------------------------------*/

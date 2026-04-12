@@ -91,8 +91,7 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         for (const [i, skillId] of magicSkills.entries()) {
 
             //検索
-            const skilldata = this.scene.cache.json.get('skilldata');
-            const searchSkill = new SearchSkill(skilldata);
+            const searchSkill = new SearchSkill(this.scene.cache.json);
             const skillDetail: SkillDetail = searchSkill.getSkillData('magic', skillId)!;
 
             const textObj = messageObjectInstance.createTextObject(this.scene, 0, 0, skillDetail.name);

@@ -85,7 +85,7 @@ export class ConditionWindow extends Phaser.GameObjects.Container {
 
     private getPortraitKey(name: string): string {
         const mapping: { [key: string]: string } = {
-            'player': 'Icon_20250609',
+            'meina': 'Icon_20250609',
             'grandpa': 'Icon_20250609',
             'lamy': 'Icon_20240908',
             'player2': 'Icon_20240908'

@@ -2,7 +2,7 @@ import { BattleScene } from "../../lib/types";
 import { EnergyGauge } from "../../util/EnergyGauge";
 
 export class EnemySelectWindow extends Phaser.GameObjects.Container {
-    private enemyPartyMap: Map<string, Phaser.GameObjects.Image>;
+    private enemyPartyList: Phaser.GameObjects.Image[];
 
     private nowSelectNo: number = 0;
 
@@ -17,8 +17,8 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
 
     }
 
-    public init(enemyPartyMap: Map<string, Phaser.GameObjects.Image>) {
-        this.enemyPartyMap = enemyPartyMap;
+    public init(enemyPartyList: Phaser.GameObjects.Image[]) {
+        this.enemyPartyList = enemyPartyList;
         this.x = 0;
         this.y = 0;
         this.createEnemy();
@@ -35,7 +35,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         const standardPosition = Number(this.scene.game.config.height) * 0.7;
 
         //キャラ画像の配置、キャラ等身（高さ）はイラストを調整すること
-        this.enemyPartyMap.forEach(enemy => {
+        for (const enemy of this.enemyPartyList) {
             enemy.setOrigin(0);
             enemy.x = maxWidth;
             enemy.y = standardPosition - enemy.height;
@@ -61,7 +61,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
             //次の敵配置用に数値を保存
             maxWidth = maxWidth + enemy.width * enemy.scaleX;
             //maxHeight = enemy.height * enemy._scaleY;
-        });
+        }
 
         //コンテナ全体の配置を調整
         const displayPosX = Number(this.scene.game.config.width) / 2 - maxWidth / 2;
@@ -83,9 +83,9 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
     private enableSelect() {
 
         //一番左の敵を点滅させる（ユーザー選択の補助）
-        this.lightUpDown(this.enemyPartyMap.values().next().value!);
+        this.lightUpDown(this.enemyPartyList[0]);
 
-        this.enemyPartyMap.forEach(enemy => {
+        for (const enemy of this.enemyPartyList) {
 
             //選択可能に設定
             enemy.setInteractive({ useHandCursor: true });
@@ -116,13 +116,13 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
                     this.disableSelect();
                 }
             }, this);
-        })
+        }
     }
 
     disableSelect() {
-        this.enemyPartyMap.forEach(enemy => {
+        for (const enemy of this.enemyPartyList) {
             enemy.disableInteractive();
-        });
+        }
     }
 
     //選択中キャラクターを点滅
@@ -154,8 +154,8 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
             this.lightUpDownTween.destroy();
         }
 
-        this.enemyPartyMap.forEach(enemy => {
+        for (const enemy of this.enemyPartyList) {
             enemy.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
-        });
+        }
     }
 }

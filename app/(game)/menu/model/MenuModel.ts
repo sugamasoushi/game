@@ -1,12 +1,13 @@
 import { GameScene } from '../../lib/SceneTypes';
 import { SaveDataManager } from "../../core/SaveDataManager";
+import { GameStateManager } from '../../GameAllState/GameStateManager';
 
 export class MenuModel {
 
     private gameScene: GameScene;
     private scene: Phaser.Scene;
 
-    private playerPartyList: Phaser.Physics.Arcade.Sprite[] = [];
+    private playerPartyList: Phaser.GameObjects.Sprite[] = [];
 
     // Setting Data
     public fontFamily: string;
@@ -41,7 +42,9 @@ export class MenuModel {
         this.alphaValue = settingBubbleData.alphaValue;
         this.lineColor = settingBubbleData.lineColor;
 
-        this.playerPartyList = this.gameScene.getMapObject().getPlayerPartyList();
+        //状態管理クラスから現在のパーティメンバーを取得
+        const gameStateManager = GameStateManager.getInstance();
+        this.playerPartyList = gameStateManager.currentPlayerPartyList;
 
         this.saveDataManager = new SaveDataManager();
     }
@@ -62,7 +65,7 @@ export class MenuModel {
         return this.gameScene.getPlayer().getData(itemName);
     }
 
-    public getPlayerPartyList(): Phaser.Physics.Arcade.Sprite[] {
+    public getPlayerPartyList(): Phaser.GameObjects.Sprite[] {
         return this.playerPartyList;
     }
 

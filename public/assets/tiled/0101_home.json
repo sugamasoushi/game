@@ -377,16 +377,62 @@
          "name":"NPC",
          "objects":[
                 {
-                 "height":0,
-                 "id":12,
-                 "name":"normal,0404,chicken_walk,\u3058\u3044\u3061\u3083\u3093,stand_right,20240622_\u9d8f,bubbleTalk0101.talk002",
-                 "point":true,
+                 "gid":8038,
+                 "height":32,
+                 "id":14,
+                 "name":"grandpa",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0101.talk002"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":"20240622_\u9d8f"
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"grandpa"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"normal"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0404"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"chicken_walk"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":0,
-                 "x":640,
-                 "y":384
+                 "width":32,
+                 "x":623,
+                 "y":378
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -425,6 +471,32 @@
                  "height":0,
                  "id":1,
                  "name":"0102_0687_1200_D",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"D"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0102"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":687
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":1200
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -495,7 +567,7 @@
                  "point":true,
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":0,
                  "x":800,
                  "y":480
@@ -507,7 +579,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":13,
+ "nextobjectid":15,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
@@ -736,6 +808,32 @@
          "name":"collision",
          "spacing":0,
          "tilecount":1,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":8018,
+         "image":"..\/img\/spritesheet\/enemy02.png",
+         "imageheight":128,
+         "imagewidth":96,
+         "margin":0,
+         "name":"enemy02",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":4,
+         "firstgid":8030,
+         "image":"..\/img\/spritesheet\/chicken_walk.png",
+         "imageheight":128,
+         "imagewidth":128,
+         "margin":0,
+         "name":"chicken_walk",
+         "spacing":0,
+         "tilecount":16,
          "tileheight":32,
          "tilewidth":32
         }],

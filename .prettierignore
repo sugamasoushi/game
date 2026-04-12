@@ -1,2 +1,3 @@
 # コードフォーマット無視設定
 public/assets/talktext/*.json
+public/assets/data/bubbleTalkData.json

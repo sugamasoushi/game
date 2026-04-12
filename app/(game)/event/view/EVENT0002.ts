@@ -17,7 +17,7 @@ export class EVENT0002 extends BaseEvent {
 
     private characterGameObject: CharacterGameObject;
     private player: Player;
-    private lamy: Npc;
+    private lamyNPC: Npc;
 
     private soundScene: Sound;
 
@@ -49,9 +49,9 @@ export class EVENT0002 extends BaseEvent {
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
-        this.lamy = (this.characterGameObject.getSprite(this.gameScene, 'lamy') as Npc);
-        this.lamy.state = CharacterState.event;
-        this.lamy.initMoveToPosition();
+        this.lamyNPC = (this.characterGameObject.getSprite(this.gameScene, 'lamyNPC') as Npc);
+        this.lamyNPC.state = CharacterState.event;
+        this.lamyNPC.initMoveToPosition();
     }
 
     //イベント定義
@@ -73,28 +73,29 @@ export class EVENT0002 extends BaseEvent {
                 cam.pan(this.player.x, this.player.y, 500, 'Linear', false);
             }),
             //キャラ移動・配置
+            this.lamyNPC.setVisible(true),
             this.characterMovingDOWN(this.player, 64, 300, false),
-            this.lamy.setStandFrame(this.lamy.getAnimationKey().standDown),
-            this.lamy.setMapPosition(this.player.x, 272)
+            this.lamyNPC.setStandFrame(this.lamyNPC.getAnimationKey().standDown),
+            this.lamyNPC.setMapPosition(this.player.x, 272)
         ]);
 
         /*会話---------------------------------------------------------------------------------*/
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).player.normal;
+        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
         const lamyImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).lamy.normal;
 
         //キャラ画像を配置
         await Promise.all([
-            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'player', playerImageKey, 1000, 0.6, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
             this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamy', lamyImageKey, 200, 1, 200),
         ]);
 
         //会話開始、テキストの終了をチェックする
         await this.eventTalk.execTalk([
-            { player: ['痛っ！！\n', '・・・何？\n'] },
+            { meina: ['痛っ！！\n', '・・・何？\n'] },
             { lamy: ['誰だお前！？\n', 'この家は私が住んでるんだ！！\n', '返さないからな！\n'] },
-            { player: ['ごめんごめん！帰るから！\n'] }
+            { meina: ['ごめんごめん！帰るから！\n'] }
         ], this.characterGameObject);
 
         //キャラ移動
@@ -110,12 +111,12 @@ export class EVENT0002 extends BaseEvent {
 
         //会話003
         await this.eventTalk.execTalk([
-            { player: ['あ"？\n'] },
+            { meina: ['あ"？\n'] },
             { lamy: ['へぁ？\n'] }
         ], this.characterGameObject);
 
         //キャラステータス設定
-        this.lamy.setData({
+        this.lamyNPC.setData({
             level: 1,
             HP: 40,
             MP: 0,
@@ -127,11 +128,11 @@ export class EVENT0002 extends BaseEvent {
             gold: 2
         });
 
-        this.lamy.setData('name', CaharacterNameData['lamy' as keyof typeof CaharacterNameData])
+        this.lamyNPC.setData('name', CaharacterNameData['lamy' as keyof typeof CaharacterNameData])
         //console.log(this.lamy.getData('name'))
 
         //イベントバトル開始
-        this.gameScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.lamy, canNotRunaway: true });
+        this.gameScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.lamyNPC, canNotRunaway: true });
 
         //戦闘終了後、イベントを途中から開始
         const battleScene = this.eventScene.scene.get('Battle');
@@ -145,7 +146,7 @@ export class EVENT0002 extends BaseEvent {
         //会話
         await this.eventTalk.execTalk([
             { lamy: ['ごめんなさい！！\n', 'ゆるしてぇ！！(´;A;｀)\n'] },
-            { player: ['あ、ごめん。\n', '・・・なんか思ったより弱いけど、ラミア族だよね？\n'] },
+            { meina: ['あ、ごめん。\n', '・・・なんか思ったより弱いけど、ラミア族だよね？\n'] },
             { lamy: ['う、うるさいな・・・。\n', 'あんたが強いだけだ！\n'] }]
             , this.characterGameObject);
 
@@ -157,7 +158,7 @@ export class EVENT0002 extends BaseEvent {
 
     override async eventEnd() {
 
-        const playerImage = this.characterGameObject.getCharacterImage('player');
+        const playerImage = this.characterGameObject.getCharacterImage('meina');
         const lamyImage = this.characterGameObject.getCharacterImage('lamy');
 
         await Promise.all([
@@ -173,10 +174,10 @@ export class EVENT0002 extends BaseEvent {
                 this.player.state = CharacterState.normal;
 
                 //イベント後のキャラに吹き出し会話を設定
-                this.lamy.setBubbleTalkKey('bubbleTalk0001.talk002');
-                this.lamy.talkSetting();
-                (this.lamy as SpriteType_3x4).setBubble();
-                this.lamy.state = CharacterState.normal;
+                this.lamyNPC.setBubbleTalkKey('bubbleTalk0001.talk002');
+                this.lamyNPC.talkSetting();
+                (this.lamyNPC as SpriteType_3x4).setBubble();
+                this.lamyNPC.state = CharacterState.normal;
 
                 //設定を戻す
                 this.gameScene.events.emit('EVENT_END')

@@ -5,7 +5,6 @@ import { FieldData } from './FieldTypes';
 import { GameKeys } from "./CommonTypes";
 
 export interface GameScene extends Phaser.Scene {
-  setBlackScreenRect(): Phaser.GameObjects.Rectangle;
   getFieldData(): FieldData;
   setPlayer(playerSprite: Player): void;
   getPlayer(): Player;

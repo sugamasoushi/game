@@ -2,7 +2,7 @@ import { BaseSprite } from "@/app/(game)/core/BaseSprite";
 import { GameScene } from "@/app/(game)/lib/SceneTypes";
 import { State } from "@/app/(game)/lib/StateTypes";
 import { CharacterState } from "@/app/(game)/lib/FieldTypes";
-import { GameStateManager } from '../../../GameAllState/GameStateManager';
+import { GameStateManager, gameStateManager } from '../../../GameAllState/GameStateManager';
 
 export class Player extends BaseSprite {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -15,17 +15,11 @@ export class Player extends BaseSprite {
     private cropRectMask: Phaser.GameObjects.Graphics;
     private cropRectMask2: Phaser.Display.Masks.GeometryMask;
 
-    private player1: Player;
 
-    constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string, player?: boolean | undefined) {
+    constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
         super(scene, x, y, spriteSheetKey, initStandKey);
         this.gameScene = scene;
-
-        if (player) {
-            this.name = 'player';
-        } else {
-            this.name = spriteSheetKey;
-        }
+        this.name = spriteSheetKey;
 
         //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
         this.gameScene.physics.add.existing(this);
@@ -40,17 +34,27 @@ export class Player extends BaseSprite {
 
         this.body.setMaxVelocity(800); // 想定速度の2倍以上は出さない
 
+        // ゲームの状態を監視
+        const stateSubscription = gameStateManager.state$.subscribe(({ state }) => {
+            if (state === State.EVENT || state === State.BUBBLE_TALK) {
+                // イベント開始時に物理移動とアニメーションを強制停止
+                this.stopAnimation();
+            }
+        });
+
+        // 破棄時のクリーンアップ
+        this.once('destroy', () => {
+            stateSubscription.unsubscribe();
+        });
     }
 
-    //オブジェクトのアニメーションを更新
     preUpdate(time: number, delta: number) {
         super.preUpdate(time, delta);
         this._updateKeyWalk();
         this._updateStopWalk();
 
-
         this.depthValue = this.y + (32 / 2) * this.scale
-        if (this.name === 'player') {
+        if (this.name === 'meina') {
             this.setDepth(this.depthValue);
         } else {
             this.setDepth(this.depthValue - 1);
@@ -267,10 +271,6 @@ export class Player extends BaseSprite {
 
     public setCursors(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
         this.cursors = cursors;
-    }
-
-    public setPlayer1(player: Player) {
-        this.player1 = player;
     }
 }
 

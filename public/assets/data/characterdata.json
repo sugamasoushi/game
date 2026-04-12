@@ -1,0 +1,38 @@
+{
+    "infomation": "キャラクターキーデータ",
+    "noName": {
+        "name": "noName",
+        "icon": "",
+        "normal": "",
+        "smile": "",
+        "unger": ""
+    },
+    "meina": {
+        "name": "メイナ",
+        "icon": "Icon_20250609",
+        "normal": "20250609",
+        "smile": "",
+        "unger": ""
+    },
+    "grandpa": {
+        "name": "じいちゃん",
+        "icon": "Icon_20240622_鶏",
+        "normal": "20240622_鶏",
+        "smile": "",
+        "unger": ""
+    },
+    "lamy": {
+        "name": "ラミィ",
+        "icon": "Icon_20240908",
+        "normal": "20240908",
+        "smile": "20240907_3",
+        "unger": ""
+    },
+    "lamyNPC": {
+        "name": "ラミア娘",
+        "icon": "Icon_20240908",
+        "normal": "20240908",
+        "smile": "20240907_3",
+        "unger": ""
+    }
+}

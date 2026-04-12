@@ -1,4 +1,5 @@
 import { EventObjState } from "../lib/types";
+import { SearchCharacterData } from "./SearchCharacterData";
 
 type TextInfomation = {
     fontFamily: string;
@@ -73,13 +74,12 @@ export class DataDefinition {
         //normal: imageKeyData.normal,
         //smile: alphaValue,
         //unger: lineColor,
-        return scene.cache.json.get('ImageKeyData');
+        return scene.cache.json.get('characterdata');
     }
 
     //キャラクターの画像キーを取得
     public getCharacterImageKey(scene: Phaser.Scene, characterName: string) {
-
-        const imageKeyData = scene.cache.json.get('ImageKeyData');
+        const imageKeyData = scene.cache.json.get('characterdata');
 
         for (const key in imageKeyData) {
             const k = key as keyof typeof imageKeyData;
@@ -94,7 +94,7 @@ export class DataDefinition {
         }
     }
 
-    
+
 
     //イベントデータ
     public getEventFlgFromSaveDataInfomation(scene: Phaser.Scene, eventName: string): number {
@@ -129,15 +129,9 @@ export class DataDefinition {
 
     //名前データを取得
     public getSpriteNameData(scene: Phaser.Scene, characterName: string) {
-        const fieldNameData = scene.cache.json.get('namedata').FieldNameData;
-
-        for (const key in fieldNameData) {
-            const k = key as keyof typeof fieldNameData;
-            if (k === characterName) {
-                console.log(key, fieldNameData[k])
-                return fieldNameData[k];
-            }
-        }
+        //キャラクターデータから検索クラスを生成
+        const searchCharacterData = new SearchCharacterData(scene.cache.json);
+        return searchCharacterData.getCharacterData(characterName).name;
     }
 
 

@@ -171,6 +171,32 @@
                  "height":416,
                  "id":1,
                  "name":"0001_1920_0500_L",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"L"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0001"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":1920
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":500
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -182,6 +208,32 @@
                  "height":378,
                  "id":2,
                  "name":"0001_0000_0100_R",
+                 "properties":[
+                        {
+                         "name":"direction",
+                         "type":"string",
+                         "value":"R"
+                        }, 
+                        {
+                         "name":"moveToMap",
+                         "type":"string",
+                         "value":"0001"
+                        }, 
+                        {
+                         "name":"moveX",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"moveY",
+                         "type":"int",
+                         "value":100
+                        }, 
+                        {
+                         "name":"note",
+                         "type":"string",
+                         "value":"\u5ea7\u6a19\u306f\u5de6\u4e0a\u57fa\u6e96"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

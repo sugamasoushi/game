@@ -89,21 +89,21 @@ export class EVENT0004 extends BaseEvent {
         ]);
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).player.normal;
+        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
         const lamyImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).lamy.normal;
 
         //キャラ画像を配置
         await Promise.all([
-            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'player', playerImageKey, 1000, 0.6, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
             this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamy', lamyImageKey, 200, 1, 200),
             this.player.setStandFrame(this.player.getAnimationKey().standDown)
         ]);
 
         await this.eventTalk.execTalk([
             { lamy: ['見つけたぁ！！！\n'] },
-            { player: ['痛"っ！\n', 'あ～～～もう！！なんなの！！！\n'] },
+            { meina: ['痛"っ！\n', 'あ～～～もう！！なんなの！！！\n'] },
             { lamy: ['お前っ！！\n', 'あたしにご飯を作れっ！！\n'] },
-            { player: ['・・・・・・・・・・・・・・・・・・・・・・・・・・・・・💢💢💢\n'] },
+            { meina: ['・・・・・・・・・・・・・・・・・・・・・・・・・・・・・💢💢💢\n'] },
             { lamy: ['・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・(´;_;｀)\n'] }
         ], this.characterGameObject);
 
@@ -112,7 +112,7 @@ export class EVENT0004 extends BaseEvent {
 
         await this.eventTalk.execTalk([
             { lamy: ['お願い、あたしが悪かったからご飯恵んでよぉ・・・。\n'] },
-            { player: ['（ていうかよく考えたら先に攻撃したの私か）\n', '\n', '分かったよ、何食べる？\n', 'あ、鶏はダメだからね。\n'] }
+            { meina: ['（ていうかよく考えたら先に攻撃したの私か）\n', '\n', '分かったよ、何食べる？\n', 'あ、鶏はダメだからね。\n'] }
         ], this.characterGameObject);
 
         //メッセージウィンドウを非表示

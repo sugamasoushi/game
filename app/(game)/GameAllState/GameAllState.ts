@@ -3,7 +3,7 @@ export class GameAllState {
 
     private registry: Phaser.Data.DataManager;
     private cache: Phaser.Cache.CacheManager;
-    private partyList: string[] = ['player'];//現状はプレイヤーのみ
+    private partyList: string[] = ['meina'];//現状はプレイヤーのみ
     private playerPartyList: Phaser.GameObjects.Sprite[] = [];//現状はプレイヤーのみ
 
     constructor() { }

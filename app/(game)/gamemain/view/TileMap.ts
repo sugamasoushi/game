@@ -1,5 +1,7 @@
 import { GameScene } from "../../lib/types";
 import { FieldData } from "../../lib/types";
+import { tilesets } from "../../lib/FieldTypes";
+
 
 interface AnimationTileMapLayer extends Phaser.Tilemaps.TilemapLayer {
     useAnimTile: number[];
@@ -33,10 +35,63 @@ export class TileMap extends Phaser.GameObjects.Container {
     private collisionLayer: Phaser.Tilemaps.TilemapLayer;
     private playerWithDepthMapName: Array<string> = [];
 
-    constructor(scene: GameScene) {
+    constructor(scene: GameScene, fieldData: FieldData) {
         super(scene);
         this.gameScene = scene;
         this.addToUpdateList();
+
+        this.makeTilemap = this.gameScene.make.tilemap({ key: fieldData.mapKey });
+    }
+
+
+    // 未使用だが、例として残す
+    // Tiledのプロパティに設定したファイルパスからデータをロードする。
+    // オブジェクト個別にロードするため、重いデータや条件分岐などの処理を介して使用するなど。
+    // public loadCharacterFile() {
+    //     for (const makeTilemapObj of this.makeTilemap.objects) {
+    //         if (makeTilemapObj.name === 'NPC') {
+    //             for (const npcObj of makeTilemapObj.objects) {
+
+    //                 const entity = new TiledObjectEntity(npcObj.properties);
+
+    //                 for (const property of npcObj.properties) {
+    //                     if (property.name === 'filepath') {
+    //                         this.gameScene.load.spritesheet(entity.name, entity.filepath,
+    //                             { frameWidth: Number(npcObj.width), frameHeight: Number(npcObj.height) }
+    //                         );
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    public loadTileSetFile(fieldData: FieldData) {
+        //タイル画像のロード
+        //データ内のタイルセット画像のURLの一部を書き換える。配置を変更する場合は注意。
+        const tilesets: tilesets[] = this.gameScene.cache.tilemap.get(fieldData.mapKey).data.tilesets;
+        for (const tileset of tilesets) {
+
+            const dataDirectry = tileset.image.split('/');
+
+            if (dataDirectry[2] === 'spritesheet') {
+
+                /**
+                 * Tiledによりデフォルトでファイル名から拡張子を除いた名称となる
+                 * 例：meina.pngなら「meina」となる
+                 * spritesheetのキーは「tex_」を付与して区別する
+                 */
+                const textureKey = "tex_" + tileset.name;
+                const textureUrl = tileset.image.replace('..', 'assets');
+                this.gameScene.load.spritesheet(textureKey, textureUrl,
+                    { frameWidth: tileset.tilewidth, frameHeight: tileset.tileheight }
+                );
+            } else {
+                const tileKey = tileset.name;
+                const tileUrl = tileset.image.replace('..', 'assets');
+                this.gameScene.load.image({ key: tileKey, url: tileUrl });
+            }
+        }
     }
 
     public execute(fieldData: FieldData) {
@@ -69,11 +124,14 @@ export class TileMap extends Phaser.GameObjects.Container {
         this.makeTilemap = tilemap;
 
         //JSONから読み込んだTiledデータにはレイヤー、タイルセットのキー情報、オブジェクト情報、タイルアニメーション情報が含まれている
-        // console.log(tilemap);
-
         //Tiledデータにタイルセットの画像情報を設定
         //例：this.tilemap.addTilesetImage('base_out_atlas', 'base_out_atlas');省略しない場合はこの書き方、キー情報を紐づけている。
+
         tilemap.tilesets.forEach(tilesetArray => {
+            // "tex_" プリフィックス付きのテクスチャがキャッシュにある場合は、タイルセット登録から除外する
+            if (this.gameScene.textures.exists("tex_" + tilesetArray.name)) {
+                return;
+            }
             tilemap.addTilesetImage(tilesetArray.name);
         })
 
@@ -141,7 +199,6 @@ export class TileMap extends Phaser.GameObjects.Container {
                 tilemap.layers[i].tilemapLayer.setDepth(tilemap.layers[i].heightInPixels);
                 //mapの当たり判定
                 this.collisionLayer.setCollisionByExclusion([-1], true);
-                //scene.collisionLayer.removeFromDisplayList();
                 this.collisionLayer.setVisible(false);//非表示にするだけならこちらを使用する
 
             } else {

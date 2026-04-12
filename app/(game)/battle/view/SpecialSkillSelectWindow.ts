@@ -91,8 +91,7 @@ export class SpecialSkillSelectWindow extends Phaser.GameObjects.Container {
         for (const [i, skillId] of specialSkills.entries()) {
 
             //検索
-            const skilldata = this.scene.cache.json.get('skilldata');
-            const searchSkill = new SearchSkill(skilldata);
+            const searchSkill = new SearchSkill(this.scene.cache.json);
             const skillDetail: SkillDetail = searchSkill.getSkillData('special', skillId)!;
 
             const textObj = messageObjectInstance.createTextObject(this.scene, 0, 0, skillDetail.name);

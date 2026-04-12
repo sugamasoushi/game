@@ -73,11 +73,11 @@ export class FieldPresenter {
 
     private setEventEmitter() {
         //状態管理クラス
-        const manager = GameStateManager.getInstance();
+        const gameStateManager = GameStateManager.getInstance();
 
         //フェード後、入力設定
         this.gameScene.events.once('FADE_IN_COMPLETE', () => {
-            if (manager.currentState !== State.EVENT) {
+            if (gameStateManager.currentState !== State.EVENT) {
                 this.inputManager.setState(true);
             }
         });
@@ -95,25 +95,9 @@ export class FieldPresenter {
         this.gameScene.events.on('FIELD_RESTART', (fieldData: FieldData) => {
 
             this.inputManager.setState(false);
-            // this.cameraManager.execFadeOut();
-
-            // this.gameScene.events.once('FADE_OUT_COMPLETE', () => {
-
-            //     //状態更新
-            //     manager.updateState({
-            //         state: State.FIELD_RESTART,
-            //         fieldData: {
-            //             gameMode: fieldData.gameMode,
-            //             mapKey: fieldData.mapKey,
-            //             x: fieldData.x,
-            //             y: fieldData.y,
-            //             initStandKey: fieldData.initStandKey,
-            //         }
-            //     }, 'FieldMove');
-            // });
 
             //状態更新
-            manager.updateState({
+            gameStateManager.updateState({
                 state: State.FIELD_RESTART,
                 fieldData: {
                     gameMode: fieldData.gameMode,
@@ -135,7 +119,7 @@ export class FieldPresenter {
             this.inputManager.setState(false);
 
             //状態更新
-            manager.updateState({
+            gameStateManager.updateState({
                 state: State.EVENT,
                 eventObj: eventObj
             }, 'Event');
@@ -147,7 +131,7 @@ export class FieldPresenter {
             this.inputManager.setState(true);
             this.cameraManager.setFollow(true);//カメラ設定
 
-            manager.updateState({
+            gameStateManager.updateState({
                 state: State.NOSTATE,
             }, 'EventEnd');
 
@@ -158,13 +142,14 @@ export class FieldPresenter {
         this.gameScene.events.on('BATTLE', (battleData: { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }) => {
 
             //戦闘開始時に停止
-            for (const sprite of this.fieldMapModel.getPlayerPartyList()) {
+            for (const sprite of gameStateManager.currentPlayerPartyList) {
+                console.log(sprite);
                 (sprite as Player).stopAnimation();
                 (sprite as Player).setVelocity(0);//念のため
             }
 
             //状態更新
-            manager.updateState({
+            gameStateManager.updateState({
                 state: State.BATTLE,
                 battleData: { usePatern: battleData.usePatern, fieldHitEnemy: battleData.fieldHitEnemy, canNotRunaway: battleData.canNotRunaway }
             }, battleData.usePatern);

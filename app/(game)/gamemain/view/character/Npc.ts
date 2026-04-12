@@ -3,6 +3,8 @@ import { CharacterState } from "@/app/(game)/lib/FieldTypes";
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
 import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { BubbleTalk } from './Action/BubbleTalk';
+import { GameStateManager } from '../../../GameAllState/GameStateManager';
+import { State } from '@/app/(game)/lib/StateTypes';
 
 export class Npc extends BaseSprite {
     private npcType: string;
@@ -19,13 +21,24 @@ export class Npc extends BaseSprite {
 
     public body: Phaser.Physics.Arcade.Body
 
-    constructor(gameScene: GameScene, x: number, y: number, npcType: string, spriteSheetKey: string, npcNameCode: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
+    constructor(
+        gameScene: GameScene,
+        x: number,
+        y: number,
+        npcType: string,
+        spriteSheetKey: string,
+        npcNameCode: string,
+        initStandKey: string,
+        imageKey: string,
+        bubbleTalkKey: string
+    ) {
         super(gameScene, x, y, spriteSheetKey, initStandKey);
         this.gameScene = gameScene;
         this.npcType = npcType;
         this.state = CharacterState.normal;
         if (npcType === 'event') {
             this.state = CharacterState.event;
+            //this.setVisible(false);
         }
         this.name = npcNameCode;
         this.bubbleTalkKey = bubbleTalkKey;
@@ -125,9 +138,13 @@ export class Npc extends BaseSprite {
             const bubbleTalk = new BubbleTalk(this.gameScene, this, this.bubbleTalkKey);
             bubbleTalk.init();
 
+            const manager = GameStateManager.getInstance();
+
             this.on('pointerdown', () => {
 
                 this.state = CharacterState.talking;
+
+                manager.updateState({ state: State.BUBBLE_TALK }, 'npc');
 
                 //キャラの向きをチェック
                 const fieldObjChk = new FieldObjectCheck(this.gameScene.getPlayer(), this);
@@ -154,6 +171,7 @@ export class Npc extends BaseSprite {
 
                     //会話終了後、設定を戻す
                     this.state = CharacterState.normal;
+                    manager.updateState({ state: State.NOSTATE }, 'npc');
 
                 })();
             })
@@ -162,8 +180,8 @@ export class Npc extends BaseSprite {
 
     //enemy衝突
     _collideSetting() {
-        //キャラクターやマップ作成後に実行する事
 
+        //キャラクターやマップ作成後に実行する事
         if (this.npcType === 'enemy') {
 
             //オブジェクトに衝突した場合、戦闘を発生させる
@@ -173,7 +191,7 @@ export class Npc extends BaseSprite {
             }, undefined, this.gameScene);
 
         } else {
-            this.gameScene.physics.add.collider(this, this.gameScene.getPlayer());
+            //this.gameScene.physics.add.collider(this, this.gameScene.getPlayer());
         }
     }
 

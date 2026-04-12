@@ -4,6 +4,7 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { MessageObject } from "../../util/MessageObject";
 import YesNoWindow from "../../util/YesNoWindow";
 import { CharacterGameObject } from '../view/CharacterGameObject';
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 
 type TalkLine = { [chara: string]: string[] };
 // type TalkGroup = Record<string, TalkLine[]>;
@@ -203,9 +204,9 @@ export class EventTalk {
 
         //キャラクター名が存在する場合
         if (charKey) {
-            //名前データから取得
-            const nameData = this.eventScene.cache.json.get('namedata').FieldNameData as Record<string, string>;
-            const name = nameData[charKey] ?? '';
+            //キャラクターデータから検索クラスを生成
+            const searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
+            const name = searchCharacterData.getCharacterData(charKey).name;
             this.characterNameText = this.messageObjectInstance.createTextObject(this.eventScene, 0, 0, name);
 
             //ラベル位置は調整する事
@@ -222,9 +223,9 @@ export class EventTalk {
     //キャラ名のラベルを作成
     private createCharacterLabelWindow(charKey: string) {
 
-        //キャラクター名の確認
-        const nameData = this.eventScene.cache.json.get('namedata').FieldNameData as Record<string, string>;
-        const name = nameData[charKey];
+        //キャラクターデータの確認
+        const searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
+        const name = searchCharacterData.getCharacterData(charKey).name;
 
         //キャラクター名が存在する場合
         if (name) {

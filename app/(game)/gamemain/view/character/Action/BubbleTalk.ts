@@ -7,6 +7,7 @@ import { FieldObjectCheck } from '@/app/(game)/util/FieldObjectCheck';
 import { MessageObject } from '../../../../util/MessageObject';
 
 import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
+import { SearchCharacterData } from '@/app/(game)/Data/SearchCharacterData';
 
 export class BubbleTalk {
     private gameScene: GameScene;
@@ -164,7 +165,7 @@ export class BubbleTalk {
         }
 
         //プレイヤー発言中の場合
-        if (charKey === 'player') {
+        if (charKey === 'meina') {
             if (playerPosition === 'left') {
                 textX = (this.gameScene as GameScene).getPlayer().x - this.messageWidth;
             } else {
@@ -206,7 +207,7 @@ export class BubbleTalk {
     //吹き出しを作成
     private createMessageWindow(charKey: string) {
 
-        if (charKey === 'player') {
+        if (charKey === 'meina') {
             const messageWindow = new MessageWindow(this.gameScene);
             messageWindow.init();
             messageWindow.createBubbleWindow(
@@ -255,45 +256,52 @@ export class BubbleTalk {
 
         //キャラクター名が存在する場合
         if (charKey) {
-            //名前データから取得
-            const nameData = this.gameScene.cache.json.get('namedata').FieldNameData as Record<string, string>;
-            const name = nameData[charKey] ?? '';
-            this.characterNameText = this.messageObjectInstance.createTextObject(this.gameScene, 0, 0, name);
+            //キャラクターデータから検索クラスを生成
+            const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
+            const name = searchCharacterData.getCharacterData(charKey).name;
 
-            //ラベル位置は調整する事
-            const labelX = this.textX;
-            const labelY = this.textY - this.characterNameText.getTextMetrics().fontSize * 2;
-            this.characterNameText.setPosition(labelX, labelY);
-            this.characterNameText.setDepth(this.textObject.depth + 10);
+            //名前が存在する場合
+            if (name !== 'noName') {
+                this.characterNameText = this.messageObjectInstance.createTextObject(this.gameScene, 0, 0, name);
 
-            //削除対象に登録
-            this.messageOperation.addMessageObjectList(this.characterNameText);
+                //ラベル位置は調整する事
+                const labelX = this.textX;
+                const labelY = this.textY - this.characterNameText.getTextMetrics().fontSize * 2;
+                this.characterNameText.setPosition(labelX, labelY);
+                this.characterNameText.setDepth(this.textObject.depth + 10);
+
+                //削除対象に登録
+                this.messageOperation.addMessageObjectList(this.characterNameText);
+            }
         }
     }
 
     //キャラ名のラベルを作成
     private createCharacterLabelWindow(charKey: string) {
 
-        //キャラクター名の確認
-        const nameData = this.gameScene.cache.json.get('namedata').FieldNameData as Record<string, string>;
-        const name = nameData[charKey];
-
         //キャラクター名が存在する場合
-        if (name) {
-            const characterLabelWindow = new MessageWindow(this.gameScene);
-            characterLabelWindow.init();
-            characterLabelWindow.createOneColumnOneWindow(this.characterNameText, 8);
-            this.characterLabelWindow = characterLabelWindow;
+        if (charKey) {
+            //キャラクターデータの確認
+            const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
+            const name = searchCharacterData.getCharacterData(charKey).name;
 
-            //削除対象に登録
-            this.messageOperation.addMessageObjectList(this.characterLabelWindow);
+            //キャラクター名が存在する場合
+            if (name !== 'noName') {
+                const characterLabelWindow = new MessageWindow(this.gameScene);
+                characterLabelWindow.init();
+                characterLabelWindow.createOneColumnOneWindow(this.characterNameText, 8);
+                this.characterLabelWindow = characterLabelWindow;
+
+                //削除対象に登録
+                this.messageOperation.addMessageObjectList(this.characterLabelWindow);
+            }
         }
     }
 
     //キャラクターのアイコンを設定
     private setImage(charKey: string) {
 
-        if (charKey === 'player') {
+        if (charKey === 'meina') {
             this.characterIcon = this.gameScene.add.image(this.textX - 50, this.textY, 'Icon_' + this.gameScene.getPlayer().getData('ImageKey'));
 
             //削除対象に登録

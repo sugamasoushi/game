@@ -26,11 +26,6 @@ export class CharacterGameObject {
         return characterSprite!;
     }
 
-    //パーティリストを取得
-    public getPlayerPartyList(gameScene: GameScene): Phaser.GameObjects.Sprite[] {
-        return gameScene.getMapObject().getPlayerPartyList();
-    }
-
     //フィールドの敵リストを取得
     public getFieldEnemyList(gameScene: GameScene): Npc[] {
         return gameScene.getMapObject().getFieldEnemyList();
