@@ -27,9 +27,9 @@ export class CharacterGameObject {
     }
 
     //パーティリストを取得
-    public getPlayerPartyList(gameScene: GameScene): Phaser.GameObjects.Sprite[] {
-        return gameScene.getMapObject().getPlayerPartyList();
-    }
+    // public getPlayerPartyList(gameScene: GameScene): Phaser.GameObjects.Sprite[] {
+    //     return gameScene.getMapObject().getPlayerPartyList();
+    // }
 
     //フィールドの敵リストを取得
     public getFieldEnemyList(gameScene: GameScene): Npc[] {
@@ -60,6 +60,10 @@ export class CharacterGameObject {
     //キャラクターの立ち絵を取得しスクロール
     public scrollOutImage(imgae: Phaser.GameObjects.Image, moveToX: number, duration: number) {
         return new Promise<void>(resolve => {
+            if (!imgae || !imgae.scene) {
+                resolve();
+                return;
+            }
 
             //画面外からスクロール
             imgae.scene.tweens.add({
@@ -87,6 +91,10 @@ export class CharacterGameObject {
         const lightDownRGB = 128;
 
         return new Promise<void>(resolve => {
+            if (!characterImage || !characterImage.scene) {
+                resolve();
+                return;
+            }
             //このtweenはオブジェクトをターゲットとせず、内部で値を更新し続ける
             //※削除処理は考えるべき
             characterImage!.scene.tweens.addCounter({
@@ -118,6 +126,10 @@ export class CharacterGameObject {
 
             if (characterKey !== key) {
                 return new Promise<void>(resolve => {
+                    if (!image || !image.scene) {
+                        resolve();
+                        return;
+                    }
                     //このtweenは値を保持し更新し続ける。
                     //※削除処理は考えるべき
                     image.scene.tweens.addCounter({

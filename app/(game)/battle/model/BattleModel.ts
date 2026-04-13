@@ -1,14 +1,13 @@
 import { BattleScene, GameScene, CharacterStatus } from "../../lib/types";
 import { Npc } from "../../gamemain/view/character/Npc";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
+import { gameStateManager } from "../../GameAllState/GameStateManager";
 
 export class BattleModel {
     private battleScene: BattleScene;
     private gameScene: GameScene;
     private usePatern: string;
     private canNotRunaway: boolean = false;
-
-    private playerPartyList: Phaser.GameObjects.Sprite[] = [];//現状はプレイヤーのみ
     private enemyList: string[] = [];//イベント戦闘の敵名称等
     private enemyPartyList: Phaser.GameObjects.Image[] = [];
 
@@ -16,15 +15,13 @@ export class BattleModel {
 
     constructor(
         battleScene: BattleScene,
-        data: { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean },
-        playerPartyList: Phaser.GameObjects.Sprite[]
+        data: { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }
     ) {
         this.battleScene = battleScene;
         this.gameScene = (this.battleScene.scene.get('Game') as GameScene);
         this.usePatern = data.usePatern;
         this.canNotRunaway = data.canNotRunaway;
         this.fieldHitEnemy = data.fieldHitEnemy;
-        this.playerPartyList = playerPartyList;
 
         //敵味方パーティを作成
         if (this.usePatern === 'normal') {
@@ -123,7 +120,7 @@ export class BattleModel {
         this.enemyPartyList.push(lamy);
     }
 
-    public getPlayerPartyList(): Phaser.GameObjects.Sprite[] { return this.playerPartyList; }
+    public getPlayerPartyList(): Phaser.GameObjects.Sprite[] { return gameStateManager.currentPlayerPartyList; }
     public getEnemyList(): string[] { return this.enemyList; }
     public getCanNotRunaway(): boolean { return this.canNotRunaway; }
     public getEnemyPartyList(): Phaser.GameObjects.Image[] { return this.enemyPartyList; }
@@ -132,7 +129,7 @@ export class BattleModel {
     public getBattlerList() {
 
         //味方のマップを配列に変換
-        const partyeList: Phaser.GameObjects.GameObject[] = this.playerPartyList;
+        const partyeList: Phaser.GameObjects.GameObject[] = gameStateManager.currentPlayerPartyList;
 
         //敵のマップを配列に変換
         const enemyList: Phaser.GameObjects.GameObject[] = this.enemyPartyList;
@@ -154,7 +151,7 @@ export class BattleModel {
             const playerPartyNum = 0;
 
             // プレイヤーのパーティリストから対象を決定
-            for (const [index, player] of this.playerPartyList.entries()) {
+            for (const [index, player] of gameStateManager.currentPlayerPartyList.entries()) {
                 if (index === playerPartyNum) {
                     list.setData('attackType', 'normal');
                     list.setData('BattleTarget', player);
@@ -177,7 +174,7 @@ export class BattleModel {
     }
 
     public resetBattleStatus() {
-        for (const partyMember of this.playerPartyList) {
+        for (const partyMember of gameStateManager.currentPlayerPartyList) {
             partyMember.data.remove('GuardValue');
             partyMember.data.remove('SkillType');
             partyMember.data.remove('UseSkill');

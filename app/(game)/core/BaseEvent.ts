@@ -2,6 +2,8 @@ import { Eventer, EventObjState } from "../lib/types";
 import { Event } from "../scenes/Event";
 import { Player } from "../gamemain/view/character/Player";
 import { Npc } from "../gamemain/view/character/Npc";
+import { gameStateManager } from "../GameAllState/GameStateManager";
+import { State } from "../lib/StateTypes";
 
 //イベントクラスの基底クラス
 export class BaseEvent implements Eventer {
@@ -11,6 +13,10 @@ export class BaseEvent implements Eventer {
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         this.eventScene = eventScene;
         this.eventObject = eventObject;
+    }
+
+    protected get isGameOver(): boolean {
+        return gameStateManager.currentState === State.GAMEOVER;
     }
 
     //オーバーライド

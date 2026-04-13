@@ -7,7 +7,6 @@ const INITIAL_STATE: GameState = {
     state: State.NOSTATE,
     sceneKey: 'string', // 更新元のキーを追加
     money: 100,
-    hp: 100,
     playerPartyList: [],
     battleFlag: false,
     isGameOver: false,
@@ -110,20 +109,28 @@ export class GameStateManager {
     // 3. ゲームオーバー判定専用のストリーム
     // take(1) を使うことで、一度発火したら完了するように設計
     public readonly onGameOver$: Observable<void> = this.gameState$.pipe(
-        filter(gameState => gameState.hp <= 0 && !gameState.isGameOver),
+        filter(gameState => {
+            // パーティ全員のHPをチェック
+            const party = gameState.playerPartyList;
+            if (party.length === 0) return false;
+
+            // すべてのメンバーのHPが0以下であるかを確認
+            const isAllDead = party.every(member => {
+                const hp = member.getData('HP');
+                return hp !== undefined && hp <= 0;
+            });
+
+            return isAllDead && !gameState.isGameOver;
+        }),
         map(() => undefined),
         take(1)
     );
 
-    // 4. 状態更新メソッド
-    //「今の状態をコピーして、HPだけを安全に計算し直し、新しい状態として再配布する」という一連の処理を安全に行っている
-    public damage(amount: number): void {
-        const currentState = this.gameState$.value;
-        this.gameState$.next({
-            ...currentState,//まずは全ての値を取得、※元の保持データ（参照先）の変更はこのように書く
-            hp: Math.max(0, currentState.hp - amount)//値更新、０未満にはならないらしい
-        });
+    // ゲームオーバー状態をセットする
+    public triggerGameOver() {
+        this.updateState({ state: State.GAMEOVER, isGameOver: true }, 'system');
     }
+
 
     // 戦闘中かどうかのチェック
     public startBattle(): void {
@@ -169,9 +176,7 @@ export class GameStateManager {
 
 
 
-    // 現在の値取得
     public get currentState(): State { return this.gameState$.value.state; }
-    public get currentHP(): number { return this.gameState$.value.state; }
     public get currentBattleFlag(): boolean { return this.gameState$.value.battleFlag; }
     public get currentFieldData(): FieldData { return this.gameState$.value.fieldData!; }
     public get currentBattleData() {

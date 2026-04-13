@@ -12,14 +12,14 @@ export enum State {
   FIELD_RESUME = 22,
   BATTLE = 30,
   EVENT = 40,
-  BUBBLE_TALK = 45
+  BUBBLE_TALK = 45,
+  GAMEOVER = 50
 }
 
 export interface GameState {
   state: State;
   sceneKey?: string; // 更新元のキーを追加
   money: number;
-  hp: number;
   playerPartyList: Phaser.GameObjects.Sprite[];
   battleFlag: boolean;
   isGameOver: boolean;

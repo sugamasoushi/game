@@ -2,14 +2,13 @@ import { GameScene, State } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
 import { FieldPresenter } from "./FieldPresenter";
 import { Player } from "../view/character/Player";
-import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { GameStateManager, gameStateManager } from "../../GameAllState/GameStateManager";
 import { FieldAttack } from '../view/character/Action/FieldAttack';
 import { DataDefinition } from '../../Data/DataDefinition';
 import { FieldMapModel } from "../model/FieldMapModel";
 
 export class PlayerPresenter {
     private player: Player;
-    private playerPartyList: Phaser.Physics.Arcade.Sprite[] = [];
     private fieldAttack: FieldAttack;
 
     constructor(
@@ -29,15 +28,15 @@ export class PlayerPresenter {
         this.player.setCursors(this.inputManager.phaserCursors);
 
         //プレイヤーのパーティメンバーを作成
-        this.playerPartyList = this.fieldPresenter.getPlayerPartyList();
-        if (this.playerPartyList[1]) {
-            (this.playerPartyList[1] as Player).setCursors(this.inputManager.phaserCursors);
+        const playerPartyList = gameStateManager.currentPlayerPartyList;
+        if (playerPartyList[1]) {
+            (playerPartyList[1] as Player).setCursors(this.inputManager.phaserCursors);
             //this.player.setPlayer1(this.player);
         }
 
         //プレイヤーのパーティメンバーを作成
-        if (this.playerPartyList[2]) {
-            (this.playerPartyList[2] as Player).setCursors(this.inputManager.phaserCursors);
+        if (playerPartyList[2]) {
+            (playerPartyList[2] as Player).setCursors(this.inputManager.phaserCursors);
         }
 
         this.setAnyObject();
@@ -67,15 +66,17 @@ export class PlayerPresenter {
                     this.inputManager.phaserInput.activePointer.worldY,
                     0, false, 50, 1000);
 
-                if (this.playerPartyList[1]) {
-                    (this.playerPartyList[1] as Player).setMoveToPosition(
+                const playerPartyList = gameStateManager.currentPlayerPartyList;
+
+                if (playerPartyList[1]) {
+                    (playerPartyList[1] as Player).setMoveToPosition(
                         this.inputManager.phaserInput.activePointer.worldX,
                         this.inputManager.phaserInput.activePointer.worldY,
                         1, false, 40, 1100);
                 }
 
-                if (this.playerPartyList[2]) {
-                    (this.playerPartyList[2] as Player).setMoveToPosition(
+                if (playerPartyList[2]) {
+                    (playerPartyList[2] as Player).setMoveToPosition(
                         this.inputManager.phaserInput.activePointer.worldX,
                         this.inputManager.phaserInput.activePointer.worldY,
                         2, false, 40, 1100);

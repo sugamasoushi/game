@@ -7,8 +7,6 @@ export class MenuModel {
     private gameScene: GameScene;
     private scene: Phaser.Scene;
 
-    private playerPartyList: Phaser.GameObjects.Sprite[] = [];
-
     // Setting Data
     public fontFamily: string;
     public fontColor: string;
@@ -42,9 +40,7 @@ export class MenuModel {
         this.alphaValue = settingBubbleData.alphaValue;
         this.lineColor = settingBubbleData.lineColor;
 
-        //状態管理クラスから現在のパーティメンバーを取得
         const gameStateManager = GameStateManager.getInstance();
-        this.playerPartyList = gameStateManager.currentPlayerPartyList;
 
         this.saveDataManager = new SaveDataManager();
     }
@@ -66,7 +62,8 @@ export class MenuModel {
     }
 
     public getPlayerPartyList(): Phaser.GameObjects.Sprite[] {
-        return this.playerPartyList;
+        const gameStateManager = GameStateManager.getInstance();
+        return gameStateManager.currentPlayerPartyList;
     }
 
     // アイテムリストから表示不要なステータス項目を除外して返す
@@ -92,7 +89,8 @@ export class MenuModel {
         }
 
         // 使用対象のメンバーデータを取得
-        const targetMember = this.playerPartyList[memberIndex];
+        const gameStateManager = GameStateManager.getInstance();
+        const targetMember = gameStateManager.currentPlayerPartyList[memberIndex];
         if (!targetMember) return;
         const memberData = targetMember.data.values;
 

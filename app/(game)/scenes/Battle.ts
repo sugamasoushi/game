@@ -65,8 +65,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
         //model
         this.battleModel = new BattleModel(
             this,
-            (battleData as { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }),
-            manager.currentPlayerPartyList
+            (battleData as { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean })
         );
         this.commandSelectModel = new CommandSelectModel();
         this.turnModel = new TurnModel();
@@ -111,6 +110,13 @@ export class Battle extends Phaser.Scene implements BattleScene {
             this.endScene();
             resolve()
         }, this);
+
+        // ゲームオーバーの監視
+        const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
+            this.input.enabled = false;
+            this.cameras.main.fadeOut(1000);
+        });
+        this.events.once('shutdown', () => gameOverSub.unsubscribe());
 
         //背景画像
         if (data.sceneKey === 'event') {

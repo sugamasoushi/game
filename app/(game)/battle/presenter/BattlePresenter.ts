@@ -439,7 +439,6 @@ export class BattlePresenter {
 
     //現在ターンのキャラクターの攻撃処理
     async battle(battler: Phaser.GameObjects.GameObject) {
-        gameStateManager.damage(100);
         let winner = '';
 
         //攻撃
@@ -513,7 +512,7 @@ export class BattlePresenter {
             }
 
             await this.battleMessageWindow.messageOutput('ゲームオーバー', 1000);
-            this.battleScene.scene.launch('GameOver');
+            gameStateManager.triggerGameOver();
             this.endEvents.emit('BattleEnd');
         }
 

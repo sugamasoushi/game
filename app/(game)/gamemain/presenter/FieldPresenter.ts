@@ -43,6 +43,7 @@ export class FieldPresenter {
     }
 
     public async create(sceneKey: string) {
+        //this.cameraManager.getMainCamera().setZoom(1.2);
 
         //マップ情報の判定、検索処理とか実装する必要がある
         if (this.fieldMapModel.getFieldData().mapKey === '0102') {
@@ -179,7 +180,8 @@ export class FieldPresenter {
     }
 
     public getPlayerPartyList() {
-        return this.mapObject.getPlayerPartyList();
+        const gameStateManager = GameStateManager.getInstance();
+        return gameStateManager.currentPlayerPartyList;
     }
 
     public getTilemap(): TileMap {

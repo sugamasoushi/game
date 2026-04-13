@@ -108,6 +108,14 @@ export class SceneController extends Scene {
             case State.BUBBLE_TALK:
                 console.log('BubbleTalk')
                 break;
+            case State.GAMEOVER:
+                console.log('GameOver transition')
+                this.scene.stop('Game');
+                this.scene.stop('Battle');
+                this.scene.stop('Event');
+                this.scene.stop('Menu');
+                this.scene.launch('GameOver');
+                break;
         }
     }
 

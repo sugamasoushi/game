@@ -1,6 +1,6 @@
 import { EventScene } from '../lib/SceneTypes';
 import { SerchEvent } from "../event/SearchEvent";
-import { GameStateManager } from "../GameAllState/GameStateManager";
+import { GameStateManager, gameStateManager } from "../GameAllState/GameStateManager";
 
 export class Event extends Phaser.Scene implements EventScene {
 
@@ -31,6 +31,12 @@ export class Event extends Phaser.Scene implements EventScene {
             eventClass.init();
             eventClass.execEvent();
         }
+
+        // ゲームオーバーの監視
+        const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
+            this.input.enabled = false;
+        });
+        this.events.once('shutdown', () => gameOverSub.unsubscribe());
     }
     public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {
         return this.cursorsKeys;

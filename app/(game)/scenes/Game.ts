@@ -15,7 +15,7 @@ import { SaveButton } from '../gamemain/view/SaveButton';
 import { FireButton } from '../gamemain/view/FireButton';
 import { Player } from '../gamemain/view/character/Player';
 
-import { GameStateManager } from '../GameAllState/GameStateManager';
+import { GameStateManager, gameStateManager } from '../GameAllState/GameStateManager';
 
 import { InputManager } from '../core/input/InputManager';
 import { CameraManager } from '../gamemain/view/CameraManager';
@@ -110,6 +110,15 @@ export class Game extends Scene implements GameScene {
         this.fieldPresenter.create(data.sceneKey);
         this.playerPresenter.execute();
         this.npcPresenter.execute();
+
+        // ゲームオーバーの監視
+        const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
+            this.input.enabled = false;
+            if (this.mainCamera) {
+                this.mainCamera.fadeOut(1000);
+            }
+        });
+        this.events.once('shutdown', () => gameOverSub.unsubscribe());
 
         EventBus.emit('current-scene-ready', this);
     }

@@ -143,6 +143,9 @@ export class EVENT0002 extends BaseEvent {
             });
         })
 
+        // ゲームオーバー時はイベントを中断
+        if (this.isGameOver) return;
+
         //会話
         await this.eventTalk.execTalk([
             { lamy: ['ごめんなさい！！\n', 'ゆるしてぇ！！(´;A;｀)\n'] },

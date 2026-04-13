@@ -2,6 +2,7 @@ import { GameScene } from '../lib/SceneTypes';
 import { MenuModel } from "../menu/model/MenuModel";
 import { MenuView } from "../menu/view/MenuView";
 import { MenuPresenter } from "../menu/presenter/MenuPresenter";
+import { gameStateManager } from "../GameAllState/GameStateManager";
 
 export class Menu extends Phaser.Scene {
 
@@ -35,6 +36,12 @@ export class Menu extends Phaser.Scene {
 
     create() {
         this.menuPresenter.create();
+
+        // ゲームオーバーの監視
+        const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
+            this.input.enabled = false;
+        });
+        this.events.once('shutdown', () => gameOverSub.unsubscribe());
     }
 
     public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {

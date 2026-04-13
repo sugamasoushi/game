@@ -1,5 +1,6 @@
 import { GameScene, FieldData } from "../../lib/types";
 import { MapObject } from "../view/MapObject";
+import { gameStateManager } from "../../GameAllState/GameStateManager";
 import { Player } from "../view/character/Player";
 import { Npc } from "../view/character/Npc";
 
@@ -7,7 +8,6 @@ export class FieldMapModel {
     private mapObject: MapObject;
     private fieldData: FieldData;
     private player: Player;
-    private playerPartyList: Phaser.Physics.Arcade.Sprite[] = [];
 
     private npcNormalList: Npc[] = [];
     private npcEnemyList: Npc[] = [];
@@ -25,7 +25,6 @@ export class FieldMapModel {
     public execute(mapObject: MapObject) {
         this.mapObject = mapObject;
         this.player = mapObject.getPlayer();
-        this.playerPartyList = mapObject.getPlayerPartyList();
         this.npcNormalList = mapObject.getFieldNpclList();
         this.npcEnemyList = mapObject.getFieldEnemyList();
     }
@@ -33,8 +32,8 @@ export class FieldMapModel {
     public getPlayer(): Player {
         return this.player;
     }
-    public getPlayerPartyList(): Phaser.GameObjects.Sprite[] {
-        return this.playerPartyList;
+    public getPlayerPartyList(): Phaser.Physics.Arcade.Sprite[] {
+        return gameStateManager.currentPlayerPartyList as Phaser.Physics.Arcade.Sprite[];
     }
     public getFieldEnemyList(): Npc[] {
         return this.npcEnemyList;
