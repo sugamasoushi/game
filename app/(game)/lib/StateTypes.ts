@@ -1,6 +1,7 @@
 import { FieldData } from "./FieldTypes";
 import { Npc } from "../gamemain/view/character/Npc";
 import { ViewsContainer } from "./BattleTypes";
+import { ActorState } from "../core/ActorState";
 // import * as Phaser from 'phaser';
 
 export enum State {
@@ -21,6 +22,7 @@ export interface GameState {
   sceneKey?: string; // 更新元のキーを追加
   money: number;
   playerPartyList: Phaser.GameObjects.Sprite[];
+  playerActorList: ActorState[];
   battleFlag: boolean;
   isGameOver: boolean;
   fieldData: FieldData;

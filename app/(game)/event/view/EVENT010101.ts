@@ -8,7 +8,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
 
 //Event.tsは未使用
-export class EVENT0001 extends BaseEvent {
+export class EVENT010101 extends BaseEvent {
     private gameScene: GameScene;
     private settingData: DataDefinition;
 
@@ -18,15 +18,11 @@ export class EVENT0001 extends BaseEvent {
     }
 
     override init() {
-        //console.log('EVENT0001')
 
-        //このイベントをOFF
-        this.eventObject.state = EventObjState.false;
-        (this.eventObject.body as Phaser.Physics.Arcade.StaticBody).collisionCategory = 0;//衝突判定のON/OFFを切り替える
-
-        //キャッシュのイベントフラグを更新
+        //キャッシュのイベントフラグと衝突判定を更新
         this.settingData = new DataDefinition();
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0001', false);
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010101', false);
+        this.switchingEventObjFlg('EVENT010101', false);
 
         this.gameScene.getPlayer().stopAnimation();
     }
@@ -39,7 +35,6 @@ export class EVENT0001 extends BaseEvent {
         maskRect.fillStyle(0x000000, 1);
         maskRect.fillRect(0, 0, Number(this.eventScene.game.config.width), Number(this.eventScene.game.config.height));
         maskRect.setDepth(Number(this.eventScene.game.config.height)).setAlpha(0.5);
-
 
         const messageObjectInstance = new MessageObject();
         messageObjectInstance.init(this.eventScene)
@@ -66,7 +61,7 @@ export class EVENT0001 extends BaseEvent {
             , 24);
         textObject.setDepth(Number(this.eventScene.game.config.height) + 1);
 
-        //メッセージウィンドウ作成
+        //配置
         textObject.x = (Number(this.eventScene.game.config.width) - textObject.width) / 2;
         textObject.y = Number(this.eventScene.game.config.height);
 

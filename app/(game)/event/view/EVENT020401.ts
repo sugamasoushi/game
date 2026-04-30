@@ -1,3 +1,7 @@
+/**
+ * ENDING
+ */
+
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
 import { GameScene, EventObjState, CharacterState } from "../../lib/types";
@@ -8,7 +12,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 
-export class EVENT0004 extends BaseEvent {
+export class EVENT010401 extends BaseEvent {
     private gameScene: GameScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
@@ -37,7 +41,7 @@ export class EVENT0004 extends BaseEvent {
 
         //キャッシュのイベントフラグを更新
         this.settingData = new DataDefinition();
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0004', false);
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010401', false);
 
         //プレイヤー設定
         this.player = this.gameScene.getPlayer();
@@ -57,9 +61,9 @@ export class EVENT0004 extends BaseEvent {
             this.gameScene,
             816,
             496,
-            'lamy', //タイル画像のキー、キャラ名としても使用する
-            'lamy', //キャラ番号
-            'stand_up',//指定されていなければ下向き配置
+            'tex_lamy', //タイル画像のキー
+            'lamyNPC',//キャラ名
+            'stand_up',//向き
             '20240908', //立ち絵のキー、アイコンにも使用
             ''//指定されていれば吹き出し会話を設定する
         );

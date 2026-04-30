@@ -516,26 +516,37 @@
          "name":"EVENT",
          "objects":[
                 {
-                 "height":32,
-                 "id":8,
-                 "name":"EVENT0001",
+                 "height":64,
+                 "id":15,
+                 "name":"EVENT020201",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":32,
-                 "x":480,
-                 "y":320
+                 "width":1,
+                 "x":704,
+                 "y":416
                 }, 
                 {
                  "height":2,
                  "id":11,
-                 "name":"EVENT0004",
+                 "name":"EVENT010401",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":32,
                  "x":800,
                  "y":463.5
+                }, 
+                {
+                 "height":32,
+                 "id":8,
+                 "name":"EVENT010101",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":480,
+                 "y":320
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -579,7 +590,7 @@
          "y":0
         }],
  "nextlayerid":20,
- "nextobjectid":15,
+ "nextobjectid":16,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

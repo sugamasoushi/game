@@ -55,7 +55,6 @@ export class ItemWindow extends Phaser.GameObjects.Container {
                 this.menuModel.fontSize
             ).setDepth(this.mainWindowDepth + 50);
 
-            //右　個数
             const itemValue = messageObject.createTextObject(
                 this.scene,
                 itemX + xOffset + 200,
@@ -63,6 +62,11 @@ export class ItemWindow extends Phaser.GameObjects.Container {
                 [this.menuModel.getPlayerItemCount(itemList[i]).toString()],
                 this.menuModel.fontSize
             ).setDepth(this.mainWindowDepth + 50);
+
+            // 初期表示時の個数チェックによりグレーアウトを設定
+            if (this.menuModel.getPlayerItemCount(itemList[i]) <= 0) {
+                itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+            }
 
             this.add([itemName, itemValue]);
 
@@ -107,7 +111,11 @@ export class ItemWindow extends Phaser.GameObjects.Container {
                         // 選択時の処理
                         this.menuListWindow.onSelect = (memberIndex: number) => {
                             // 使用後の個数を反映
-                            itemValue.setText(this.useItem(itemName.text, memberIndex).toString());
+                            const count = this.useItem(itemName.text, memberIndex);
+                            itemValue.setText(count.toString());
+                            if (count <= 0) {
+                                itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+                            }
                             this.closeMenuListWindow();
                         };
 
@@ -115,7 +123,11 @@ export class ItemWindow extends Phaser.GameObjects.Container {
 
                     } else {
                         // 使用後の個数を反映（メンバー1人の場合はインデックス0）
-                        itemValue.setText(this.useItem(itemName.text, 0).toString());
+                        const count = this.useItem(itemName.text, 0);
+                        itemValue.setText(count.toString());
+                        if (count <= 0) {
+                            itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+                        }
                     }
                 }
             });
@@ -178,14 +190,22 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     private itemNameDisableInteractive() {
         for (const itemName of this.itemNameList) {
             itemName.disableInteractive();
-            itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+            // 一律グレーアウトを廃止し、個数0のもののみグレー、他は維持（または半透明化など）
+            // 今回はユーザー要望に基づき、「0になったアイテムのみ対象」とするため一律変更は行わない
         }
     }
 
     private itemNameEnableInteractive() {
         for (const itemName of this.itemNameList) {
             itemName.setInteractive({ useHandCursor: true });
-            itemName.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
+            
+            // 個数をチェックして色を戻す
+            const count = this.menuModel.getPlayerItemCount(itemName.text);
+            if (count > 0) {
+                itemName.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
+            } else {
+                itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+            }
         }
     }
 }

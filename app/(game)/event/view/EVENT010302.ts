@@ -7,14 +7,14 @@ import { Npc } from "../../gamemain/view/character/Npc";
 import { Player } from "../../gamemain/view/character/Player";
 import { CharacterGameObject } from './CharacterGameObject';
 
-export class EVENT0003 extends BaseEvent {
+export class EVENT010302 extends BaseEvent {
     private gameScene: GameScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
     private characterGameObject: CharacterGameObject;
     private player: Player;
-    private lamy: Npc;
+    private lamyNPC: Npc;
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
@@ -27,14 +27,13 @@ export class EVENT0003 extends BaseEvent {
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
-        //このイベントをOFF
-        this.eventObject.state = EventObjState.false;
-        (this.eventObject.body as Phaser.Physics.Arcade.StaticBody).collisionCategory = 0;//衝突判定のON/OFFを切り替える
-
         //キャッシュのイベントフラグを更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0003', false);
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0004', true);
-        this.serchEventObj('EVENT0004', true);
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010302', false);
+        this.switchingEventObjFlg('EVENT010302', false);
+
+        //関連イベントのフラグと当たり判定を更新
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010401', true);
+        this.switchingEventObjFlg('EVENT010401', true);
 
         //プレイヤー設定
         this.player = this.gameScene.getPlayer();
@@ -42,9 +41,9 @@ export class EVENT0003 extends BaseEvent {
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
-        this.lamy = (this.characterGameObject.getSprite(this.gameScene, 'lamy') as Npc);
-        this.lamy.state = EventObjState.nowEvent;
-        this.lamy.initMoveToPosition();
+        this.lamyNPC = (this.characterGameObject.getSprite(this.gameScene, 'lamyNPC') as Npc);
+        this.lamyNPC.state = EventObjState.nowEvent;
+        this.lamyNPC.initMoveToPosition();
     }
 
     //イベント定義
@@ -81,6 +80,9 @@ export class EVENT0003 extends BaseEvent {
 
                 //設定を戻す
                 this.gameScene.events.emit('EVENT_END', true)
+
+                //キャラ画像を削除
+                this.characterGameObject.imageObjectsDestroy();
 
                 //マップ移動はシーンの再描画で実施する
                 //FieldPresenterに通知

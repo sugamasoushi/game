@@ -10,7 +10,7 @@ import { SpriteType_3x4 } from "../../gamemain/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
 import { CaharacterNameData } from '../../Data/NameData';
 
-export class EVENT0002 extends BaseEvent {
+export class EVENT010301 extends BaseEvent {
     private gameScene: GameScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
@@ -33,14 +33,13 @@ export class EVENT0002 extends BaseEvent {
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
-        //このイベントをOFF
-        this.eventObject.state = EventObjState.false;
-        (this.eventObject.body as Phaser.Physics.Arcade.StaticBody).collisionCategory = 0;//衝突判定のON/OFFを切り替える
+        //キャッシュのイベントフラグと当たり判定を更新
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010301', false);
+        this.switchingEventObjFlg('EVENT010301', false);
 
-        //キャッシュのイベントフラグを更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0002', false);
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0003', true);
-        this.serchEventObj('EVENT0003', true);
+        //関連イベントのフラグと当たり判定を更新
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010302', true);
+        this.switchingEventObjFlg('EVENT010302', true);
 
         //プレイヤー設定
         this.player = this.gameScene.getPlayer();
@@ -180,7 +179,11 @@ export class EVENT0002 extends BaseEvent {
                 this.lamyNPC.setBubbleTalkKey('bubbleTalk0001.talk002');
                 this.lamyNPC.talkSetting();
                 (this.lamyNPC as SpriteType_3x4).setBubble();
+                this.lamyNPC.setData('ImageKey', '20240908');
                 this.lamyNPC.state = CharacterState.normal;
+
+                //キャラ画像を削除
+                this.characterGameObject.imageObjectsDestroy();
 
                 //設定を戻す
                 this.gameScene.events.emit('EVENT_END')

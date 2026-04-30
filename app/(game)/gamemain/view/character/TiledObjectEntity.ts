@@ -75,4 +75,14 @@ export class TiledObjectEntity {
         const value = this.dataMap.get("spritesheetKey");
         return typeof value === "string" ? "tex_" + value : "";
     }
+
+    get scale(): number {
+        const value = this.dataMap.get("scale");
+        return typeof value === "number" ? value : 1;
+    }
+
+    get eventKey(): string {
+        const value = this.dataMap.get("eventKey");
+        return typeof value === "string" ? value : "";
+    }
 }

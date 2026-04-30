@@ -3068,46 +3068,13 @@
                 {
                  "gid":11907,
                  "height":32,
-                 "id":86,
-                 "name":"itembox",
-                 "properties":[
-                        {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":"bubbleTalk0102.talk003"
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"string",
-                         "value":"1"
-                        }, 
-                        {
-                         "name":"itemName",
-                         "type":"string",
-                         "value":"\u3084\u304f\u305d\u3046"
-                        }, 
-                        {
-                         "name":"value",
-                         "type":"string",
-                         "value":"2"
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":512,
-                 "y":1248
-                }, 
-                {
-                 "gid":11907,
-                 "height":32,
                  "id":88,
-                 "name":"itembox",
+                 "name":"chest",
                  "properties":[
                         {
                          "name":"bubbleTalkKey",
                          "type":"string",
-                         "value":"bubbleTalk0102.talk003"
+                         "value":""
                         }, 
                         {
                          "name":"id",
@@ -3115,14 +3082,14 @@
                          "value":"1"
                         }, 
                         {
-                         "name":"itemName",
+                         "name":"item",
                          "type":"string",
                          "value":"\u3084\u304f\u305d\u3046"
                         }, 
                         {
-                         "name":"value",
-                         "type":"string",
-                         "value":"1"
+                         "name":"num",
+                         "type":"int",
+                         "value":1
                         }],
                  "rotation":0,
                  "type":"",
@@ -3130,6 +3097,39 @@
                  "width":32,
                  "x":1024,
                  "y":2112
+                }, 
+                {
+                 "gid":11907,
+                 "height":32,
+                 "id":86,
+                 "name":"chest",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkKey",
+                         "type":"string",
+                         "value":"bubbleTalk0102.talk003"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"0"
+                        }, 
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"\u3084\u304f\u305d\u3046"
+                        }, 
+                        {
+                         "name":"num",
+                         "type":"int",
+                         "value":2
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":512,
+                 "y":1248
                 }, 
                 {
                  "gid":11919,
@@ -3302,11 +3302,6 @@
                          "name":"imageKey",
                          "type":"string",
                          "value":""
-                        }, 
-                        {
-                         "name":"link",
-                         "type":"object",
-                         "value":14
                         }, 
                         {
                          "name":"name",
@@ -3697,17 +3692,6 @@
          "name":"EVENT",
          "objects":[
                 {
-                 "height":1,
-                 "id":17,
-                 "name":"EVENT0102",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":64,
-                 "x":256,
-                 "y":1536
-                }, 
-                {
                  "height":1.45299145299145,
                  "id":25,
                  "name":"EVENT010202",
@@ -3717,6 +3701,17 @@
                  "width":130.666666666667,
                  "x":1056,
                  "y":1790.54700854701
+                }, 
+                {
+                 "height":1,
+                 "id":17,
+                 "name":"EVENT010201",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":64,
+                 "x":256,
+                 "y":1536
                 }],
          "opacity":1,
          "type":"objectgroup",

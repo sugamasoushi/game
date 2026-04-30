@@ -2,15 +2,17 @@ import { FieldData } from '../lib/FieldTypes';
 import { State, GameState } from '../lib/StateTypes';
 import { BehaviorSubject, Observable, distinctUntilChanged } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
+import { ActorState } from '../core/ActorState';
 
 const INITIAL_STATE: GameState = {
     state: State.NOSTATE,
     sceneKey: 'string', // 更新元のキーを追加
     money: 100,
     playerPartyList: [],
+    playerActorList: [],
     battleFlag: false,
     isGameOver: false,
-    fieldData: { gameMode: 'string', mapKey: 'string', x: 0, y: 0, initStandKey: 'string' },
+    fieldData: { gameMode: 'string', mapKey: 'string', x: 0, y: 0, x2: 0, y2: 0, initStandKey: 'string' },
     battleData: { usePatern: 'string', fieldHitEnemy: undefined, canNotRunaway: false },
     eventObj: undefined
 }
@@ -188,6 +190,7 @@ export class GameStateManager {
     }
     public get currentEventObj(): Phaser.Physics.Arcade.Sprite { return this.gameState$.value.eventObj! }
     public get currentPlayerPartyList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.playerPartyList; }
+    public get currentPlayerActorList(): ActorState[] { return this.gameState$.value.playerActorList; }
 }
 
 // 唯一のインスタンスを公開（シングルトン）

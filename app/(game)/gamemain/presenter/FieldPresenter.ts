@@ -105,6 +105,8 @@ export class FieldPresenter {
                     mapKey: fieldData.mapKey,
                     x: fieldData.x,
                     y: fieldData.y,
+                    x2: fieldData.x2,
+                    y2: fieldData.y2,
                     initStandKey: fieldData.initStandKey,
                 }
             }, 'FieldMove');

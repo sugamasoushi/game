@@ -17,7 +17,7 @@ export class Player extends BaseSprite {
 
 
     constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
-        super(scene, x, y, spriteSheetKey, initStandKey);
+        super(scene, x, y, 'tex_' + spriteSheetKey, initStandKey);
         this.gameScene = scene;
         this.name = spriteSheetKey;
 
@@ -30,7 +30,7 @@ export class Player extends BaseSprite {
         this.setOffset(0, 8);//当たり判定の左上の位置を変更
         this.setDisplayOrigin(16, 24);//当たり判定の中心位置を変更
 
-        this._animationSetting(spriteSheetKey);
+        this._animationSetting('tex_' + spriteSheetKey);
 
         this.body.setMaxVelocity(800); // 想定速度の2倍以上は出さない
 

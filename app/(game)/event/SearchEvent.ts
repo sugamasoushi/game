@@ -1,21 +1,25 @@
 import { Event } from "../scenes/Event";
-import { EVENT0001 } from "./view/EVENT0001";
-import { EVENT0002 } from "./view/EVENT0002";
-import { EVENT0003 } from "./view/EVENT0003";
-import { EVENT0004 } from "./view/EVENT0004";
-import { EVENT0102 } from "./view/EVENT0102";
+import { EVENT010101 } from "./view/EVENT010101";
+import { EVENT010301 } from "./view/EVENT010301";
+import { EVENT010302 } from "./view/EVENT010302";
+import { EVENT010401 } from "./view/EVENT010401";
+import { EVENT010201 } from "./view/EVENT010201";
 import { EVENT010202 } from "./view/EVENT010202";
+import { EVENT020101 } from "./view/EVENT020101";
+import { EVENT020201 } from "./view/EVENT020201";
 
 export class SerchEvent {
 
     constructor() { }
 
     public searchEventClass(eventScene: Event, eventObj: Phaser.Physics.Arcade.Sprite) {
-        if (eventObj.name === 'EVENT0001') { return new EVENT0001(eventScene, eventObj); }
-        if (eventObj.name === 'EVENT0002') { return new EVENT0002(eventScene, eventObj); }
-        if (eventObj.name === 'EVENT0003') { return new EVENT0003(eventScene, eventObj); }
-        if (eventObj.name === 'EVENT0004') { return new EVENT0004(eventScene, eventObj); }
-        if (eventObj.name === 'EVENT0102') { return new EVENT0102(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT010101') { return new EVENT010101(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT010201') { return new EVENT010201(eventScene, eventObj); }
         if (eventObj.name === 'EVENT010202') { return new EVENT010202(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT010301') { return new EVENT010301(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT010302') { return new EVENT010302(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT010401') { return new EVENT010401(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT020101') { return new EVENT020101(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT020201') { return new EVENT020201(eventScene, eventObj); }
     }
 }

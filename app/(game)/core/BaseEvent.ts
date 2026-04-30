@@ -29,7 +29,7 @@ export class BaseEvent implements Eventer {
     protected eventEnd() { }
 
     //イベントオブジェクト検索
-    protected serchEventObj(name: string, state: boolean) {
+    protected switchingEventObjFlg(name: string, state: boolean) {
         const gameScene = this.eventScene.scene.get('Game');
 
         //イベントが完了してない場合は衝突判定をOFFにしておく
@@ -227,6 +227,26 @@ export class BaseEvent implements Eventer {
             this.eventScene.time.delayedCall(duration, () => {
                 resolve();
             }, [], this.eventScene);
+        });
+    }
+
+    protected execFadeIn() {
+        return new Promise<void>(resolve => {
+            this.eventScene.cameras.main.once('camerafadeincomplete', () => {
+                resolve();
+            });
+
+            this.eventScene.cameras.main.fadeIn(200);
+        });
+    }
+
+    protected execFadeOut() {
+        return new Promise<void>(resolve => {
+            this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
+                resolve();
+            });
+
+            this.eventScene.cameras.main.fadeOut(400);
         });
     }
 }

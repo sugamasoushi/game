@@ -81,11 +81,19 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
     hide() { this.disableInteractive(); }
 
     private enableSelect() {
+        // HPが0以上の生存している敵のみを抽出
+        const activeEnemies = this.enemyPartyList.filter(enemy => enemy.getData('HP') > 0);
 
-        //一番左の敵を点滅させる（ユーザー選択の補助）
-        this.lightUpDown(this.enemyPartyList[0]);
+        //生存している一番左の敵を点滅させる
+        if (activeEnemies.length > 0) {
+            this.lightUpDown(activeEnemies[0]);
+        }
 
         for (const enemy of this.enemyPartyList) {
+            // HPが0の場合は選択対象外
+            if (enemy.getData('HP') <= 0) {
+                continue;
+            }
 
             //選択可能に設定
             enemy.setInteractive({ useHandCursor: true });

@@ -36,7 +36,7 @@
         }
     },
     "playerData2": {
-        "PartyMember": true,
+        "PartyMemberFlg": false,
         "status": {
             "Lv": 1,
             "HP": 40,
@@ -107,17 +107,14 @@
         }
     },
     "EventFlag": {
-        "EVENT0001": true,
-        "EVENT0002": true,
-        "EVENT0003": false,
-        "EVENT0004": false,
-        "EVENT0102": true,
-        "EVENT010202": true
+        "EVENT010101": true,
+        "EVENT010201": true,
+        "EVENT010202": true,
+        "EVENT010301": true,
+        "EVENT010302": false,
+        "EVENT010401": false,
+        "EVENT020101": false,
+        "EVENT020201": false
     },
-    "MAP0102": {
-        "itembox": {
-            "id": 1,
-            "value": 2
-        }
-    }
+    "itemboxFlg": [1,1,1,1,1,1,1,1,1,1,1,1]
 }

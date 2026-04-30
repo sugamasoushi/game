@@ -675,7 +675,7 @@
                 {
                  "height":1,
                  "id":71,
-                 "name":"EVENT0003",
+                 "name":"EVENT010302",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -686,7 +686,7 @@
                 {
                  "height":1,
                  "id":79,
-                 "name":"EVENT0002",
+                 "name":"EVENT010301",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -840,7 +840,7 @@
                         {
                          "name":"imageKey",
                          "type":"string",
-                         "value":"20240908"
+                         "value":"enemy00"
                         }, 
                         {
                          "name":"name",

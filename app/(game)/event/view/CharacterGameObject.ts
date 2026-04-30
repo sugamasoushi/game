@@ -26,11 +26,6 @@ export class CharacterGameObject {
         return characterSprite!;
     }
 
-    //パーティリストを取得
-    // public getPlayerPartyList(gameScene: GameScene): Phaser.GameObjects.Sprite[] {
-    //     return gameScene.getMapObject().getPlayerPartyList();
-    // }
-
     //フィールドの敵リストを取得
     public getFieldEnemyList(gameScene: GameScene): Npc[] {
         return gameScene.getMapObject().getFieldEnemyList();
@@ -57,8 +52,8 @@ export class CharacterGameObject {
         })
     }
 
-    //キャラクターの立ち絵を取得しスクロール
-    public scrollOutImage(imgae: Phaser.GameObjects.Image, moveToX: number, duration: number) {
+    //キャラクターの立ち絵をスクロール
+    public scrollInImage(imgae: Phaser.GameObjects.Image, moveToX: number, duration: number) {
         return new Promise<void>(resolve => {
             if (!imgae || !imgae.scene) {
                 resolve();
@@ -66,6 +61,27 @@ export class CharacterGameObject {
             }
 
             //画面外からスクロール
+            imgae.scene.tweens.add({
+                targets: imgae,
+                x: moveToX,
+                ease: 'sine.out',
+                duration: duration,
+                onComplete: () => {
+                    resolve();
+                }
+            });
+        })
+    }
+
+    //キャラクターの立ち絵をスクロール
+    public scrollOutImage(imgae: Phaser.GameObjects.Image, moveToX: number, duration: number) {
+        return new Promise<void>(resolve => {
+            if (!imgae || !imgae.scene) {
+                resolve();
+                return;
+            }
+
+            //画面外へスクロール
             imgae.scene.tweens.add({
                 targets: imgae,
                 x: moveToX,
@@ -151,5 +167,11 @@ export class CharacterGameObject {
                 })
             }
         }
+    }
+
+    public imageObjectsDestroy() {
+        this.characterImageMap.forEach(image => {
+            image.destroy();
+        });
     }
 }

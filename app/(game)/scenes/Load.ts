@@ -44,6 +44,7 @@ export class Load extends Scene {
         this.load.image('enemy00', 'assets/img/CharaStand/enemy00.png');
         this.load.image('enemy01', 'assets/img/CharaStand/enemy01.png');
         this.load.image('enemy02', 'assets/img/CharaStand/enemy02.png');
+        this.load.image('enemy03', 'assets/img/CharaStand/enemy03.png');
         this.load.image('20230905', 'assets/img/CharaStand/20230905.png');
         this.load.image('20230427', 'assets/img/CharaStand/20230427.png');
         this.load.image('20230927', 'assets/img/CharaStand/20230927.png');
@@ -65,10 +66,10 @@ export class Load extends Scene {
         this.load.spritesheet('girl', 'assets/img/spritesheet/char_45_75.png',
             { frameWidth: 45, frameHeight: 75 }
         );
-        this.load.spritesheet('meina', 'assets/img/spritesheet/meina2_32_40.png',
+        this.load.spritesheet('tex_meina', 'assets/img/spritesheet/meina2_32_40.png',
             { frameWidth: 32, frameHeight: 40 }
         );
-        this.load.spritesheet('lamy', 'assets/img/spritesheet/lamy_32_40.png',
+        this.load.spritesheet('tex_lamy', 'assets/img/spritesheet/lamy_32_40.png',
             { frameWidth: 32, frameHeight: 40 }
         );
 

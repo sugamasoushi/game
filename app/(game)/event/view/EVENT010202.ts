@@ -7,7 +7,6 @@ import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
 
-
 export class EVENT010202 extends BaseEvent {
     private gameScene: GameScene;
     private settingData: DataDefinition;
@@ -28,16 +27,13 @@ export class EVENT010202 extends BaseEvent {
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
-        //このイベントをOFF
-        this.eventObject.state = EventObjState.false;
-        (this.eventObject.body as Phaser.Physics.Arcade.StaticBody).collisionCategory = 0;//衝突判定のON/OFFを切り替える
-
-        //キャッシュのイベントフラグを更新
+        //キャッシュのイベントフラグと当たり判定を更新
         this.settingData.updateEventFlg(this.eventScene, 'EVENT010202', false);
+        this.switchingEventObjFlg('EVENT010202', false);
 
         //関連イベントのフラグと当たり判定を更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0102', false);
-        this.serchEventObj('EVENT0102', true);
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010201', false);
+        this.switchingEventObjFlg('EVENT010201', false);
 
         //プレイヤー設定
         this.player = this.gameScene.getPlayer();
@@ -62,7 +58,7 @@ export class EVENT010202 extends BaseEvent {
 
         await this.eventTalk.execTalk([
             { meina: ['ちょっと山を下りて散策しようかな\n', 'そういえば最近ラミア族が多いんだよね\n'] },
-            { meina: ['まだ勝てなそうだから気を付けよう。。。\n'] }
+            { meina: ['まだ勝てなそうだから気を付けよう・・・。\n'] }
 
         ], this.characterGameObject);
 
@@ -82,6 +78,9 @@ export class EVENT010202 extends BaseEvent {
 
             //プレイヤーの状態を更新
             this.player.state = CharacterState.normal;
+
+            //キャラ画像を削除
+            this.characterGameObject.imageObjectsDestroy();
 
             //設定を戻す
             this.gameScene.events.emit('EVENT_END');

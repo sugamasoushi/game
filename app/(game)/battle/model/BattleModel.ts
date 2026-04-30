@@ -97,9 +97,11 @@ export class BattleModel {
         this.enemyPartyList = [];
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
 
+        console.log(this.fieldHitEnemy)
+
         //イベントから呼び出された場合、とりあえず一体のみ
-        const lamy = this.battleScene.add.image(0, 0, 'enemy00');
-        lamy.setData('ImageKey', 'enemy00');
+        const enemy = this.battleScene.add.image(0, 0, this.fieldHitEnemy.getData('ImageKey'));
+        enemy.setData('ImageKey', this.fieldHitEnemy.getData('ImageKey'));
         const data: CharacterStatus = {
             level: this.fieldHitEnemy.getData('level'),
             HP: this.fieldHitEnemy.getData('HP'),
@@ -112,12 +114,12 @@ export class BattleModel {
             gold: this.fieldHitEnemy.getData('gold')
         }
 
-        lamy.setData(data);
-        lamy.setData('NpcType', 'enemy');
+        enemy.setData(data);
+        enemy.setData('NpcType', 'enemy');
 
         //名前の検索と設定
-        lamy.setData('name', searchEnemyData.getEnemyData(lamy.getData('ImageKey')));
-        this.enemyPartyList.push(lamy);
+        enemy.setData('name', searchEnemyData.getEnemyData(enemy.getData('ImageKey')));
+        this.enemyPartyList.push(enemy);
     }
 
     public getPlayerPartyList(): Phaser.GameObjects.Sprite[] { return gameStateManager.currentPlayerPartyList; }

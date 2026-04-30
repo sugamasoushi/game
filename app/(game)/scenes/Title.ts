@@ -261,6 +261,8 @@ export class Title extends Scene {
                     mapKey: '0101',
                     x: 495,
                     y: 337,
+                    x2: 0,
+                    y2: 0,
                     initStandKey: 'stand_left',
                 }
             }, 'New Game')
@@ -297,6 +299,8 @@ export class Title extends Scene {
                     mapKey: this.cache.json.get('savedata').playerData.PlayerMapKey,
                     x: this.cache.json.get('savedata').playerData.PlayerPosition.x,
                     y: this.cache.json.get('savedata').playerData.PlayerPosition.y,
+                    x2: 0,
+                    y2: 0,
                     initStandKey: this.cache.json.get('savedata').playerData.initStandKey,
                 }
             }, 'Continue')

@@ -12,7 +12,7 @@ type TalkGroup = Record<string, TalkLine[]>;
 
 type TalkData = Record<string, TalkGroup>;
 
-export class EVENT0102 extends BaseEvent {
+export class EVENT010201 extends BaseEvent {
     private gameScene: GameScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
@@ -51,16 +51,13 @@ export class EVENT0102 extends BaseEvent {
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
-        //このイベントをOFF
-        this.eventObject.state = EventObjState.false;
-        (this.eventObject.body as Phaser.Physics.Arcade.StaticBody).collisionCategory = 0;//衝突判定のON/OFFを切り替える
-
-        //キャッシュのイベントフラグを更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT0102', false);
+        //キャッシュのイベントフラグと当たり判定を更新
+        this.settingData.updateEventFlg(this.eventScene, 'EVENT010201', false);
+        this.switchingEventObjFlg('EVENT010201', false);
 
         //関連イベントのフラグと当たり判定を更新
         this.settingData.updateEventFlg(this.eventScene, 'EVENT010202', false);
-        this.serchEventObj('EVENT010202', true);
+        this.switchingEventObjFlg('EVENT010202', false);
 
         //プレイヤー設定
         this.player = this.gameScene.getPlayer();
@@ -158,6 +155,9 @@ export class EVENT0102 extends BaseEvent {
 
                 //NPC削除
                 this.grandpa.deleteCharacter();
+
+                //キャラ画像を削除
+                this.characterGameObject.imageObjectsDestroy();
 
                 //設定を戻す
                 this.gameScene.events.emit('EVENT_END');
