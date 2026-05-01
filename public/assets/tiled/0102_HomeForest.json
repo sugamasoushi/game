@@ -3829,6 +3829,12 @@
  "nextlayerid":58,
  "nextobjectid":91,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"battleBackground",
+         "type":"string",
+         "value":"battle_hill"
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
  "tileheight":32,

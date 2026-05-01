@@ -45,7 +45,7 @@ export class MapObject extends Phaser.GameObjects.Container {
 
     preUpdate(time: number) { }
 
-    public async execute(phaserEvents: Phaser.Events.EventEmitter, tileMap: TileMap, fieldData: FieldData) {
+    public async execute(phaserEvents: Phaser.Events.EventEmitter, tileMap: TileMap, fieldData: FieldData, sceneKey: string) {
         this.phaserEvents = phaserEvents;
         this.fieldData = fieldData;
         this.TileMap = tileMap;
@@ -55,13 +55,14 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.npcNormalList = [];
         this.npcEnemyList = [];
 
-        this.createPlayer();
+        this.createPlayer(sceneKey);
         this.createNPC();
         this.createObject();
 
     }
 
-    private createPlayer() {
+    private createPlayer(sceneKey: string) {
+        const gameStateManager = GameStateManager.getInstance();
 
         const playerX = this.fieldData.x;
         const playerY = this.fieldData.y;
@@ -80,6 +81,8 @@ export class MapObject extends Phaser.GameObjects.Container {
         player.setData(this.gameScene.cache.json.get('savedata').playerData.Equip);
         player.setData(this.gameScene.cache.json.get('savedata').playerData.Skill);
         player.setData(this.gameScene.cache.json.get('savedata').playerData.Item);
+
+        
 
         //プレイヤーと衝突判定の設定
         this.gameScene.setPlayer(player);
@@ -132,7 +135,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         }
 
         // 状態管理クラスのパーティリストを更新
-        const gameStateManager = GameStateManager.getInstance();
         gameStateManager.setPlayerPartyList(this.playerPartyList);
     }
 

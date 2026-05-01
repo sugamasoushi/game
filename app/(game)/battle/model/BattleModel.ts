@@ -37,8 +37,8 @@ export class BattleModel {
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
 
         //敵数をランダムで作成
-        const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
-        // const enemyValue = 2;
+        //const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
+        const enemyValue = 2;
 
         for (let i = 0; i < enemyValue; i++) {
 
@@ -97,7 +97,7 @@ export class BattleModel {
         this.enemyPartyList = [];
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
 
-        console.log(this.fieldHitEnemy)
+        //console.log(this.fieldHitEnemy)
 
         //イベントから呼び出された場合、とりあえず一体のみ
         const enemy = this.battleScene.add.image(0, 0, this.fieldHitEnemy.getData('ImageKey'));
@@ -148,9 +148,23 @@ export class BattleModel {
         //現時点ではプレイヤーのみ対象
         for (const list of this.enemyPartyList) {
 
-            //対象を決定
-            //const playerPartyNum = new Phaser.Math.RandomDataGenerator().between(1, 2);
-            const playerPartyNum = 0;
+            //対象を決定（現状はHPが残っているプレイヤーをランダムで決定）
+            let playerPartyNum = 0;
+
+            // 生存者リストを作成
+            const livingPlayers = gameStateManager.currentPlayerPartyList.filter(
+                player => player.data.values.HP > 0
+            );
+
+            // 生存者の中からランダムに一人選ぶ
+            if (livingPlayers.length > 0) {
+                playerPartyNum = new Phaser.Math.RandomDataGenerator().between(0, livingPlayers.length - 1);
+                const targetPlayer = livingPlayers[playerPartyNum];
+
+                console.log("対象:", targetPlayer);
+            } else {
+                console.log("生存しているプレイヤーがいません");
+            }
 
             // プレイヤーのパーティリストから対象を決定
             for (const [index, player] of gameStateManager.currentPlayerPartyList.entries()) {
@@ -160,6 +174,25 @@ export class BattleModel {
                     list.setData('BattleTargetIcon', characterIcon);
                 }
             }
+        }
+    }
+
+    public getEnemyAttackTarget() {
+
+        // 生存者リストを作成
+        const livingPlayers = gameStateManager.currentPlayerPartyList.filter(
+            player => player.data.values.HP > 0
+        );
+
+        // 生存者の中からランダムに一人選ぶ
+        if (livingPlayers.length > 0) {
+            const playerPartyNum = new Phaser.Math.RandomDataGenerator().between(0, livingPlayers.length - 1);
+            const targetPlayer = livingPlayers[playerPartyNum];
+
+            console.log("対象:", targetPlayer);
+            return targetPlayer;
+        } else {
+            console.log("生存しているプレイヤーがいません");
         }
     }
 

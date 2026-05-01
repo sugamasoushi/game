@@ -1,6 +1,7 @@
 import { GameScene } from '../../lib/SceneTypes';
 import { MenuModel } from "../model/MenuModel";
 import { MenuView } from "../view/MenuView";
+import { CacheDataUpdate } from "../../core/CacheDataUpdate";
 
 export class MenuPresenter {
 
@@ -57,6 +58,11 @@ export class MenuPresenter {
         this.menuView.executeEndAnimation(() => {
             // アニメーション完了後の処理
             this.scene.scene.stop();
+
+            //キャッシュを更新
+            const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
+            cacheDataUpdate.phaserCacheDataUpdate();
+
             this.gameScene.resumeScene();
             // イベントリスナーの解除
             this.scene.events.off('GAME_INPUT_TRUE');

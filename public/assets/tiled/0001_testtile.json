@@ -987,6 +987,12 @@
  "nextlayerid":53,
  "nextobjectid":85,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"battleBackground",
+         "type":"string",
+         "value":"lamyOpImageHome"
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
  "tileheight":32,

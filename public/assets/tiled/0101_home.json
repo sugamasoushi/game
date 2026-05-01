@@ -592,6 +592,12 @@
  "nextlayerid":20,
  "nextobjectid":16,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"battleBackground",
+         "type":"string",
+         "value":"meinaOpImageHome"
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
  "tileheight":32,

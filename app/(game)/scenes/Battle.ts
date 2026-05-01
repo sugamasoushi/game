@@ -19,7 +19,7 @@ import { Npc } from "../gamemain/view/character/Npc";
 
 import { gameStateManager } from "../GameAllState/GameStateManager";
 import { GameStateManager } from "../GameAllState/GameStateManager";
-import { resolve } from "path";
+import { CacheDataUpdate } from "../core/CacheDataUpdate";
 
 export class Battle extends Phaser.Scene implements BattleScene {
     private gameScene: GameScene;
@@ -108,7 +108,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
         this.events.on('BattleEnd', () => {
 
             this.endScene();
-            resolve()
+
         }, this);
 
         // ゲームオーバーの監視
@@ -119,11 +119,9 @@ export class Battle extends Phaser.Scene implements BattleScene {
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
 
         //背景画像
-        if (data.sceneKey === 'event') {
-            this.add.image(Number(this.game.config.width) / 2, Number(this.game.config.height) / 2, 'lamyOpImageHome');
-        } else {
-            this.add.image(Number(this.game.config.width) / 2, Number(this.game.config.height) / 2, 'hill_ComfyUI');
-        }
+        //状態管理クラスから現在のバトル用データを取得
+        const manager = GameStateManager.getInstance();
+        this.add.image(Number(this.game.config.width) / 2, Number(this.game.config.height) / 2, manager.currentBattleBackGroundKey);
 
         this.battlePresenter.create(
             this.events,
@@ -162,6 +160,10 @@ export class Battle extends Phaser.Scene implements BattleScene {
                 //状態管理クラス
                 const manager = GameStateManager.getInstance();
                 manager.updateState({ state: State.FIELD_RESUME }, 'resume');
+
+                //キャッシュを更新
+                const cacheDataUpdate = new CacheDataUpdate(this);
+                cacheDataUpdate.phaserCacheDataUpdate();
 
                 this.events.emit('shutdown')
             }

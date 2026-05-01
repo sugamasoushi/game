@@ -66,6 +66,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         //コンテナ全体の配置を調整
         const displayPosX = Number(this.scene.game.config.width) / 2 - maxWidth / 2;
         this.x = displayPosX;
+        this.y += 150;
     }
 
     //表示状態

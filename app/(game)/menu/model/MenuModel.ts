@@ -40,8 +40,6 @@ export class MenuModel {
         this.alphaValue = settingBubbleData.alphaValue;
         this.lineColor = settingBubbleData.lineColor;
 
-        const gameStateManager = GameStateManager.getInstance();
-
         this.saveDataManager = new SaveDataManager();
     }
 

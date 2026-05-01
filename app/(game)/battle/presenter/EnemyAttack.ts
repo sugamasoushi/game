@@ -1,24 +1,36 @@
 import { Sound } from "../../scenes/Sound";
 import { BattleMessageWindow } from "../view/BattleMessageWindow";
+import { BattleModel } from "../model/BattleModel";
+import { PlayerPartyWindow } from "../view/PlayerPartyWindow";
 
 export default class EnemyAttack {
-    private battleScene: Phaser.Scene;
     private attacker: Phaser.GameObjects.Image;
     private target: Phaser.GameObjects.Sprite;
 
     private soundScene: Sound;
 
     //現状は単体選択のみ対応
-    constructor(battleScene: Phaser.Scene) {
-        this.battleScene = battleScene;
+    constructor(
+        private battleScene: Phaser.Scene,
+        private battleModel: BattleModel,
+        private playerPartyWindow: PlayerPartyWindow
+    ) {
         this.soundScene = this.battleScene.scene.get('Sound') as Sound;
     }
 
     //仮、通常攻撃のエフェクトは別途作成する
     public attack(battleMessageWindow: BattleMessageWindow, attacker: Phaser.GameObjects.Image) {
+
+        //敵の攻撃対象を設定
+        const targetPlayer = this.battleModel.getEnemyAttackTarget();
+        const targetPlayerIcon = this.playerPartyWindow.getCharacterIcon(targetPlayer!.name);
+        attacker.setData('BattleTarget', targetPlayer);
+        attacker.setData('BattleTargetIcon', targetPlayerIcon);
+
         return new Promise<void>(resolve => {
             if (attacker.data.values.HP <= 0) return resolve();
             this.attacker = attacker;
+            //this.attackType = attacker.getData('attackType');
             this.target = attacker.getData('BattleTarget');
             const targetIcon = attacker.getData('BattleTargetIcon');
 
@@ -55,6 +67,9 @@ export default class EnemyAttack {
                 this.target.data.values.HP -= damage;
                 if (this.target.data.values.HP <= 0) {
                     this.target.data.values.HP = 0;
+
+                    //倒した相手のアイコンをグレーアウト
+                    this.battleScene.events.emit('PLAYER_ICON_LIGHTDOWN', this.target.name);
                 }
 
                 //攻撃対象を初期化

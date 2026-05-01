@@ -2,6 +2,7 @@ import { GameScene } from "../../lib/types";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { MapObject } from "./MapObject";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { CacheDataUpdate } from "../../core/CacheDataUpdate";
 
 export class SaveButton {
     private saveDataManager: SaveDataManager;
@@ -12,11 +13,11 @@ export class SaveButton {
     }
 
     public async execute() {
-        this.createTestButton();
+        this.createSaveButton();
     }
 
-    //テスト用のボタン
-    private createTestButton() {
+    //ボタン
+    private createSaveButton() {
         this.saveDataManager = new SaveDataManager();
 
         const gameConfigWidth: number = Number(this.gameScene.game.config.width);
@@ -39,7 +40,7 @@ export class SaveButton {
             localY: number,
             event: Phaser.Types.Input.EventData) => {
 
-            //パーティクル
+            //effect（パーティクル）
             const emitter = this.gameScene.add.particles(0, 0, 'spark', {
                 speed: { min: 100, max: 200 },
                 angle: { min: 0, max: 360 },
@@ -55,63 +56,58 @@ export class SaveButton {
             //下層のオブジェクトのイベントを止める
             event.stopPropagation();
 
-            this.phaserCacheDataUpdate();
+            //セーブ前にキャッシュを更新
+            //this.phaserCacheDataUpdate();
 
+            const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
+            cacheDataUpdate.phaserCacheDataUpdate();
+
+            //セーブ処理
             await this.saveDataManager.setSaveData(this.gameScene);
 
-            //zone.removeInteractive();//クリック後、クリック操作を削除
-            console.log(this.gameScene.getPlayer());
-            const list: Phaser.GameObjects.GameObject[] = [];
-            this.gameScene.children.getChildren().map(obj => {
-                if (obj.type === "Sprite") {
-                    list.push(obj)
-                }
-            })
         });
 
     }
 
-    private phaserCacheDataUpdate() {
-        const manager = GameStateManager.getInstance();
-        const savedata = this.gameScene.cache.json.get('savedata');
-        const player = this.mapObject.getPlayer();
+    // private phaserCacheDataUpdate() {
+    //     const manager = GameStateManager.getInstance();
+    //     const savedata = this.gameScene.cache.json.get('savedata');
+    //     const player = this.mapObject.getPlayer();
 
-        // console.log(savedata);
-        // console.log(player.data);
+    //     savedata.infomation = "中断セーブデータ";
+    //     savedata.playerData.PlayerMapKey = manager.currentFieldData.mapKey;
+    //     savedata.playerData.PlayerPosition.x = player.x;
+    //     savedata.playerData.PlayerPosition.y = player.y;
+    //     //savedata.playerData.initStandKey = player.getAnimationKey().standframe;
 
-        savedata.infomation = "中断セーブデータ";
-        savedata.playerData.PlayerMapKey = manager.currentFieldData.mapKey;
-        savedata.playerData.PlayerPosition.x = player.x;
-        savedata.playerData.PlayerPosition.y = player.y;
-        //savedata.playerData.initStandKey = player.getAnimationKey().standframe;
+    //     // ステータスを同期
+    //     const status = savedata.playerData.status;
+    //     for (const key in status) {
+    //         if (player.data.has(key)) {
+    //             status[key] = player.data.get(key);
+    //         }
+    //     }
 
-        // ステータスを同期
-        const status = savedata.playerData.status;
-        for (const key in status) {
-            if (player.data.has(key)) {
-                status[key] = player.data.get(key);
-            }
-        }
+    //     // アイテムを同期（削除状態を反映）
+    //     const items = savedata.playerData.Item;
+    //     for (const key in items) {
+    //         if (player.data.has(key)) {
+    //             items[key] = player.data.get(key);
+    //         } else {
+    //             // player.data に存在しない（個数0で削除された）場合はセーブデータからも削除
+    //             delete items[key];
+    //         }
+    //     }
 
-        // アイテムを同期（削除状態を反映）
-        const items = savedata.playerData.Item;
-        for (const key in items) {
-            if (player.data.has(key)) {
-                items[key] = player.data.get(key);
-            } else {
-                // player.data に存在しない（個数0で削除された）場合はセーブデータからも削除
-                delete items[key];
-            }
-        }
+    //     // cache.savedataのItemに存在しない項目を追加
+    //     for (const key in player.data.list) {
+    //         if (!items.hasOwnProperty(key)) {
+    //             if (this.saveDataManager.checkItemListData(key)) {
+    //                 items[key] = player.data.get(key);
+    //             }
+    //         }
+    //     }
+    // }
 
-        // cache.savedataのItemに存在しない項目を追加
-        for (const key in player.data.list) {
-            if (!items.hasOwnProperty(key)) {
-                if (this.saveDataManager.checkItemListData(key)) {
-                    items[key] = player.data.get(key);
-                }
-            }
-        }
-    }
 
 }

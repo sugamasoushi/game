@@ -211,6 +211,11 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
                 }
             })
 
+            //HPが0以下の場合はグレーアウト
+            if (HP <= 0) {
+                charIcon.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+            }
+
             // 次のキャラクターの表示用X座標を更新
             nextCharacterX += currentCharacterWidth + 30; // キャラクター間の隙間を追加
         }
@@ -254,16 +259,12 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
         this.characterObject.get(characterName)!.obj.CharacterIcon.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
     }
 
-    public lightUp() {
-        this.selectList.forEach(list => {
-            list.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
-        });
+    public lightUp(characterName: string) {
+        this.characterObject.get(characterName)!.obj.CharacterIcon.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
     }
 
-    public lightDown() {
-        this.selectList.forEach(list => {
-            list.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-        });
+    public lightDown(characterName: string) {
+        this.characterObject.get(characterName)!.obj.CharacterIcon.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
     }
 
 }

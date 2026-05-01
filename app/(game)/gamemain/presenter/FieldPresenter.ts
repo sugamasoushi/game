@@ -43,6 +43,7 @@ export class FieldPresenter {
     }
 
     public async create(sceneKey: string) {
+
         //this.cameraManager.getMainCamera().setZoom(1.2);
 
         //マップ情報の判定、検索処理とか実装する必要がある
@@ -60,7 +61,7 @@ export class FieldPresenter {
 
         //マップやオブジェクトを作成
         this.tileMap.execute(this.fieldMapModel.getFieldData());
-        this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData());
+        this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData(), sceneKey);
         this.menuButton.execute();
         this.saveButton.execute();
         this.fireButton.execute();
@@ -146,7 +147,7 @@ export class FieldPresenter {
 
             //戦闘開始時に停止
             for (const sprite of gameStateManager.currentPlayerPartyList) {
-                console.log(sprite);
+                // console.log(sprite);
                 (sprite as Player).stopAnimation();
                 (sprite as Player).setVelocity(0);//念のため
             }

@@ -9,6 +9,7 @@ import { EnemySelectWindow } from "../view/EnemySelectWindow";
 import { BattleMessageWindow } from '../view/BattleMessageWindow';
 import { SpecialSkillSelectWindow } from "../view/SpecialSkillSelectWindow";
 import { MagicSkillSelectWindow } from "../view/MagicSkillSelectWindow";
+import { CacheDataUpdate } from "../../core/CacheDataUpdate";
 
 import { StateMachine } from "./StateMachine";
 
@@ -123,6 +124,9 @@ export class BattlePresenter {
 
         //ターンモデルのイベント設定
         this.setTurnModel();
+
+        //イベントの設定
+        this.setBattleEventEmitter();
 
         // 初期遷移
         this.stateMachine.push('BATTLE_SELECT');
@@ -393,8 +397,8 @@ export class BattlePresenter {
         //戦闘開始
         this.commandSelectModel.on('CommandSelectFinish', () => {
 
-            //敵の攻撃対象を設定
-            this.battleModel.setEnemyAttackTarget(this.playerPartyWindow.getCharacterIcon('meina'));
+            // //敵の攻撃対象を設定
+            // this.battleModel.setEnemyAttackTarget(this.playerPartyWindow.getCharacterIcon('meina'));
 
             //ターン順を設定
             this.turnModel.setupTurnOrder(this.battleModel.getBattlerList());
@@ -425,6 +429,9 @@ export class BattlePresenter {
             //防御をリセット
             this.battleModel.resetBattleStatus();
 
+            //次のコマンド選択キャラクターをチェック
+            this.commandSelectModel.checkNextCommandSelectStartCharacter();
+
             //最初のコマンドに戻る
             this.stateMachine.push('BATTLE_SELECT');
         })
@@ -442,6 +449,7 @@ export class BattlePresenter {
         let winner = '';
 
         //攻撃
+        //対象の敵が設定されているかつ攻撃者のHPが0以上の場合のみ攻撃
         if (battler.getData('NpcType') !== 'enemy' && battler.data.values.HP > 0) {
 
             //攻撃対象のHPが0以上の場合は攻撃、0以下の場合は攻撃しない
@@ -472,7 +480,7 @@ export class BattlePresenter {
             }
 
         } else if (battler.getData('NpcType') === 'enemy' && battler.data.values.HP > 0) {
-            const enemyAttack = new EnemyAttack(this.battleScene);
+            const enemyAttack = new EnemyAttack(this.battleScene, this.battleModel, this.playerPartyWindow);
             await enemyAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Image);
         }
 
@@ -501,6 +509,10 @@ export class BattlePresenter {
             }
 
             await this.battleMessageWindow.messageOutput('勝利！', 2000);
+
+            //キャッシュを更新
+            // const cacheDataUpdate = new CacheDataUpdate(this.battleScene);
+            // cacheDataUpdate.phaserCacheDataUpdate();
 
             this.endEvents.emit('BattleEnd');
 
@@ -542,6 +554,16 @@ export class BattlePresenter {
         return continueFlag;
     }
 
+    private setBattleEventEmitter() {
 
+        //味方のコマンド選択キャラクターアイコンを点滅
+        this.battleScene.events.on('PLAYER_ICON_LIGHTUP', (name: string) => {
+            this.playerPartyWindow.lightUp(name);
+        });
 
+        //味方のコマンド選択キャラクターアイコンを点滅
+        this.battleScene.events.on('PLAYER_ICON_LIGHTDOWN', (name: string) => {
+            this.playerPartyWindow.lightDown(name);
+        });
+    }
 }

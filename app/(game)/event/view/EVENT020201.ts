@@ -151,7 +151,7 @@ export class EVENT020201 extends BaseEvent {
         const endMessage = messageObjectInstance.createTextObject(this.eventScene, 0, 0,
             'シナリオ：俺\n'
             + '企画：俺\n'
-            + 'プロップデザイン\n'
+            + 'プロップデザイン：俺\n'
             + 'キャラクターデザイン：俺\n'
             + 'ストーリー制作：俺\n'
             + 'BGM：「DOVA-SYNDROME」様\n'

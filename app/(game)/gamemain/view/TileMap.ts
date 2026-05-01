@@ -1,7 +1,7 @@
 import { GameScene } from "../../lib/types";
 import { FieldData } from "../../lib/types";
 import { tilesets } from "../../lib/FieldTypes";
-
+import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
 
 interface AnimationTileMapLayer extends Phaser.Tilemaps.TilemapLayer {
     useAnimTile: number[];
@@ -117,11 +117,19 @@ export class TileMap extends Phaser.GameObjects.Container {
      */
     private createTileMap() {
         const mapkey = this.fieldData.mapKey;
-        //console.log(mapkey)
 
         //mapkeyからTiledデータを呼び出す
         const tilemap: Phaser.Tilemaps.Tilemap = this.gameScene.make.tilemap({ key: mapkey });
         this.makeTilemap = tilemap;
+
+        if (Array.isArray(tilemap.properties)) {
+            for (const prop of tilemap.properties) {
+                const p = prop as { name: string; value: string };
+                // 状態管理クラスのパーティリストを更新
+                const gameStateManager = GameStateManager.getInstance();
+                gameStateManager.setBattleDataBackGroundKey(p.value);
+            }
+        }
 
         //JSONから読み込んだTiledデータにはレイヤー、タイルセットのキー情報、オブジェクト情報、タイルアニメーション情報が含まれている
         //Tiledデータにタイルセットの画像情報を設定
