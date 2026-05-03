@@ -4,8 +4,9 @@ export interface SkillDetail {
     type: string;
     description: string;
     mpCost: number;
-    effect: string;
+    effectClassName: string;
     value: number;
+    selectComment: string;
 }
 
 /** IDをキーとしたスキルのマップ（"01", "02"など） */

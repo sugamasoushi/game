@@ -30,7 +30,7 @@ export class MapObject extends Phaser.GameObjects.Container {
     private eventObjects: Phaser.Physics.Arcade.StaticGroup;
     private clickEventObjects: Phaser.Physics.Arcade.StaticGroup;
     private mapMoveObjects: Phaser.Physics.Arcade.StaticGroup;
-    private itemboxSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
+    private chestSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
     private treeGlassSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
     private treeStemSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
 
@@ -264,7 +264,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         let eventObjects: Phaser.GameObjects.GameObject[] = [];
         let clickEventObjects: Phaser.GameObjects.GameObject[] = [];
         let mapMoveObjects: Phaser.GameObjects.GameObject[] = [];
-        let itemboxSpriteObjects: Phaser.GameObjects.GameObject[] = [];
+        let chestSpriteObjects: Phaser.GameObjects.GameObject[] = [];
         let treeGlassSpriteObjects: Phaser.GameObjects.GameObject[] = [];
         let treeStemSpriteObjects: Phaser.GameObjects.GameObject[] = [];
 
@@ -280,7 +280,7 @@ export class MapObject extends Phaser.GameObjects.Container {
 
         if (makeTileMap.getObjectLayer('SPRITE')) {
             //同じ名前のオブジェクトをまとめて作成する。
-            itemboxSpriteObjects = makeTileMap.createFromObjects('SPRITE', {
+            chestSpriteObjects = makeTileMap.createFromObjects('SPRITE', {
                 name: 'chest',  // Tiledでオブジェクトに付けた「名前」を指定
                 key: 'tex_Chests' // ロード済みのspritesheetKey
             });
@@ -302,7 +302,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.clickEventObjects = this.gameScene.physics.add.staticGroup(clickEventObjects);
         this.mapMoveObjects = this.gameScene.physics.add.staticGroup(mapMoveObjects);
 
-        this.itemboxSpriteObjects = this.gameScene.physics.add.staticGroup(itemboxSpriteObjects);
+        this.chestSpriteObjects = this.gameScene.physics.add.staticGroup(chestSpriteObjects);
         this.treeGlassSpriteObjects = this.gameScene.physics.add.staticGroup(treeGlassSpriteObjects);
         this.treeStemSpriteObjects = this.gameScene.physics.add.staticGroup(treeStemSpriteObjects);
 
@@ -311,7 +311,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         const clickEventObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.clickEventObjects.getChildren();
         const mapMoveObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.mapMoveObjects.getChildren();
 
-        const itemboxSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.itemboxSpriteObjects.getChildren();
+        const chestSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.chestSpriteObjects.getChildren();
         const treeGlassSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.treeGlassSpriteObjects.getChildren();
         const treeStemSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.treeStemSpriteObjects.getChildren();
 
@@ -325,8 +325,8 @@ export class MapObject extends Phaser.GameObjects.Container {
             this.settingMapMoveObject(obj as Phaser.Physics.Arcade.Sprite);
         }
 
-        for (const obj of itemboxSpriteObjectStaticGroupChildren) {
-            this.settingItemboxSpriteObject(obj as Phaser.Physics.Arcade.Sprite, 'tex_Chests');
+        for (const obj of chestSpriteObjectStaticGroupChildren) {
+            this.settingChestSpriteObject(obj as Phaser.Physics.Arcade.Sprite, 'tex_Chests');
         }
         for (const obj of treeGlassSpriteObjectStaticGroupChildren) {
             this.settingTreeGlassSpriteObjects(obj as Phaser.Physics.Arcade.Sprite);
@@ -517,7 +517,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
     }
 
-    private settingItemboxSpriteObject(obj: Phaser.Physics.Arcade.Sprite, imageKey: string) {
+    private settingChestSpriteObject(obj: Phaser.Physics.Arcade.Sprite, imageKey: string) {
 
         //衝突判定の追加
         for (const player of this.playerPartyList) {
@@ -525,7 +525,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         }
 
         //深度設定
-        obj.setDepth(this.TileMap.getTilemapInPixels().heightInPixels);
+        obj.setDepth(obj.y);
 
         //アニメーション設定
         obj.anims.create({
@@ -549,7 +549,7 @@ export class MapObject extends Phaser.GameObjects.Container {
             const getItemName = obj.getData('item');
             const getItemNum = obj.getData('num');
 
-            let bubbleTalk: BubbleTalk | undefined;
+            let bubbleTalk: BubbleTalk;
 
             //吹き出し会話を設定
             if (bubbleTalkKey) {
@@ -615,7 +615,7 @@ export class MapObject extends Phaser.GameObjects.Container {
 
     //------------------------オブジェクトサンプル
     private settingTreeGlassSpriteObjects(obj: Phaser.Physics.Arcade.Sprite) {
-        obj.setDepth(9999 + 1);
+        obj.setDepth(this.gameScene.getTilemap().getMakeTilemap().heightInPixels > this.gameScene.getTilemap().getMakeTilemap().widthInPixels ? this.gameScene.getTilemap().getMakeTilemap().heightInPixels : this.gameScene.getTilemap().getMakeTilemap().widthInPixels);
 
         obj.setOrigin(0.5, 1);
 
@@ -633,7 +633,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
     }
     private settingTreeStemSpriteObjects(obj: Phaser.Physics.Arcade.Sprite) {
-        obj.setDepth(9999);
+        obj.setDepth(obj.y);
     }
     //------------------------オブジェクトサンプル
 

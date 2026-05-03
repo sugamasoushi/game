@@ -18,7 +18,7 @@ export class EVENT010401 extends BaseEvent {
     private characterGameObject: CharacterGameObject;
     private player: Player;
     private lamyNpc: Npc;
-
+    private grandpa: Npc;
 
     private soundScene: Sound;
 
@@ -50,6 +50,9 @@ export class EVENT010401 extends BaseEvent {
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
+        this.grandpa = (this.characterGameObject.getSprite(this.gameScene, 'grandpa') as Npc);
+        this.grandpa.state = CharacterState.event;
+        this.grandpa.initMoveToPosition();
     }
 
     //イベント定義
@@ -100,7 +103,7 @@ export class EVENT010401 extends BaseEvent {
         //キャラ画像を配置
         await Promise.all([
             this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
-            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamy', lamyImageKey, 200, 1, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamyNPC', lamyImageKey, 200, 1, 200),
             this.player.setStandFrame(this.player.getAnimationKey().standDown)
         ]);
 
@@ -108,17 +111,18 @@ export class EVENT010401 extends BaseEvent {
             { lamyNPC: ['見つけたぁ！！！\n'] },
             { meina: ['痛"っ！\n', 'あ～～～もう！！なんなの！！！\n'] },
             { lamyNPC: ['お前っ！！\n', 'あたしにご飯を作れっ！！\n'] },
-            { meina: ['・・・・・・・・・・・・・・・・・・・・・・・・・・・・・💢💢💢\n'] },
-            { lamyNPC: ['・・・・・・・・・・・・・・・・・・・・・・・・・・・・・・(´;_;｀)\n'] }
+            { meina: ['・・・・・・・・・・・・・・・・・・・💢💢💢\n'] },
+            { lamyNPC: ['・・・・・・・・・・・・・・・・・・・泣泣泣\n'] }
         ], this.characterGameObject);
 
         //イベントイラストを被せて表示
         const eventImage = this.eventScene.add.image(Number(this.eventScene.game.config.width) / 2, Number(this.eventScene.game.config.height) / 2, '20250603');
+        eventImage.setDepth(200);
 
         await this.eventTalk.execTalk([
             { lamyNPC: ['お願い、あたしが悪かったからご飯恵んでよぉ・・・。\n'] },
-            { meina: ['（ていうかよく考えたら先に攻撃したの私か）\n', '\n', '分かったよ、何食べる？\n', 'あ、鶏はダメだからね。\n'] }
-        ], this.characterGameObject);
+            { meina: ['（・・・そういえば、よく考えたら先に攻撃したの私か）\n', '\n', '分かったよ、何食べる？\n', 'あ、鶏はダメだからね。\n'] }
+        ], this.characterGameObject, true);
 
         //場面転換
         await this.execFadeOut();
@@ -151,10 +155,58 @@ export class EVENT010401 extends BaseEvent {
         //場面転換
         await this.execFadeOut();
         await new Promise<void>(resolve => {
+
+            //キャラ画像を削除
+            this.characterGameObject.imageObjectsDestroy();
             this.lamyNpc.stopAnimation();
+
+            //じいちゃん配置
+            this.grandpa.setMapPosition(448, 416);
+            this.grandpa.setStandFrame(this.grandpa.getAnimationKey().standUp);
+
             resolve();
         })
         await this.execFadeIn();
+
+        //キャラの画像キーを取得
+        const grandpaImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).grandpa.normal;
+
+        //キャラ画像を配置
+        await Promise.all([
+            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 450, 'grandpa', grandpaImageKey, 800, 0.2, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamy', lamyImageKey, 200, 1, 200)
+        ]);
+
+        await this.eventTalk.execTalk([
+            { grandpa: ['それにしてもよく食べるのぉ\n', 'よほど腹減ってたんじゃな\n'] },
+            { lamy: ['もぐも・・・鶏がしゃべった！？\n'] },
+            { meina: ['あんたも蛇なのにしゃべってるじゃん？\n'] },
+            { lamy: ['もぐもぐ・・・それもそうね（？）\n', '\n', 'じゅるり\n'] },
+            { grandpa: ['やめておけ、ワシはまずいぞ\n'] }
+        ], this.characterGameObject);
+
+        //場面転換
+        await this.execFadeOut();
+        await new Promise<void>(resolve => {
+
+            //キャラ画像を削除
+            this.characterGameObject.imageObjectsDestroy();
+            this.lamyNpc.stopAnimation();
+
+            //じいちゃんを戻す
+            this.grandpa.setMapPosition(623, 378);
+            this.grandpa.state = CharacterState.normal;
+
+            resolve();
+        })
+        await this.execFadeIn();
+
+        //キャラ画像を配置
+        await Promise.all([
+            this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamy', lamyImageKey, 200, 1, 200)
+        ]);
 
         await this.eventTalk.execTalk([
             { lamy: ['ご馳走様！あ～～～お腹いっぱい！！\n'] },

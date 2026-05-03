@@ -49,12 +49,12 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
         this.keyCode = 'keydown-A';
 
         const settingData = new DataDefinition();
-        this.fontFamily = settingData.getTextInfomation(this.fromScene).fontFamily;
-        const fontColorData = settingData.getTextInfomation(this.fromScene).fontColor;
+        this.fontFamily = settingData.getEventMessageInfomation(this.fromScene).fontFamily;
+        const fontColorData = settingData.getEventMessageInfomation(this.fromScene).fontColor;
         this.fontColor = Phaser.Display.Color.HexStringToColor(fontColorData).color;
-        this.fontSize = Number(settingData.getTextInfomation(this.fromScene).fontSize);
-        this.lineSpaceValue = Number(settingData.getTextInfomation(this.fromScene).lineSpaceValue);
-        this.textLine = Number(settingData.getTextInfomation(this.fromScene).textLine);
+        this.fontSize = Number(settingData.getEventMessageInfomation(this.fromScene).fontSize);
+        this.lineSpaceValue = Number(settingData.getEventMessageInfomation(this.fromScene).lineSpaceValue);
+        this.textLine = Number(settingData.getEventMessageInfomation(this.fromScene).textLine);
         this.alphaValue = Number(settingData.getMessageWindowInfomation(this.fromScene).alphaValue);
         const backColorData = settingData.getMessageWindowInfomation(this.fromScene).backColor;
         this.backColor = Phaser.Display.Color.HexStringToColor(backColorData).color;

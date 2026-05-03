@@ -49,6 +49,7 @@ export class Load extends Scene {
         this.load.image('20230427', 'assets/img/CharaStand/20230427.png');
         this.load.image('20230927', 'assets/img/CharaStand/20230927.png');
         this.load.image('20250609', 'assets/img/CharaStand/20250609.png');
+        this.load.image('20240713_2', 'assets/img/CharaStand/20240713_2.png');
         this.load.image('20240622_鶏', 'assets/img/CharaStand/20240622_鶏.png');
         this.load.image('20240908', 'assets/img/CharaStand/20240908.png');
         this.load.image('20240907_3', 'assets/img/CharaStand/20240907_3.png');
@@ -159,6 +160,19 @@ export class Load extends Scene {
             }
         });
 
+        this.load.spritesheet({
+            key: 'tex_WindCutter',
+            url: "/assets/img/spritesheet/pipo-btleffect161.png",
+            frameConfig: {
+                frameWidth: 192,  //横幅
+                frameHeight: 192, //縦幅　指定が無い場合は横幅の値が使用される
+                startFrame: 0,   //解析の最初のフレーム
+                endFrame: 9,    //最後のフレーム　指定無しの場合はフレーム幅で分割計算される
+                margin: 0,       //余白　フレームの端のスペース
+                spacing: 0 //各フレームの間隔。
+            }
+        });
+
         this.load.audio('bgm_otobokeDance', 'assets/sound/おとぼけダンス(Silly_dance).mp3');
         //https://dova-s.jp/bgm/play17179.html
 
@@ -176,6 +190,9 @@ export class Load extends Scene {
         this.load.audio('SE_victory', 'assets/sound/回復魔法4.mp3');
         this.load.audio('SE_message', 'assets/sound/メッセージ表示音3.mp3');
         this.load.audio('SE_chestOpen', 'assets/sound/受話器を置く.mp3');
+        this.load.audio('SE_windCutter', 'assets/sound/刀で斬る3.mp3');
+        this.load.audio('SE_jajaann', 'assets/sound/ジャジャーン.mp3');
+        this.load.audio('SE_newsTitle', 'assets/sound/ニュースタイトル表示1.mp3');
         //https://soundeffect-lab.info/sound/battle/
 
         this.load.video('meina_video', 'assets/video/ComfyUI_00010_.mp4');

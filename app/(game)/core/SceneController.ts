@@ -97,7 +97,7 @@ export class SceneController extends Scene {
                 break;
             case State.BATTLE:
                 console.log('Battle')
-                //this.scene.pause('Game');
+                this.scene.pause('Game');
                 this.scene.launch('Battle', { sceneKey });// launchで現在のシーンの上に重ねてシーンを出す
                 break;
             case State.EVENT:

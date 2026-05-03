@@ -2,14 +2,12 @@ import { GameScene, BattleScene } from "../../lib/types";
 import { MessageObject } from "../../util/MessageObject";
 import { EnergyGauge } from "../../util/EnergyGauge";
 import { CharacterGameObject } from '../../event/view/CharacterGameObject';
-import { DataDefinition } from '../../Data/DataDefinition';
 import { SearchCharacterData } from '../../Data/SearchCharacterData';
 
 export class PlayerPartyWindow extends Phaser.GameObjects.Container {
     private gameScene: GameScene;
     private characterGameObject: CharacterGameObject;
     private charIconList: Phaser.GameObjects.Image[] = [];
-    private lightUpDownIcon: Phaser.GameObjects.Image;
 
     private partyList: string[]
 
@@ -18,8 +16,7 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
     //キャラ選択は0番目から昇順に行う、順番を可変にする場合は考慮する事
     private mainColumn: string[] = ['Lv', 'HP', 'MP'];
     private selectList: Phaser.GameObjects.Text[] = [];
-    private clickZone: Phaser.GameObjects.Zone[] = [];
-    // characterObjectList = new Array();
+    //private clickZone: Phaser.GameObjects.Zone[] = [];
     private nowHPColmunList: Phaser.GameObjects.Text[] = [];
     private nowMPColmunList: Phaser.GameObjects.Text[] = [];
 

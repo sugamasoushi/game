@@ -7,9 +7,6 @@ import { CharacterGameObject } from '../view/CharacterGameObject';
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
 
 type TalkLine = { [chara: string]: string[] };
-// type TalkGroup = Record<string, TalkLine[]>;
-
-// type TalkData = Record<string, TalkGroup>;
 
 export class EventTalk {
     private eventScene: EventScene;
@@ -47,8 +44,8 @@ export class EventTalk {
     }
 
     //会話実行
-    public async execTalk(talkdata: TalkLine[], characterGameObject: CharacterGameObject): Promise<void | number> {
-        //console.log('execTalk')
+    public async execTalk(
+        talkdata: TalkLine[], characterGameObject: CharacterGameObject, eventImageFlg?: boolean): Promise<void | number> {
 
         //最終行が選択肢の場合、行番号を取得。※選択肢は必ず会話の最後に設定する事
         for (const data of talkdata) {
@@ -57,17 +54,8 @@ export class EventTalk {
             }
         }
 
-        //メインの吹き出しを作成
-        const rectR = 32;
-        const width = Number(this.eventScene.game.config.width) - rectR * 2;
-        const height = Number(this.eventScene.game.config.height) - rectR * 2 - 468;
-        const messageWindowInstance = new MessageWindow(this.eventScene);
-        messageWindowInstance.init();
-        messageWindowInstance.createMessageWindow(0, 468, width, height, rectR, 100);
-        this.messageWindow = messageWindowInstance;
-
         //実行
-        const q = await this.talk(talkdata, characterGameObject);
+        const q = await this.talk(talkdata, characterGameObject, eventImageFlg);
 
         //メッセ完了後、メッセージウィンドウを削除
         await new Promise<void>(resolve => {
@@ -79,7 +67,7 @@ export class EventTalk {
     }
 
     //キャラクター毎に吹き出しの出現と削除を処理
-    public async talk(talkdata: TalkLine[], characterGameObject: CharacterGameObject): Promise<void | number> {
+    public async talk(talkdata: TalkLine[], characterGameObject: CharacterGameObject, eventImageFlg?: boolean): Promise<void | number> {
         let q: void | number = 99999;
 
         //配列ごとに台詞を描画
@@ -103,7 +91,7 @@ export class EventTalk {
                 characterGameObject.lightDownOtherCharacters(chara);
             }
 
-            await this.execCharacterMessage(chara, talks)
+            await this.execCharacterMessage(chara, talks, characterGameObject, eventImageFlg)
         }
 
         //会話終了後、クリック操作などを再設定
@@ -111,16 +99,16 @@ export class EventTalk {
     }
 
     //キャラクター毎に吹き出しの出現と削除を行う
-    private async execCharacterMessage(charKey: string, talks: string[]): Promise<void> {
+    private async execCharacterMessage(charKey: string, talks: string[], characterGameObject: CharacterGameObject, eventImageFlg?: boolean): Promise<void> {
 
         //テキストを作成
-        this.createTextObject(charKey, talks);
+        this.createMessage(charKey, talks);
 
         //マスク作成
         this.createTextMask();
 
         //キャラクター名ラベルを作成
-        this.createCharacterLabel(charKey);
+        this.createCharacterLabel(charKey, characterGameObject, eventImageFlg);
 
         //キャラクター名ラベルの吹き出しを作成
         this.createCharacterLabelWindow(charKey);
@@ -153,12 +141,12 @@ export class EventTalk {
     }
 
     //テキストを作成
-    private createTextObject(charKey: string, talks: string[]) {
+    private createMessage(charKey: string, talks: string[]) {
 
         //テキストオブジェクト作成
         this.textObject = this.messageObjectInstance.createTextObject(this.eventScene, 0, 0, talks);
 
-        this.textX = 100;
+        this.textX = 250;
         this.textY = 550;
 
         //テキストオブジェクトの位置を更新
@@ -173,6 +161,16 @@ export class EventTalk {
         this.textLine = this.textObject.getData('textLine');
 
         this.textObject.text = '';//メッセージの幅だけ取得し、空の状態に戻す。改行有テキストも高さ調整するため初期化している。
+
+        //メッセージウィンドウを作成
+        if(this.messageWindow){
+            this.messageWindow.destroy();
+        }
+        const messageWindowInstance = new MessageWindow(this.eventScene);
+        messageWindowInstance.init();
+        messageWindowInstance.createEventMessageWindow(this.textObject);
+        this.messageWindow = messageWindowInstance;
+
 
         //削除対象に登録
         this.messageOperation.addMessageObjectList(this.textObject);
@@ -200,19 +198,30 @@ export class EventTalk {
     }
 
     //キャラ名のラベルテキストを作成
-    private createCharacterLabel(charKey: string): void {
+    private createCharacterLabel(charKey: string, characterGameObject: CharacterGameObject, eventImageFlg?: boolean): void {
 
         //キャラクター名が存在する場合
         if (charKey) {
+
             //キャラクターデータから検索クラスを生成
             const searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
             const name = searchCharacterData.getCharacterData(charKey).name;
             this.characterNameText = this.messageObjectInstance.createTextObject(this.eventScene, 0, 0, name);
+            const labelWidth = this.characterNameText.width;
 
-            //ラベル位置は調整する事
-            const labelX = this.textX;
-            const labelY = this.textY - this.characterNameText.getTextMetrics().fontSize * 2;
-            this.characterNameText.setPosition(labelX, labelY);
+            //ラベル位置を設定
+            //イベント画像による会話の場合は中央、それ以外はキャラ画像に合わせて設定
+            if (eventImageFlg) {
+                const labelX = Number(this.eventScene.game.config.width) / 2 - labelWidth / 2;
+                const labelY = this.textY - this.characterNameText.getTextMetrics().fontSize * 2;
+                this.characterNameText.setPosition(labelX, labelY);
+            } else {
+
+                const characterImage = characterGameObject.getCharacterImage(charKey);
+                const labelX = characterImage.x - this.characterNameText.width / 2;
+                const labelY = this.textY - this.characterNameText.getTextMetrics().fontSize * 2;
+                this.characterNameText.setPosition(labelX, labelY);
+            }
             this.characterNameText.setDepth(this.textObject.depth + 10);
 
             //削除対象に登録

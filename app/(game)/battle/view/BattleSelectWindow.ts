@@ -4,11 +4,12 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { BattleScene } from "../../lib/types";
 import DebugMessage from "../../util/DebugMessage";
 import { Sound } from "../../scenes/Sound";
+import { ItemUpdate } from "../../Data/ItemUpdate";
 
 export class BattleSelectWindow extends Phaser.GameObjects.Container {
     private getCanNotRunawayFlg: boolean = false;
 
-    private column: string[] = ['戦う', '作戦', '設定', '逃げる'];
+    private column: string[] = ['戦う', 'オート', 'アイテム', '逃げる'];
     private selectList: Phaser.GameObjects.Text[] = [];
     private nowSelectNo: number = 0;
 
@@ -17,7 +18,7 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
 
     private soundScene: Sound;
 
-    constructor(battleScene: BattleScene, getCanNotRunawayFlg: boolean) {
+    constructor(private battleScene: BattleScene, getCanNotRunawayFlg: boolean) {
         super(battleScene);
         this.getCanNotRunawayFlg = getCanNotRunawayFlg;
     }
@@ -97,10 +98,20 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
         if (index === 0) {//戦う
             this.emit('Battle_Select_Submit', 0);//パーティの戦闘を指定
             this.disableSelect();
-        } else if (index === 1) {//作戦
-            console.log('作戦')
-        } else if (index === 2) {//設定
-            console.log('設定')
+        } else if (index === 1) {//オート
+            this.battleScene.events.emit('AUTO_BATTLE_SELECT', true)
+            this.disableSelect();
+        } else if (index === 2) {//アイテム
+
+            const itemUpdate = new ItemUpdate(this.battleScene);
+            const itemList = itemUpdate.getValidItemList();
+
+            if (itemList.length == 0 || itemList == null) {
+                this.battleScene.events.emit('BATTLE_MESSAGE_OUTPUT', '何も持ってない！', 1200);
+                return;
+            }
+            this.emit('Item_Select_Submit', true)
+            this.disableSelect();
         } else if (index === 3) {//逃げる
             //逃走可否チェック
             if (this.getCanNotRunawayFlg) {
@@ -159,7 +170,7 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
             obj.setInteractive({ useHandCursor: true });//テキストをクリック可能にする
 
             //未実装項目をグレーアウト
-            if (obj.name === '作戦' || obj.name === '設定') {
+            if (obj.name === '設定') {
                 obj.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
             }
         });

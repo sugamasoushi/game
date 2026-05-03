@@ -46,7 +46,7 @@ export class StateMachine {
     /** 前の状態に戻る */
     pop() {
         if (this.history.length === 0) return;
-        console.log(this.history)
+        //console.log(this.history)
 
         // 現在の終了
         if (this.currentStateKey) {

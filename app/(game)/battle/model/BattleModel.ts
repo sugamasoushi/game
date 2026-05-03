@@ -9,7 +9,7 @@ export class BattleModel {
     private usePatern: string;
     private canNotRunaway: boolean = false;
     private enemyList: string[] = [];//イベント戦闘の敵名称等
-    private enemyPartyList: Phaser.GameObjects.Image[] = [];
+    public enemyPartyList: Phaser.GameObjects.Image[] = [];
 
     private fieldHitEnemy: Npc;
 
@@ -189,19 +189,38 @@ export class BattleModel {
             const playerPartyNum = new Phaser.Math.RandomDataGenerator().between(0, livingPlayers.length - 1);
             const targetPlayer = livingPlayers[playerPartyNum];
 
-            console.log("対象:", targetPlayer);
+            // console.log("対象:", targetPlayer);
             return targetPlayer;
+            //return livingPlayers[0];
         } else {
             console.log("生存しているプレイヤーがいません");
         }
     }
 
+    public getPlayerAutoAttackTarget() {
+
+        // 生存者リストを作成
+        const livingEnemies = this.enemyPartyList.filter(
+            enemy => enemy.data.values.HP > 0
+        );
+
+        // 生存者の中からランダムに一人選ぶ
+        if (livingEnemies.length > 0) {
+            const enemyIndex = new Phaser.Math.RandomDataGenerator().between(0, livingEnemies.length - 1);
+            const targetEnemy = livingEnemies[enemyIndex];
+
+            //console.log("対象:", targetEnemy);
+            return targetEnemy;
+        } else {
+            console.log("生存している敵がいません");
+        }
+    }
+
     public deleteEnemy() {
         for (const enemy of this.enemyPartyList) {
-            // enemy.getData('backGaugeHP').setVisible(false);
-            // enemy.getData('gaugeHP').setVisible(false);
             enemy.destroy();
         }
+        this.enemyPartyList = [];
     }
 
     public getUsePatern() {
@@ -219,5 +238,13 @@ export class BattleModel {
         }
     }
 
+    public checkPlayerPartyHP() {
+        const partyeList: Phaser.GameObjects.GameObject[] = gameStateManager.currentPlayerPartyList;
+        for (const partyMember of partyeList) {
+            if (partyMember.data.values.HP <= 0) {
+                partyMember.data.values.HP = 1;
+            }
+        }
+    }
 }
 

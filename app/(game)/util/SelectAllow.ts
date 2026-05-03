@@ -25,7 +25,8 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
     //カーソル作成
     public createAllow() {
 
-        const fontSize = this.settingData.getTextInfomation(this.scene).fontSize;
+        const fontSize = 24;
+        //const fontSize = this.settingData.getEventMessageInfomation(this.scene).fontSize;
         const lineColorString = this.settingData.getMessageWindowInfomation(this.scene).lineColor;
         const lineColor = Phaser.Display.Color.HexStringToColor(lineColorString).color;
         const alphaValue = this.settingData.getMessageWindowInfomation(this.scene).alphaValue;
@@ -95,7 +96,7 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
         this.clear();
         if (this.allowTween) this.allowTween.pause();
 
-        const fontSize = this.settingData.getTextInfomation(this.scene).fontSize;
+        const fontSize = this.settingData.getEventMessageInfomation(this.scene).fontSize;
         const lineColorString = this.settingData.getMessageWindowInfomation(this.scene).lineColor;
         const lineColor = Phaser.Display.Color.HexStringToColor(lineColorString).color;
         const alphaValue = this.settingData.getMessageWindowInfomation(this.scene).alphaValue;

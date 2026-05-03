@@ -1,11 +1,10 @@
 import { Sound } from "../../scenes/Sound";
-import { MagicFrame } from "../../util/Effect/MagicFrame";
 import { SkillDetail } from "../../lib/SkillDataTypes";
 import { BattleMessageWindow } from "../view/BattleMessageWindow";
-import { NormalAttack } from "../../util/Effect/NormalAttack";
+import { NormalAttack } from "../view/Effect/NormalAttack";
+import { SearchMagicEffect } from "./SearchMagicEffect";
 
 export default class PlayerAttack {
-    private battleScene: Phaser.Scene;
     private attacker: Phaser.GameObjects.Sprite;
     private targetEnemy: Phaser.GameObjects.Image;
     attackDuration = 300;
@@ -13,19 +12,18 @@ export default class PlayerAttack {
     private soundScene: Sound;
 
     //現状は単体選択のみ対応
-    constructor(battleScene: Phaser.Scene) {
-        this.battleScene = battleScene;
-
-        //BGM開始はNpcCommonで実行しているが、sceneと役割を考えると改良した方が良い
+    constructor(private battleScene: Phaser.Scene) {
         this.soundScene = this.battleScene.scene.get('Sound') as Sound;
     }
 
     //仮、通常攻撃のエフェクトは別途作成する
     //攻撃者のデータから目標を取得して処理する
     public attack(battleMessageWindow: BattleMessageWindow, attacker: Phaser.GameObjects.Sprite) {
+
         return new Promise<void>(resolve => {
 
             if (attacker.data.values.HP <= 0) return resolve();
+
             this.attacker = attacker;
             this.targetEnemy = attacker.getData('BattleTarget');
 
@@ -46,20 +44,16 @@ export default class PlayerAttack {
                                 case 'special':
 
                                 case 'magic':
-                                    const effect = new MagicFrame(this.battleScene, targetX, targetY, this.attackDuration, undefined);
-                                    return Promise.all([
-                                        effect.attackAnimation(),
-                                        this.attackTween(effect),
-                                    ])
+                                    // console.log(skillDetail);
+                                    const searchMagicEffect = new SearchMagicEffect(skillDetail, this.battleScene, targetX, targetY);
+                                    const effect = searchMagicEffect.searchMagicEffect();
+                                    return effect!.attackAnimation();
                                 default:
                                     return Promise.resolve();
                             }
                         } else {
-                            const effect = new NormalAttack(this.battleScene, targetX, targetY, this.attackDuration, undefined);
-                            return Promise.all([
-                                effect.attackAnimation(),
-                                this.normalAttackTween(effect),
-                            ])
+                            const effect = new NormalAttack(this.battleScene, targetX, targetY);
+                            return effect.attackAnimation();
                         }
                     })(),
 
@@ -91,44 +85,6 @@ export default class PlayerAttack {
 
                 resolve();
             })();
-        })
-    }
-
-    //攻撃エフェクト
-    private attackTween(effect: Phaser.GameObjects.Sprite) {
-        this.soundScene.SE_fire.play();
-        return new Promise<void>(resolve => {
-            const tween = this.battleScene.tweens.add({
-                targets: effect,
-                scale: 2,
-                ease: 'sine.inout',
-                repeat: 2,
-                yoyo: true,
-                duration: this.attackDuration,
-                onComplete: () => {
-                    resolve();
-                    this.soundScene.SE_fire.stop();
-                    tween.destroy();
-                }
-            });
-        })
-    }
-
-    private normalAttackTween(effect: Phaser.GameObjects.Sprite) {
-        this.soundScene.SE_attack6.play({ loop: true });
-        return new Promise<void>(resolve => {
-            const tween = this.battleScene.tweens.add({
-                targets: effect,
-                scale: 2,
-                ease: 'sine.inout',
-                repeat: 1,
-                duration: 180,
-                onComplete: () => {
-                    resolve();
-                    this.soundScene.SE_attack6.stop();
-                    tween.destroy();
-                }
-            });
         })
     }
 

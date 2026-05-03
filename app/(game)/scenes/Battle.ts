@@ -12,6 +12,7 @@ import { EnemySelectWindow } from "../battle/view/EnemySelectWindow";
 import { BattleMessageWindow } from "../battle/view/BattleMessageWindow";
 import { SpecialSkillSelectWindow } from "../battle/view/SpecialSkillSelectWindow";
 import { MagicSkillSelectWindow } from "../battle/view/MagicSkillSelectWindow";
+import { ItemSelectWindow } from "../battle/view/ItemSelectWindow";
 
 import { BattlePresenter } from "../battle/presenter/BattlePresenter";
 
@@ -37,6 +38,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
     private battleMessageWindow: BattleMessageWindow;
     private specialSkillSelectWindow: SpecialSkillSelectWindow;
     private magicSkillSelectWindow: MagicSkillSelectWindow;
+    private itemSelectWindow: ItemSelectWindow;
 
     //presenter
     private battlePresenter: BattlePresenter;
@@ -78,6 +80,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
         this.battleMessageWindow = new BattleMessageWindow(this);
         this.specialSkillSelectWindow = new SpecialSkillSelectWindow(this);
         this.magicSkillSelectWindow = new MagicSkillSelectWindow(this);
+        this.itemSelectWindow = new ItemSelectWindow(this, this.battleModel);
 
         //presenter
         this.battlePresenter = new BattlePresenter(
@@ -91,7 +94,8 @@ export class Battle extends Phaser.Scene implements BattleScene {
             this.enemySelectWindow,
             this.battleMessageWindow,
             this.specialSkillSelectWindow,
-            this.magicSkillSelectWindow
+            this.magicSkillSelectWindow,
+            this.itemSelectWindow
         );
         this.battlePresenter.init();
 
@@ -132,8 +136,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
                 enemySelectWindow: this.enemySelectWindow,
                 specialSkillSelect: this.specialSkillSelectWindow,
                 magicSkillSelect: this.magicSkillSelectWindow,
-
-                item: this.playerPartyWindow,//まだ使ってない
+                itemSelectWindow: this.itemSelectWindow
             });
     }
 
@@ -179,9 +182,9 @@ export class Battle extends Phaser.Scene implements BattleScene {
     }
 
     //画面更新を再開。このメソッドは別シーンから参照される。
-    public resumeScene() {
-        this.mainCamera.postFX.clear();
-        this.scene.resume();
-    }
+    // public resumeScene() {
+    //     this.mainCamera.postFX.clear();
+    //     this.scene.resume();
+    // }
 
 }

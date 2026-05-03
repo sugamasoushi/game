@@ -1,7 +1,6 @@
 import { MenuModel } from "../model/MenuModel";
 import { MessageObject } from "../../util/MessageObject";
 import { SelectAllow } from "../../util/SelectAllow";
-import DebugMessage from '../../util/DebugMessage';
 import { MessageWindow } from "../../util/MessageWindow";
 
 export class MenuListWindow extends Phaser.GameObjects.Container {

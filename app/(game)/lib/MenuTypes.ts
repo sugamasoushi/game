@@ -4,6 +4,6 @@ export enum MenuTab {
     Equip = 2,
     Skill = 3,
     Status = 4,
-    Movie = 5,
-    Option = 6
+    Save = 5,
+    Movie = 6
 }

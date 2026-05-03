@@ -21,7 +21,7 @@ export default class EnemyAttack {
     //仮、通常攻撃のエフェクトは別途作成する
     public attack(battleMessageWindow: BattleMessageWindow, attacker: Phaser.GameObjects.Image) {
 
-        //敵の攻撃対象を設定
+        //敵キャラクターの攻撃対象を設定
         const targetPlayer = this.battleModel.getEnemyAttackTarget();
         const targetPlayerIcon = this.playerPartyWindow.getCharacterIcon(targetPlayer!.name);
         attacker.setData('BattleTarget', targetPlayer);

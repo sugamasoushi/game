@@ -9,7 +9,7 @@ export interface ViewsContainer {
   playerPartyWindow: IWindowView;
   attackSelect: IWindowView;
   enemySelectWindow: IWindowView;
-  item: IWindowView;
+  itemSelectWindow: IWindowView;
   specialSkillSelect: IWindowView;
   magicSkillSelect: IWindowView;
 }

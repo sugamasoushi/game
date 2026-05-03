@@ -3,17 +3,16 @@ import { MessageObject } from "../../util/MessageObject";
 import { BattleScene } from "../../lib/types";
 
 export class BattleMessageWindow extends Phaser.GameObjects.Container {
-    //※選択リストは必ずテキストオブジェクトを格納したcolumnを参照する事。
-    //コンテナにはウィンドウオブジェクトも含まれているため、container.listを使用すると不要な番号を取得してしまう。
     private messageObject: Phaser.GameObjects.Text;
-    private messageWindow: MessageWindow;
+    private messageWindow: Phaser.GameObjects.Graphics;
+    private textX: number;//テキスト座標、吹き出しやアイコン等の基準座標
+    private textY: number;
 
     constructor(battleScene: BattleScene) {
         super(battleScene, 0, 0);
         this.name = BattleMessageWindow.name;
         this.scene.add.existing(this);
         this.addToUpdateList();
-
     }
 
     init() {
@@ -21,21 +20,24 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
     }
 
     private createWindow() {
-        const marginX = 200;
-        const width = Number(this.scene.game.config.width) - marginX * 2;
-        const height = 200;
-        const rectR = 32;
 
         //項目テキスト作成
         const messageObjectInstace = new MessageObject();
         messageObjectInstace.init(this.scene);
-        this.messageObject = messageObjectInstace.createTextObject(this.scene, 20, 20, ['初期値']);
+        this.messageObject = messageObjectInstace.createTextObject(this.scene, 0, 0, ['初期値']);
+
+        this.textX = 250;
+        this.textY = 500;
+
+        //テキストオブジェクトの位置を更新
+        this.messageObject.x = this.textX;
+        this.messageObject.y = this.textY;
 
         //ウィンドウ作成
-        this.messageWindow = new MessageWindow(this.scene);
-        this.messageWindow.init();
-        // createMessageWindow内で(rectR, rectR)の位置に描画されるため、-rectRして位置を合わせる
-        this.messageWindow.createMessageWindow(-rectR, -rectR, width, height, rectR, undefined);
+        const messageWindowInstance = new MessageWindow(this.scene);
+        messageWindowInstance.init();
+        messageWindowInstance.createEventMessageWindow(this.messageObject);
+        this.messageWindow = messageWindowInstance;
 
         //コンテナ作成
         this.add(this.messageWindow);
@@ -45,9 +47,6 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
         this.setVisible(false);
         this.disableSelect();
 
-        // 左右の余白を等しく設定
-        this.x = marginX;
-        this.y = Number(this.scene.game.config.height) - height - 40;
         this.setDepth(9999999);
     }
 
@@ -63,7 +62,7 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
         // this.clickZone.disableInteractive();
     }
 
-    messageOutput(text: string, value: number | undefined) {
+    messageOutput(text: string, value?: number) {
         const time = value ? value : 1000;
         this.messageObject.setText(text);
 

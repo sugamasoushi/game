@@ -102,15 +102,21 @@ export class CharacterGameObject {
     public lightUp(characterKey: string) {
         const characterImage = this.characterImageMap.get(characterKey);
 
+        if (!characterImage) return;
+
+        //既に明るい、またはTween実行中なら何もしない
+        if (characterImage.getData('isLightUp') === true) {
+            return;
+        }
+
+        characterImage.setDepth(10);
+
         //ライトアップダウンの色合い設定
         const lightUpRGB = 255;
         const lightDownRGB = 128;
 
         return new Promise<void>(resolve => {
-            if (!characterImage || !characterImage.scene) {
-                resolve();
-                return;
-            }
+
             //このtweenはオブジェクトをターゲットとせず、内部で値を更新し続ける
             //※削除処理は考えるべき
             characterImage!.scene.tweens.addCounter({
@@ -126,6 +132,7 @@ export class CharacterGameObject {
                     characterImage!.setTint(Phaser.Display.Color.GetColor(value, value, value));
                 },
                 onComplete: () => {
+                    characterImage.setData('isLightUp', true);
                     resolve();
                 }
             });
@@ -136,16 +143,22 @@ export class CharacterGameObject {
     lightDownOtherCharacters(characterKey: string) {
         for (const [key, image] of this.characterImageMap) {
 
+            if (!image) continue;
+
+            //既に暗い場合はスキップ
+            if (image.getData('isLightUp') === false) {
+                continue;
+            }
+
+            image.setDepth(0);
+
             //ライトアップダウンの色合い設定
             const lightUpRGB = 255;
             const lightDownRGB = 128;
 
             if (characterKey !== key) {
                 return new Promise<void>(resolve => {
-                    if (!image || !image.scene) {
-                        resolve();
-                        return;
-                    }
+
                     //このtweenは値を保持し更新し続ける。
                     //※削除処理は考えるべき
                     image.scene.tweens.addCounter({
@@ -161,6 +174,7 @@ export class CharacterGameObject {
                             image.setTint(Phaser.Display.Color.GetColor(value, value, value));
                         },
                         onComplete: () => {
+                            image.setData('isLightUp', false);
                             resolve();
                         }
                     });
@@ -170,8 +184,15 @@ export class CharacterGameObject {
     }
 
     public imageObjectsDestroy() {
-        this.characterImageMap.forEach(image => {
+        this.characterImageMap.forEach((image) => {
             image.destroy();
         });
+        // 最後にMapを空にする
+        this.characterImageMap.clear();
+    }
+
+    public imageClear(key: string) {
+        this.characterImageMap.get(key)!.destroy();
+        this.characterImageMap.delete(key);
     }
 }

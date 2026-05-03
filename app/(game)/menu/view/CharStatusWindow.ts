@@ -61,6 +61,12 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
         this.downArrow.on('pointerdown', () => this.scroll('down'));
         this.add(this.downArrow);
 
+        //キャラが一人の場合は非表示
+        if (partyList.length < 2) {
+            this.upArrow.setVisible(false)
+            this.downArrow.setVisible(false)
+        }
+
         this.setMask(mainColumn.cropRectMask.createGeometryMask());
         this.setDepth(this.mainWindowDepth + 50);
 

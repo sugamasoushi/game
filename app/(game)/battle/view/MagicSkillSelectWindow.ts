@@ -9,7 +9,6 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
 
     private windowMarginX = 200;
-    private windowWidth = Number(this.scene.game.config.width) - this.windowMarginX * 2;
     private windowHeight = 200;
 
     private selectList: Phaser.GameObjects.Text[] = [];
@@ -34,48 +33,10 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         this.x = 0;
         this.y = 0;
         this.name = MagicSkillSelectWindow.name;
-
-        this.createWindow();
     }
 
     preUpdate() {
         this.updateSelectNo();
-    }
-
-    //パーティキャラクター共通とし、スキルリストのみ書き換えでキャラクターごとに対応する
-    private createWindow() {
-        const rectR = 32;
-
-        //ウィンドウ作成
-        this.messageWindow = new MessageWindow(this.scene);
-        this.messageWindow.init();
-        // createMessageWindow内で(rectR, rectR)の位置に描画されるため、-rectRして位置を合わせる
-        this.messageWindow.createMessageWindow(-rectR, -rectR, this.windowWidth, this.windowHeight, rectR, undefined);
-
-        // 左右の余白を等しく設定
-        this.messageWindow.x = this.windowMarginX;
-        this.messageWindow.y = Number(this.scene.game.config.height) - this.windowHeight - 40;
-        this.messageWindow.setDepth(Number(this.scene.game.config.height));
-
-        //戻るボタン
-        this.backButtonCreate(this.messageWindow.x + this.windowWidth, this.messageWindow.y);
-
-        //カーソル作成、初期位置設定
-        this.allow = new SelectAllow(this.scene);
-        this.allow.init(0, 0);
-        this.allow.createAllow();
-        if (this.selectList.length > 0) {
-            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
-        }
-        this.allow.setDepth(Number(this.scene.game.config.height) + 1);
-
-        //クリック可能に設定
-        this.enableSelect();
-
-        this.messageWindow.setVisible(false);
-        this.allow.setVisible(false);
-        this.backButton.setVisible(false);
-        this.backButtonWindow.setVisible(false);
     }
 
     private createSkillList() {
@@ -124,6 +85,39 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
 
             this.selectList.push(textObj);
         }
+    }
+
+    private createWindow() {
+
+        if (this.messageWindow) {
+            this.messageWindow.destroy();
+        }
+
+        //ウィンドウ作成
+        const messageWindowInstance = new MessageWindow(this.scene);
+        messageWindowInstance.init();
+        messageWindowInstance.createEventMessageWindow(this.selectList[0]);
+        this.messageWindow = messageWindowInstance;
+
+        //戻るボタン
+        this.backButtonCreate(this.messageWindow.x + this.messageWindow.width - 16, this.messageWindow.y - 16);
+
+        //カーソル作成、初期位置設定
+        this.allow = new SelectAllow(this.scene);
+        this.allow.init(0, 0);
+        this.allow.createAllow();
+        if (this.selectList.length > 0) {
+            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+        }
+        this.allow.setDepth(Number(this.scene.game.config.height) + 1);
+
+        //クリック可能に設定
+        this.enableSelect();
+
+        this.messageWindow.setVisible(false);
+        this.allow.setVisible(false);
+        this.backButton.setVisible(false);
+        this.backButtonWindow.setVisible(false);
     }
 
     private backButtonCreate(x: number, y: number) {
@@ -180,10 +174,15 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
     }
 
     show(data: Phaser.GameObjects.Sprite) {
-        this.nowSelectCharacter = data;
+
+        //選択中キャラクターの更新が必要な場合のみ更新（戻るボタンによる遷移の場合は未更新）
+        if (data) {
+            this.nowSelectCharacter = data;
+        }
 
         //キャラクター固有のリストの為、show()で作成
         this.createSkillList();
+        this.createWindow();
 
         this.messageWindow.setVisible(true);
         this.allow.setVisible(true);

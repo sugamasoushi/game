@@ -20,6 +20,9 @@ export class Sound extends Scene {
     public SE_attack: Phaser.Sound.HTML5AudioSound;
     public SE_attack6: Phaser.Sound.HTML5AudioSound;
     public SE_chestOpen: Phaser.Sound.HTML5AudioSound;
+    public SE_windCutter: Phaser.Sound.HTML5AudioSound;
+    public SE_jajaann: Phaser.Sound.HTML5AudioSound;
+    public SE_newsTitle: Phaser.Sound.HTML5AudioSound;
 
     constructor() { super('Sound'); }
     init() {
@@ -57,6 +60,12 @@ export class Sound extends Scene {
         this.SE_message.volume = 0.7;
         this.SE_chestOpen = this.sound.add('SE_chestOpen', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_chestOpen.volume = 0.7;
+        this.SE_windCutter = this.sound.add('SE_windCutter', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_windCutter.volume = 0.7;
+        this.SE_jajaann = this.sound.add('SE_jajaann', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_jajaann.volume = 0.7;
+        this.SE_newsTitle = this.sound.add('SE_newsTitle', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_newsTitle.volume = 0.7;
 
         this.game.events.on('BGM_FIELD', (sceneKey: string, seKey: string) => {
             if (this.debugFlg) return;

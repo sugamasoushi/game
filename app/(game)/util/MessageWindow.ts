@@ -1,3 +1,5 @@
+import { DataDefinition } from "@/app/(game)/Data/DataDefinition";
+
 export class MessageWindow extends Phaser.GameObjects.Graphics {
     public scene: Phaser.Scene;
     private backColor: number;
@@ -7,6 +9,7 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
     private rectR = 16;//一旦デフォルトは16
     public width: number = 0;
     public height: number = 0;
+    private dataDefinition: DataDefinition;
 
     constructor(scene: Phaser.Scene) {
         super(scene);
@@ -16,6 +19,9 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
     public init() {
         //DisplayListに追加
         this.scene.add.existing(this);
+
+        //テキスト設定値取得用
+        this.dataDefinition = new DataDefinition();
 
         const sceneKey = this.scene.scene.key;
         const settingData = this.scene.cache.json.get('savedata').GameSetting.MessageWindow;
@@ -50,18 +56,48 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
 
         this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
         this.lineStyle(2, this.lineColor);
+
+        /**
+         * 初期位置から更にxy座標分だけずらして描画することになるため注意
+         * 以下の処理はx,yを0,0にしてから描画する
+         */
         this.strokeRoundedRect(rectR, rectR, w, h, rectR);
         this.fillRoundedRect(rectR, rectR, w, h, rectR);
         this.setDepth(depth);
     }
 
+    //テキストを基準に画面下側にウィンドウを作成
+    public createEventMessageWindow(messageObject: Phaser.GameObjects.Text, R?: number) {
+        const eventMessageInfomation = this.dataDefinition.getEventMessageInfomation(this.scene);
+        const tileSize = 32;//マップのタイルサイズ32を基準とする
+        const rectR = R ? R : eventMessageInfomation.fontSize;//角の丸みの半径
+        const offset = tileSize * 4;
+
+        //初期位置を設定
+        this.x = offset;
+        this.y = messageObject.y - tileSize;
+
+        this.width = Number(messageObject.scene.game.canvas.width) - offset * 2;
+        this.height = this.scene.game.canvas.height - this.y - tileSize;
+
+        this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
+        this.lineStyle(2, this.lineColor);
+
+        /**
+         * 初期位置から更にxy座標分だけずらして描画することになるため注意
+         * 以下の処理はx,yを0,0にしてから描画する
+         */
+        this.strokeRoundedRect(0, 0, this.width, this.height, rectR);
+        this.fillRoundedRect(0, 0, this.width, this.height, rectR);
+        this.setDepth(messageObject.depth - 10);
+    }
+
     //テキストオブジェクトに対してウィンドウを作成
-    public createOneColumnOneWindow(colmun: Phaser.GameObjects.Text, R: number | undefined) {
+    public createOneColumnOneWindow(colmun: Phaser.GameObjects.Text, R?: number) {
         const rectR = R ? R : this.rectR;//角の丸みの半径
         const width = colmun.width + rectR * 2;
         const height = colmun.height + rectR * 2;
 
-        // lebelWindow = this.scene.add.graphics();
         this.x = colmun.x;//座標初期値はテキストの左上
         this.y = colmun.y;
         this.width = width;
@@ -105,7 +141,7 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
     }
 
     //吹き出し型のウィンドウを作成
-    public createBubbleWindow(textObject: Phaser.GameObjects.Text, pointX: number, pointY: number, direction: string, R: number | undefined) {
+    public createBubbleWindow(textObject: Phaser.GameObjects.Text, pointX: number, pointY: number, direction: string, R?: number | undefined) {
 
         //テキストの行数、最大２行
         let textLine = 2;

@@ -16,24 +16,27 @@
             "type": "guard",
             "description": "がっちりガード！",
             "mpCost": 0,
-            "effect": "",
-            "value": 20
+            "effectClassName": "",
+            "value": 20,
+            "selectComment": ""
         },
         "02": {
             "name": "回避",
             "type": "avoid",
             "description": "避けるな！",
             "mpCost": 0,
-            "effect": "",
-            "value": 0
+            "effectClassName": "",
+            "value": 0,
+            "selectComment": ""
         },
         "03": {
             "name": "投石",
             "type": "attack",
             "description": "恐っ！",
             "mpCost": 0,
-            "effect": "",
-            "value": 10
+            "effectClassName": "",
+            "value": 10,
+            "selectComment": ""
         }
     },
     "magic": {
@@ -42,24 +45,27 @@
             "type": "attack",
             "description": "メラメラ～",
             "mpCost": 10,
-            "effect": "",
-            "value": 30
+            "effectClassName": "MagicFrame",
+            "value": 30,
+            "selectComment": "獲物はお前だ！"
         },
         "02": {
             "name": "風の刃",
             "type": "attack",
             "description": "ヒューン！",
             "mpCost": 10,
-            "effect": "",
-            "value": 25
+            "effectClassName": "WindCutter",
+            "value": 35,
+            "selectComment": "あいつなら効きそうだ！"
         },
         "03": {
             "name": "氷の塊",
             "type": "attack",
-            "description": "ばしゃ～！",
+            "description": "ぐさ～っ！",
             "mpCost": 10,
-            "effect": "",
-            "value": 20
+            "effectClassName": "",
+            "value": 20,
+            "selectComment": ""
         }
     }
 }

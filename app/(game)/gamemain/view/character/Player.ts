@@ -61,6 +61,10 @@ export class Player extends BaseSprite {
         }
 
         this._updateRectMask();
+
+        if (this.name !== 'meina' && Phaser.Math.Distance.BetweenPoints(this, this.gameScene.getPlayer()) > 500 && this.state === CharacterState.normal) {
+            this.setMapPosition(this.gameScene.getPlayer().x, this.gameScene.getPlayer().y);
+        }
     }
 
     //キー入力による移動

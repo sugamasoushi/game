@@ -2,7 +2,6 @@ import { BattleScene } from "../../lib/types";
 import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
-import DebugMessage from "../../util/DebugMessage";
 
 export class AttackSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;

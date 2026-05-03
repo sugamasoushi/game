@@ -9,7 +9,7 @@ import { EnemySelectWindow } from "../view/EnemySelectWindow";
 import { BattleMessageWindow } from '../view/BattleMessageWindow';
 import { SpecialSkillSelectWindow } from "../view/SpecialSkillSelectWindow";
 import { MagicSkillSelectWindow } from "../view/MagicSkillSelectWindow";
-import { CacheDataUpdate } from "../../core/CacheDataUpdate";
+import { ItemSelectWindow } from "../view/ItemSelectWindow";
 
 import { StateMachine } from "./StateMachine";
 
@@ -18,6 +18,7 @@ import PlayerGuard from "./PlayerGuard";
 import EnemyAttack from "./EnemyAttack";
 
 import { gameStateManager } from "../../GameAllState/GameStateManager";
+import { ItemUpdate } from "../../Data/ItemUpdate";
 
 import { Sound } from "../../scenes/Sound";
 
@@ -37,8 +38,11 @@ export class BattlePresenter {
     private battleMessageWindow: BattleMessageWindow;
     private specialSkillSelectWindow: SpecialSkillSelectWindow;
     private magicSkillSelectWindow: MagicSkillSelectWindow;
+    private itemSelectWindow: ItemSelectWindow;
 
     private views: ViewsContainer
+
+    private autoFlg: boolean = false;
 
     //履歴
     private stateMachine: StateMachine;
@@ -55,7 +59,8 @@ export class BattlePresenter {
         enemySelectWindow: EnemySelectWindow,
         battleMessageWindow: BattleMessageWindow,
         specialSkillSelectWindow: SpecialSkillSelectWindow,
-        magicSkillSelectWindow: MagicSkillSelectWindow
+        magicSkillSelectWindow: MagicSkillSelectWindow,
+        itemSelectWindow: ItemSelectWindow
     ) {
         this.battleScene = battleScene;
         this.battleModel = battleModel;
@@ -68,6 +73,7 @@ export class BattlePresenter {
         this.battleMessageWindow = battleMessageWindow;
         this.specialSkillSelectWindow = specialSkillSelectWindow;
         this.magicSkillSelectWindow = magicSkillSelectWindow;
+        this.itemSelectWindow = itemSelectWindow;
     }
 
     public init() {
@@ -81,6 +87,7 @@ export class BattlePresenter {
         this.battleMessageWindow.init();
         this.specialSkillSelectWindow.init();
         this.magicSkillSelectWindow.init();
+        this.itemSelectWindow.init();
     }
 
     public async create(events: Phaser.Events.EventEmitter, views: ViewsContainer) {
@@ -92,11 +99,13 @@ export class BattlePresenter {
 
         //各viewのcreateを実行
         this.battleSelectWindow.createBattleSelectWindow(100, Number(this.battleScene.game.config.height) - 200);
-        this.playerPartyWindow.createBattleCharacterIcon(this.battleModel.getPlayerPartyList(), 200, Number(this.battleScene.game.config.height) - 200);
+        this.playerPartyWindow.createBattleCharacterIcon(this.battleModel.getPlayerPartyList(), 250, Number(this.battleScene.game.config.height) - 200);
         //AttackSelectWindowはinitでcreate実施
         //EnemySelectWindowはinitでcreate実施
         //battleMessageWindowはinitでcreate実施
         //specialSkillSelectWindowはinitでcreate実施
+        //magicSkillSelectWindowはinitでcreate実施
+        //itemSelectWindowはinitでcreate実施
 
         //depth設定
         this.battleSelectWindow.setDepth(100);
@@ -106,6 +115,7 @@ export class BattlePresenter {
         this.battleMessageWindow.setDepth(500);
         this.specialSkillSelectWindow.setDepth(120);
         this.magicSkillSelectWindow.setDepth(120);
+        this.itemSelectWindow.setDepth(120);
 
         //履歴を管理し、戻る操作の際に履歴通りのウィンドウを表示するための機能
         this.stateMachine = new StateMachine(this.views);
@@ -132,7 +142,7 @@ export class BattlePresenter {
         this.stateMachine.push('BATTLE_SELECT');
 
         //冒頭メッセージ
-        await this.battleMessageWindow.messageOutput('敵が現れた！', 1000);
+        await this.battleMessageWindow.messageOutput('敵が現れた！', 1200);
     }
 
     //設定：BattleSelectWindow
@@ -161,10 +171,17 @@ export class BattlePresenter {
             this.stateMachine.push('ATTACK_SELECT', this.commandSelectModel.getCurrentCharacter());
         });
 
+        //【攻撃方法選択】【アイテム】
+        this.views.battleSelect.on('Item_Select_Submit', () => {
+
+            //アイテム選択ウィンドウに移動
+            this.stateMachine.push('ITEM_SELECT');
+        });
+
         // シーン終了時にイベントを破棄
         this.battleScene.events.once('shutdown', () => {
             this.views.battleSelect.off('Battle_Select_Submit');
-
+            this.views.battleSelect.off('Item_Select_Submit');
         });
     }
 
@@ -272,6 +289,7 @@ export class BattlePresenter {
         this.battleScene.events.once('shutdown', () => {
             this.views.specialSkillSelect.off('Attack_Select_Submit');
             this.views.specialSkillSelect.off('Select_back_Submit');
+            this.views.specialSkillSelect.off('No_Attack_Select_Submit');
         });
     }
 
@@ -309,6 +327,7 @@ export class BattlePresenter {
         // シーン終了時にイベントを破棄
         this.battleScene.events.once('shutdown', () => {
             this.views.magicSkillSelect.off('Attack_Select_Submit');
+            this.views.magicSkillSelect.off('No_Attack_Select_Submit');
             this.views.magicSkillSelect.off('Select_back_Submit');
         });
     }
@@ -319,7 +338,7 @@ export class BattlePresenter {
         // 表示・非表示設定
         this.stateMachine.addState('ENEMY_SELECT', {
             enter: (v) => {
-                v.enemySelectWindow.show(undefined);
+                v.enemySelectWindow.show(this.commandSelectModel.getCurrentCharacter());
             },
             exit: (v) => v.enemySelectWindow.hide()
         });
@@ -353,29 +372,32 @@ export class BattlePresenter {
     //設定：ItemSelectWindow
     private settingItemSelectWindow() {
 
-        // this.stateMachine.addState('ITEM_SELECT', {
-        //     enter: (v, data) => {
-        //         console.log("アイテムリスト受信:", data);
-        //         v.item.show();
-        //     },
-        //     exit: (v) => v.item.hide()
-        // });
-
+        this.stateMachine.addState('ITEM_SELECT', {
+            enter: (v, data) => {
+                v.itemSelectWindow.show(data);
+            },
+            exit: (v) => v.itemSelectWindow.hide()
+        });
 
         // 【アイテム】
-        // views.battleSelect.on('Battle_Item_Submit', () => {
-        //     this.stateMachine.push('ITEM', ["ポーション", "エリクサー"]);
-        // });
+        this.views.itemSelectWindow.on('Use_Item_Submit', (listName: string) => {
+            //this.stateMachine.push('ITEM_SELECT');
+            /**
+             * アイテム使用後、遷移無し
+             */
+            console.log('アイテム使用' + listName);
+        });
 
-        //【アイテム】【戻る】
-        // this.views.item.on('Select_back_Submit', () => {
-        //     this.stateMachine.pop(); // 履歴を使って戻る
-        // });
+        // 【アイテム】【戻る】
+        this.views.itemSelectWindow.on('Select_back_Submit', () => {
+            this.stateMachine.pop(); // 履歴を使って戻る
+        });
 
-        // // シーン終了時にイベントを破棄
-        // this.battleScene.events.once('shutdown', () => {
-        //     this.views.item.off('Select_back_Submit');
-        // });
+        // シーン終了時にイベントを破棄
+        this.battleScene.events.once('shutdown', () => {
+            this.views.itemSelectWindow.off('Select_back_Submit');
+            this.views.itemSelectWindow.off('Use_Item_Submit');
+        });
 
     }
 
@@ -396,9 +418,6 @@ export class BattlePresenter {
 
         //戦闘開始
         this.commandSelectModel.on('CommandSelectFinish', () => {
-
-            // //敵の攻撃対象を設定
-            // this.battleModel.setEnemyAttackTarget(this.playerPartyWindow.getCharacterIcon('meina'));
 
             //ターン順を設定
             this.turnModel.setupTurnOrder(this.battleModel.getBattlerList());
@@ -432,6 +451,9 @@ export class BattlePresenter {
             //次のコマンド選択キャラクターをチェック
             this.commandSelectModel.checkNextCommandSelectStartCharacter();
 
+            //オートフラグをリセット
+            this.autoFlg = false;
+
             //最初のコマンドに戻る
             this.stateMachine.push('BATTLE_SELECT');
         })
@@ -452,6 +474,19 @@ export class BattlePresenter {
         //対象の敵が設定されているかつ攻撃者のHPが0以上の場合のみ攻撃
         if (battler.getData('NpcType') !== 'enemy' && battler.data.values.HP > 0) {
 
+            //フラグの更新タイミングを待つ（たまにautoFlgの更新が遅いせいか後続のbattler.getData()で例外が発生する）
+            await new Promise<void>(resolve => {
+                this.battleScene.time.delayedCall(10, () => {
+                    resolve();
+                }, [], this.battleScene);
+            });
+
+            if (this.autoFlg) {
+                //プレイヤーキャラクターの攻撃対象を設定
+                const targetEnemy = this.battleModel.getPlayerAutoAttackTarget();
+                battler.setData('BattleTarget', targetEnemy);
+            }
+
             //攻撃対象のHPが0以上の場合は攻撃、0以下の場合は攻撃しない
             if (battler.getData('BattleTarget').getData('HP') > 0) {
 
@@ -460,6 +495,7 @@ export class BattlePresenter {
                 if (skillDetail) {
                     switch (skillDetail.type) {
                         case 'attack':
+                            //今のところ、打撃系スキルは無し
                             const playerAttack = new PlayerAttack(this.battleScene);
                             await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
                             break;
@@ -510,9 +546,11 @@ export class BattlePresenter {
 
             await this.battleMessageWindow.messageOutput('勝利！', 2000);
 
-            //キャッシュを更新
-            // const cacheDataUpdate = new CacheDataUpdate(this.battleScene);
-            // cacheDataUpdate.phaserCacheDataUpdate();
+            //敵キャラを削除
+            this.battleModel.deleteEnemy();
+
+            //HPが0以下のメンバーは1にする（現状、戦闘終了後は必ず１残す）
+            this.battleModel.checkPlayerPartyHP();
 
             this.endEvents.emit('BattleEnd');
 
@@ -556,6 +594,11 @@ export class BattlePresenter {
 
     private setBattleEventEmitter() {
 
+        //メッセージの出力
+        this.battleScene.events.on('BATTLE_MESSAGE_OUTPUT', async (text: string, waitTime: number) => {
+            await this.battleMessageWindow.messageOutput(text, waitTime);
+        });
+
         //味方のコマンド選択キャラクターアイコンを点滅
         this.battleScene.events.on('PLAYER_ICON_LIGHTUP', (name: string) => {
             this.playerPartyWindow.lightUp(name);
@@ -565,5 +608,27 @@ export class BattlePresenter {
         this.battleScene.events.on('PLAYER_ICON_LIGHTDOWN', (name: string) => {
             this.playerPartyWindow.lightDown(name);
         });
+
+        //オート選択
+        this.battleScene.events.on('AUTO_BATTLE_SELECT', (autoFlg: boolean) => {
+            this.autoFlg = autoFlg;
+            this.commandSelectModel.emit('CommandSelectFinish');
+        });
+
+        this.battleScene.events.on('USE_ITEM', this.onUseItem, this);
+
+        //イベントの破棄
+        this.battleScene.events.on('shutdown', () => {
+            this.battleScene.events.off('BATTLE_MESSAGE_OUTPUT');
+            this.battleScene.events.off('PLAYER_ICON_LIGHTUP');
+            this.battleScene.events.off('PLAYER_ICON_LIGHTDOWN');
+            this.battleScene.events.off('AUTO_BATTLE_SELECT');
+        });
+    }
+
+    //アイテム使用
+    private onUseItem(itemName: string, count: number, memberIndex: number = 0) {
+        const itemUpdate = new ItemUpdate(this.battleScene);
+        itemUpdate.useItem(itemName, count, memberIndex);
     }
 }

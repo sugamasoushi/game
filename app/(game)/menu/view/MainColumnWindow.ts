@@ -25,7 +25,7 @@ export class MainColumnWindow {
 
     public cropRectMask: Phaser.GameObjects.Graphics;
 
-    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'フィールドスキル', 'ステータス', 'MOVIE'];
+    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'フィールドスキル', 'ステータス', 'セーブ', 'MOVIE'];
     public nowMainColumnNo: MenuTab = MenuTab.Condition;
     public nextMainColumnNo: MenuTab = MenuTab.Condition;
 
@@ -51,20 +51,6 @@ export class MainColumnWindow {
     // 各Windowのコンテナを受け取るためのメソッド
     public setContainers(containers: Phaser.GameObjects.Container[]) {
         this.containerArray = containers;
-    }
-
-    private createBackButton() {
-        this.BackButton = this.scene.add.text(
-            1150, 50,
-            "✖", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
-        this.BackButton.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
-        this.BackButton.setDepth(Number(this.scene.game.config.height));
-        this.BackButton.setScrollFactor(0);
-        this.BackButton.setInteractive({ useHandCursor: true });
-        this.BackButton.on('pointerdown', () => {
-            // プレゼンター側にイベントを通知
-            this.scene.events.emit('MenuCloseClick');
-        }, this);
     }
 
     private backButtonCreate(x: number, y: number) {
@@ -168,7 +154,7 @@ export class MainColumnWindow {
         this.cropRectMask.x = mainWindowX;
         this.cropRectMask.y = mainWindowY + 80;
         this.cropRectMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
-        this.cropRectMask.fillRect(0, 0, mainWindowWidth, mainWindowHeight - 80 - rectR * 2);
+        this.cropRectMask.fillRect(0, -5, mainWindowWidth, mainWindowHeight - 80 - rectR * 2 + 5);
         this.cropRectMask.setAlpha(0.5);
         this.cropRectMask.setVisible(false);
 

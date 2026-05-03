@@ -52,14 +52,14 @@ export class EVENT010202 extends BaseEvent {
 
         //キャラ画像を配置
         this.characterGameObject = new CharacterGameObject();
-        this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200)
-
-        /*会話---------------------------------------------------------------------------------*/
+        await this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200)
 
         await this.eventTalk.execTalk([
-            { meina: ['ちょっと山を下りて散策しようかな\n', 'そういえば最近ラミア族が多いんだよね\n'] },
-            { meina: ['まだ勝てなそうだから気を付けよう・・・。\n'] }
-
+            {
+                meina: ['ちょっと山を下りて散策しようかな\n',
+                    'そういえば最近ラミア族が多いんだよね\n',
+                    'まだ勝てそうにないから気を付けよう・・・。\n']
+            }
         ], this.characterGameObject);
 
         await this.stopAnyTime(50);
@@ -73,28 +73,33 @@ export class EVENT010202 extends BaseEvent {
         const playerImage = this.characterGameObject.getCharacterImage('meina');
         this.characterGameObject.scrollOutImage(playerImage, 2000, 200)
 
+
         //以下はイベントごとに設定
         await new Promise<void>(resolve => {
 
-            //プレイヤーの状態を更新
-            this.player.state = CharacterState.normal;
+            this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
 
-            //キャラ画像を削除
-            this.characterGameObject.imageObjectsDestroy();
+                //プレイヤーの状態を更新
+                this.player.state = CharacterState.normal;
 
-            //設定を戻す
-            this.gameScene.events.emit('EVENT_END');
+                //キャラ画像を削除
+                this.characterGameObject.imageObjectsDestroy();
 
-            //フラグ更新のためマップリスタート
-            this.gameScene.events.emit('FIELD_RESTART', {
-                gameMode: 'updateFlg',
-                x: this.player.x,
-                y: this.player.y,
-                mapKey: '0102',
-                initStandKey: 'stand_down'
+                //設定を戻す
+                this.gameScene.events.emit('EVENT_END');
+
+                //フラグ更新のためマップリスタート
+                this.gameScene.events.emit('FIELD_RESTART', {
+                    gameMode: 'updateFlg',
+                    x: this.player.x,
+                    y: this.player.y,
+                    mapKey: '0102',
+                    initStandKey: 'stand_down'
+                });
+
+                resolve();
             });
-
-            resolve();
+            this.eventScene.cameras.main.fadeOut(200);
         })
 
         this.eventScene.scene.stop();

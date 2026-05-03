@@ -41,8 +41,8 @@ export class DataDefinition {
         }
     }
     //テキストの設定情報を取得
-    public getTextInfomation(scene: Phaser.Scene): TextInfomation {
-        const settingTextData = scene.cache.json.get('savedata').GameSetting.BubbleWindow;
+    public getEventMessageInfomation(scene: Phaser.Scene): TextInfomation {
+        const settingTextData = scene.cache.json.get('savedata').GameSetting.EventWindow;
         const fontFamily = settingTextData.fontFamily;
         const fontColor = settingTextData.fontColor;
         const fontSize = settingTextData.fontSize;
@@ -56,7 +56,7 @@ export class DataDefinition {
             textLine: textLine
         }
     }
-    //テキストの設定情報を取得
+    //ウィンドウの設定情報を取得
     public getMessageWindowInfomation(scene: Phaser.Scene): MessageWindowInfomation {
         const settingTextData = scene.cache.json.get('savedata').GameSetting.MessageWindow;
         const backColor = settingTextData.backColor;

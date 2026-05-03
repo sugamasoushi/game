@@ -99,12 +99,6 @@ export class EVENT010201 extends BaseEvent {
         const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
         const grandpaImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).grandpa.normal;
 
-        //画像の設定
-        // this.playerImage = this.eventScene.add.image(2000, 700, this.player.getData('ImageKey'));
-        // this.playerImage.setScale(0.6).setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-        // this.grandpaImage = this.eventScene.add.image(-100, 450, this.grandpa.getData('ImageKey'));
-        // this.grandpaImage.setScale(0.2).setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-
         //キャラ画像を配置
         await Promise.all([
             this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),

@@ -1,17 +1,17 @@
 import { EffectCommon } from "./EffectCommon";
 
-export class MagicFrame extends EffectCommon {
+export class WindCutter extends EffectCommon {
 
     constructor(scene: Phaser.Scene, x: number, y: number, attackDuration: number, sprite: Phaser.GameObjects.Sprite | undefined) {
-        super(scene, x, y, 'flames32', attackDuration, sprite);
+        super(scene, x, y, 'tex_WindCutter', attackDuration, sprite);
 
-        //フィールドとマップで使い分ける
+        //フィールドとバトルで使い分ける
         if (sprite !== undefined) {
-            this.name = 'MagicFrame';
+            this.name = 'WindCutter';
             (this.body as Phaser.Physics.Arcade.Body).onOverlap = true;
             this.bodySetting((this.body as Phaser.Physics.Arcade.Body));
         } else {
-            this.name = 'MagicFrame';
+            this.name = 'WindCutter';
         }
     }
 
@@ -28,13 +28,13 @@ export class MagicFrame extends EffectCommon {
     override animationSetting(texture: string) {
         this.anims.create({
             key: this.startAnimKey,//発射時
-            frames: this.anims.generateFrameNumbers(texture, { start: 0, end: 7 }),
+            frames: this.anims.generateFrameNumbers(texture, { start: 0, end: 9 }),
             frameRate: this.frameRateValue,
             repeat: -1
         });
         this.anims.create({
             key: this.finishAnimKey,//終了時
-            frames: this.anims.generateFrameNumbers(texture, { start: 8, end: 11 }),
+            frames: this.anims.generateFrameNumbers(texture, { start: 9, end: 9 }),
             frameRate: this.frameRateValue,
             repeat: -1
         });

@@ -6,6 +6,7 @@ import { ItemWindow } from "./ItemWindow";
 import { EquipWindow } from "./EquipWindow";
 import { SkillWindow } from "./SkillWindow";
 import { CharStatusWindow } from "./CharStatusWindow";
+import { SaveWindow } from "./SaveWindow";
 import { MovieWindow } from "./MovieWindow";
 
 export class MenuView {
@@ -20,6 +21,7 @@ export class MenuView {
     public equipWindow: EquipWindow;
     public skillWindow: SkillWindow;
     public charStatusWindow: CharStatusWindow;
+    public saveWindow: SaveWindow;
     public movieWindow: MovieWindow;
 
     constructor(scene: Phaser.Scene, gameScene: GameScene, menuModel: MenuModel) {
@@ -33,6 +35,7 @@ export class MenuView {
         this.equipWindow = new EquipWindow(this.scene, this.menuModel);
         this.skillWindow = new SkillWindow(this.scene, this.menuModel);
         this.charStatusWindow = new CharStatusWindow(this.scene, this.menuModel);
+        this.saveWindow = new SaveWindow(this.scene, this.menuModel);
         this.movieWindow = new MovieWindow(this.scene, this.menuModel);
     }
 
@@ -46,6 +49,7 @@ export class MenuView {
         this.equipWindow.create(this.mainColumnWindow);
         this.skillWindow.create(this.mainColumnWindow);
         this.charStatusWindow.create(this.mainColumnWindow);
+        this.saveWindow.create(this.mainColumnWindow);
         this.movieWindow.create(this.mainColumnWindow);
 
         // 各コンテナをMainColumnWindowへ登録し、Tweenアニメーションで動かせるようにする
@@ -55,6 +59,7 @@ export class MenuView {
             this.equipWindow,
             this.skillWindow,
             this.charStatusWindow,
+            this.saveWindow,
             this.movieWindow,
         ]);
     }
