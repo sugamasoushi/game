@@ -13,6 +13,7 @@ import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
 import { SearchCharacterData } from '../../Data/SearchCharacterData';
 import { TiledObjectEntity } from './character/TiledObjectEntity';
+import { CacheDataUpdate } from '@/app/(game)/core/CacheDataUpdate';
 
 export class MapObject extends Phaser.GameObjects.Container {
     private fieldData: FieldData;
@@ -82,7 +83,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         player.setData(this.gameScene.cache.json.get('savedata').playerData.Skill);
         player.setData(this.gameScene.cache.json.get('savedata').playerData.Item);
 
-        
+
 
         //プレイヤーと衝突判定の設定
         this.gameScene.setPlayer(player);
@@ -279,6 +280,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         }
 
         if (makeTileMap.getObjectLayer('SPRITE')) {
+
             //同じ名前のオブジェクトをまとめて作成する。
             chestSpriteObjects = makeTileMap.createFromObjects('SPRITE', {
                 name: 'chest',  // Tiledでオブジェクトに付けた「名前」を指定
@@ -506,8 +508,9 @@ export class MapObject extends Phaser.GameObjects.Container {
                 initStandKey: initStandKey
             });
 
-            //アニメーション用配列を初期化。※TileMapのcreate時に初期化している。
-            // this.TileMap.initAnimationTileMapLayer();
+            //キャッシュを更新
+            const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
+            cacheDataUpdate.phaserCacheDataUpdate();
 
         }, undefined, this.gameScene);
 
@@ -518,6 +521,17 @@ export class MapObject extends Phaser.GameObjects.Container {
     }
 
     private settingChestSpriteObject(obj: Phaser.Physics.Arcade.Sprite, imageKey: string) {
+
+        //id無し宝箱はランダム生成
+        console.log(obj.getData('id'))
+        if (!obj.getData('id') === null || obj.getData('id') === undefined) {
+            if (new Phaser.Math.RandomDataGenerator().between(0, 2) >= 1) {//2/3の確率で出現
+                //ランダム生成した宝箱の場合は、配置しない（削除する）
+                obj.destroy();
+                console.log('remove random box');
+                return;
+            }
+        }
 
         //衝突判定の追加
         for (const player of this.playerPartyList) {
@@ -542,7 +556,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
 
         //配置時の状態設定
-        if (this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] === 0) {
+        if (obj.getData('id') !== null && this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] === 0) {
             obj.play('chest_open');
         } else {
             const bubbleTalkKey = obj.getData('bubbleTalkKey');
@@ -596,8 +610,14 @@ export class MapObject extends Phaser.GameObjects.Container {
                         }
                         this.gameScene.getPlayer().data.values[getItemName] += getItemNum;
 
-                        //キャッシュのセーブデータ更新
-                        this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] = 0;
+                        //idが存在する場合はキャッシュのフラグを更新
+                        if (obj.getData('id') !== null) {
+                            this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] = 0;
+                        }
+
+                        //キャッシュを更新
+                        const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
+                        cacheDataUpdate.phaserCacheDataUpdate();
 
                         //オブジェクトのインタラクティブを無効化
                         obj.setInteractive({ useHandCursor: false });

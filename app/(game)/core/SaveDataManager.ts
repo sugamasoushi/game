@@ -49,6 +49,31 @@ export class SaveDataManager {
         }
     }
 
+    //セーブデータをローカルストレージまたはElectronから読み込み
+    public async checkSaveData(scene: Phaser.Scene) {
+        let result = false;
+        let savedata;
+        if (window.electronAPI) {
+            savedata = await window.electronAPI.loadData();
+            if (typeof savedata === 'string') {
+                try {
+                    savedata = JSON.parse(savedata);
+                } catch (e) { }
+            }
+        } else {
+            const localData = localStorage.getItem('savedata');
+            if (localData) {
+                savedata = JSON.parse(localData);
+            }
+        }
+
+        //データが存在する場合
+        if (savedata) {
+            result = true;
+        }
+        return result;
+    }
+
     /**
      * アイテムリストのチェック
      * セーブデータはsavedata.jsonの形式となるが、setData()でGameObjectに設定すると階層構造が変わってしまう。

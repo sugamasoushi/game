@@ -273,7 +273,7 @@ export class Title extends Scene {
         });
     }
 
-    continue() {
+    async continue() {
         const gameWidth = Number(this.game.config.width)
         const gameHeight = Number(this.game.config.height)
 
@@ -285,6 +285,15 @@ export class Title extends Scene {
         this.ContinueStart.setDepth(gameHeight);
 
         this.ContinueStart.setInteractive({ useHandCursor: true });
+
+        //セーブデータが存在しない場合
+        const hasData = await this.saveDataManager.checkSaveData(this);
+        if (!hasData) {
+            this.ContinueStart.setAlpha(0.5);
+            this.ContinueStart.disableInteractive();
+            return;
+        }
+
         this.ContinueStart.on('pointerdown', async () => {
             this.ContinueStart.disableInteractive();
 

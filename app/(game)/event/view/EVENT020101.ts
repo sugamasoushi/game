@@ -92,7 +92,7 @@ export class EVENT020101 extends BaseEvent {
         //会話開始、テキストの終了をチェックする
         await this.eventTalk.execTalk([
             { meina: ['よ～し、こいつを狩るか\n', '足引っ張らないでよ！\n'] },
-            { lamy: ['へへっ任せときな！\n', 'まずあたしが軽くジャブ打ってそれからぁ！\n'] }
+            { lamy: ['へへっ任せときな！\n', 'まずあたしが軽くジャブ打って・・・\n', 'それからぁ！\n'] }
         ], this.characterGameObject);
 
         //キャラステータス設定
@@ -149,7 +149,7 @@ export class EVENT020101 extends BaseEvent {
         await this.eventTalk.execTalk([
             { meina: ['いきなり特攻するな馬鹿！！\n', '熊の肥やしにでもなるつもりだったの！？\n'] },
             { lamy: ['あ、あたし不味いから吐き出されたに決まってんじゃん！！\n'] },
-            { meina: ['そういう話じゃないって！！\n', 'まったく、蛇食わして太らせたほうが増量出来て良かったか・・・？\n'] },
+            { meina: ['そういう話じゃないって！！\n', 'この蛇食わして太らせるべきだったか・・・？\n'] },
             { lamy: ['ちょっと！！そこまで言うな！！\n'] }
         ], this.characterGameObject);
 

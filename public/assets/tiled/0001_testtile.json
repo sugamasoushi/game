@@ -887,6 +887,40 @@
         }, 
         {
          "draworder":"topdown",
+         "id":53,
+         "name":"SPRITE",
+         "objects":[
+                {
+                 "gid":2578,
+                 "height":32,
+                 "id":85,
+                 "name":"chest",
+                 "properties":[
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"\u3084\u304f\u305d\u3046"
+                        }, 
+                        {
+                         "name":"num",
+                         "type":"int",
+                         "value":4
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":672,
+                 "y":288
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":45,
          "name":"MASK",
          "objects":[
@@ -984,8 +1018,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":53,
- "nextobjectid":85,
+ "nextlayerid":54,
+ "nextobjectid":86,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -1900,6 +1934,19 @@
          "spacing":0,
          "tilecount":12,
          "tileheight":40,
+         "tilewidth":32
+        }, 
+        {
+         "columns":4,
+         "firstgid":2578,
+         "image":"..\/img\/spritesheet\/Chests.png",
+         "imageheight":96,
+         "imagewidth":128,
+         "margin":0,
+         "name":"Chests",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
          "tilewidth":32
         }],
  "tilewidth":32,

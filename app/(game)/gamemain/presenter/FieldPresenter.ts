@@ -45,6 +45,14 @@ export class FieldPresenter {
     public async create(sceneKey: string) {
 
         //this.cameraManager.getMainCamera().setZoom(1.2);
+        // this.cameraManager.getMainCamera().postFX.addTiltShift(
+        //     0.9,//ピントが合う範囲の広さ
+        //     0.5,//ぼかしの量。値を大きくするとボケが強くなる。
+        //     0.1,//コントラスト。ミニチュア特有のクッキリ感を出す。
+        //     0.8,//明るさ。上げすぎると目に痛い。
+        //     0.2,//エフェクト全体の強度。基本は 1。
+        //     0.5//ぼかす方向。0 が水平、1 が垂直。
+        // );
 
         //マップ情報の判定、検索処理とか実装する必要がある
         if (this.fieldMapModel.getFieldData().mapKey === '0102') {

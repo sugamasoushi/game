@@ -475,11 +475,11 @@ export class BattlePresenter {
         if (battler.getData('NpcType') !== 'enemy' && battler.data.values.HP > 0) {
 
             //フラグの更新タイミングを待つ（たまにautoFlgの更新が遅いせいか後続のbattler.getData()で例外が発生する）
-            await new Promise<void>(resolve => {
-                this.battleScene.time.delayedCall(10, () => {
-                    resolve();
-                }, [], this.battleScene);
-            });
+            // await new Promise<void>(resolve => {
+            //     this.battleScene.time.delayedCall(10, () => {
+            //         resolve();
+            //     }, [], this.battleScene);
+            // });
 
             if (this.autoFlg) {
                 //プレイヤーキャラクターの攻撃対象を設定

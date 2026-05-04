@@ -47,6 +47,7 @@ export class FireButton {
         tapText.setOrigin(0.5, 0.5).setStroke('#582a2aff', 12).setShadow(4, 4, '#582a2aff', 8, false, true);
         tapText.setDepth(flame.depth + 1);
         tapText.setScrollFactor(0);
+        tapText.setAlpha(0);
 
         const hitZone = this.gameScene.add.zone(flameX, flameY, 100, 100)
             .setInteractive({ useHandCursor: true })
