@@ -2,6 +2,8 @@ import { GameScene } from '../../lib/SceneTypes';
 import { MenuModel } from "../model/MenuModel";
 import { MenuView } from "../view/MenuView";
 import { CacheDataUpdate } from "../../core/CacheDataUpdate";
+import { GameStateManager } from '../../GameAllState/GameStateManager';
+import { State } from '../../lib/types';
 
 export class MenuPresenter {
 
@@ -54,6 +56,10 @@ export class MenuPresenter {
     }
 
     private onCloseMenu() {
+
+        //Phaserのトップレベルのイベント
+        this.scene.game.events.emit('UI_CLOSE');
+
         // メニューの閉じるアニメーションを実行し、完了時にシーンを再開させる
         this.menuView.executeEndAnimation(() => {
             // アニメーション完了後の処理
@@ -64,6 +70,14 @@ export class MenuPresenter {
             cacheDataUpdate.phaserCacheDataUpdate();
 
             this.gameScene.resumeScene();
+
+            //状態管理クラス
+            const gameStateManager = GameStateManager.getInstance();
+
+            //状態更新
+            gameStateManager.updateState({ state: State.NOSTATE }, 'MenuClose');
+
+
             // イベントリスナーの解除
             this.scene.events.off('GAME_INPUT_TRUE');
             this.scene.events.off('GAME_INPUT_FALSE');

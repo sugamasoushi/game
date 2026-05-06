@@ -3,9 +3,11 @@ import { GameScene } from "@/app/(game)/lib/SceneTypes";
 import { State } from "@/app/(game)/lib/StateTypes";
 import { CharacterState } from "@/app/(game)/lib/FieldTypes";
 import { GameStateManager, gameStateManager } from '../../../GameAllState/GameStateManager';
+import { InputManager } from "@/app/(game)/core/input/InputManager";
 
 export class Player extends BaseSprite {
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    private inputManager: InputManager;
 
     public body: Phaser.Physics.Arcade.Body;
     private frameRate: number = 10;
@@ -77,29 +79,30 @@ export class Player extends BaseSprite {
 
         //状態管理クラス
         const manager = GameStateManager.getInstance();
-        if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT) { return; }
+        if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) { return; }
 
         //十字キーを取得
         const cursorsKeys = this.cursors;
+        const vPadDir = this.inputManager?.virtualPadDirection;
 
         //値が設定されている場合はクリックによる移動中のため処理しない
         if (this.moveToPositionX && this.moveToPositionY) return;
         this.setVelocity(0);
 
-        if (cursorsKeys.left.isDown) {
+        if (cursorsKeys.left.isDown || vPadDir === 'left') {
             this.moveDirection = this.walkLeft;
             this.standframe = this.standLeft;
             this.setVelocityX(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.right.isDown) {
+        } else if (cursorsKeys.right.isDown || vPadDir === 'right') {
             this.moveDirection = this.walkRight;
             this.standframe = this.standRight;
             this.setVelocityX(this.playerDefaultVelocity);
         }
-        if (cursorsKeys.up.isDown) {
+        if (cursorsKeys.up.isDown || vPadDir === 'up') {
             this.moveDirection = this.walkUp;
             this.standframe = this.standUp;
             this.setVelocityY(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.down.isDown) {
+        } else if (cursorsKeys.down.isDown || vPadDir === 'down') {
             this.moveDirection = this.walkDown;
             this.standframe = this.standDown;
             this.setVelocityY(this.playerDefaultVelocity);
@@ -112,6 +115,7 @@ export class Player extends BaseSprite {
             && !cursorsKeys.right.isDown
             && !cursorsKeys.up.isDown
             && !cursorsKeys.down.isDown
+            && !vPadDir
             && this.moveDirection !== this.walkStop) {
             this.setVelocity(0);
             this.stopAnimation();
@@ -275,6 +279,10 @@ export class Player extends BaseSprite {
 
     public setCursors(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
         this.cursors = cursors;
+    }
+
+    public setInputManager(inputManager: InputManager) {
+        this.inputManager = inputManager;
     }
 }
 

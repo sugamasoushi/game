@@ -15,6 +15,10 @@ export class CameraManager {
         this.mainCamera.setBounds(-64, -64, makeTilemap.widthInPixels + 128, makeTilemap.heightInPixels + 128);//マップの最大値
     }
 
+    public execFadeInStart() {
+        this.gameScene.events.emit('FADE_IN_START');
+    }
+
     public execFadeIn() {
         this.mainCamera.once('camerafadeincomplete', () => {
             this.gameScene.events.emit('FADE_IN_COMPLETE');
@@ -24,11 +28,14 @@ export class CameraManager {
     }
 
     public execFadeOut() {
-        this.mainCamera.once('camerafadeoutcomplete', () => {
-            this.gameScene.events.emit('FADE_OUT_COMPLETE');
-        });
+        return new Promise<void>(resolve => {
+            this.mainCamera.once('camerafadeoutcomplete', () => {
+                resolve();
+            });
 
-        this.mainCamera.fadeOut(400);
+            this.mainCamera.fadeOut(200);
+            this.gameScene.events.emit('FADE_OUT_START');
+        });
     }
 
     public setFollow(flg: boolean) {

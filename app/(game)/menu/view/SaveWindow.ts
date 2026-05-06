@@ -6,6 +6,8 @@ import { Sound } from "../../scenes/Sound";
 import { MessageWindow } from "../../util/MessageWindow";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { CacheDataUpdate } from "../../core/CacheDataUpdate";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class SaveWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
@@ -14,6 +16,11 @@ export class SaveWindow extends Phaser.GameObjects.Container {
 
     private mainWindowDepth: number = 500;
     private soundScene: Sound;
+
+    private isSaveSelectMode: boolean = false;
+    private saveTween: Phaser.Tweens.Tween | null = null;
+    private subs = new Subscription();
+    private canDecide: boolean = false;
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
@@ -30,7 +37,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
         const lamy = this.scene.add.image(450, 250, '20240907_3').setScale(0.9);
         const clickCharacter: Phaser.GameObjects.Image[] = [niwatori, meina, lamy];
 
-        const playerPartyNum = new Phaser.Math.RandomDataGenerator().between(0, clickCharacter.length - 1);
+
 
         //コンテナの位置設定
         this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Save;
@@ -41,14 +48,27 @@ export class SaveWindow extends Phaser.GameObjects.Container {
         messageObjectInstance.init(this.scene);
         this.messageObject = messageObjectInstance.createTextObject(this.scene, 0, 0, ['セーブする'], 56);
         this.messageObject.setDepth(100)
-        this.messageObject.x = mainColumn.scrollValue / 2 - this.messageObject.width / 2;
-        this.messageObject.y = mainColumn.containtsY / 2 + this.messageObject.height * 2;
+        
+        // 中央基準に設定
+        this.messageObject.setOrigin(0.5);
+        this.messageObject.x = mainColumn.scrollValue / 2;
+        this.messageObject.y = mainColumn.containtsY / 2 + this.messageObject.height * 2 + this.messageObject.height / 2;
 
         //ウィンドウを作成
         const messageWindowInstance = new MessageWindow(this.scene);
         messageWindowInstance.init();
+        // ウィンドウ作成時は一時的にOriginを戻すか、座標を補正して渡す
+        this.messageObject.setOrigin(0);
+        this.messageObject.x -= this.messageObject.width / 2;
+        this.messageObject.y -= this.messageObject.height / 2;
+        
         messageWindowInstance.createOneColumnOneWindow(this.messageObject);
         this.messageWindow = messageWindowInstance;
+
+        // ウィンドウ作成後に再び中央基準に戻す
+        this.messageObject.setOrigin(0.5);
+        this.messageObject.x += this.messageObject.width / 2;
+        this.messageObject.y += this.messageObject.height / 2;
 
         this.messageWindow.setInteractive({
             useHandCursor: true  // マウスオーバーでカーソルが指マークになる
@@ -80,6 +100,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
 
             //セーブ完了
             this.soundScene.SE_jajaann.play();
+            this.stopSaveAnimation();
 
             //テキストを再設定
             this.messageObject.destroy();
@@ -87,14 +108,21 @@ export class SaveWindow extends Phaser.GameObjects.Container {
             messageObjectInstance.init(this.scene);
             this.messageObject = messageObjectInstance.createTextObject(this.scene, 0, 0, ['セーブ完了！！'], 56);
             this.messageObject.setDepth(100)
-            this.messageObject.x = mainColumn.scrollValue / 2 - this.messageObject.width / 2;
-            this.messageObject.y = mainColumn.containtsY / 2 + this.messageObject.height * 2;
+            this.messageObject.setOrigin(0.5);
+            this.messageObject.x = mainColumn.scrollValue / 2;
+            this.messageObject.y = mainColumn.containtsY / 2 + this.messageObject.height * 2 + this.messageObject.height / 2;
 
             //ウィンドウを再設定
             this.messageWindow.destroy();
             const messageWindowInstance = new MessageWindow(this.scene);
             messageWindowInstance.init();
+            this.messageObject.setOrigin(0);
+            this.messageObject.x -= this.messageObject.width / 2;
+            this.messageObject.y -= this.messageObject.height / 2;
             messageWindowInstance.createOneColumnOneWindow(this.messageObject);
+            this.messageObject.setOrigin(0.5);
+            this.messageObject.x += this.messageObject.width / 2;
+            this.messageObject.y += this.messageObject.height / 2;
             this.messageWindow = messageWindowInstance;
 
             this.add(this.messageWindow);
@@ -109,6 +137,62 @@ export class SaveWindow extends Phaser.GameObjects.Container {
 
         this.setDepth(this.mainWindowDepth + 50);
         this.setMask(mainColumn.cropRectMask.createGeometryMask());
+
+        this.setupPadKeyboardInput();
+    }
+
+    private setupPadKeyboardInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        this.scene.events.on('SaveSelectModeStart', () => {
+            this.isSaveSelectMode = true;
+            this.canDecide = false;
+            this.scene.time.delayedCall(10, () => { this.canDecide = true; });
+            
+            // 拡大縮小アニメーション開始
+            if (this.saveTween) this.saveTween.stop();
+            this.saveTween = this.scene.tweens.add({
+                targets: [this.messageObject, this.messageWindow],
+                scaleX: 1.1,
+                scaleY: 1.1,
+                duration: 500,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+            });
+        });
+
+        this.scene.events.on('SaveSelectModeEnd', () => {
+            this.isSaveSelectMode = false;
+            if (this.saveTween) {
+                this.saveTween.stop();
+                this.saveTween = null;
+            }
+            this.messageObject.setScale(1);
+            this.messageWindow.setScale(1);
+        });
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.isSaveSelectMode || !this.canDecide) return;
+            // POINTER_UPイベントを発火させる
+            this.messageWindow.emit(Phaser.Input.Events.POINTER_UP);
+        }));
+    }
+
+    private stopSaveAnimation() {
+        if (this.saveTween) {
+            this.saveTween.stop();
+            this.saveTween = null;
+        }
+        this.messageObject.setScale(1);
+        this.messageWindow.setScale(1);
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        this.scene.events.off('SaveSelectModeStart');
+        this.scene.events.off('SaveSelectModeEnd');
+        super.destroy(fromScene);
     }
 
 }

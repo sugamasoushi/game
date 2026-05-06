@@ -4,6 +4,7 @@ import { Title } from './scenes/Title';
 import { Load } from './scenes/Load';
 import { GameOver } from './scenes/GameOver';
 import { Game as MainGame } from './scenes/Game';
+import { UI } from './scenes/UI';
 import { MainMenu } from './scenes/MainMenu';
 import { AUTO, Game } from 'phaser';
 import { Menu } from './scenes/Menu';
@@ -47,6 +48,7 @@ const config: Phaser.Types.Core.GameConfig = {
     scene: [
         Boot,
         SceneController,
+        UI,
         Title,
         Load,
         MainMenu,

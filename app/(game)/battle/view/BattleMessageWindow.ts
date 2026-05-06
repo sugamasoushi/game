@@ -27,7 +27,7 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
         this.messageObject = messageObjectInstace.createTextObject(this.scene, 0, 0, ['初期値']);
 
         this.textX = 250;
-        this.textY = 500;
+        this.textY = Number(this.scene.game.canvas.height) - 200 + 20;
 
         //テキストオブジェクトの位置を更新
         this.messageObject.x = this.textX;

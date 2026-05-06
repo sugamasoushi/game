@@ -3079,7 +3079,7 @@
                         {
                          "name":"id",
                          "type":"string",
-                         "value":"1"
+                         "value":"2"
                         }, 
                         {
                          "name":"item",
@@ -3277,69 +3277,6 @@
          "id":40,
          "name":"NPC",
          "objects":[
-                {
-                 "gid":11843,
-                 "height":32,
-                 "id":74,
-                 "name":"character",
-                 "properties":[
-                        {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":"bubbleTalk0102.talk005"
-                        }, 
-                        {
-                         "name":"filepath",
-                         "type":"file",
-                         "value":"..\/img\/spritesheet\/pipo-charachip030.png"
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"imageKey",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"name",
-                         "type":"string",
-                         "value":"testmob"
-                        }, 
-                        {
-                         "name":"npcType",
-                         "type":"string",
-                         "value":"normal"
-                        }, 
-                        {
-                         "name":"spriteType",
-                         "type":"string",
-                         "value":"0304"
-                        }, 
-                        {
-                         "name":"spritesheetKey",
-                         "type":"string",
-                         "value":"pipo-charachip030"
-                        }, 
-                        {
-                         "name":"standkey",
-                         "type":"string",
-                         "value":"stand_down"
-                        }, 
-                        {
-                         "name":"visible",
-                         "type":"bool",
-                         "value":true
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":674,
-                 "y":802
-                }, 
                 {
                  "gid":11855,
                  "height":32,

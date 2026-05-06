@@ -98,8 +98,8 @@ export class BattlePresenter {
         this.views = views;
 
         //各viewのcreateを実行
-        this.battleSelectWindow.createBattleSelectWindow(100, Number(this.battleScene.game.config.height) - 200);
-        this.playerPartyWindow.createBattleCharacterIcon(this.battleModel.getPlayerPartyList(), 250, Number(this.battleScene.game.config.height) - 200);
+        this.battleSelectWindow.createBattleSelectWindow(250, Number(this.battleScene.game.config.height) - 200);
+        this.playerPartyWindow.createBattleCharacterIcon(this.battleModel.getPlayerPartyList(), 400, Number(this.battleScene.game.config.height) - 200);
         //AttackSelectWindowはinitでcreate実施
         //EnemySelectWindowはinitでcreate実施
         //battleMessageWindowはinitでcreate実施
@@ -220,7 +220,6 @@ export class BattlePresenter {
 
             // 履歴を使って戻る
             this.stateMachine.pop();
-            this.views.attackSelect.hide();
         });
 
         //【攻撃方法選択】【特技】
@@ -282,7 +281,6 @@ export class BattlePresenter {
 
             // 履歴を使って戻る
             this.stateMachine.pop();
-            this.views.specialSkillSelect.hide();
         });
 
         // シーン終了時にイベントを破棄
@@ -321,7 +319,6 @@ export class BattlePresenter {
 
             // 履歴を使って戻る
             this.stateMachine.pop();
-            this.views.magicSkillSelect.hide();
         });
 
         // シーン終了時にイベントを破棄

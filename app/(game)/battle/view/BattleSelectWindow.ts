@@ -5,6 +5,8 @@ import { BattleScene } from "../../lib/types";
 import DebugMessage from "../../util/DebugMessage";
 import { Sound } from "../../scenes/Sound";
 import { ItemUpdate } from "../../Data/ItemUpdate";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class BattleSelectWindow extends Phaser.GameObjects.Container {
     private getCanNotRunawayFlg: boolean = false;
@@ -15,8 +17,10 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
 
     private columnWindow: MessageWindow;
     private allow: SelectAllow;
+    private canDecide: boolean = false;
 
     private soundScene: Sound;
+    private subs = new Subscription();
 
     constructor(private battleScene: BattleScene, getCanNotRunawayFlg: boolean) {
         super(battleScene);
@@ -30,6 +34,7 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
         this.addToUpdateList();
         this.soundScene = this.scene.scene.get('Sound') as Sound;
+        this.setupInput();
     }
 
     public createBattleSelectWindow(x: number, y: number) {
@@ -56,7 +61,7 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
             }, this);
 
             obj.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-                pointer.reset();//入力状態をリセット、リセットしないと押下中に連続で処理される
+                pointer.reset();
                 this.selectExec(index);
                 this.scene.input.setDefaultCursor('default');
             }, this);
@@ -127,8 +132,13 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
     show() {
         this.enableSelect();
         this.setVisible(true);
+        this.canDecide = false;
+        this.scene.time.delayedCall(10, () => {
+            this.canDecide = true;
+        });
     }
     move() {
+        this.setActive(false);
         this.lightDown();
         this.disableInteractive();
     }
@@ -136,34 +146,43 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
         this.setVisible(false);
     }
 
+    private setupInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            if (this.nowSelectNo + 1 < this.selectList.length) {
+                this.nowSelectNo++;
+                this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+            }
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            if (this.nowSelectNo - 1 >= 0) {
+                this.nowSelectNo--;
+                this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+            }
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.visible || !this.active || !this.canDecide) return;
+            this.selectExec(this.nowSelectNo);
+        }));
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
+    }
+
     private updateSelectNo() {
-
-        const minNo = 0;
-        const maxNo = this.selectList.length;
-        let selectText = null;
-        const cursor: Phaser.Types.Input.Keyboard.CursorKeys = (this.scene as BattleScene).getCursorsKeys();
-
-        //キー押下でリストの選択番号を更新する
-        if (cursor.down.isDown) {
-            //更新後の選択番号がリスト番号の最大値を超える場合
-            if (this.nowSelectNo + 1 >= maxNo) { return; }
-            cursor.down.isDown = false;
-            this.nowSelectNo++;
-            selectText = this.selectList[this.nowSelectNo];
-            this.allow.updatePosition(selectText);
-
-        } else if (cursor.up.isDown) {
-            //更新後の選択番号がリスト番号の最小値を超える場合
-            if (this.nowSelectNo - 1 < minNo) { return; }
-            cursor.up.isDown = false;
-            this.nowSelectNo--;
-            selectText = this.selectList[this.nowSelectNo];
-            this.allow.updatePosition(selectText);
-        }
+        // InputManager側で制御するため、従来のキーボード直接参照は削除または無効化
     }
 
     //テキストクリック可
     enableSelect() {
+        this.setActive(true);
         this.allow.lightUp();
         this.lightUp();
         this.selectList.forEach((obj) => {

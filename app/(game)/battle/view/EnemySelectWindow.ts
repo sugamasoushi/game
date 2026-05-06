@@ -3,19 +3,24 @@ import { BattleScene } from "../../lib/types";
 import { EnergyGauge } from "../../util/EnergyGauge";
 import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class EnemySelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
 
     private messageText: string = '獲物はあいつだ！！';
     private enemyPartyList: Phaser.GameObjects.Image[];
-    private lightUpDownTween: Phaser.Tweens.Tween;
-    private lightDownUpTween: Phaser.Tweens.Tween;
 
     private messageObject: Phaser.GameObjects.Text;
-    private messageWindow: Phaser.GameObjects.Graphics;
+    private messageWindow: MessageWindow;
     private backButton: Phaser.GameObjects.Text;
     private backButtonWindow: MessageWindow;
+
+    private nowSelectNo: number = -1;
+    private tweens: Phaser.Tweens.Tween[] = [];
+    private subs = new Subscription();
+    private canDecide: boolean = false;
 
     constructor(battleScene: BattleScene) {
         super(battleScene);
@@ -32,10 +37,9 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         this.createEnemy();
         this.createMessage();
 
-        this.messageObject.setVisible(false);
-        this.messageWindow.setVisible(false);
-        this.backButton.setVisible(false);
-        this.backButtonWindow.setVisible(false);
+        this.setVisible(true);
+        this.setActive(false);
+        this.setupInput();
     }
 
     preUpdate() {
@@ -71,7 +75,6 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
 
             //次の敵配置用に数値を保存
             maxWidth = maxWidth + enemy.width * enemy.scaleX;
-            //maxHeight = enemy.height * enemy._scaleY;
         }
 
         //コンテナ全体の配置を調整
@@ -87,177 +90,233 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         const messageObjectInstance = new MessageObject();
         messageObjectInstance.init(this.scene);
         this.messageObject = messageObjectInstance.createTextObject(this.scene, 0, 0, this.messageText);
-        this.messageObject.setDepth(100)
+        this.messageObject.setDepth(100);
 
         //テキストオブジェクトの位置を更新
         this.messageObject.x = Number(this.scene.game.canvas.width) / 2 - this.messageObject.width / 2;
         this.messageObject.y = 500;
 
-        //メッセージウィンドウを作成
-        if (this.messageWindow) {
-            this.messageWindow.destroy();
-        }
+        //ウィンドウ作成
         const messageWindowInstance = new MessageWindow(this.scene);
         messageWindowInstance.init();
         messageWindowInstance.createOneColumnOneWindow(this.messageObject);
         this.messageWindow = messageWindowInstance;
         this.messageWindow.setDepth(this.messageObject.depth - 10)
 
-        this.backButtonCreate(this.messageObject.x + this.messageObject.width + tilesize / 2, this.messageObject.y - tilesize);
-    }
+        //戻るボタン (配置を調整)
+        const backButtonX = this.messageWindow.x + this.messageWindow.width;
+        const backButtonY = this.messageWindow.y;
 
-    private backButtonCreate(x: number, y: number) {
-
-        const messageObjectInstance = new MessageObject();
-        messageObjectInstance.init(this.scene);
-        messageObjectInstance.getTextInfomation();
-
-        this.backButton = messageObjectInstance.createTextObject(this.scene, x, y + 16, "✖");
-        this.backButton.setDepth(Number(this.scene.game.config.height) + 1);
+        this.backButton = messageObjectInstance.createTextObject(this.scene, backButtonX, backButtonY, "✖");
+        this.backButton.setDepth(101);
 
         //ウィンドウ作成
         this.backButtonWindow = new MessageWindow(this.scene);
         this.backButtonWindow.init();
         this.backButtonWindow.createOneColumnOneWindow(this.backButton, 16);
-
-        // 左右の余白を等しく設定
-        this.backButtonWindow.x = x;
-        this.backButtonWindow.y = y + 16;
-        this.backButtonWindow.setDepth(Number(this.scene.game.config.height));
+        this.backButtonWindow.setDepth(100);
 
         this.backButton.setDepth(this.backButtonWindow.depth + 1);
         this.backButton.setInteractive({ useHandCursor: true });
         this.backButton.on('pointerdown', () => {
-            this.emit('Select_back_Submit');
-            console.log("戻るが押された");
-
-            this.deleteLight();
-            this.disableSelect();
+            this.backSubmit();
         }, this);
+
+        this.messageObject.setVisible(false);
+        this.messageWindow.setVisible(false);
+        this.backButton.setVisible(false);
+        this.backButtonWindow.setVisible(false);
     }
 
-    //表示状態
-    updateView() {
-        //処理が必要なら実装する
+    private updateView() {
+        for (const enemy of this.enemyPartyList) {
+            enemy.getData('backGaugeHP').update();
+            enemy.getData('gaugeHP').update();
+        }
     }
 
     show(data: Phaser.GameObjects.Sprite) {
         this.nowSelectCharacter = data;
+        this.nowSelectNo = -1;
 
         this.messageObject.setVisible(true);
         this.messageWindow.setVisible(true);
         this.backButton.setVisible(true);
         this.backButtonWindow.setVisible(true);
+
+        this.setActive(true);
         this.enableSelect();
+
+        this.canDecide = false;
+        this.scene.time.delayedCall(10, () => {
+            this.canDecide = true;
+        });
     }
-    move() { }
+
+    private setupInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        const navigate = (dir: 'next' | 'prev') => {
+            const aliveIndices = this.enemyPartyList
+                .map((e, i) => e.getData('HP') > 0 ? i : -1)
+                .filter(i => i !== -1);
+
+            if (aliveIndices.length === 0) return;
+
+            if (this.nowSelectNo === -1) {
+                this.nowSelectNo = aliveIndices[0];
+            } else {
+                let currentIndex = aliveIndices.indexOf(this.nowSelectNo);
+                if (dir === 'next') {
+                    currentIndex = (currentIndex + 1) % aliveIndices.length;
+                } else {
+                    currentIndex = (currentIndex - 1 + aliveIndices.length) % aliveIndices.length;
+                }
+                this.nowSelectNo = aliveIndices[currentIndex];
+            }
+            this.updateSelection();
+        };
+
+        this.subs.add(inputManager.rightButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            navigate('next');
+        }));
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            navigate('next');
+        }));
+        this.subs.add(inputManager.leftButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            navigate('prev');
+        }));
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            navigate('prev');
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.visible || !this.active || !this.canDecide) return;
+            if (this.nowSelectNo !== -1) {
+                this.submit(this.enemyPartyList[this.nowSelectNo]);
+            } else {
+                const firstAlive = this.enemyPartyList.find(e => e.getData('HP') > 0);
+                if (firstAlive) this.submit(firstAlive);
+            }
+        }));
+
+        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.backSubmit();
+        }));
+    }
+
+    private submit(enemy: Phaser.GameObjects.Image) {
+        this.scene.input.setDefaultCursor('default');
+        this.emit('Enemy_Select_Submit', enemy);
+        this.hide();
+    }
+
+    private backSubmit() {
+        this.scene.input.setDefaultCursor('default');
+        this.emit('Select_back_Submit');
+        this.hide();
+    }
+
+    private updateSelection() {
+        this.deleteLight();
+
+        if (this.nowSelectNo === -1) {
+            // 全員点滅
+            this.enemyPartyList.forEach((enemy, index) => {
+                if (enemy.getData('HP') > 0) {
+                    this.addFlashTween(enemy, index % 2 === 0);
+                }
+            });
+        } else {
+            // 選択中のみ点滅
+            const selectedEnemy = this.enemyPartyList[this.nowSelectNo];
+            if (selectedEnemy) {
+                this.addFlashTween(selectedEnemy, true);
+            }
+        }
+    }
+
+    private addFlashTween(enemy: Phaser.GameObjects.Image, isUpFirst: boolean) {
+        const tween = this.scene.tweens.addCounter({
+            from: isUpFirst ? 255 : 128,
+            to: isUpFirst ? 128 : 255,
+            duration: 400,
+            ease: 'linear',
+            yoyo: true,
+            repeat: -1,
+            onUpdate: (t) => {
+                const val = Math.floor(t.getValue()!);
+                enemy.setTint(Phaser.Display.Color.GetColor(val, val, val));
+            }
+        });
+        this.tweens.push(tween);
+    }
+
+    move() {
+        this.disableSelect();
+    }
+
     hide() {
+        this.setActive(false);
+
         this.messageObject.setVisible(false);
         this.messageWindow.setVisible(false);
         this.backButton.setVisible(false);
         this.backButtonWindow.setVisible(false);
         this.deleteLight();
-        this.disableInteractive();
+        this.disableSelect();
     }
 
     private enableSelect() {
+        this.setActive(true);
+        this.updateSelection();
 
         for (const [index, enemy] of this.enemyPartyList.entries()) {
-            // HPが0の場合は選択対象外
-            if (enemy.getData('HP') <= 0) {
-                continue;
-            }
+            if (enemy.getData('HP') <= 0) continue;
 
-            if (index % 2 == 1) { this.lightUpDown(enemy); }
-            if (index % 2 == 0) { this.lightDownUp(enemy); }
-
-            //選択可能に設定
             enemy.setInteractive({ useHandCursor: true });
 
-            //マウスオーバー中の敵を点滅
             enemy.on('pointerover', () => {
-                //this.lightUpDown(enemy);
+                this.nowSelectNo = index;
+                this.updateSelection();
             }, this);
 
             enemy.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-                //左クリック
                 if (pointer.leftButtonDown()) {
-                    pointer.reset();//入力状態をリセット、リセットしないと押下中に連続で処理される
-                    this.scene.input.setDefaultCursor('default');//カーソルを戻す
-                    this.emit('Enemy_Select_Submit', enemy);
-
-                    this.deleteLight();
-                    this.disableSelect();
-
-                    this.messageObject.setVisible(false);
-                    this.messageWindow.setVisible(false);
-                    this.backButton.setVisible(false);
-                    this.backButtonWindow.setVisible(false);
+                    pointer.reset();
+                    this.submit(enemy);
                 }
-
-                //右クリック
                 if (pointer.rightButtonDown()) {
                     pointer.reset();
-                    this.scene.input.setDefaultCursor('default');//カーソルを戻す
-                    this.emit('Select_back_Submit');
-
-                    this.deleteLight();
-                    this.disableSelect();
+                    this.backSubmit();
                 }
             }, this);
         }
     }
 
-    disableSelect() {
+    private disableSelect() {
         for (const enemy of this.enemyPartyList) {
             enemy.disableInteractive();
         }
     }
 
-    //選択中キャラクターを点滅（奇数用）
-    lightUpDown(enemy: Phaser.GameObjects.Image) {
-        this.lightUpDownTween = this.scene.tweens.addCounter({//このtweenはオブジェクトをターゲットとせず、設定した値を更新し続ける
-            from: 255,
-            to: 128,
-            duration: 400,
-            ease: 'linear',
-            yoyo: true,
-            repeat: -1,
-            onUpdate: (tween) => {
-                //このtweenから値を取得する
-                const value = Math.floor(tween.getValue()!);
-
-                //取得した値をセットする
-                enemy.setTint(Phaser.Display.Color.GetColor(value, value, value));
-            },
-        });
-    }
-
-    //選択中キャラクターを点滅（偶数用）
-    lightDownUp(enemy: Phaser.GameObjects.Image) {
-        this.lightDownUpTween = this.scene.tweens.addCounter({//このtweenはオブジェクトをターゲットとせず、設定した値を更新し続ける
-            from: 128,
-            to: 255,
-            duration: 400,
-            ease: 'linear',
-            yoyo: true,
-            repeat: -1,
-            onUpdate: (tween) => {
-                //このtweenから値を取得する
-                const value = Math.floor(tween.getValue()!);
-
-                //取得した値をセットする
-                enemy.setTint(Phaser.Display.Color.GetColor(value, value, value));
-            },
-        });
-    }
-
-    deleteLight() {
-        if (this.lightUpDownTween) { this.lightUpDownTween.destroy(); }
-        if (this.lightDownUpTween) { this.lightDownUpTween.destroy(); }
+    private deleteLight() {
+        this.tweens.forEach(t => t.destroy());
+        this.tweens = [];
 
         for (const enemy of this.enemyPartyList) {
             enemy.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
         }
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        this.deleteLight();
+        super.destroy(fromScene);
     }
 }

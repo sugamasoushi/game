@@ -5,10 +5,14 @@ import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { BubbleTalk } from './Action/BubbleTalk';
 import { GameStateManager } from '../../../GameAllState/GameStateManager';
 import { State } from '@/app/(game)/lib/StateTypes';
+import { InputManager } from '@/app/(game)/core/input/InputManager';
 
 export class Npc extends BaseSprite {
     private npcType: string;
+    private inputManager: InputManager;
     protected bubbleTalkKey;
+    protected currentBubbleTalk: BubbleTalk | null = null;
+    private wasCirclePressed = false;
 
     protected spriteObjList: Phaser.Physics.Arcade.Sprite[] = [];
     private graphicsObjList: Phaser.GameObjects.Graphics[] = [];
@@ -52,6 +56,7 @@ export class Npc extends BaseSprite {
         this.setDepth(this.y + (32 / 2) * this.scale);
         this.updateRandomMoveToPosition();
         this._setInput();
+        this._checkVirtualPadTalk();
         this.energyHP();
         this.delete();
     }
@@ -135,47 +140,87 @@ export class Npc extends BaseSprite {
 
         //tiledでtalkデータを設定する事
         if (this.bubbleTalkKey) {
-            const bubbleTalk = new BubbleTalk(this.gameScene, this, this.bubbleTalkKey);
-            bubbleTalk.init();
+            this.currentBubbleTalk = new BubbleTalk(this.gameScene, this, this.bubbleTalkKey);
+            this.currentBubbleTalk.init();
 
             const manager = GameStateManager.getInstance();
 
             this.on('pointerdown', () => {
-
-                this.state = CharacterState.talking;
-
-                manager.updateState({ state: State.BUBBLE_TALK }, 'npc');
-
-                //キャラの向きをチェック
-                const fieldObjChk = new FieldObjectCheck(this.gameScene.getPlayer(), this);
-                const playerDirection = fieldObjChk.getObjectDirection().object1Direction;
-
-                //キャラの向きを設定
-                if (playerDirection === 'left') {
-                    this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standLeft);
-                    this.turnAround();
-                } else if (playerDirection === 'right') {
-                    this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standRight);
-                    this.turnAround();
-                } else if (playerDirection === 'up') {
-                    this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standUp);
-                    this.turnAround();
-                } else if (playerDirection === 'down') {
-                    this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standDown);
-                    this.turnAround();
-                }
-
-                (async () => {
-                    //クリックで吹き出し会話
-                    await bubbleTalk!.execTalk();
-
-                    //会話終了後、設定を戻す
-                    this.state = CharacterState.normal;
-                    manager.updateState({ state: State.NOSTATE }, 'npc');
-
-                })();
-            })
+                this.execNpcTalk(manager, this.currentBubbleTalk!);
+            });
         }
+    }
+
+    private _checkVirtualPadTalk() {
+        if (!this.inputManager) return;
+        if (!this.currentBubbleTalk) return;
+
+        const dir = this.inputManager.virtualPadDirection;
+        const isCirclePressed = dir === 'faceCircle';
+
+        if (isCirclePressed && !this.wasCirclePressed) {
+            const manager = GameStateManager.getInstance();
+            if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
+                // 会話不可の状態
+            } else {
+                //プレイヤーとの距離が近い場合
+                // if (Phaser.Math.Difference(this.x, this.gameScene.getPlayer().x) < 40 &&
+                //     Phaser.Math.Difference(this.y, this.gameScene.getPlayer().y) < 40 &&
+                //     this.state === CharacterState.normal) {
+
+                //     this.execNpcTalk(manager, this.currentBubbleTalk);
+                // }
+
+                // player と target の矩形が重なっているか
+                if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), this.gameScene.getPlayer().getBounds()) &&
+                    this.state === CharacterState.normal) {
+
+                    this.execNpcTalk(manager, this.currentBubbleTalk);
+                }
+            }
+        }
+        this.wasCirclePressed = isCirclePressed;
+    }
+
+    private execNpcTalk(manager: GameStateManager, bubbleTalk: BubbleTalk) {
+        if (this.state === CharacterState.talking) return;
+
+        this.state = CharacterState.talking;
+        manager.updateState({ state: State.BUBBLE_TALK }, 'npc');
+
+        //キャラの向きをチェック
+        const fieldObjChk = new FieldObjectCheck(this.gameScene.getPlayer(), this);
+        const playerDirection = fieldObjChk.getObjectDirection().object1Direction;
+
+        //キャラの向きを設定
+        if (playerDirection === 'left') {
+            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standLeft);
+            this.turnAround();
+        } else if (playerDirection === 'right') {
+            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standRight);
+            this.turnAround();
+        } else if (playerDirection === 'up') {
+            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standUp);
+            this.turnAround();
+        } else if (playerDirection === 'down') {
+            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standDown);
+            this.turnAround();
+        }
+
+        (async () => {
+            //吹き出し会話
+            await bubbleTalk.execTalk();
+
+            //会話終了後、設定を戻す
+            this.state = CharacterState.normal;
+            manager.updateState({ state: State.NOSTATE }, 'npc');
+        })();
+    }
+
+
+
+    public setInputManager(inputManager: InputManager) {
+        this.inputManager = inputManager;
     }
 
     //enemy衝突
@@ -359,5 +404,7 @@ export class Npc extends BaseSprite {
             this.destroy();
         }, undefined, this.gameScene);
     }
+
+
 
 }

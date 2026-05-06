@@ -4,12 +4,21 @@ import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import { Sound } from "../../scenes/Sound";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class MovieWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
     private mainWindowDepth: number = 500;
     public selectAllow: SelectAllow;
     private soundScene: Sound;
+
+    private movieLabels: Phaser.GameObjects.Text[] = [];
+    private isMovieSelectMode: boolean = false;
+    private canDecide: boolean = false;
+    private selectedIndex: number = 0;
+    private subs = new Subscription();
+    private videoArray = ['メイナ', 'ラミィ１', 'ラミィ２'];
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
@@ -28,9 +37,7 @@ export class MovieWindow extends Phaser.GameObjects.Container {
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
-        const array = ['メイナ', 'ラミィ１', 'ラミィ２'];
-
-        for (let i = 0; i < array.length; i++) {
+        for (let i = 0; i < this.videoArray.length; i++) {
 
             //左　項目
             const Label = messageObject.createTextObject(
@@ -40,22 +47,28 @@ export class MovieWindow extends Phaser.GameObjects.Container {
             //右　セーブスロット
             const saveSlot = messageObject.createTextObject(
                 this.scene, saveX + 150, saveY + i * (this.menuModel.lineSpaceValue + this.menuModel.fontSize),
-                [array[i]], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
+                [this.videoArray[i]], this.menuModel.fontSize).setDepth(this.mainWindowDepth + 50);
             this.add([Label, saveSlot]);
 
             // マウスオーバーで選択位置を更新
             saveSlot.setInteractive({ useHandCursor: true });
             saveSlot.on('pointerover', () => {
-                this.selectAllow.updatePosition(saveSlot);
+                if (this.isMovieSelectMode) {
+                    this.selectedIndex = i;
+                    this.selectAllow.updatePosition(saveSlot);
+                }
             });
 
             // クリックでセーブ
             saveSlot.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
                 if (pointer.leftButtonDown()) {
                     pointer.reset();
-                    this.playVideo(array[i]);
+                    this.selectedIndex = i;
+                    this.playVideo(this.videoArray[i]);
                 }
             });
+
+            this.movieLabels.push(saveSlot);
         }
 
         this.selectAllow = new SelectAllow(this.scene);
@@ -66,6 +79,60 @@ export class MovieWindow extends Phaser.GameObjects.Container {
 
         this.setDepth(this.mainWindowDepth + 50);
         this.setMask(mainColumn.cropRectMask.createGeometryMask());
+
+        this.setupPadKeyboardInput();
+    }
+
+    private setupPadKeyboardInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        const onSelectStart = () => {
+            this.isMovieSelectMode = true;
+            this.canDecide = false;
+            // 1フレーム待ってから決定可能にする
+            this.scene.time.delayedCall(10, () => {
+                this.canDecide = true;
+            });
+            this.selectedIndex = 0;
+            this.selectAllow.setVisible(true);
+            this.selectAllow.updatePosition(this.movieLabels[0]);
+        };
+
+        const onSelectEnd = () => {
+            this.isMovieSelectMode = false;
+            this.selectAllow.setVisible(false);
+        };
+
+        this.scene.events.on('MovieSelectModeStart', onSelectStart);
+        this.scene.events.on('MovieSelectModeEnd', onSelectEnd);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.isMovieSelectMode) return;
+            if (this.selectedIndex + 1 < this.movieLabels.length) {
+                this.selectedIndex += 1;
+                this.selectAllow.updatePosition(this.movieLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.isMovieSelectMode) return;
+            if (this.selectedIndex - 1 >= 0) {
+                this.selectedIndex -= 1;
+                this.selectAllow.updatePosition(this.movieLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.isMovieSelectMode || !this.canDecide) return;
+            this.playVideo(this.videoArray[this.selectedIndex]);
+        }));
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        this.scene.events.off('MovieSelectModeStart');
+        this.scene.events.off('MovieSelectModeEnd');
+        super.destroy(fromScene);
     }
 
     private async playVideo(key: string) {

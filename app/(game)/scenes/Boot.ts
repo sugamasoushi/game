@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import { GameStateManager } from '../GameAllState/GameStateManager';
+import { InputManager } from '../core/input/InputManager';
 
 export class Boot extends Scene {
     constructor() { super('Boot'); }
@@ -23,6 +24,9 @@ export class Boot extends Scene {
     }
 
     create() {
+        // 入力管理を一度だけ実行
+        InputManager.getInstance(this).execute();
+
         this.scene.launch('SceneController');
     }
 }

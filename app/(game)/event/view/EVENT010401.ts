@@ -334,7 +334,7 @@ export class EVENT010401 extends BaseEvent {
                     y2: 337,
                     mapKey: gameStateManager.currentFieldData.mapKey,
                     initStandKey: 'stand_down'
-                });
+                }, 'EventEndRestart');
 
                 resolve();
             });

@@ -11,6 +11,7 @@ type TextInfomation = {
 }
 
 export class MessageObject {
+    private scene: Phaser.Scene;
     private fontFamily: string;
     private fontColor: string;
     private fontSize: number;
@@ -20,6 +21,7 @@ export class MessageObject {
     constructor() { }
 
     public init(scene: Phaser.Scene) {
+        this.scene = scene;
 
         if (scene.scene.key === 'Event' || scene.scene.key === 'Battle' || scene.scene.key === 'Menu') {
             const settingTextData = scene.cache.json.get('savedata').GameSetting.EventWindow;
@@ -60,6 +62,23 @@ export class MessageObject {
             lineSpaceValue: this.lineSpaceValue,
             textLine: this.textLine
         }
+    }
 
+    public fadeIn(duration?: number) {
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 1,
+            duration: duration ? duration : 200,
+            ease: 'Power1'
+        });
+    }
+
+    public fadeOut(duration?: number) {
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 0,
+            duration: duration ? duration : 200,
+            ease: 'Power1'
+        });
     }
 }

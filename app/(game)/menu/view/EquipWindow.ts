@@ -4,10 +4,17 @@ import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class EquipWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
     public selectAllow: SelectAllow;
+    private equipLabels: Phaser.GameObjects.Text[] = [];
+    private isEquipSelectMode: boolean = false;
+    private canDecide: boolean = false;
+    private selectedIndex: number = 0;
+    private subs = new Subscription();
 
     constructor(scene: Phaser.Scene, private menuModel: MenuModel) {
         super(scene);
@@ -57,8 +64,13 @@ export class EquipWindow extends Phaser.GameObjects.Container {
             // マウスオーバーで選択位置を更新
             charEquip.setInteractive({ useHandCursor: true });
             charEquip.on('pointerover', () => {
-                this.selectAllow.updatePosition(charEquip);
+                if (this.isEquipSelectMode) {
+                    this.selectedIndex = i;
+                    this.selectAllow.updatePosition(charEquip);
+                }
             });
+
+            this.equipLabels.push(charEquip);
 
             // クリックで装備を変更
             charEquip.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -85,5 +97,87 @@ export class EquipWindow extends Phaser.GameObjects.Container {
 
         this.setDepth(this.mainWindowDepth + 50);
         this.setMask(mainColumn.cropRectMask.createGeometryMask());
+
+        this.setupPadKeyboardInput();
+    }
+
+    private setupPadKeyboardInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        const onSelectStart = () => {
+            if (this.equipLabels.length > 0) {
+                this.isEquipSelectMode = true;
+                this.canDecide = false;
+                // 1フレーム待ってから決定可能にする
+                this.scene.time.delayedCall(10, () => {
+                    this.canDecide = true;
+                });
+                this.selectedIndex = 0;
+                this.selectAllow.setVisible(true);
+                this.selectAllow.updatePosition(this.equipLabels[0]);
+            }
+        };
+
+        const onSelectEnd = () => {
+            this.isEquipSelectMode = false;
+            this.selectAllow.setVisible(false);
+        };
+
+        this.scene.events.on('EquipSelectModeStart', onSelectStart);
+        this.scene.events.on('EquipSelectModeEnd', onSelectEnd);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.isEquipSelectMode) return;
+            if (this.selectedIndex + 2 < this.equipLabels.length) {
+                this.selectedIndex += 2;
+                this.selectAllow.updatePosition(this.equipLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.isEquipSelectMode) return;
+            if (this.selectedIndex - 2 >= 0) {
+                this.selectedIndex -= 2;
+                this.selectAllow.updatePosition(this.equipLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.rightButton$.subscribe(() => {
+            if (!this.isEquipSelectMode) return;
+            if (this.selectedIndex + 1 < this.equipLabels.length && this.selectedIndex % 2 === 0) {
+                this.selectedIndex += 1;
+                this.selectAllow.updatePosition(this.equipLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.leftButton$.subscribe(() => {
+            if (!this.isEquipSelectMode) return;
+            if (this.selectedIndex - 1 >= 0 && this.selectedIndex % 2 === 1) {
+                this.selectedIndex -= 1;
+                this.selectAllow.updatePosition(this.equipLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.isEquipSelectMode || !this.canDecide) return;
+            this.execEquipAction(this.selectedIndex);
+        }));
+    }
+
+    private execEquipAction(index: number) {
+        if (index < 0 || index >= this.equipLabels.length) return;
+        const equipLabel = this.equipLabels[index];
+        const listeners = equipLabel.listeners('pointerdown');
+        if (listeners.length > 0) {
+            const listener = listeners[0] as (pointer: Phaser.Input.Pointer) => void;
+            listener({ leftButtonDown: () => true, reset: () => { } } as Phaser.Input.Pointer);
+        }
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        this.scene.events.off('EquipSelectModeStart');
+        this.scene.events.off('EquipSelectModeEnd');
+        super.destroy(fromScene);
     }
 }

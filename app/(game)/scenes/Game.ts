@@ -60,7 +60,7 @@ export class Game extends Scene implements GameScene {
         this.menuButton = new MenuButton(this);
         this.testButton = new SaveButton(this, this.mapObject);
         this.fireButton = new FireButton(this, this.mapObject);
-        this.inputManager = new InputManager(this);
+        this.inputManager = InputManager.getInstance(this);
         this.cameraManager = new CameraManager(this);
         this.fieldMessageWindow = new FieldMessageWindow(this);
 

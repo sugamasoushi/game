@@ -68,9 +68,15 @@ export class SceneController extends Scene {
 
         //状態をスタートに更新
         manager.updateState({ state: State.START }, '')
+
+        this.scene.launch('UI');
+        this.scene.bringToTop('UI')
     }
 
     private handleStateChange(state: State, sceneKey: string) {
+        //状態管理クラス
+        const manager = GameStateManager.getInstance();
+
         switch (state) {
             case State.NOSTATE:
                 //処理無
@@ -86,19 +92,27 @@ export class SceneController extends Scene {
             case State.FIELD:
                 console.log('Game')
                 this.scene.launch('Game', { sceneKey });
+                manager.updateState({ state: State.NOSTATE }, '')
                 break;
             case State.FIELD_RESTART:
                 console.log('Game restart', sceneKey)
                 this.scene.get('Game').scene.restart({ sceneKey });
+                manager.updateState({ state: State.NOSTATE }, '')
                 break;
             case State.FIELD_RESUME:
                 console.log('Game resume', sceneKey)
                 this.scene.get('Game').scene.resume();
+                manager.updateState({ state: State.NOSTATE }, '')
                 break;
             case State.BATTLE:
                 console.log('Battle')
                 this.scene.pause('Game');
                 this.scene.launch('Battle', { sceneKey });// launchで現在のシーンの上に重ねてシーンを出す
+                break;
+            case State.MENU:
+                console.log('Menu')
+                this.scene.pause('Game');
+                this.scene.launch('Menu', { sceneKey });
                 break;
             case State.EVENT:
                 console.log('Event')
@@ -117,6 +131,7 @@ export class SceneController extends Scene {
                 this.scene.launch('GameOver');
                 break;
         }
+
     }
 
     async alert() {

@@ -66,12 +66,13 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
         this.setDepth(depth);
     }
 
-    //テキストを基準に画面下側にウィンドウを作成
+    //テキストを基準に画面下側にウィンドウを作成。左右はオフセットを設定。
     public createEventMessageWindow(messageObject: Phaser.GameObjects.Text, R?: number) {
         const eventMessageInfomation = this.dataDefinition.getEventMessageInfomation(this.scene);
         const tileSize = 32;//マップのタイルサイズ32を基準とする
         const rectR = R ? R : eventMessageInfomation.fontSize;//角の丸みの半径
-        const offset = tileSize * 4;
+        //const offset = tileSize * 4;
+        const offset = 200;
 
         //初期位置を設定
         this.x = offset;
@@ -217,4 +218,90 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
     public setLineLightDown() {
         this.lineStyle(2, 0x808080);
     }
+
+    public fadeIn(duration?: number) {
+        this.scene.tweens.add({
+            targets: this,
+            alpha: this.alphaValue,
+            duration: duration ? duration : 200,
+            ease: 'Power1'
+        });
+    }
+
+    public fadeOut(duration?: number) {
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 0,
+            duration: duration ? duration : 200,
+            ease: 'Power1'
+        });
+    }
+
+    // 十字型のウィンドウを作成
+    public createCrossWindow(centerX: number, centerY: number, buttonSize: number, R?: number) {
+        const r = R ? R : 8; // 角の丸みの半径
+        const hs = buttonSize / 2;
+        const f = buttonSize * 1.5;
+        const cx = centerX;
+        const cy = centerY;
+
+        this.x = 0;
+        this.y = 0;
+
+        this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
+        this.lineStyle(2, this.lineColor);
+
+        this.beginPath();
+        // 上
+        this.moveTo(cx - hs + r, cy - f);
+        this.lineTo(cx + hs - r, cy - f);
+        this.arc(cx + hs - r, cy - f + r, r, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false);
+        // 内角1
+        this.lineTo(cx + hs, cy - hs);
+        // 右
+        this.lineTo(cx + f - r, cy - hs);
+        this.arc(cx + f - r, cy - hs + r, r, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false);
+        this.lineTo(cx + f, cy + hs - r);
+        this.arc(cx + f - r, cy + hs - r, r, Phaser.Math.DegToRad(0), Phaser.Math.DegToRad(90), false);
+        // 内角2
+        this.lineTo(cx + hs, cy + hs);
+        // 下
+        this.lineTo(cx + hs, cy + f - r);
+        this.arc(cx + hs - r, cy + f - r, r, Phaser.Math.DegToRad(0), Phaser.Math.DegToRad(90), false);
+        this.lineTo(cx - hs + r, cy + f);
+        this.arc(cx - hs + r, cy + f - r, r, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(180), false);
+        // 内角3
+        this.lineTo(cx - hs, cy + hs);
+        // 左
+        this.lineTo(cx - f + r, cy + hs);
+        this.arc(cx - f + r, cy + hs - r, r, Phaser.Math.DegToRad(90), Phaser.Math.DegToRad(180), false);
+        this.lineTo(cx - f, cy - hs + r);
+        this.arc(cx - f + r, cy - hs + r, r, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
+        // 内角4
+        this.lineTo(cx - hs, cy - hs);
+        // 左上の角
+        this.lineTo(cx - hs, cy - f + r);
+        this.arc(cx - hs + r, cy - f + r, r, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
+        
+        this.closePath();
+        this.fillPath();
+        this.strokePath();
+    }
+
+    // 円形のウィンドウを作成
+    public createCircleWindow(centerX: number, centerY: number, radius: number) {
+        this.x = 0;
+        this.y = 0;
+
+        this.fillStyle(this.backColor, 1).setAlpha(this.alphaValue);
+        this.lineStyle(2, this.lineColor);
+
+        this.fillCircle(centerX, centerY, radius);
+        this.strokeCircle(centerX, centerY, radius);
+    }
+
+    get currentAlphaValue() {
+        return this.alphaValue;
+    }
+
 }

@@ -7,6 +7,8 @@ import { SaveDataManager } from "../../core/SaveDataManager";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { SelectListWindow } from "./SelectListWindow";
 import { Sound } from "../../scenes/Sound";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class ItemSelectWindow extends Phaser.GameObjects.Container {
     private battleScene: BattleScene;
@@ -30,24 +32,24 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
     public selectAllow: SelectAllow;
 
     private soundScene: Sound;
+    private subs = new Subscription();
+    private canDecide: boolean = false;
 
     constructor(battleScene: BattleScene, battleModel: BattleModel) {
         super(battleScene);
         this.scene.add.existing(this);
-        this.addToUpdateList();
         this.name = ItemSelectWindow.name;
         this.battleModel = battleModel;
         this.soundScene = this.scene.scene.get('Sound') as Sound;
+        this.setVisible(false);
+        this.setActive(false);
+        this.setupInput();
     }
 
     init() {
         this.x = 0;
         this.y = 0;
         this.name = ItemSelectWindow.name;
-    }
-
-    preUpdate() {
-        this.updateSelectNo();
     }
 
     private createItemList() {
@@ -109,15 +111,6 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                     this.disableSelect();
                     this.scene.input.setDefaultCursor('default');
 
-                    //アイテムが0以上かチェック
-                    // const currentCount = this.battleModel.getPlayerPartyList()[0].data.values[listName];
-                    // if (currentCount <= 0 || currentCount == undefined) {
-                    //     textObj.disableInteractive();
-                    //     // const debugMessage = new DebugMessage(this.scene);
-                    //     // debugMessage.NotImplemented('もう無いよ！');
-                    //     return;
-                    // }
-
                     //パーティメンバーが2人以上の場合、使用するメンバーを選択する
                     if (this.battleModel.getPlayerPartyList().length > 1) {
 
@@ -131,10 +124,12 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
 
                         this.selectListWindow = new SelectListWindow(this.scene);
                         // ウィンドウの位置を中央付近に設定
+
+                        this.selectListWindow.create(partyname);
                         this.selectListWindow.x = textObj.x + 150;
                         this.selectListWindow.y = 400;
-                        this.selectListWindow.create(partyname);
                         this.selectListWindow.setDepth(900);
+                        this.selectListWindow.show();
 
                         // 選択時の処理
                         this.selectListWindow.onSelect = (memberIndex: number) => {
@@ -153,6 +148,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                                 countObj.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
                             }
                             this.closeMenuListWindow();
+                            this.setActive(true);
                             this.enableSelect();
                             this.selectExec(listName);
                         };
@@ -160,12 +156,13 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                         //リストウィンドウの戻るが押されたときの処理
                         this.selectListWindow.onBack = () => {
                             this.closeMenuListWindow();
+                            this.setActive(true);
                             this.enableSelect();
                         };
 
                     } else {
                         this.soundScene.SE_newsTitle.play();
-                        
+
                         // 使用後の個数を反映（メンバー1人の場合はインデックス0）
                         this.battleModel.getPlayerPartyList()[0].data.values[listName] -= 1;
                         const count = this.battleModel.getPlayerPartyList()[0].data.values[listName];
@@ -186,6 +183,72 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
             this.selectList.push(textObj);
             this.countList.push(countObj);
         }
+    }
+
+    private setupInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(this.maxColumns);
+        }));
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(-this.maxColumns);
+        }));
+        this.subs.add(inputManager.rightButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(1);
+        }));
+        this.subs.add(inputManager.leftButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(-1);
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.visible || !this.active || !this.canDecide) return;
+            if (this.selectList.length > 0) {
+                const itemText = this.selectList[this.nowSelectNo];
+                // 既存のクリックイベントを発火させる
+                itemText.emit('pointerdown', { leftButtonDown: () => true, reset: () => { } });
+            }
+        }));
+
+        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.backSubmit();
+        }));
+    }
+
+    private navigate(delta: number) {
+        const maxNo = this.selectList.length;
+        if (maxNo === 0) return;
+
+        let newSelectNo = this.nowSelectNo + delta;
+        if (newSelectNo < 0) newSelectNo = 0;
+        if (newSelectNo >= maxNo) newSelectNo = maxNo - 1;
+
+        if (newSelectNo !== this.nowSelectNo) {
+            this.nowSelectNo = newSelectNo;
+            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+        }
+    }
+
+    private backSubmit() {
+        this.emit('Select_back_Submit');
+
+        for (const list of this.selectList) {
+            list.destroy();
+        }
+        this.selectList = [];
+
+        for (const countText of this.countList) {
+            countText.destroy();
+        }
+        this.countList = [];
+
+        this.nowSelectNo = 0;
+        this.hide();
     }
 
     private createWindow() {
@@ -245,21 +308,10 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
         this.backButton.setDepth(this.backButtonWindow.depth + 1);
         this.backButton.setInteractive({ useHandCursor: true });
         this.backButton.on('pointerdown', () => {
-            this.emit('Select_back_Submit');
-
-            for (const list of this.selectList) {
-                list.destroy();
-            }
-            this.selectList = [];
-
-            for (const countText of this.countList) {
-                countText.destroy();
-            }
-            this.countList = [];
-
-            this.nowSelectNo = 0;
+            this.backSubmit();
         }, this);
     }
+
 
     //選択実行
     private selectExec(listName: string) {
@@ -267,6 +319,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
     }
 
     show() {
+        this.nowSelectNo = 0;
         //アイテムリストの為、show()で作成
         this.createItemList();
         this.createWindow();
@@ -277,9 +330,17 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
         this.backButtonWindow.setVisible(true);
 
         this.enableSelect();
+
+        this.canDecide = false;
+        this.scene.time.delayedCall(10, () => {
+            this.canDecide = true;
+        });
     }
 
     hide() {
+        this.setVisible(false);
+        this.setActive(false);
+
         this.messageWindow.setVisible(false);
         this.allow.setVisible(false);
         this.backButton.setVisible(false);
@@ -296,43 +357,17 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
         this.countList = [];
     }
 
-    move() { this.disableSelect(); }
+    move() { this.setActive(false); this.disableSelect(); }
 
-    private updateSelectNo() {
-        const maxNo = this.selectList.length;
-        if (maxNo === 0) return;
-
-        const cursor: Phaser.Types.Input.Keyboard.CursorKeys = (this.scene as BattleScene).getCursorsKeys();
-
-        let newSelectNo = this.nowSelectNo;
-
-        if (cursor.down.isDown) {
-            cursor.down.isDown = false;
-            newSelectNo += this.maxColumns;
-        } else if (cursor.up.isDown) {
-            cursor.up.isDown = false;
-            newSelectNo -= this.maxColumns;
-        } else if (cursor.right.isDown) {
-            cursor.right.isDown = false;
-            newSelectNo += 1;
-        } else if (cursor.left.isDown) {
-            cursor.left.isDown = false;
-            newSelectNo -= 1;
-        }
-
-        // 範囲内に収める
-        if (newSelectNo < 0) newSelectNo = 0;
-        if (newSelectNo >= maxNo) newSelectNo = maxNo - 1;
-
-        if (newSelectNo !== this.nowSelectNo) {
-            this.nowSelectNo = newSelectNo;
-            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
-        }
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
     }
 
     //テキストクリック可
     private enableSelect() {
         this.setVisible(true);
+        this.setActive(true);
         for (const itemName of this.selectList) {
 
             // 個数をチェックして色を戻す
@@ -350,6 +385,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
 
     //テキストクリック不可
     private disableSelect() {
+        this.setActive(false);
         this.allow.lightDown();
         for (const itemName of this.selectList) {
             itemName.disableInteractive();

@@ -2,6 +2,8 @@ import { BattleScene } from "../../lib/types";
 import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class AttackSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
@@ -17,6 +19,8 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
     private backButtonWindow: MessageWindow;
 
     private characterIcon: Phaser.GameObjects.Image;
+    private canDecide: boolean = false;
+    private subs = new Subscription();
 
     constructor(battleScene: BattleScene) {
         super(battleScene);
@@ -29,11 +33,10 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         this.x = 0;
         this.y = 0;
         this.name = AttackSelectWindow.name;
+        this.setVisible(false);
+        this.setActive(false);
         this.createWindow(this.column);
-    }
-
-    preUpdate() {
-        this.updateSelectNo();
+        this.setupInput();
     }
 
     private createWindow(column: string[]) {
@@ -46,8 +49,7 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         this.backButton.setDepth(Number(this.scene.game.config.height) + 1);
         this.backButton.setInteractive({ useHandCursor: true });
         this.backButton.on('pointerdown', () => {
-            this.emit('Select_back_Submit', 0);
-            this.nowSelectNo = 0;
+            this.backSubmit();
         }, this);
 
         this.backButtonWindow = new MessageWindow(this.scene);
@@ -126,9 +128,16 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
     show(data: Phaser.GameObjects.Sprite) {
 
         this.nowSelectCharacter = data;
+        this.nowSelectNo = 0;
+        this.allow.updatePosition(this.selectList[this.nowSelectNo]);
 
         this.setVisible(true);
         this.enableSelect();
+
+        this.canDecide = false;
+        this.scene.time.delayedCall(10, () => {
+            this.canDecide = true;
+        });
 
         //コンテナ配置（キャラクターアイコンの近くに配置）
         this.x = this.characterIcon.parentContainer.x + 200;
@@ -141,34 +150,54 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
 
     hide() {
         this.setVisible(false);
+        this.setActive(false);
     }
 
-    private updateSelectNo() {
-        const minNo = 0;
-        const maxNo = this.selectList.length;
-        let selectText = null;
-        const cursor: Phaser.Types.Input.Keyboard.CursorKeys = (this.scene as BattleScene).getCursorsKeys();
+    private setupInput() {
+        const inputManager = InputManager.getInstance(this.scene);
 
-        //キー押下でリストの選択番号を更新する
-        if (cursor.down.isDown) {
-            //更新後の選択番号がリスト番号の最大値を超える場合
-            if (this.nowSelectNo + 1 >= maxNo) { return; }
-            cursor.down.isDown = false;
-            this.nowSelectNo++;
-            selectText = this.selectList[this.nowSelectNo];
-            this.allow.updatePosition(selectText);
-        } else if (cursor.up.isDown) {
-            //更新後の選択番号がリスト番号の最小値を超える場合
-            if (this.nowSelectNo - 1 < minNo) { return; }
-            cursor.up.isDown = false;
-            this.nowSelectNo--;
-            selectText = this.selectList[this.nowSelectNo];
-            this.allow.updatePosition(selectText);
-        }
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            if (this.nowSelectNo + 1 < this.selectList.length) {
+                this.nowSelectNo++;
+                this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+            }
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            if (this.nowSelectNo - 1 >= 0) {
+                this.nowSelectNo--;
+                this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+            }
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.visible || !this.active || !this.canDecide) return;
+            this.selectExec(this.nowSelectNo);
+        }));
+
+        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.backSubmit();
+        }));
     }
+
+    private backSubmit() {
+        this.emit('Select_back_Submit', 0);
+        this.nowSelectNo = 0;
+        this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
+    }
+
 
     //テキストクリック可
     enableSelect() {
+        this.setActive(true);
         this.allow.lightUp();
         this.lightUp();
         this.setVisible(true);
@@ -179,6 +208,7 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
 
     //テキストクリック不可
     disableSelect() {
+        this.setActive(false);
         this.allow.lightDown();
         this.lightDown();
         this.selectList.forEach(obj => {

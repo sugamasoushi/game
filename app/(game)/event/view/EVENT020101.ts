@@ -221,7 +221,7 @@ export class EVENT020101 extends BaseEvent {
                     y: 490,
                     mapKey: '0101',
                     initStandKey: 'stand_up'
-                });
+                }, 'EventEndRestart');
 
                 resolve();
             });

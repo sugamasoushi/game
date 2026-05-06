@@ -17,6 +17,7 @@ import { FieldMessageWindow } from "../view/FieldMessageWindow";
 
 export class FieldPresenter {
     private subs = new Subscription(); // 購読をまとめる箱
+    private uiScene: Phaser.Scene;
 
     constructor(
         private gameScene: GameScene,
@@ -40,18 +41,20 @@ export class FieldPresenter {
         this.cameraManager = cameraManager;
         this.inputManager = inputManager;
         this.fieldMessageWindow = fieldMessageWindow;
+
+        this.uiScene = this.gameScene.scene.get('UI') as Phaser.Scene;
     }
 
     public async create(sceneKey: string) {
 
         //this.cameraManager.getMainCamera().setZoom(1.2);
         // this.cameraManager.getMainCamera().postFX.addTiltShift(
-        //     0.9,//ピントが合う範囲の広さ
-        //     0.5,//ぼかしの量。値を大きくするとボケが強くなる。
-        //     0.1,//コントラスト。ミニチュア特有のクッキリ感を出す。
-        //     0.8,//明るさ。上げすぎると目に痛い。
-        //     0.2,//エフェクト全体の強度。基本は 1。
-        //     0.5//ぼかす方向。0 が水平、1 が垂直。
+        //     0.5,//radius: ボケ効果の半径。デフォルト値は 0.5。
+        //     0.5,//amount: ボケ効果の量。デフォルト値は 1。 
+        //     1.5,//contrast: ボケ効果の色のコントラスト。デフォルト値は 0.2
+        //     0.5,//blurX水平方向のぼかしの量。 
+        //     0.5,//blurY垂直方向のぼかしの量。 
+        //     0.5//strengthぼかしの強さ。 
         // );
 
         //マップ情報の判定、検索処理とか実装する必要がある
@@ -65,18 +68,20 @@ export class FieldPresenter {
         this.setEventEmitter();
 
         //シーン開始時にフェードイン
-        if (sceneKey !== 'menu') { this.cameraManager.execFadeIn(); }
+        if (sceneKey !== 'menu') {
+            this.cameraManager.execFadeInStart();
+            this.cameraManager.execFadeIn();
+        }
 
         //マップやオブジェクトを作成
         this.tileMap.execute(this.fieldMapModel.getFieldData());
-        this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData(), sceneKey);
-        this.menuButton.execute();
-        this.saveButton.execute();
-        this.fireButton.execute();
+        this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData(), sceneKey, this.inputManager);
+        //this.menuButton.execute();
+        //this.saveButton.execute();
+        //this.fireButton.execute();
         this.fieldMessageWindow.init();
 
         //オブジェクト作成、各種設定
-        this.inputManager.execute();
         this.cameraManager.execute(this.tileMap.getMakeTilemap(), this.mapObject.getPlayer());
         this.fieldMapModel.execute(this.mapObject);
     }
@@ -85,6 +90,13 @@ export class FieldPresenter {
         //状態管理クラス
         const gameStateManager = GameStateManager.getInstance();
 
+        //フェードイン開始
+        this.gameScene.events.once('FADE_IN_START', () => {
+
+            //uiにフェードイン開始を通知
+            this.uiScene.events.emit('UI_FADEIN_START');
+        });
+
         //フェード後、入力設定
         this.gameScene.events.once('FADE_IN_COMPLETE', () => {
             if (gameStateManager.currentState !== State.EVENT) {
@@ -92,6 +104,14 @@ export class FieldPresenter {
             }
         });
 
+        //フェードアウト開始
+        this.gameScene.events.once('FADE_OUT_START', () => {
+
+            //uiにフェードアウト開始を通知
+            this.uiScene.events.emit('UI_FADEOUT_START');
+        });
+
+        //自由メッセージ
         this.gameScene.events.on('FREE_MESSAGE_WINDOW', (message: string, time: number) => {
             this.fieldMessageWindow.messageOutput(message, time);
         });
@@ -102,9 +122,14 @@ export class FieldPresenter {
         });
         this.gameScene.events.on('GAME_INPUT_FALSE', () => { this.inputManager.setState(false); });
 
-        this.gameScene.events.on('FIELD_RESTART', (fieldData: FieldData) => {
+        this.gameScene.events.on('FIELD_RESTART', async (fieldData: FieldData, key: string) => {
 
+            this.inputManager.setVirtualPadDirectionNull();
             this.inputManager.setState(false);
+
+            if (key !== "EventEndRestart") {
+                await this.cameraManager.execFadeOut();
+            }
 
             //状態更新
             gameStateManager.updateState({
@@ -119,6 +144,14 @@ export class FieldPresenter {
                     initStandKey: fieldData.initStandKey,
                 }
             }, 'FieldMove');
+
+            this.inputManager.setState(true);
+
+            //フェードアウトとして使用する
+            this.uiScene.events.emit('UI_FADEOUT_START');
+
+            //状態更新
+            gameStateManager.updateState({ state: State.NOSTATE }, 'NoState');
 
         })
 
@@ -181,8 +214,8 @@ export class FieldPresenter {
             this.gameScene.events.off('EVENT_END');
             this.gameScene.events.off('BATTLE');
             this.gameScene.events.off('FREE_MESSAGE_WINDOW');
+            this.gameScene.events.off('FADE_IN_START');
             this.subs.unsubscribe();
-            this.inputManager.destroy();
         });
     }
 
@@ -198,6 +231,5 @@ export class FieldPresenter {
     public getTilemap(): TileMap {
         return this.tileMap;
     }
-
 
 }

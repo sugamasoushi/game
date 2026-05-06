@@ -1,6 +1,6 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState, CharacterState } from "../../lib/types";
+import { GameScene, EventObjState, CharacterState, State } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
 import { Npc } from "../../gamemain/view/character/Npc";
 import { Player } from "../../gamemain/view/character/Player";
@@ -9,6 +9,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { SpriteType_3x4 } from "../../gamemain/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
 import { CaharacterNameData } from '../../Data/NameData';
+import { GameStateManager } from "../../GameAllState/GameStateManager";
 
 export class EVENT010301 extends BaseEvent {
     private gameScene: GameScene;
@@ -138,6 +139,9 @@ export class EVENT010301 extends BaseEvent {
         await new Promise<void>(resolve => {
             battleScene.events.on('shutdown', () => {
                 this.eventScene.scene.resume();
+
+                const gameStateManager = GameStateManager.getInstance();
+                gameStateManager.updateState({ state: State.EVENT }, 'EventEnd');
                 resolve();
             });
         })
@@ -147,7 +151,7 @@ export class EVENT010301 extends BaseEvent {
 
         //会話
         await this.eventTalk.execTalk([
-            { lamy: ['ごめんなさい！！\n', 'ゆるしてぇ！！(´;A;｀)\n'] },
+            { lamy: ['ごめんなさい！！\n', 'ゆるしてぇ！！泣\n'] },
             { meina: ['あ、ごめん。\n', '・・・なんか思ったより弱いけど、ラミア族だよね？\n'] },
             { lamy: ['う、うるさいな・・・。\n', 'あんたが強いだけだ！\n'] }]
             , this.characterGameObject);

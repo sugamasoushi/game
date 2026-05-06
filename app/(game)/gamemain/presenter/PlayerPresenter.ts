@@ -26,17 +26,20 @@ export class PlayerPresenter {
         //プレイヤーを作成
         this.player = this.fieldPresenter.getPlayer();
         this.player.setCursors(this.inputManager.phaserCursors);
+        this.player.setInputManager(this.inputManager);
 
         //プレイヤーのパーティメンバーを作成
         const playerPartyList = gameStateManager.currentPlayerPartyList;
         if (playerPartyList[1]) {
             (playerPartyList[1] as Player).setCursors(this.inputManager.phaserCursors);
+            (playerPartyList[1] as Player).setInputManager(this.inputManager);
             //this.player.setPlayer1(this.player);
         }
 
         //プレイヤーのパーティメンバーを作成
         if (playerPartyList[2]) {
             (playerPartyList[2] as Player).setCursors(this.inputManager.phaserCursors);
+            (playerPartyList[2] as Player).setInputManager(this.inputManager);
         }
 
         this.setAnyObject();
@@ -56,6 +59,7 @@ export class PlayerPresenter {
             //状態管理クラス
             const manager = GameStateManager.getInstance();
             if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.BATTLE) { return; }
+
 
             //左クリック押下時
             if (pointer.leftButtonReleased()) {
@@ -93,6 +97,30 @@ export class PlayerPresenter {
                 console.log("Pキー押下")
                 this.fieldAttack.frameBullet(this.player.x, this.player.y);
             }
+        });
+
+        this.inputManager.fieldAttackButton$.subscribe(() => {
+            console.log("FieldAttackボタン押下")
+            this.fieldAttack.frameBullet(this.player.x, this.player.y);
+        });
+
+        this.inputManager.menuButton$.subscribe(() => {
+            console.log("メニューボタン押下")
+
+            //状態管理クラス
+            const gameStateManager = GameStateManager.getInstance();
+
+            //状態がNOSTATE以外の場合は、メニューを開かない
+            if (gameStateManager.currentState !== State.NOSTATE) { return; }
+
+            //ぼかし
+            //https://newdocs.phaser.io/docs/3.70.0/Phaser.GameObjects.Components.FX#addBlur
+            const mainCamera: Phaser.Cameras.Scene2D.Camera = this.gameScene.cameras.main;
+            mainCamera.postFX.addBlur(2, 1, 1, 1, 0xffffff, 1);
+
+            //状態更新
+            gameStateManager.updateState({ state: State.MENU }, 'menu');
+
         });
 
         //右クリック

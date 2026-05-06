@@ -12,6 +12,7 @@ export enum State {
   FIELD_RESTART = 21,
   FIELD_RESUME = 22,
   BATTLE = 30,
+  MENU = 35,
   EVENT = 40,
   BUBBLE_TALK = 45,
   GAMEOVER = 50

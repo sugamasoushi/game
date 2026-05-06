@@ -21,8 +21,8 @@ export class FireButton {
         const gameConfigHeight: number = Number(this.gameScene.game.config.height);
 
 
-        const flameX = 100;
-        const flameY = gameConfigHeight - 50;
+        const flameX = gameConfigWidth - 100;
+        const flameY = gameConfigHeight - 250;
         const flameDepth = 999999;
         this.fieldAttack = new FieldAttack(this.mapObject.getPlayer(), this.mapObject.getPlayer().x, this.mapObject.getPlayer().y);
 
@@ -47,7 +47,7 @@ export class FireButton {
         tapText.setOrigin(0.5, 0.5).setStroke('#582a2aff', 12).setShadow(4, 4, '#582a2aff', 8, false, true);
         tapText.setDepth(flame.depth + 1);
         tapText.setScrollFactor(0);
-        tapText.setAlpha(0);
+        //tapText.setAlpha(0);
 
         const hitZone = this.gameScene.add.zone(flameX, flameY, 100, 100)
             .setInteractive({ useHandCursor: true })
@@ -57,8 +57,10 @@ export class FireButton {
         hitZone.on(Phaser.Input.Events.POINTER_UP, (
             pointer: Phaser.Input.Pointer) => {
 
-            //右クリック判定。クリック後、ボタンを離した後の判定となる。rightButtonDown()は押下中の判定となる。
+            //右クリックの場合は処理しない
             if (pointer.rightButtonReleased()) return;
+
+            //クリック後、ボタンを離した後の判定となる。rightButtonDown()は押下中の判定となる。
             pointer.reset();//入力状態をリセット、リセットしないと押下中に連続で処理される
             this.fieldAttack.frameBullet(this.mapObject.getPlayer().x, this.mapObject.getPlayer().y);
 

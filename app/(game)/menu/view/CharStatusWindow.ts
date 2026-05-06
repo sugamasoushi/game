@@ -4,6 +4,8 @@ import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import { SearchSkill } from "../../Data/SearchSkill";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class CharStatusWindow extends Phaser.GameObjects.Container {
 
@@ -15,6 +17,9 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
     private contentHeight: number = 0;
     private upArrow!: SelectAllow;
     private downArrow!: SelectAllow;
+    private isConditionSelectMode: boolean = false;
+    private arrowTween: Phaser.Tweens.Tween | null = null;
+    private subs = new Subscription();
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
@@ -72,6 +77,62 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
 
         this.bringToTop(this.upArrow);
         this.bringToTop(this.downArrow);
+
+        this.setupPadKeyboardInput();
+    }
+
+    private setupPadKeyboardInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        const onStart = () => {
+            this.isConditionSelectMode = true;
+            
+            // 矢印を強調するアニメーション
+            if (this.arrowTween) this.arrowTween.stop();
+            this.arrowTween = this.scene.tweens.add({
+                targets: [this.upArrow, this.downArrow],
+                scaleX: 1.2,
+                scaleY: 1.2,
+                duration: 500,
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+            });
+        };
+
+        const onEnd = () => {
+            this.isConditionSelectMode = false;
+            if (this.arrowTween) {
+                this.arrowTween.stop();
+                this.arrowTween = null;
+            }
+            this.upArrow.setScale(1);
+            this.downArrow.setScale(1);
+        };
+
+        this.scene.events.on('ConditionSelectModeStart', onStart);
+        this.scene.events.on('StatusSelectModeStart', onStart);
+        this.scene.events.on('ConditionSelectModeEnd', onEnd);
+        this.scene.events.on('StatusSelectModeEnd', onEnd);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.isConditionSelectMode) return;
+            this.scroll('down');
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.isConditionSelectMode) return;
+            this.scroll('up');
+        }));
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        this.scene.events.off('ConditionSelectModeStart');
+        this.scene.events.off('StatusSelectModeStart');
+        this.scene.events.off('ConditionSelectModeEnd');
+        this.scene.events.off('StatusSelectModeEnd');
+        super.destroy(fromScene);
     }
 
     private createCharacterContent(container: Phaser.GameObjects.Container, sprite: Phaser.GameObjects.Sprite, messageObject: MessageObject): void {
@@ -90,11 +151,13 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
         const statsX = 350;
         const statsY = 20;
 
-        const labels = ['Lv', 'HP', 'MP', '攻撃力', '防御力', '運'];
+        const labels = ['Lv', '最大HP', '最大MP', '攻撃力', '防御力', '運'];
         const values = [
             String(playerData.Lv),
-            playerData.HP + ' / ' + playerData.MaxHP,
-            playerData.MP + ' / ' + playerData.MaxMP,
+            // playerData.HP + ' / ' + playerData.MaxHP,
+            // playerData.MP + ' / ' + playerData.MaxMP,
+            playerData.MaxHP,
+            playerData.MaxMP,
             '10', '5', '0'
         ];
 

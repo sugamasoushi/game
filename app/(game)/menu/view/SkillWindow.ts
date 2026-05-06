@@ -5,10 +5,17 @@ import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
 import { SearchSkill } from "../../Data/SearchSkill";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class SkillWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
     public selectAllow: SelectAllow;
+    private skillLabels: Phaser.GameObjects.Text[] = [];
+    private isSkillSelectMode: boolean = false;
+    private canDecide: boolean = false;
+    private selectedIndex: number = 0;
+    private subs = new Subscription();
 
     constructor(scene: Phaser.Scene, private menuModel: MenuModel) {
         super(scene);
@@ -80,6 +87,88 @@ export class SkillWindow extends Phaser.GameObjects.Container {
 
         this.setDepth(this.mainWindowDepth + 50);
         this.setMask(mainColumn.cropRectMask.createGeometryMask());
+
+        this.setupPadKeyboardInput();
+    }
+
+    private setupPadKeyboardInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        const onSelectStart = () => {
+            if (this.skillLabels.length > 0) {
+                this.isSkillSelectMode = true;
+                this.canDecide = false;
+                // 1フレーム待ってから決定可能にする
+                this.scene.time.delayedCall(10, () => {
+                    this.canDecide = true;
+                });
+                this.selectedIndex = 0;
+                this.selectAllow.setVisible(true);
+                this.selectAllow.updatePosition(this.skillLabels[0]);
+            }
+        };
+
+        const onSelectEnd = () => {
+            this.isSkillSelectMode = false;
+            this.selectAllow.setVisible(false);
+        };
+
+        this.scene.events.on('SkillSelectModeStart', onSelectStart);
+        this.scene.events.on('SkillSelectModeEnd', onSelectEnd);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.isSkillSelectMode) return;
+            if (this.selectedIndex + 2 < this.skillLabels.length) {
+                this.selectedIndex += 2;
+                this.selectAllow.updatePosition(this.skillLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.isSkillSelectMode) return;
+            if (this.selectedIndex - 2 >= 0) {
+                this.selectedIndex -= 2;
+                this.selectAllow.updatePosition(this.skillLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.rightButton$.subscribe(() => {
+            if (!this.isSkillSelectMode) return;
+            if (this.selectedIndex + 1 < this.skillLabels.length && this.selectedIndex % 2 === 0) {
+                this.selectedIndex += 1;
+                this.selectAllow.updatePosition(this.skillLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.leftButton$.subscribe(() => {
+            if (!this.isSkillSelectMode) return;
+            if (this.selectedIndex - 1 >= 0 && this.selectedIndex % 2 === 1) {
+                this.selectedIndex -= 1;
+                this.selectAllow.updatePosition(this.skillLabels[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.isSkillSelectMode || !this.canDecide) return;
+            this.execSkillUse(this.selectedIndex);
+        }));
+    }
+
+    private execSkillUse(index: number) {
+        if (index < 0 || index >= this.skillLabels.length) return;
+        const skill = this.skillLabels[index];
+        const listeners = skill.listeners('pointerdown');
+        if (listeners.length > 0) {
+            const listener = listeners[0] as (pointer: Phaser.Input.Pointer) => void;
+            listener({ leftButtonDown: () => true, reset: () => { } } as Phaser.Input.Pointer);
+        }
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        this.scene.events.off('SkillSelectModeStart');
+        this.scene.events.off('SkillSelectModeEnd');
+        super.destroy(fromScene);
     }
 
     /**
@@ -111,8 +200,13 @@ export class SkillWindow extends Phaser.GameObjects.Container {
         // マウスオーバーで選択位置を更新
         skill.setInteractive({ useHandCursor: true });
         skill.on('pointerover', () => {
-            this.selectAllow.updatePosition(skill);
+            if (this.isSkillSelectMode) {
+                this.selectedIndex = this.skillLabels.indexOf(skill);
+                this.selectAllow.updatePosition(skill);
+            }
         });
+
+        this.skillLabels.push(skill);
 
         // クリックでスキルを使用
         skill.on('pointerdown', (pointer: Phaser.Input.Pointer) => {

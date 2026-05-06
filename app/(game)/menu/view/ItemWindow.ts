@@ -1,5 +1,4 @@
 import { MenuModel } from "../model/MenuModel";
-import { Menu } from "../../scenes/Menu";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
@@ -9,6 +8,8 @@ import { ListWindow } from "../../util/ListWindow";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageWindow } from "../../util/MessageWindow";
 import { MenuListWindow } from "./MenuListWindow";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class ItemWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
@@ -16,10 +17,18 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     private itemNameList: Phaser.GameObjects.Text[] = [];
 
     private listWindow: ListWindow;
-    private backButton: Phaser.GameObjects.Text;
-    private backButtonWindow: MessageWindow;
+    private backButton: Phaser.GameObjects.Text | null;
+    private backButtonWindow: MessageWindow | null;
 
-    private menuListWindow: MenuListWindow;
+    private menuListWindow: MenuListWindow | null;
+
+    private itemValueList: Phaser.GameObjects.Text[] = [];
+    private isItemSelectMode: boolean = false;
+    private canDecide: boolean = false;
+    private selectedIndex: number = 0;
+    private subs = new Subscription();
+
+    private mainColumn: MainColumnWindow;
 
     constructor(scene: Phaser.Scene, private menuModel: MenuModel) {
         super(scene);
@@ -27,26 +36,48 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     }
 
     public create(mainColumn: MainColumnWindow) {
+        this.mainColumn = mainColumn;
+        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Item;
+        this.y = mainColumn.containtsY;
+
+        this.drawItemList();
+
+        this.selectAllow = new SelectAllow(this.scene);
+        this.selectAllow.init(0, 0);
+        this.selectAllow.createAllow();
+        this.selectAllow.setVisible(false);
+        this.add(this.selectAllow);
+
+        this.setDepth(this.mainWindowDepth + 50);
+        this.setMask(mainColumn.cropRectMask.createGeometryMask());
+
+        this.setupPadKeyboardInput();
+    }
+
+    private drawItemList() {
+        // 既存のオブジェクトを削除
+        for (const itemName of this.itemNameList) itemName.destroy();
+        for (const itemValue of this.itemValueList) itemValue.destroy();
+        this.itemNameList = [];
+        this.itemValueList = [];
+
         const itemX = 430;
         const itemY = 0;
         const rightValue = 300;
 
-        this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Item;
-        this.y = mainColumn.containtsY;
-
         const messageObject = new MessageObject();
         messageObject.init(this.scene);
 
-        const itemList = this.menuModel.getValidItemList();
+        // 個数が1個以上のアイテムのみを対象とする
+        const allItems = this.menuModel.getValidItemList();
+        const itemList = allItems.filter(item => this.menuModel.getPlayerItemCount(item) > 0);
 
-        // アイテムリストは2列で表示する
         for (let i = 0; i < itemList.length; i++) {
             const row = Math.floor(i / 2);
             const col = i % 2;
             const xOffset = col * rightValue;
             const yOffset = row * (this.menuModel.lineSpaceValue + this.menuModel.fontSize);
 
-            //左　項目
             const itemName = messageObject.createTextObject(
                 this.scene,
                 itemX + xOffset,
@@ -63,87 +94,33 @@ export class ItemWindow extends Phaser.GameObjects.Container {
                 this.menuModel.fontSize
             ).setDepth(this.mainWindowDepth + 50);
 
-            // 初期表示時の個数チェックによりグレーアウトを設定
-            if (this.menuModel.getPlayerItemCount(itemList[i]) <= 0) {
-                itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-            }
-
             this.add([itemName, itemValue]);
 
             // マウスオーバーで選択位置を更新
             itemName.setInteractive({ useHandCursor: true });
             itemName.on('pointerover', () => {
-                this.selectAllow.updatePosition(itemName);
+                if (this.isItemSelectMode && !this.menuListWindow) {
+                    this.selectedIndex = i;
+                    this.selectAllow.updatePosition(itemName);
+                }
             });
 
             // クリックでアイテムを使用
             itemName.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
                 if (pointer.leftButtonDown()) {
                     pointer.reset();
-                    this.itemNameDisableInteractive();
-                    this.scene.input.setDefaultCursor('default');
-
-                    //アイテムが0以上かチェック
-                    const count = this.menuModel.getItemData().values[itemName.text];
-                    if (count <= 0 || count == undefined) {
-                        const debugMessage = new DebugMessage(this.scene);
-                        debugMessage.NotImplemented('もう無いよ！');
-                        return;
-                    }
-
-                    //パーティメンバーが2人以上の場合、使用するメンバーを選択する
-                    if (this.menuModel.getPlayerPartyList().length > 1) {
-
-                        const dataDefinition = new DataDefinition();
-
-                        const partyname: string[] = [];
-                        for (let i = 0; i < this.menuModel.getPlayerPartyList().length; i++) {
-                            const charcterName = dataDefinition.getSpriteNameData(this.scene, this.menuModel.getPlayerPartyList()[i].name);
-                            partyname.push(charcterName);
-                        }
-
-                        this.menuListWindow = new MenuListWindow(this.scene, this.menuModel);
-                        // ウィンドウの位置を中央付近に設定
-                        this.menuListWindow.x = 600;
-                        this.menuListWindow.y = 250;
-                        this.menuListWindow.create(partyname);
-
-                        // 選択時の処理
-                        this.menuListWindow.onSelect = (memberIndex: number) => {
-                            // 使用後の個数を反映
-                            const count = this.useItem(itemName.text, memberIndex);
-                            itemValue.setText(count.toString());
-                            if (count <= 0) {
-                                itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-                            }
-                            this.closeMenuListWindow();
-                        };
-
-                        this.backButtonCreate(this.menuListWindow.x + 116, this.menuListWindow.y - 40);
-
-                    } else {
-                        // 使用後の個数を反映（メンバー1人の場合はインデックス0）
-                        const count = this.useItem(itemName.text, 0);
-                        itemValue.setText(count.toString());
-                        if (count <= 0) {
-                            itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-                        }
-                    }
+                    this.selectedIndex = i;
+                    this.execItemUse(i);
                 }
             });
 
             this.itemNameList.push(itemName);
-
+            this.itemValueList.push(itemValue);
         }
 
-        this.selectAllow = new SelectAllow(this.scene);
-        this.selectAllow.init(0, 0);
-        this.selectAllow.createAllow();
-        this.selectAllow.setVisible(false);
-        this.add(this.selectAllow);
-
-        this.setDepth(this.mainWindowDepth + 50);
-        this.setMask(mainColumn.cropRectMask.createGeometryMask());
+        if (this.selectAllow) {
+            this.bringToTop(this.selectAllow);
+        }
     }
 
     private backButtonCreate(x: number, y: number) {
@@ -173,10 +150,21 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     }
 
     private closeMenuListWindow() {
-        if (this.menuListWindow) this.menuListWindow.destroy();
-        if (this.backButton) this.backButton.destroy();
-        if (this.backButtonWindow) this.backButtonWindow.destroy();
-        this.itemNameEnableInteractive();
+        if (this.menuListWindow) {
+            this.menuListWindow.destroy();
+            this.menuListWindow = null;
+        }
+        if (this.backButton) {
+            this.backButton.destroy();
+            this.backButton = null;
+        }
+        if (this.backButtonWindow) {
+            this.backButtonWindow.destroy();
+            this.backButtonWindow = null;
+        }
+
+        this.drawItemList();
+        this.repositionCursor();
     }
 
     useItem(itemName: string, memberIndex: number = 0): number {
@@ -190,22 +178,167 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     private itemNameDisableInteractive() {
         for (const itemName of this.itemNameList) {
             itemName.disableInteractive();
-            // 一律グレーアウトを廃止し、個数0のもののみグレー、他は維持（または半透明化など）
-            // 今回はユーザー要望に基づき、「0になったアイテムのみ対象」とするため一律変更は行わない
+            // 一律グレーアウト
+            itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
         }
     }
 
     private itemNameEnableInteractive() {
         for (const itemName of this.itemNameList) {
-            itemName.setInteractive({ useHandCursor: true });
-            
-            // 個数をチェックして色を戻す
+            // 個数をチェックして色とインタラクティブを制御
             const count = this.menuModel.getPlayerItemCount(itemName.text);
             if (count > 0) {
+                itemName.setInteractive({ useHandCursor: true });
                 itemName.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
             } else {
+                itemName.disableInteractive();
                 itemName.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
             }
+        }
+    }
+
+    private execItemUse(index: number) {
+        if (index < 0 || index >= this.itemNameList.length) return;
+
+        const itemName = this.itemNameList[index];
+
+        // カーソルを停止・非表示にし、テキストをグレーアウト
+        this.selectAllow.setVisible(false);
+        this.itemNameDisableInteractive();
+        this.scene.input.setDefaultCursor('default');
+
+        //アイテムが0以上かチェック
+        const count = this.menuModel.getItemData().values[itemName.text];
+        if (count <= 0 || count == undefined) {
+            const debugMessage = new DebugMessage(this.scene);
+            debugMessage.NotImplemented('もう無いよ！');
+            this.itemNameEnableInteractive();
+
+            // 再びカーソルを表示（0個のアイテムを避ける）
+            this.repositionCursor();
+            return;
+        }
+
+        //パーティメンバーが2人以上の場合、使用するメンバーを選択する
+        if (this.menuModel.getPlayerPartyList().length > 1) {
+
+            const dataDefinition = new DataDefinition();
+
+            const partyname: string[] = [];
+            for (let i = 0; i < this.menuModel.getPlayerPartyList().length; i++) {
+                const charcterName = dataDefinition.getSpriteNameData(this.scene, this.menuModel.getPlayerPartyList()[i].name);
+                partyname.push(charcterName);
+            }
+
+            this.menuListWindow = new MenuListWindow(this.scene, this.menuModel);
+            // ウィンドウの位置を中央付近に設定
+            this.menuListWindow.x = 600;
+            this.menuListWindow.y = 250;
+            this.menuListWindow.create(partyname);
+
+            // 選択時の処理
+            this.menuListWindow.onSelect = (memberIndex: number) => {
+                // 使用後の個数を反映
+                this.useItem(itemName.text, memberIndex);
+                this.closeMenuListWindow();
+            };
+
+            this.backButtonCreate(this.menuListWindow.x + 116, this.menuListWindow.y - 40);
+
+        } else {
+            // 使用後の個数を反映（メンバー1人の場合はインデックス0）
+            this.useItem(itemName.text, 0);
+            this.drawItemList();
+            this.repositionCursor();
+        }
+    }
+
+    private setupPadKeyboardInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        const onSelectStart = () => {
+            if (this.itemNameList.length > 0) {
+                this.isItemSelectMode = true;
+                this.canDecide = false;
+                // 1フレーム待ってから決定可能にする
+                this.scene.time.delayedCall(10, () => {
+                    this.canDecide = true;
+                });
+                this.selectedIndex = 0;
+                this.repositionCursor();
+            }
+        };
+
+        const onSelectEnd = () => {
+            this.isItemSelectMode = false;
+            this.selectAllow.setVisible(false);
+        };
+
+        this.scene.events.on('ItemSelectModeStart', onSelectStart);
+        this.scene.events.on('ItemSelectModeEnd', onSelectEnd);
+
+        // カーソル移動
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (this.selectedIndex + 2 < this.itemNameList.length) {
+                this.selectedIndex += 2;
+                this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (this.selectedIndex - 2 >= 0) {
+                this.selectedIndex -= 2;
+                this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.rightButton$.subscribe(() => {
+            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (this.selectedIndex + 1 < this.itemNameList.length && this.selectedIndex % 2 === 0) {
+                this.selectedIndex += 1;
+                this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.leftButton$.subscribe(() => {
+            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (this.selectedIndex - 1 >= 0 && this.selectedIndex % 2 === 1) {
+                this.selectedIndex -= 1;
+                this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
+            }
+        }));
+
+        // 決定
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.isItemSelectMode || !this.canDecide || this.menuListWindow) return;
+            this.execItemUse(this.selectedIndex);
+        }));
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        this.scene.events.off('ItemSelectModeStart');
+        this.scene.events.off('ItemSelectModeEnd');
+        super.destroy(fromScene);
+    }
+
+    private repositionCursor() {
+        if (!this.isItemSelectMode) return;
+
+        if (this.itemNameList.length > 0) {
+            // インデックスが範囲外（アイテムが削除された場合）なら最後尾に調整
+            if (this.selectedIndex >= this.itemNameList.length) {
+                this.selectedIndex = this.itemNameList.length - 1;
+            }
+
+            // drawItemList で個数1以上のものに絞っているため、ここでは単に位置を合わせるだけで良い
+            this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
+            this.selectAllow.setVisible(true);
+        } else {
+            // アイテムが一つも無くなった場合
+            this.selectAllow.setVisible(false);
         }
     }
 }

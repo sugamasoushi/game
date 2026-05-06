@@ -1,5 +1,7 @@
 import { MessageWindow } from "../../util/MessageWindow";
 import { MessageObject } from "../../util/MessageObject";
+import { GameStateManager } from '../../GameAllState/GameStateManager';
+import { State } from '../../lib/types';
 
 export class MenuButton {
 
@@ -12,13 +14,6 @@ export class MenuButton {
     private createMenuButton() {
         const gameConfigWidth: number = Number(this.gameScene.game.canvas.width);
         const gameConfigHeight: number = Number(this.gameScene.game.canvas.height);
-
-        // const MenuText = this.gameScene.add.text(gameConfigWidth - 100, gameConfigHeight - 100,
-        //     "MENU", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
-        // MenuText.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
-        // MenuText.setDepth(999999);
-        // MenuText.setScrollFactor(0);//スクロールに影響されなくなる
-
 
         //テキストを作成
         const messageObjectInstance = new MessageObject();
@@ -61,9 +56,15 @@ export class MenuButton {
         mainCamera.postFX.addBlur(2, 1, 1, 1, 0xffffff, 1);
 
         //画面更新を停止
-        this.gameScene.scene.pause();
-        //このシーンを消さずにメニューシーンを表示する
-        this.gameScene.scene.launch('Menu');
+        // this.gameScene.scene.pause();
+        // //このシーンを消さずにメニューシーンを表示する
+        // this.gameScene.scene.launch('Menu');
+
+        //状態管理クラス
+        const gameStateManager = GameStateManager.getInstance();
+
+        //状態更新
+        gameStateManager.updateState({ state: State.MENU }, 'MenuOpen');
     }
 
     private test() {

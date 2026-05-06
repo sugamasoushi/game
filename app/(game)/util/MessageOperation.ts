@@ -1,5 +1,8 @@
 import { GameScene, EventScene } from '../lib/types';
 import { Sound } from '../scenes/Sound';
+import { InputManager } from '@/app/(game)/core/input/InputManager';
+import { Subscription } from "rxjs";
+import { take } from "rxjs/operators";
 
 export class MessageOperation {
     private eventScene: GameScene | EventScene;
@@ -62,26 +65,26 @@ export class MessageOperation {
     //テキストのスクロールとクリアを実行する
     public textScroll(scene: Phaser.Scene, textObject: Phaser.GameObjects.Text, clickZone: Phaser.GameObjects.Zone, lineCount: number, allLineCount: number, textLine: number) {
         this.textObject = textObject;
-        const keyCode: string = 'keydown-A';
         const pointerOperation: string = 'pointerdown';
+        const inputManager = InputManager.getInstance(scene);
 
         return new Promise<void>(resolve => {
 
             if (allLineCount - lineCount > 0 && lineCount % textLine === 0) {
                 //次の行が存在し、現在の行数が2だった場合はスクロールする
 
-                //ゾーンをクリックするとテキストがスクロールされる
-                clickZone.once(pointerOperation, () => {//一回限りのイベント
-                    scene.input.keyboard!.off(keyCode);//キー入力OFF
+                //決定ボタン（スペース、仮想パッド〇、ゲームパッド〇）でスクロール
+                const sub = inputManager.decideButton$.pipe(take(1)).subscribe(() => {//take(1) オペレータを使用し、1回だけ通知を受け取る安全なサブスクリプション
+                    clickZone.off(pointerOperation);//マウス入力OFF
                     (async () => {
                         await this._scrollTween(scene, textObject);
                         resolve();
                     })();
                 });
 
-                //「A」キーを押下するとテキストがスクロールされる
-                scene.input.keyboard!.once(keyCode, () => {//一回限りのイベント
-                    clickZone.off(pointerOperation);//マウス入力OFF
+                //ゾーンをクリックするとテキストがスクロールされる
+                clickZone.once(pointerOperation, () => {//一回限りのイベント
+                    sub.unsubscribe();//購読解除
                     (async () => {
                         await this._scrollTween(scene, textObject);
                         resolve();
@@ -91,22 +94,7 @@ export class MessageOperation {
             } else if (allLineCount - lineCount === 0) {
 
                 //現在の行で終了の場合はテキストをクリアする
-                clickZone.once(pointerOperation, () => {//一回限りのイベント
-                    scene.input.keyboard!.off(keyCode);//キー入力OFF
-                    if (this.usePatern === 'BubbleTalk') {
-                        textObject.text = '';
-                        (async () => {
-                            await this._deleteTween(scene, this.messageObjectList);
-                            resolve();
-                        })();
-                    } else {
-                        // textObject.text = '';
-                        this.deleteObject()
-                        resolve();
-                    }
-                });
-
-                scene.input.keyboard!.once(keyCode, () => {//一回限りのイベント
+                const sub = inputManager.decideButton$.pipe(take(1)).subscribe(() => {
                     clickZone.off(pointerOperation);//マウス入力OFF
                     if (this.usePatern === 'BubbleTalk') {
                         textObject.text = '';
@@ -115,12 +103,25 @@ export class MessageOperation {
                             resolve();
                         })();
                     } else {
-                        // textObject.text = '';
                         this.deleteObject()
                         resolve();
                     }
                 });
 
+                //ゾーンをクリックするとテキストがクリアされる
+                clickZone.once(pointerOperation, () => {//一回限りのイベント
+                    sub.unsubscribe();//購読解除
+                    if (this.usePatern === 'BubbleTalk') {
+                        textObject.text = '';
+                        (async () => {
+                            await this._deleteTween(scene, this.messageObjectList);
+                            resolve();
+                        })();
+                    } else {
+                        this.deleteObject()
+                        resolve();
+                    }
+                });
 
             } else {
                 //現在行が1行目の場合、続けて2行目を表示

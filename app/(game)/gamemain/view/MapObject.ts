@@ -14,11 +14,15 @@ import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
 import { SearchCharacterData } from '../../Data/SearchCharacterData';
 import { TiledObjectEntity } from './character/TiledObjectEntity';
 import { CacheDataUpdate } from '@/app/(game)/core/CacheDataUpdate';
+import { InputManager } from '../../core/input/InputManager';
+import { State } from "../../lib/types";
 
 export class MapObject extends Phaser.GameObjects.Container {
     private fieldData: FieldData;
 
     private phaserEvents: Phaser.Events.EventEmitter;
+    private inputManager: InputManager
+    private wasCirclePressed = false;
 
     private gameScene: GameScene;
     private TileMap: TileMap;
@@ -29,9 +33,9 @@ export class MapObject extends Phaser.GameObjects.Container {
     private npcEnemyList: Npc[] = [];
 
     private eventObjects: Phaser.Physics.Arcade.StaticGroup;
-    private clickEventObjects: Phaser.Physics.Arcade.StaticGroup;
+    private clickEventObjects: Phaser.Physics.Arcade.Sprite[] = [];
     private mapMoveObjects: Phaser.Physics.Arcade.StaticGroup;
-    private chestSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
+    private chestSpriteObjects: Phaser.Physics.Arcade.Sprite[] = [];
     private treeGlassSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
     private treeStemSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
 
@@ -40,16 +44,20 @@ export class MapObject extends Phaser.GameObjects.Container {
     constructor(scene: GameScene) {
         super(scene);
         this.gameScene = scene;
+        this.addToUpdateList();
         this.dataDefinition = new DataDefinition();
         this.soundScene = this.gameScene.scene.get('Sound') as Sound;
     }
 
-    preUpdate(time: number) { }
+    preUpdate(time: number) {
+        this.checkVirtualPad();
+    }
 
-    public async execute(phaserEvents: Phaser.Events.EventEmitter, tileMap: TileMap, fieldData: FieldData, sceneKey: string) {
+    public async execute(phaserEvents: Phaser.Events.EventEmitter, tileMap: TileMap, fieldData: FieldData, sceneKey: string, inputManager: InputManager) {
         this.phaserEvents = phaserEvents;
         this.fieldData = fieldData;
         this.TileMap = tileMap;
+        this.inputManager = inputManager;
 
         // リストを初期化
         this.playerPartyList = [];
@@ -243,6 +251,8 @@ export class MapObject extends Phaser.GameObjects.Container {
                                 this.gameScene.physics.add.collider(npc!, player);
                             }
 
+                            npc!.setInputManager(this.inputManager);
+
                         } catch (e) {
                             console.log('NPC作成エラー')
                             console.log(e)
@@ -301,19 +311,19 @@ export class MapObject extends Phaser.GameObjects.Container {
 
         //静的オブジェクトに設定
         this.eventObjects = this.gameScene.physics.add.staticGroup(eventObjects);
-        this.clickEventObjects = this.gameScene.physics.add.staticGroup(clickEventObjects);
+        const clickEventObjectsArcadeStaticGroup = this.gameScene.physics.add.staticGroup(clickEventObjects);
         this.mapMoveObjects = this.gameScene.physics.add.staticGroup(mapMoveObjects);
 
-        this.chestSpriteObjects = this.gameScene.physics.add.staticGroup(chestSpriteObjects);
+        const chestSpriteObjectsArcadeStaticGroup: Phaser.Physics.Arcade.StaticGroup = this.gameScene.physics.add.staticGroup(chestSpriteObjects);
         this.treeGlassSpriteObjects = this.gameScene.physics.add.staticGroup(treeGlassSpriteObjects);
         this.treeStemSpriteObjects = this.gameScene.physics.add.staticGroup(treeStemSpriteObjects);
 
         //静的オブジェクトの子要素を取得
         const eventObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.eventObjects.getChildren();
-        const clickEventObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.clickEventObjects.getChildren();
+        const clickEventObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = clickEventObjectsArcadeStaticGroup.getChildren();
         const mapMoveObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.mapMoveObjects.getChildren();
 
-        const chestSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.chestSpriteObjects.getChildren();
+        const chestSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = chestSpriteObjectsArcadeStaticGroup.getChildren();
         const treeGlassSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.treeGlassSpriteObjects.getChildren();
         const treeStemSpriteObjectStaticGroupChildren: Phaser.GameObjects.GameObject[] = this.treeStemSpriteObjects.getChildren();
 
@@ -322,6 +332,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         }
         for (const obj of clickEventObjectStaticGroupChildren) {
             this.settingClickEventObject(obj as Phaser.Physics.Arcade.Sprite);
+            this.clickEventObjects.push(obj as Phaser.Physics.Arcade.Sprite);
         }
         for (const obj of mapMoveObjectStaticGroupChildren) {
             this.settingMapMoveObject(obj as Phaser.Physics.Arcade.Sprite);
@@ -329,6 +340,7 @@ export class MapObject extends Phaser.GameObjects.Container {
 
         for (const obj of chestSpriteObjectStaticGroupChildren) {
             this.settingChestSpriteObject(obj as Phaser.Physics.Arcade.Sprite, 'tex_Chests');
+            this.chestSpriteObjects.push(obj as Phaser.Physics.Arcade.Sprite);
         }
         for (const obj of treeGlassSpriteObjectStaticGroupChildren) {
             this.settingTreeGlassSpriteObjects(obj as Phaser.Physics.Arcade.Sprite);
@@ -383,10 +395,6 @@ export class MapObject extends Phaser.GameObjects.Container {
 
     private settingClickEventObject(obj: Phaser.Physics.Arcade.Sprite): void {
 
-        //吹き出し会話を設定
-        const bubbleTalk = new BubbleTalk(this.gameScene, undefined, obj.name);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
-        bubbleTalk.init();
-
         //有効状態に設定
         obj.state = ObjState.true;
 
@@ -397,37 +405,21 @@ export class MapObject extends Phaser.GameObjects.Container {
             this.gameScene.getPlayer().stopAnimation();
             if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
 
-                //プレイヤーとオブジェクトのチェック
-                const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
+                // //吹き出し会話を設定
+                // const bubbleTalk = new BubbleTalk(this.gameScene, undefined, obj.name);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
+                // bubbleTalk.init();
 
-                //キャラ向きとオブジェクト位置からイベント発生可否をチェック
-                if (fieldPlayerChk.checkPlayerClickEvent()) {
-                    bubbleTalk!.execTalk();
-                }
+                // //プレイヤーとオブジェクトのチェック
+                // const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
+
+                // //キャラ向きとオブジェクト位置からイベント発生可否をチェック
+                // if (fieldPlayerChk.checkPlayerClickEvent()) {
+                //     bubbleTalk!.execTalk();
+                // }
+                this.execClickEvent(obj);
             }
         })
-        //プレイヤーとの距離が40未満の場合
-        if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
-            obj.on('pointerdown', () => {
 
-                //キー押下
-                // this.scene.input.keyboard.on(this.keyCode, async () => {
-                //     this.scene.keys.P.setEmitOnRepeat(false)//押下時、一度だけイベントを発行する。（設定しないと押下中にイベントが発行され続ける）
-
-                //     this._positionLeftRightCheck();//キャラの位置関係を確認
-                //     this.sprite.turnAround();
-                //     this.scene.deviceSetting.deviceEventFalse();
-                //     this.scene.mapManage.mapNpcList.forEach(list => {
-                //         list.bubbleTalkFlag = true;
-                //     });
-
-                //     for (let i = 0; i < talkData.length; i++) {
-                //         await this._execTalk(Object.keys(talkData[i])[0], talkData[i][Object.keys(talkData[i])]);
-                //     }
-                //     this._reSetting();
-                // })
-            })
-        }
         obj.setDepth(-100);
 
         // シーン終了時にイベントを破棄
@@ -523,12 +515,10 @@ export class MapObject extends Phaser.GameObjects.Container {
     private settingChestSpriteObject(obj: Phaser.Physics.Arcade.Sprite, imageKey: string) {
 
         //id無し宝箱はランダム生成
-        console.log(obj.getData('id'))
         if (!obj.getData('id') === null || obj.getData('id') === undefined) {
             if (new Phaser.Math.RandomDataGenerator().between(0, 2) >= 1) {//2/3の確率で出現
                 //ランダム生成した宝箱の場合は、配置しない（削除する）
                 obj.destroy();
-                console.log('remove random box');
                 return;
             }
         }
@@ -559,71 +549,72 @@ export class MapObject extends Phaser.GameObjects.Container {
         if (obj.getData('id') !== null && this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] === 0) {
             obj.play('chest_open');
         } else {
-            const bubbleTalkKey = obj.getData('bubbleTalkKey');
-            const getItemName = obj.getData('item');
-            const getItemNum = obj.getData('num');
-
-            let bubbleTalk: BubbleTalk;
-
-            //吹き出し会話を設定
-            if (bubbleTalkKey) {
-                bubbleTalk = new BubbleTalk(this.gameScene, undefined, bubbleTalkKey);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
-                bubbleTalk.init();
-            }
 
             //クリック可能にする
             obj.setInteractive({ useHandCursor: true });
 
             //クリックイベント
             obj.on('pointerdown', async () => {
-                if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
+                // if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
 
-                    //プレイヤーとオブジェクトのチェック
-                    const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
+                //     const getItemName = obj.getData('item');
+                //     const getItemNum = obj.getData('num');
+                //     const bubbleTalkKey = obj.getData('bubbleTalkKey');
 
-                    //キャラ向きとオブジェクト位置からイベント発生可否をチェック
-                    if (fieldPlayerChk.checkPlayerClickEvent()) {
+                //     //吹き出し会話を設定
+                //     let bubbleTalk: BubbleTalk;
+                //     if (bubbleTalkKey) {
+                //         bubbleTalk = new BubbleTalk(this.gameScene, undefined, bubbleTalkKey);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
+                //         bubbleTalk.init();
+                //     }
 
-                        //メッセージ表示
-                        new Promise<void>(resolve => {
-                            const time = 1500
-                            this.gameScene.time.delayedCall(time, () => {
+                //     //プレイヤーとオブジェクトのチェック
+                //     const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
 
-                                //待機時間後、吹き出しメッセージがある場合は開始
-                                if (bubbleTalk) { bubbleTalk.execTalk(); }
-                                this.gameScene.events.emit('GAME_INPUT_TRUE');
-                                resolve();
-                            }, [], this.scene);
-                            this.gameScene.events.emit('GAME_INPUT_FALSE');
-                            this.gameScene.events.emit('FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
-                        });
+                //     //キャラ向きとオブジェクト位置からイベント発生可否をチェック
+                //     if (fieldPlayerChk.checkPlayerClickEvent()) {
 
-                        obj.play('chest_open');
-                        this.soundScene.SE_chestOpen.play();
+                //         //メッセージ表示
+                //         new Promise<void>(resolve => {
+                //             const time = 1500
+                //             this.gameScene.time.delayedCall(time, () => {
 
-                        //プレイヤーの持ち物を更新
-                        this.gameScene.getPlayer().stopAnimation();
+                //                 //待機時間後、吹き出しメッセージがある場合は開始
+                //                 if (bubbleTalk) { bubbleTalk.execTalk(); }
+                //                 this.gameScene.events.emit('GAME_INPUT_TRUE');
+                //                 resolve();
+                //             }, [], this.scene);
+                //             this.gameScene.events.emit('GAME_INPUT_FALSE');
+                //             this.gameScene.events.emit('FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
+                //         });
 
-                        //アイテムを持ってない場合、初期化
-                        if (!this.gameScene.getPlayer().getData(getItemName)) {
-                            this.gameScene.getPlayer().setData(getItemName, 0);
-                        }
-                        this.gameScene.getPlayer().data.values[getItemName] += getItemNum;
+                //         obj.play('chest_open');
+                //         this.soundScene.SE_chestOpen.play();
 
-                        //idが存在する場合はキャッシュのフラグを更新
-                        if (obj.getData('id') !== null) {
-                            this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] = 0;
-                        }
+                //         //プレイヤーの持ち物を更新
+                //         this.gameScene.getPlayer().stopAnimation();
 
-                        //キャッシュを更新
-                        const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
-                        cacheDataUpdate.phaserCacheDataUpdate();
+                //         //アイテムを持ってない場合、初期化
+                //         if (!this.gameScene.getPlayer().getData(getItemName)) {
+                //             this.gameScene.getPlayer().setData(getItemName, 0);
+                //         }
+                //         this.gameScene.getPlayer().data.values[getItemName] += getItemNum;
 
-                        //オブジェクトのインタラクティブを無効化
-                        obj.setInteractive({ useHandCursor: false });
-                        obj.off('pointerdown');
-                    }
-                }
+                //         //idが存在する場合はキャッシュのフラグを更新
+                //         if (obj.getData('id') !== null) {
+                //             this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] = 0;
+                //         }
+
+                //         //キャッシュを更新
+                //         const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
+                //         cacheDataUpdate.phaserCacheDataUpdate();
+
+                //         //オブジェクトのインタラクティブを無効化
+                //         obj.setInteractive({ useHandCursor: false });
+                //         obj.off('pointerdown');
+                //     }
+                // }
+                this.execOpenChest(obj);
             })
 
             // シーン終了時にイベントを破棄
@@ -668,6 +659,122 @@ export class MapObject extends Phaser.GameObjects.Container {
     }
     public getFieldNpclList(): Npc[] {
         return this.npcNormalList;
+    }
+
+    private checkVirtualPad() {
+        if (!this.inputManager) return;
+
+        const dir = this.inputManager.virtualPadDirection;
+        const isCirclePressed = dir === 'faceCircle';
+
+        //〇ボタンが押された場合
+        if (isCirclePressed && !this.wasCirclePressed) {
+
+            //クリックイベント
+            for (const obj of this.clickEventObjects) {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(obj.getBounds(), this.gameScene.getPlayer().getBounds())) {
+                    this.execClickEvent(obj);
+                }
+            }
+
+            //宝箱を開ける
+            for (const obj of this.chestSpriteObjects) {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(obj.getBounds(), this.gameScene.getPlayer().getBounds())) {
+                    this.execOpenChest(obj);
+                }
+            }
+        }
+        this.wasCirclePressed = isCirclePressed;
+    }
+
+    private execClickEvent(obj: Phaser.Physics.Arcade.Sprite) {
+
+        //状態管理クラス
+        const manager = GameStateManager.getInstance();
+
+        //操作ロックされている場合、何もしない
+        if (manager.currentState !== State.NOSTATE) return;
+
+        //吹き出し会話を設定
+        const bubbleTalk = new BubbleTalk(this.gameScene, undefined, obj.name);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
+        bubbleTalk.init();
+
+        //プレイヤーとオブジェクトのチェック
+        const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
+
+        //キャラ向きとオブジェクト位置からイベント発生可否をチェック
+        if (fieldPlayerChk.checkPlayerClickEvent()) {
+            bubbleTalk!.execTalk();
+        }
+    }
+
+    private execOpenChest(obj: Phaser.Physics.Arcade.Sprite) {
+
+        if (obj.getData('num') <= 0) return;
+
+        //プレイヤーとの距離が近い場合
+        if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
+            const getItemName = obj.getData('item');
+            const getItemNum = obj.getData('num');
+            const bubbleTalkKey = obj.getData('bubbleTalkKey');
+
+            //吹き出し会話を設定
+            let bubbleTalk: BubbleTalk;
+            if (bubbleTalkKey) {
+                bubbleTalk = new BubbleTalk(this.gameScene, undefined, bubbleTalkKey);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
+                bubbleTalk.init();
+            }
+
+            //プレイヤーとオブジェクトのチェック
+            const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
+
+            //キャラ向きとオブジェクト位置からイベント発生可否をチェック
+            if (fieldPlayerChk.checkPlayerClickEvent()) {
+
+                //メッセージ表示
+                new Promise<void>(resolve => {
+                    const time = 1500
+                    this.gameScene.time.delayedCall(time, () => {
+
+                        //待機時間後、吹き出しメッセージがある場合は開始
+                        if (bubbleTalk) { bubbleTalk.execTalk(); }
+                        this.gameScene.events.emit('GAME_INPUT_TRUE');
+                        resolve();
+                    }, [], this.scene);
+                    this.gameScene.events.emit('GAME_INPUT_FALSE');
+                    this.gameScene.events.emit('FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
+                });
+
+                obj.play('chest_open');
+                this.soundScene.SE_chestOpen.play();
+
+                //プレイヤーの持ち物を更新
+                this.gameScene.getPlayer().stopAnimation();
+
+                //アイテムを持ってない場合、初期化
+                if (!this.gameScene.getPlayer().getData(getItemName)) {
+                    this.gameScene.getPlayer().setData(getItemName, 0);
+                }
+                this.gameScene.getPlayer().data.values[getItemName] += getItemNum;
+
+                //idが存在する場合はキャッシュのフラグを更新
+                if (obj.getData('id') !== null) {
+                    this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] = 0;
+                }
+
+                //個数を更新
+                obj.setData('num', 0);
+
+                //キャッシュを更新
+                const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
+                cacheDataUpdate.phaserCacheDataUpdate();
+
+                //オブジェクトのインタラクティブを無効化
+                obj.setInteractive({ useHandCursor: false });
+                obj.off('pointerdown');
+            }
+        }
+
     }
 
 }

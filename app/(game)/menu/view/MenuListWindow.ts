@@ -2,6 +2,8 @@ import { MenuModel } from "../model/MenuModel";
 import { MessageObject } from "../../util/MessageObject";
 import { SelectAllow } from "../../util/SelectAllow";
 import { MessageWindow } from "../../util/MessageWindow";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class MenuListWindow extends Phaser.GameObjects.Container {
 
@@ -12,6 +14,9 @@ export class MenuListWindow extends Phaser.GameObjects.Container {
 
     public selectAllow: SelectAllow;
     public onSelect: (index: number) => void;
+
+    private selectedIndex: number = 0;
+    private subs = new Subscription();
 
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
@@ -79,5 +84,42 @@ export class MenuListWindow extends Phaser.GameObjects.Container {
             option.setDepth(baseDepth + 1);
         }
         this.selectAllow.setDepth(baseDepth + 2);
+
+        this.setupPadKeyboardInput();
+    }
+
+    private setupPadKeyboardInput() {
+        if (this.options.length > 0) {
+            this.selectedIndex = 0;
+            this.selectAllow.setVisible(true);
+            this.selectAllow.updatePosition(this.options[0]);
+        }
+
+        const inputManager = InputManager.getInstance(this.scene);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (this.selectedIndex + 1 < this.options.length) {
+                this.selectedIndex += 1;
+                this.selectAllow.updatePosition(this.options[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (this.selectedIndex - 1 >= 0) {
+                this.selectedIndex -= 1;
+                this.selectAllow.updatePosition(this.options[this.selectedIndex]);
+            }
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (this.onSelect) {
+                this.onSelect(this.selectedIndex);
+            }
+        }));
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
     }
 }

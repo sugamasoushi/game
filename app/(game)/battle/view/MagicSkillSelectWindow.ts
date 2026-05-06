@@ -4,6 +4,8 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
 import { SearchSkill } from "../../Data/SearchSkill";
 import { SkillDetail } from "../../lib/types";
+import { InputManager } from "../../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
@@ -21,6 +23,8 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
     private backButtonWindow: MessageWindow;
 
     private characterIcon: Phaser.GameObjects.Image;
+    private canDecide: boolean = false;
+    private subs = new Subscription();
 
     constructor(battleScene: BattleScene) {
         super(battleScene);
@@ -33,10 +37,9 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         this.x = 0;
         this.y = 0;
         this.name = MagicSkillSelectWindow.name;
-    }
-
-    preUpdate() {
-        this.updateSelectNo();
+        this.setVisible(false);
+        this.setActive(false);
+        this.setupInput();
     }
 
     private createSkillList() {
@@ -99,8 +102,10 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         messageWindowInstance.createEventMessageWindow(this.selectList[0]);
         this.messageWindow = messageWindowInstance;
 
+        const windowWidth = 400; //TODO:動的に取得
+
         //戻るボタン
-        this.backButtonCreate(this.messageWindow.x + this.messageWindow.width - 16, this.messageWindow.y - 16);
+        this.backButtonCreate(this.messageWindow.x + windowWidth, this.messageWindow.y);
 
         //カーソル作成、初期位置設定
         this.allow = new SelectAllow(this.scene);
@@ -143,16 +148,84 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         this.backButton.setDepth(this.backButtonWindow.depth + 1);
         this.backButton.setInteractive({ useHandCursor: true });
         this.backButton.on('pointerdown', () => {
-            this.emit('Select_back_Submit');
-
-            //スキルリストのみ削除
-            for (const list of this.selectList) {
-                list.destroy();
-            }
-            this.selectList = [];
-
-            this.nowSelectNo = 0;
+            this.backSubmit();
         }, this);
+    }
+
+    private backSubmit() {
+        this.emit('Select_back_Submit');
+
+        //スキルリストのみ削除
+        for (const list of this.selectList) {
+            list.destroy();
+        }
+        this.selectList = [];
+
+        this.nowSelectNo = 0;
+    }
+
+    private setupInput() {
+        const inputManager = InputManager.getInstance(this.scene);
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(this.maxColumns);
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(-this.maxColumns);
+        }));
+
+        this.subs.add(inputManager.rightButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(1);
+        }));
+
+        this.subs.add(inputManager.leftButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.navigate(-1);
+        }));
+
+        this.subs.add(inputManager.decideButton$.subscribe(() => {
+            if (!this.visible || !this.active || !this.canDecide) return;
+            if (this.selectList.length > 0) {
+                const playerData = this.nowSelectCharacter.data.list;
+                const magicSkills = playerData.magic || [];
+                const skillId = magicSkills[this.nowSelectNo];
+                if (skillId) {
+                    const searchSkill = new SearchSkill(this.scene.cache.json);
+                    const skillDetail: SkillDetail = searchSkill.getSkillData('magic', skillId)!;
+                    this.nowSelectCharacter.setData('SkillType', 'magic');
+                    this.nowSelectCharacter.setData('UseSkill', skillDetail);
+                    this.selectExec(skillDetail.type);
+                }
+            }
+        }));
+
+        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+            if (!this.visible || !this.active) return;
+            this.backSubmit();
+        }));
+    }
+
+    private navigate(offset: number) {
+        const maxNo = this.selectList.length;
+        if (maxNo === 0) return;
+
+        let newSelectNo = this.nowSelectNo + offset;
+        if (newSelectNo < 0) newSelectNo = 0;
+        if (newSelectNo >= maxNo) newSelectNo = maxNo - 1;
+
+        if (newSelectNo !== this.nowSelectNo) {
+            this.nowSelectNo = newSelectNo;
+            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+        }
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
     }
 
     //選択実行
@@ -179,6 +252,7 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         if (data) {
             this.nowSelectCharacter = data;
         }
+        this.nowSelectNo = 0;
 
         //キャラクター固有のリストの為、show()で作成
         this.createSkillList();
@@ -190,17 +264,25 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         this.backButtonWindow.setVisible(true);
 
         this.enableSelect();
+
+        this.canDecide = false;
+        this.scene.time.delayedCall(10, () => {
+            this.canDecide = true;
+        });
     }
 
     hide() {
-        this.messageWindow.setVisible(false);
-        this.allow.setVisible(false);
-        this.backButton.setVisible(false);
-        this.backButtonWindow.setVisible(false);
+        this.setVisible(false);
+        this.setActive(false);
+
+        if (this.messageWindow) this.messageWindow.setVisible(false);
+        if (this.allow) this.allow.setVisible(false);
+        if (this.backButton) this.backButton.setVisible(false);
+        if (this.backButtonWindow) this.backButtonWindow.setVisible(false);
 
         //スキルリストのみ削除
         for (const list of this.selectList) {
-            list.destroy();
+            if (list) list.destroy();
         }
         this.selectList = [];
     }
@@ -209,40 +291,9 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         this.disableSelect();
     }
 
-    private updateSelectNo() {
-        const maxNo = this.selectList.length;
-        if (maxNo === 0) return;
-
-        const cursor: Phaser.Types.Input.Keyboard.CursorKeys = (this.scene as BattleScene).getCursorsKeys();
-
-        let newSelectNo = this.nowSelectNo;
-
-        if (cursor.down.isDown) {
-            cursor.down.isDown = false;
-            newSelectNo += this.maxColumns;
-        } else if (cursor.up.isDown) {
-            cursor.up.isDown = false;
-            newSelectNo -= this.maxColumns;
-        } else if (cursor.right.isDown) {
-            cursor.right.isDown = false;
-            newSelectNo += 1;
-        } else if (cursor.left.isDown) {
-            cursor.left.isDown = false;
-            newSelectNo -= 1;
-        }
-
-        // 範囲内に収める
-        if (newSelectNo < 0) newSelectNo = 0;
-        if (newSelectNo >= maxNo) newSelectNo = maxNo - 1;
-
-        if (newSelectNo !== this.nowSelectNo) {
-            this.nowSelectNo = newSelectNo;
-            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
-        }
-    }
-
     //テキストクリック可
     enableSelect() {
+        this.setActive(true);
         //this.allow.lightUp();
         this.lightUp();
         this.setVisible(true);
@@ -254,6 +305,7 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
 
     //テキストクリック不可
     disableSelect() {
+        this.setActive(false);
         this.allow.lightDown();
         this.lightDown();
         this.selectList.forEach(obj => {

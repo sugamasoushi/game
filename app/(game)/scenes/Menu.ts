@@ -19,7 +19,6 @@ export class Menu extends Phaser.Scene {
     constructor() { super('Menu'); }
 
     init() {
-        console.log('Menu');
         this.gameScene = (this.scene.get('Game') as GameScene);
 
         // 各クラスのインスタンス化
