@@ -47,8 +47,8 @@ const config: Phaser.Types.Core.GameConfig = {
     // },
     scene: [
         Boot,
-        SceneController,
         UI,
+        SceneController,
         Title,
         Load,
         MainMenu,

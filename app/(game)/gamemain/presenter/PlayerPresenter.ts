@@ -6,10 +6,12 @@ import { GameStateManager, gameStateManager } from "../../GameAllState/GameState
 import { FieldAttack } from '../view/character/Action/FieldAttack';
 import { DataDefinition } from '../../Data/DataDefinition';
 import { FieldMapModel } from "../model/FieldMapModel";
+import { Subscription } from "rxjs";
 
 export class PlayerPresenter {
     private player: Player;
     private fieldAttack: FieldAttack;
+    private subs = new Subscription();
 
     constructor(
         private gameScene: GameScene,
@@ -42,8 +44,11 @@ export class PlayerPresenter {
             (playerPartyList[2] as Player).setInputManager(this.inputManager);
         }
 
+        this.gameScene.events.once('shutdown', () => {
+            this.subs.unsubscribe();
+        });
+
         this.setAnyObject();
-        this.fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
     }
 
     //画像などの紐づけを行う。※非同期になっているのか分からないがMapObjectで生成するとカメラ設定が先に動いてヌルポになる
@@ -92,19 +97,21 @@ export class PlayerPresenter {
     private execFieldAttack() {
 
         //Pキー押下
-        this.inputManager.action$.subscribe((action) => {
+        this.subs.add(this.inputManager.action$.subscribe((action) => {
             if (action === 'P') {
                 console.log("Pキー押下")
-                this.fieldAttack.frameBullet(this.player.x, this.player.y);
+                const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
+                fieldAttack.frameBullet(this.player.x, this.player.y);
             }
-        });
+        }));
 
-        this.inputManager.fieldAttackButton$.subscribe(() => {
+        this.subs.add(this.inputManager.fieldAttackButton$.subscribe(() => {
             console.log("FieldAttackボタン押下")
-            this.fieldAttack.frameBullet(this.player.x, this.player.y);
-        });
+            const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
+            fieldAttack.frameBullet(this.player.x, this.player.y);
+        }));
 
-        this.inputManager.menuButton$.subscribe(() => {
+        this.subs.add(this.inputManager.menuButton$.subscribe(() => {
             console.log("メニューボタン押下")
 
             //状態管理クラス
@@ -121,13 +128,14 @@ export class PlayerPresenter {
             //状態更新
             gameStateManager.updateState({ state: State.MENU }, 'menu');
 
-        });
+        }))
 
         //右クリック
         this.inputManager.phaserInput.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             if (pointer.rightButtonDown()) {
                 pointer.reset();//入力状態をリセット、リセットしないと押下中に連続で処理される
-                this.fieldAttack.frameBullet(this.player.x, this.player.y);
+                const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
+                fieldAttack.frameBullet(this.player.x, this.player.y);
             }
         })
     }

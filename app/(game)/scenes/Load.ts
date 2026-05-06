@@ -232,6 +232,10 @@ export class Load extends Scene {
 
             //状態更新
             manager.updateState({ state: State.FIELD }, data.sceneKey)
+            if (data.sceneKey === 'New Game') return;
+            
+            // 再表示する（起こす）
+            this.scene.wake('UI');
         });
 
         // アセットのロードを開始（preload外でロードを行う場合はこのメソッドを呼ぶ必要がある）

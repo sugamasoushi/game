@@ -90,6 +90,7 @@ export class LeftButton {
     }
 
     public fadeIn() {
+        console.log("fadeIn");
         const duration = 200;
 
         const radius = 48 * 1.6;
@@ -103,6 +104,7 @@ export class LeftButton {
                 ease: 'Power1',
                 onComplete: () => {
                     button.setInteractive({ useHandCursor: true });
+
                 }
             });
         }
@@ -149,6 +151,7 @@ export class LeftButton {
     }
 
     public setDisable() {
+        console.log("setDisable");
         this.hitZone.disableInteractive();
         for (const button of this.buttons) {
             button.setAlpha(0.3);

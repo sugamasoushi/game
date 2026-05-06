@@ -101,6 +101,11 @@ export class FieldPresenter {
         this.gameScene.events.once('FADE_IN_COMPLETE', () => {
             if (gameStateManager.currentState !== State.EVENT) {
                 this.inputManager.setState(true);
+
+                // フィールド遷移完了後、イベント中でなければ通常状態へ
+                if (gameStateManager.currentState === State.FIELD) {
+                    gameStateManager.updateState({ state: State.NOSTATE }, 'FieldReady');
+                }
             }
         });
 

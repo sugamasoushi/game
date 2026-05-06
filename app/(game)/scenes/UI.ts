@@ -47,6 +47,11 @@ export class UI extends Scene {
             //this.menuButton.fadeIn();
         });
 
+        this.game.events.on('UI_FORCE_OFF', () => {
+            this.leftButton.setDisable();
+            this.rightButton.setDisable();
+        });
+
         //イベントの解除
         this.game.events.once('shutdown', () => {
             //this.game.events.off('UI_OPEN');

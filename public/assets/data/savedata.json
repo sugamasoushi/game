@@ -36,7 +36,7 @@
         }
     },
     "playerData2": {
-        "PartyMemberFlg": true,
+        "PartyMemberFlg": false,
         "status": {
             "Lv": 1,
             "HP": 40,

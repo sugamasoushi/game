@@ -70,7 +70,8 @@ export class SceneController extends Scene {
         manager.updateState({ state: State.START }, '')
 
         this.scene.launch('UI');
-        this.scene.bringToTop('UI')
+        this.scene.bringToTop('UI');
+        this.scene.sleep('UI');// 非表示にする（眠らせる）
     }
 
     private handleStateChange(state: State, sceneKey: string) {
@@ -92,17 +93,14 @@ export class SceneController extends Scene {
             case State.FIELD:
                 console.log('Game')
                 this.scene.launch('Game', { sceneKey });
-                manager.updateState({ state: State.NOSTATE }, '')
                 break;
             case State.FIELD_RESTART:
                 console.log('Game restart', sceneKey)
                 this.scene.get('Game').scene.restart({ sceneKey });
-                manager.updateState({ state: State.NOSTATE }, '')
                 break;
             case State.FIELD_RESUME:
                 console.log('Game resume', sceneKey)
                 this.scene.get('Game').scene.resume();
-                manager.updateState({ state: State.NOSTATE }, '')
                 break;
             case State.BATTLE:
                 console.log('Battle')

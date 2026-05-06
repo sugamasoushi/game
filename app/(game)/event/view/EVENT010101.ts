@@ -111,5 +111,9 @@ export class EVENT010101 extends BaseEvent {
 
         //設定を戻す
         this.gameScene.events.emit('EVENT_END', true)
+
+        // 再表示する（起こす）
+        const uiScene = this.eventScene.scene.get('UI') as Phaser.Scene;
+        this.eventScene.scene.wake('UI');
     }
 }

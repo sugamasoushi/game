@@ -168,6 +168,9 @@ export class Battle extends Phaser.Scene implements BattleScene {
                 const cacheDataUpdate = new CacheDataUpdate(this);
                 cacheDataUpdate.phaserCacheDataUpdate();
 
+                //状態更新
+                manager.updateState({ state: State.NOSTATE }, 'BattleEnd');
+
                 this.events.emit('shutdown')
             }
         });

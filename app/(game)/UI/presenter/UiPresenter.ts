@@ -43,9 +43,10 @@ export class UiPresenter {
         // 全てフェードイン
         this.uiScene.events.on('UI_FADEIN_START', () => {
             const state = gameStateManager.currentState;
-            if (state === State.FIELD || state === State.START || state === State.LOAD || state === State.EVENT) {
+            if (state === State.START || state === State.LOAD || state === State.EVENT || state === State.FIELD) {
                 return;
             }
+            console.log("UI_FADEIN_START");
             //this.menuButton.fadeIn();
             this.leftButton.fadeIn();
             this.rightButton.fadeIn();
@@ -60,24 +61,18 @@ export class UiPresenter {
 
         // ゲーム状態の監視
         this.subs.add(gameStateManager.state$.subscribe((stateData) => {
+            console.log(stateData);
 
-            if (stateData.state === State.START || stateData.state === State.LOAD) {
-                //this.menuButton.fadeOut();
-                this.leftButton.fadeOut();
-                this.rightButton.fadeOut();
-            } else if (stateData.state === State.EVENT) {
-                //this.menuButton.setDisable();
-                this.leftButton.setDisable();
-                this.rightButton.setDisable();
-            } else if (stateData.state === State.BATTLE || stateData.state === State.MENU) {
-                //this.menuButton.fadeOut();
-            } else {
+            if (stateData.state == State.NOSTATE) {
                 // 通常状態
                 // 既にfadeOutしている場合はfadeInを呼び、半透明なら解除する
                 //this.menuButton.fadeIn();
                 this.leftButton.fadeIn();
                 this.rightButton.fadeIn();
             }
+
+
+
         }));
 
         // シーン終了時の破棄
