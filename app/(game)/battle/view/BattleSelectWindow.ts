@@ -182,22 +182,18 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
 
     //テキストクリック可
     enableSelect() {
+        this.setAlpha(1);
         this.setActive(true);
         this.allow.lightUp();
         this.lightUp();
         this.selectList.forEach((obj) => {
             obj.setInteractive({ useHandCursor: true });//テキストをクリック可能にする
-
-            //未実装項目をグレーアウト
-            if (obj.name === '設定') {
-                obj.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
-            }
         });
-
     }
 
     //テキストクリック不可
     disableSelect() {
+        this.setAlpha(0.5);
         this.setActive(false);//更新を停止
         this.allow.lightDown();
         this.lightDown();

@@ -59,13 +59,22 @@ export default class PlayerAttack {
 
                     this.leanBack(this.targetEnemy)
                 ]);
+                //ダメージ計算処理
+                // (自身の攻撃力 + スキル威力) - (ターゲットのガード値)
+                const baseAttack = this.attacker.getData('Attack') || 0;
+                const skillValue = skillDetail?.value || 0;
+                const guardBonus = this.targetEnemy.getData('GuardValue') || 0;
+
+                const totalAttack = baseAttack + skillValue;
+                const damage = Math.max(totalAttack - guardBonus, 1);
+
                 await Promise.all([
-                    battleMessageWindow.messageOutput(this.targetEnemy.getData('name') + 'に' + this.attacker.getData('Attack') + 'のダメージ！', undefined),
+                    battleMessageWindow.messageOutput(this.targetEnemy.getData('name') + 'に' + damage + 'のダメージ！', undefined),
                     this.blinking(this.targetEnemy)
                 ]);
 
-                //計算処理
-                this.targetEnemy.data.values.HP -= this.attacker.getData('Attack');
+                //HP更新
+                this.targetEnemy.data.values.HP -= damage;
 
                 //HPチェック
                 if (this.targetEnemy.data.values.HP <= 0) {

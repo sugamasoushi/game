@@ -41,8 +41,13 @@ export default class EnemyAttack {
                     this.leanBack()
                 ]);
 
+                //ダメージ計算（ガード状態の時のみ、そのキャラクターの防御値を差し引く）
+                const baseAttack = this.attacker.getData('Attack') || 0;
+                const guardBonus = this.target.getData('GuardValue') || 0;
+                const damage = Math.max(baseAttack - guardBonus, 1);
+
                 await Promise.all([
-                    battleMessageWindow.messageOutput(this.target.getData('name') + 'に' + this.attacker.getData('Attack') + 'のダメージ！', undefined),
+                    battleMessageWindow.messageOutput(this.target.getData('name') + 'に' + damage + 'のダメージ！', undefined),
                     this.blinking(targetIcon)
                 ]);
 
@@ -58,12 +63,7 @@ export default class EnemyAttack {
                     // this.target.setData('guardPoint', 0);
                 }
 
-                //ダメージ計算
-                let GuardValue = 0;
-                if (this.target.getData('GuardValue')) {
-                    GuardValue = this.target.getData('GuardValue');
-                }
-                const damage = Math.max(this.attacker.getData('Attack') - GuardValue, 1);
+                //HP更新
                 this.target.data.values.HP -= damage;
                 if (this.target.data.values.HP <= 0) {
                     this.target.data.values.HP = 0;

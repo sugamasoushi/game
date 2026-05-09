@@ -24,8 +24,12 @@ export default class PlayerGuard {
             this.battler = battler;
 
             //ガード値を設定
+            // スキルが未設定（オート時など）の場合は基本防御力をそのままボーナスとして設定
             const skillDetail: SkillDetail = this.battler.getData('UseSkill');
-            this.battler.setData('GuardValue', skillDetail.value);
+            const baseGuard = this.battler.getData('Guard') || 0;
+            const skillValue = skillDetail?.value || baseGuard; 
+            
+            this.battler.setData('GuardValue', skillValue);
 
             (async () => {
 

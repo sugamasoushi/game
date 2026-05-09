@@ -485,18 +485,24 @@ export class BattlePresenter {
                 battler.setData('BattleTarget', targetEnemy);
             }
 
-            //攻撃対象が存在しない場合は防御スキルとなる（回復も含む）
-            if (!battler.getData('BattleTarget')) {
+            // 攻撃意図の確認（スキルが防御系かどうか）
+            const skillDetail = battler.getData('UseSkill');
+            const isGuardSkill = skillDetail?.type === 'guard';
+            const target = battler.getData('BattleTarget');
+
+            if (isGuardSkill) {
+                // 明示的に防御を選択している場合
                 const playerGuard = new PlayerGuard(this.battleScene);
                 await playerGuard.guard(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
             } else {
-
-                //攻撃対象のHPが0以上の場合は攻撃、0以下の場合は攻撃しない
-                if (battler.getData('BattleTarget').getData('HP') > 0) {
+                // 攻撃（通常攻撃・特技・魔法）の場合、ターゲットの生存チェック
+                if (!target || target.getData('HP') <= 0) {
+                    // ターゲットが不在、または既に倒れている場合
+                    await this.battleMessageWindow.messageOutput('相手がいない！！', 1000);
+                } else {
+                    // 正常に攻撃実行
                     const playerAttack = new PlayerAttack(this.battleScene);
                     await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
-                } else {
-                    await this.battleMessageWindow.messageOutput('相手がいない！！', 1000);
                 }
             }
 
