@@ -54,54 +54,25 @@ export class CommandSelectModel extends Phaser.Events.EventEmitter {
         this.skipDeadCharacters();
     }
 
+    // 前のキャラクターのターンへ戻す
+    previousTurn(): boolean {
+        let tempIndex = this.currentCharacterIndex - 1;
+
+        // 生存しているキャラが見つかるまで戻る
+        while (tempIndex >= 0 && this.actionQueue[tempIndex].data.values.HP <= 0) {
+            tempIndex--;
+        }
+
+        if (tempIndex >= 0) {
+            this.currentCharacterIndex = tempIndex;
+            return true;
+        }
+        return false;
+    }
+
     getCurrentCharacter(): Phaser.GameObjects.Sprite {
         return this.actionQueue[this.currentCharacterIndex];
     }
 }
 
 
-
-
-
-
-// // 次のキャラクターのターンへ進める
-//     nextTurn() {
-//         this.currentCharacterIndex++;
-
-//         // 全員終わったら最初に戻る
-//         if (this.currentCharacterIndex >= this.actionQueue.length) {
-//             this.currentCharacterIndex = 0;
-
-//             //先頭が生存しているか確認
-//             if (this.actionQueue[this.currentCharacterIndex].data.values.HP <= 0) {
-
-//                 //生存しているキャラクターを最初のコマンド選択対象にする
-//                 while (++this.currentCharacterIndex < this.actionQueue.length) {
-//                     if (this.actionQueue[this.currentCharacterIndex].data.values.HP > 0) {
-//                         break;
-//                     }
-//                 }
-//             }
-//             this.emit('CommandSelectFinish');
-//             return;
-//         }
-
-//         // 次のキャラを通知
-//         const currentActive = this.actionQueue[this.currentCharacterIndex];
-//         this.emit('CommandSelect', currentActive);
-
-//     }
-
-//     //生存チェック
-//     public checkNextCommandSelectStartCharacter() {
-//         //先頭が生存しているか確認
-//         if (this.actionQueue[this.currentCharacterIndex].data.values.HP <= 0) {
-
-//             //生存しているキャラクターを最初のコマンド選択対象にする
-//             while (++this.currentCharacterIndex < this.actionQueue.length) {
-//                 if (this.actionQueue[this.currentCharacterIndex].data.values.HP > 0) {
-//                     break;
-//                 }
-//             }
-//         }
-//     }

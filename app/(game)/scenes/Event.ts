@@ -36,7 +36,12 @@ export class Event extends Phaser.Scene implements EventScene {
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
             this.input.enabled = false;
         });
-        this.events.once('shutdown', () => gameOverSub.unsubscribe());
+        this.events.once('shutdown', () => {
+            gameOverSub.unsubscribe();
+            if (eventClass) {
+                eventClass.destroy();
+            }
+        });
     }
     public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {
         return this.cursorsKeys;

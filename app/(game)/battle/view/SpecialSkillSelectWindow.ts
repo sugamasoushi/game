@@ -104,7 +104,7 @@ export class SpecialSkillSelectWindow extends Phaser.GameObjects.Container {
         this.messageWindow = messageWindowInstance;
 
         //戻るボタン
-        this.backButtonCreate(this.messageWindow.x + this.windowWidth, this.messageWindow.y);
+        this.backButtonCreate(this.messageWindow.x + this.windowWidth - 64, this.messageWindow.y + 16);
 
         //カーソル作成、初期位置設定
         this.allow = new SelectAllow(this.scene);
@@ -203,7 +203,7 @@ export class SpecialSkillSelectWindow extends Phaser.GameObjects.Container {
         }));
 
         this.subs.add(inputManager.cancelButton$.subscribe(() => {
-            if (!this.visible || !this.active) return;
+            if (!this.visible || !this.active || !this.canDecide) return;
             this.backSubmit();
         }));
     }
@@ -222,16 +222,17 @@ export class SpecialSkillSelectWindow extends Phaser.GameObjects.Container {
         }
     }
 
-    public destroy(fromScene?: boolean) {
-        this.subs.unsubscribe();
-        super.destroy(fromScene);
-    }
-
     //選択実行
     private selectExec(skillType: string) {
 
+        //「防御」などの攻撃対象を選択しないコマンドを選んだ際、次のステートへの遷移（push）が発生しないため、ウィンドウが閉じられずに残ってしまう
+        this.hide();
+
         switch (skillType) {
             case 'guard':
+                this.emit('No_Attack_Select_Submit', skillType);
+                break;
+            case 'avoid':
                 this.emit('No_Attack_Select_Submit', skillType);
                 break;
             default:
@@ -240,16 +241,11 @@ export class SpecialSkillSelectWindow extends Phaser.GameObjects.Container {
         }
     }
 
-    //選択中のアイコンを設定
-    public setNowCharacterIcon(characterIcon: Phaser.GameObjects.Image) {
-        this.characterIcon = characterIcon;
-    }
-
-    show(data: Phaser.GameObjects.Sprite) {
+    show(playerSprite: Phaser.GameObjects.Sprite, playerCharacterIcon: Phaser.GameObjects.Image) {
 
         //選択中キャラクターの更新が必要な場合のみ更新（戻るボタンによる遷移の場合は未更新）
-        if (data) {
-            this.nowSelectCharacter = data;
+        if (playerSprite) {
+            this.nowSelectCharacter = playerSprite;
         }
         this.nowSelectNo = 0;
 
@@ -325,5 +321,10 @@ export class SpecialSkillSelectWindow extends Phaser.GameObjects.Container {
             list.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
         });
         //this.columnWindow.setLineLightDown();
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
     }
 }

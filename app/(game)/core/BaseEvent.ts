@@ -28,6 +28,9 @@ export class BaseEvent implements Eventer {
     //完了時の処理
     protected eventEnd() { }
 
+    //破棄時の処理
+    public destroy() { }
+
     //イベントオブジェクト検索
     protected switchingEventObjFlg(name: string, state: boolean) {
         const gameScene = this.eventScene.scene.get('Game');

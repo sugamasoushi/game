@@ -215,7 +215,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
         }));
 
         this.subs.add(inputManager.cancelButton$.subscribe(() => {
-            if (!this.visible || !this.active) return;
+            if (!this.visible || !this.active || !this.canDecide) return;
             this.backSubmit();
         }));
     }

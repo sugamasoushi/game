@@ -48,7 +48,7 @@ export class BubbleTalk {
 
     public init() {
         this.messageObjectInstance = new MessageObject();
-        this.messageObjectInstance.init(this.gameScene);
+        this.messageObjectInstance.init(this.gameScene, this.usePatern);
         const textLine = this.messageObjectInstance.getTextInfomation().textLine;
         const lineSpaceValue = this.messageObjectInstance.getTextInfomation().lineSpaceValue;
 

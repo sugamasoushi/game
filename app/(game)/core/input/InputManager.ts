@@ -41,7 +41,11 @@ export class InputManager {
             keyObj.on('down', () => this.actionSubject.next(action as InputAction));
         });
 
-        // ゲーム状態により入力切替
+        /**
+         * ゲーム状態により入力切替
+         * シングルトンであるため、各シーンを設定して使用した後に他シーンで使用する場合はシーンを再設定する必要がある
+         * 
+         */
         this.subs.add(
             this.inputFlgSubject$.subscribe(inputFlg => {
                 if (this.scene?.input) {

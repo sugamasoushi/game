@@ -178,7 +178,8 @@ export class FieldPresenter {
         this.gameScene.events.on('EVENT_END', (notFade: boolean) => {
             console.log('EVENT_END')
 
-            this.inputManager.setState(true);
+            // 入力マネージャーのターゲットをGameシーンに戻してから有効化
+            InputManager.getInstance(this.gameScene).setState(true);
             this.cameraManager.setFollow(true);//カメラ設定
 
             gameStateManager.updateState({

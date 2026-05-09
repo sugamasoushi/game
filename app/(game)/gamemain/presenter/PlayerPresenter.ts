@@ -23,7 +23,7 @@ export class PlayerPresenter {
     public execute() {
         this.execClickMove();
         this.execKeyMove();
-        this.execFieldAttack();
+        this.execFieldClick();
 
         //プレイヤーを作成
         this.player = this.fieldPresenter.getPlayer();
@@ -65,7 +65,6 @@ export class PlayerPresenter {
             const manager = GameStateManager.getInstance();
             if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.BATTLE) { return; }
 
-
             //左クリック押下時
             if (pointer.leftButtonReleased()) {
 
@@ -94,7 +93,7 @@ export class PlayerPresenter {
         });
     }
 
-    private execFieldAttack() {
+    private execFieldClick() {
 
         //Pキー押下
         this.subs.add(this.inputManager.action$.subscribe((action) => {
@@ -106,6 +105,10 @@ export class PlayerPresenter {
         }));
 
         this.subs.add(this.inputManager.fieldAttackButton$.subscribe(() => {
+            //状態管理クラス
+            const manager = GameStateManager.getInstance();
+            if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.BATTLE) { return; }
+
             console.log("FieldAttackボタン押下")
             const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
             fieldAttack.frameBullet(this.player.x, this.player.y);

@@ -120,14 +120,10 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         }
     }
 
-    //選択中のアイコンを設定
-    public setNowCharacterIcon(characterIcon: Phaser.GameObjects.Image) {
-        this.characterIcon = characterIcon;
-    }
+    show(playerSprite: Phaser.GameObjects.Sprite, playerCharacterIcon: Phaser.GameObjects.Image) {
 
-    show(data: Phaser.GameObjects.Sprite) {
-
-        this.nowSelectCharacter = data;
+        this.nowSelectCharacter = playerSprite;
+        this.characterIcon = playerCharacterIcon;
         this.nowSelectNo = 0;
         this.allow.updatePosition(this.selectList[this.nowSelectNo]);
 
@@ -140,8 +136,8 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         });
 
         //コンテナ配置（キャラクターアイコンの近くに配置）
-        this.x = this.characterIcon.parentContainer.x + 200;
-        this.y = this.characterIcon.parentContainer.y - 75;
+        this.x = playerCharacterIcon.parentContainer.x + playerCharacterIcon.x + 200;
+        this.y = playerCharacterIcon.parentContainer.y - 75;
     }
 
     move() {
@@ -178,7 +174,7 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
         }));
 
         this.subs.add(inputManager.cancelButton$.subscribe(() => {
-            if (!this.visible || !this.active) return;
+            if (!this.visible || !this.active || !this.canDecide) return;
             this.backSubmit();
         }));
     }

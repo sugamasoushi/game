@@ -159,16 +159,13 @@ export class BattlePresenter {
         });
 
         //【戦闘選択】【戦う】
-        this.views.battleSelect.on('Battle_Select_Submit', () => {//コールバック
+        this.views.battleSelect.on('Battle_Select_Submit', () => {
 
             //次のコマンド選択キャラクターを取得しアイコンを点滅
-            const character = this.commandSelectModel.getCurrentCharacter().name;
-            const characterIcon = this.playerPartyWindow.getCharacterIcon(character);
-            this.attackSelectWindow.setNowCharacterIcon(characterIcon);
-            this.playerPartyWindow.lightUpDown(character);
+            this.playerPartyWindow.lightUpDown(this.commandSelectModel.getCurrentCharacter().name);
 
             //攻撃方法選択ウィンドウに移動
-            this.stateMachine.push('ATTACK_SELECT', this.commandSelectModel.getCurrentCharacter());
+            this.stateMachine.push('ATTACK_SELECT');
         });
 
         //【攻撃方法選択】【アイテム】
@@ -199,15 +196,17 @@ export class BattlePresenter {
 
         // 表示・非表示設定
         this.stateMachine.addState('ATTACK_SELECT', {
-            enter: (v, data) => {
-                // console.log("キャラクター:", data);
-                v.attackSelect.show(data)
+            enter: (v) => {
+                v.attackSelect.show(
+                    this.commandSelectModel.getCurrentCharacter(),
+                    this.playerPartyWindow.getCharacterIcon(this.commandSelectModel.getCurrentCharacter().name)
+                )
             },
             exit: (v) => v.attackSelect.hide()
         });
 
         //【攻撃方法選択】【攻撃】
-        this.views.attackSelect.on('Attack_Select_Submit', (skillType: string) => {
+        this.views.attackSelect.on('Attack_Select_Submit', () => {
             this.stateMachine.push('ENEMY_SELECT');
         });
 
@@ -218,30 +217,28 @@ export class BattlePresenter {
             const character = this.commandSelectModel.getCurrentCharacter().name;
             this.playerPartyWindow.deleteNowLightUpDown(character);//現状はプレイヤーのみ
 
+            // 前のキャラクターに戻れるかチェック
+            const hasPrevious = this.commandSelectModel.previousTurn();
+
+            if (hasPrevious) {
+                // 前のキャラに戻ったので、そのキャラの点滅を開始
+                this.playerPartyWindow.lightUpDown(this.commandSelectModel.getCurrentCharacter().name);
+            }
+
             // 履歴を使って戻る
             this.stateMachine.pop();
         });
 
         //【攻撃方法選択】【特技】
-        this.views.attackSelect.on('SpecialSkill_Select_Submit', (nowSelectCharacter: Phaser.GameObjects.Sprite) => {
+        this.views.attackSelect.on('SpecialSkill_Select_Submit', () => {
 
-            //特技選択ウィンドウに渡すキャラクターアイコンを取得
-            const character = this.commandSelectModel.getCurrentCharacter().name;
-            const characterIcon = this.playerPartyWindow.getCharacterIcon(character);
-            this.specialSkillSelectWindow.setNowCharacterIcon(characterIcon);
-
-            this.stateMachine.push('SPECIAL_SKILL_SELECT', this.commandSelectModel.getCurrentCharacter());
+            this.stateMachine.push('SPECIAL_SKILL_SELECT');
         });
 
         //【攻撃方法選択】【魔法】
-        this.views.attackSelect.on('MagicSkill_Select_Submit', (nowSelectCharacter: Phaser.GameObjects.Sprite) => {
+        this.views.attackSelect.on('MagicSkill_Select_Submit', () => {
 
-            //魔法選択ウィンドウに渡すキャラクターアイコンを取得
-            const character = this.commandSelectModel.getCurrentCharacter().name;
-            const characterIcon = this.playerPartyWindow.getCharacterIcon(character);
-            this.magicSkillSelectWindow.setNowCharacterIcon(characterIcon);
-
-            this.stateMachine.push('MAGIC_SKILL_SELECT', this.commandSelectModel.getCurrentCharacter());
+            this.stateMachine.push('MAGIC_SKILL_SELECT');
         });
 
         // シーン終了時にイベントを破棄
@@ -258,9 +255,11 @@ export class BattlePresenter {
 
         // 表示・非表示設定
         this.stateMachine.addState('SPECIAL_SKILL_SELECT', {
-            enter: (v, data) => {
-                // console.log("キャラクター:", data);
-                v.specialSkillSelect.show(data)
+            enter: (v) => {
+                v.specialSkillSelect.show(
+                    this.commandSelectModel.getCurrentCharacter(),
+                    this.playerPartyWindow.getCharacterIcon(this.commandSelectModel.getCurrentCharacter().name)
+                )
             },
             exit: (v) => v.specialSkillSelect.hide()
         });
@@ -272,7 +271,11 @@ export class BattlePresenter {
 
         //【特技選択】【攻撃しない】
         this.views.specialSkillSelect.on('No_Attack_Select_Submit', () => {
-            this.stateMachine.push('BATTLE_START');
+
+            //点滅を停止
+            const character = this.commandSelectModel.getCurrentCharacter().name;
+            this.playerPartyWindow.deleteNowLightUpDown(character);
+
             this.commandSelectModel.nextTurn();
         });
 
@@ -296,9 +299,11 @@ export class BattlePresenter {
 
         // 表示・非表示設定
         this.stateMachine.addState('MAGIC_SKILL_SELECT', {
-            enter: (v, data) => {
-                // console.log("キャラクター:", data);
-                v.magicSkillSelect.show(data)
+            enter: (v) => {
+                v.magicSkillSelect.show(
+                    this.commandSelectModel.getCurrentCharacter(),
+                    this.playerPartyWindow.getCharacterIcon(this.commandSelectModel.getCurrentCharacter().name)
+                )
             },
             exit: (v) => v.magicSkillSelect.hide()
         });
@@ -310,7 +315,11 @@ export class BattlePresenter {
 
         //【魔法選択】【攻撃しない】
         this.views.magicSkillSelect.on('No_Attack_Select_Submit', () => {
-            this.stateMachine.push('BATTLE_START');
+
+            //点滅を停止
+            const character = this.commandSelectModel.getCurrentCharacter().name;
+            this.playerPartyWindow.deleteNowLightUpDown(character);
+
             this.commandSelectModel.nextTurn();
         });
 
@@ -335,7 +344,9 @@ export class BattlePresenter {
         // 表示・非表示設定
         this.stateMachine.addState('ENEMY_SELECT', {
             enter: (v) => {
-                v.enemySelectWindow.show(this.commandSelectModel.getCurrentCharacter());
+                v.enemySelectWindow.show(
+                    this.commandSelectModel.getCurrentCharacter(),
+                    this.playerPartyWindow.getCharacterIcon(this.commandSelectModel.getCurrentCharacter().name));
             },
             exit: (v) => v.enemySelectWindow.hide()
         });
@@ -370,8 +381,8 @@ export class BattlePresenter {
     private settingItemSelectWindow() {
 
         this.stateMachine.addState('ITEM_SELECT', {
-            enter: (v, data) => {
-                v.itemSelectWindow.show(data);
+            enter: (v) => {
+                v.itemSelectWindow.show();
             },
             exit: (v) => v.itemSelectWindow.hide()
         });
@@ -405,10 +416,7 @@ export class BattlePresenter {
         this.commandSelectModel.on('CommandSelect', () => {
 
             //次のコマンド選択キャラクターを取得しアイコンを点滅
-            const character = this.commandSelectModel.getCurrentCharacter().name;
-            const characterIcon = this.playerPartyWindow.getCharacterIcon(character);
-            this.attackSelectWindow.setNowCharacterIcon(characterIcon);
-            this.playerPartyWindow.lightUpDown(character);
+            this.playerPartyWindow.lightUpDown(this.commandSelectModel.getCurrentCharacter().name);
 
             this.stateMachine.push('ATTACK_SELECT');
         });
@@ -471,45 +479,25 @@ export class BattlePresenter {
         //対象の敵が設定されているかつ攻撃者のHPが0以上の場合のみ攻撃
         if (battler.getData('NpcType') !== 'enemy' && battler.data.values.HP > 0) {
 
-            //フラグの更新タイミングを待つ（たまにautoFlgの更新が遅いせいか後続のbattler.getData()で例外が発生する）
-            // await new Promise<void>(resolve => {
-            //     this.battleScene.time.delayedCall(10, () => {
-            //         resolve();
-            //     }, [], this.battleScene);
-            // });
-
             if (this.autoFlg) {
                 //プレイヤーキャラクターの攻撃対象を設定
                 const targetEnemy = this.battleModel.getPlayerAutoAttackTarget();
                 battler.setData('BattleTarget', targetEnemy);
             }
 
-            //攻撃対象のHPが0以上の場合は攻撃、0以下の場合は攻撃しない
-            if (battler.getData('BattleTarget').getData('HP') > 0) {
+            //攻撃対象が存在しない場合は防御スキルとなる（回復も含む）
+            if (!battler.getData('BattleTarget')) {
+                const playerGuard = new PlayerGuard(this.battleScene);
+                await playerGuard.guard(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
+            } else {
 
-                //スキル選択の場合はスキルを実行、選択していない場合は通常攻撃
-                const skillDetail: SkillDetail = battler.getData('UseSkill');
-                if (skillDetail) {
-                    switch (skillDetail.type) {
-                        case 'attack':
-                            //今のところ、打撃系スキルは無し
-                            const playerAttack = new PlayerAttack(this.battleScene);
-                            await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
-                            break;
-                        case 'guard':
-                            const playerGuard = new PlayerGuard(this.battleScene);
-                            await playerGuard.guard(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
-                            break;
-                        case 'heal':
-                            /**未実装 */
-                            break;
-                    }
-                } else {
+                //攻撃対象のHPが0以上の場合は攻撃、0以下の場合は攻撃しない
+                if (battler.getData('BattleTarget').getData('HP') > 0) {
                     const playerAttack = new PlayerAttack(this.battleScene);
                     await playerAttack.attack(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
+                } else {
+                    await this.battleMessageWindow.messageOutput('相手がいない！！', 1000);
                 }
-            } else {
-                await this.battleMessageWindow.messageOutput('相手がいない！！', 1000);
             }
 
         } else if (battler.getData('NpcType') === 'enemy' && battler.data.values.HP > 0) {

@@ -3,6 +3,8 @@ import { MessageObject } from "./MessageObject";
 import { MessageWindow } from "./MessageWindow";
 import { DataDefinition } from "../Data/DataDefinition";
 import { Menu } from "../scenes/Menu";
+import { InputManager } from "../core/input/InputManager";
+import { Subscription } from "rxjs";
 
 export class ListWindow extends Phaser.GameObjects.Graphics {
     protected fromScene: GameScene | EventScene | Menu;
@@ -27,6 +29,7 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
     protected keyCode: string;
     protected nowChoiceNo: number = 0;
     protected nextChoiceNo: number;
+    protected subs = new Subscription();
 
     private choicetList = ['はい', 'いいえ']//デフォルト
 
@@ -80,10 +83,30 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
             undefined
         );
 
+        this.setupInput();
+    }
+
+    private setupInput() {
+        const inputManager = InputManager.getInstance(this.fromScene as Phaser.Scene);
+        const minNo = 0;
+        const maxNo = this.choicetList.length;
+
+        this.subs.add(inputManager.downButton$.subscribe(() => {
+            if (this.nowChoiceNo + 1 >= maxNo) { return; }
+            this.nextChoiceNo = this.nowChoiceNo + 1;
+            this.cursorUpdate();
+        }));
+
+        this.subs.add(inputManager.upButton$.subscribe(() => {
+            if (this.nowChoiceNo - 1 < minNo) { return; }
+            this.nextChoiceNo = this.nowChoiceNo - 1;
+            this.cursorUpdate();
+        }));
     }
 
     preUpdate(time: number, delta: number) {
-        this.updateNowChoiceNoKeyboard();
+        // InputManagerによる購読モデルに移行したため、ポーリングは不要
+        // this.updateNowChoiceNoKeyboard();
     }
 
     private createCursor(x: number, y: number) {
@@ -193,6 +216,11 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
     _finish() {
         //使い終わったらインスタンスを破棄
         this.destroy();
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
     }
 
     public getNowChoiceNo(): number {

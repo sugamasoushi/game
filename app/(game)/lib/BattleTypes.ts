@@ -1,5 +1,5 @@
 export interface IWindowView extends Phaser.GameObjects.Container {
-  show(payload?: Phaser.GameObjects.Sprite | undefined): void;
+  show(playerSprite?: Phaser.GameObjects.Sprite, playerCharacterIcon?: Phaser.GameObjects.Image): void;
   move(): void;
   hide(): void;
 }

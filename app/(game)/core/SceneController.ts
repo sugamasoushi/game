@@ -101,11 +101,19 @@ export class SceneController extends Scene {
             case State.FIELD_RESUME:
                 console.log('Game resume', sceneKey)
                 this.scene.get('Game').scene.resume();
+                if (this.scene.isActive('Event')) {
+                    this.scene.get('Event').scene.resume();
+                }
                 break;
             case State.BATTLE:
                 console.log('Battle')
                 this.scene.pause('Game');
-                this.scene.launch('Battle', { sceneKey });// launchで現在のシーンの上に重ねてシーンを出す
+
+                //イベント戦闘の場合、イベントシーンも停止する
+                if (this.scene.isActive('Event')) {
+                    this.scene.pause('Event');
+                }
+                this.scene.launch('Battle', { sceneKey });
                 break;
             case State.MENU:
                 console.log('Menu')

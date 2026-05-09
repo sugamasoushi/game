@@ -1,5 +1,7 @@
 import { EventScene, GameScene } from "../lib/types";
 import { ListWindow } from "./ListWindow";
+import { InputManager } from "../core/input/InputManager";
+import { take } from "rxjs";
 
 export default class YesNoWindow extends ListWindow {
     public result: boolean | undefined;
@@ -10,26 +12,30 @@ export default class YesNoWindow extends ListWindow {
 
     //マウスクリック時のイベント
     public setEvent() {
+        const inputManager = InputManager.getInstance(this.fromScene as Phaser.Scene);
+
         return new Promise<number>(resolve => {
-            //「A」キー押下
-            this.fromScene.input.keyboard!.once(this.keyCode, () => {//一回限りのイベント
+            //決定ボタン（スペース、仮想パッド〇、ゲームパッド〇）
+            this.subs.add(inputManager.decideButton$.pipe(take(1)).subscribe(() => {
                 if (this.nowChoiceNo === 0) {
                     this.result = true;
                     this._deleteObject();
+                    resolve(this.getNowChoiceNo());
                 } else if (this.nowChoiceNo === 1) {
                     this.result = false;
                     this._deleteObject();
+                    resolve(this.getNowChoiceNo());
                 }
-            });
+            }));
 
             //クリック
-            this.textObjectList[0].on('pointerdown', () => {
+            this.textObjectList[0].once('pointerdown', () => {
                 this.result = true;
                 this._deleteObject();
                 resolve(this.getNowChoiceNo());
             }, this.scene)
 
-            this.textObjectList[1].on('pointerdown', () => {
+            this.textObjectList[1].once('pointerdown', () => {
                 this.result = false;
                 this._deleteObject();
                 resolve(this.getNowChoiceNo());

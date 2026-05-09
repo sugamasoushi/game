@@ -92,7 +92,7 @@ export class EVENT020101 extends BaseEvent {
         //会話開始、テキストの終了をチェックする
         await this.eventTalk.execTalk([
             { meina: ['よ～し、こいつを狩るか\n', '足引っ張らないでよ！\n'] },
-            { lamy: ['へへっ任せときな！\n', 'まずあたしが軽くジャブ打って・・・\n', 'それからぁ！\n'] }
+            { lamy: ['任せときなって！\n', 'まずあたしが軽くジャブ打ってぇ！\n', 'それからぁ！\n'] }
         ], this.characterGameObject);
 
         //キャラステータス設定

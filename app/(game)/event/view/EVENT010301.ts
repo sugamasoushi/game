@@ -1,6 +1,6 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState, CharacterState, State } from "../../lib/types";
+import { GameScene, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
 import { Npc } from "../../gamemain/view/character/Npc";
 import { Player } from "../../gamemain/view/character/Player";
@@ -9,7 +9,6 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { SpriteType_3x4 } from "../../gamemain/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
 import { CaharacterNameData } from '../../Data/NameData';
-import { GameStateManager } from "../../GameAllState/GameStateManager";
 
 export class EVENT010301 extends BaseEvent {
     private gameScene: GameScene;
@@ -139,9 +138,6 @@ export class EVENT010301 extends BaseEvent {
         await new Promise<void>(resolve => {
             battleScene.events.on('shutdown', () => {
                 this.eventScene.scene.resume();
-
-                const gameStateManager = GameStateManager.getInstance();
-                gameStateManager.updateState({ state: State.EVENT }, 'EventEnd');
                 resolve();
             });
         })
@@ -198,5 +194,11 @@ export class EVENT010301 extends BaseEvent {
             this.eventScene.cameras.main.fadeOut(200);
         })
         this.eventScene.scene.stop();
+    }
+
+    override destroy() {
+        if (this.eventTalk) {
+            this.eventTalk.destroy();
+        }
     }
 }

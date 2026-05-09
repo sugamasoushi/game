@@ -90,8 +90,7 @@ export class LeftButton {
     }
 
     public fadeIn() {
-        console.log("fadeIn");
-        const duration = 200;
+         const duration = 200;
 
         const radius = 48 * 1.6;
         this.hitZone.setInteractive(new Phaser.Geom.Circle(radius, radius, radius), Phaser.Geom.Circle.Contains);
@@ -151,7 +150,6 @@ export class LeftButton {
     }
 
     public setDisable() {
-        console.log("setDisable");
         this.hitZone.disableInteractive();
         for (const button of this.buttons) {
             button.setAlpha(0.3);

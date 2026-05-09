@@ -11,6 +11,7 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
 
     private windowMarginX = 200;
+    private windowWidth = Number(this.scene.game.config.width) - this.windowMarginX * 2;
     private windowHeight = 200;
 
     private selectList: Phaser.GameObjects.Text[] = [];
@@ -102,10 +103,8 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         messageWindowInstance.createEventMessageWindow(this.selectList[0]);
         this.messageWindow = messageWindowInstance;
 
-        const windowWidth = 400; //TODO:動的に取得
-
         //戻るボタン
-        this.backButtonCreate(this.messageWindow.x + windowWidth, this.messageWindow.y);
+        this.backButtonCreate(this.messageWindow.x + this.windowWidth - 64, this.messageWindow.y + 16);
 
         //カーソル作成、初期位置設定
         this.allow = new SelectAllow(this.scene);
@@ -204,7 +203,7 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         }));
 
         this.subs.add(inputManager.cancelButton$.subscribe(() => {
-            if (!this.visible || !this.active) return;
+            if (!this.visible || !this.active || !this.canDecide) return;
             this.backSubmit();
         }));
     }
@@ -223,13 +222,9 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         }
     }
 
-    public destroy(fromScene?: boolean) {
-        this.subs.unsubscribe();
-        super.destroy(fromScene);
-    }
-
     //選択実行
     private selectExec(skillType: string) {
+        this.hide();
 
         switch (skillType) {
             case 'guard':
@@ -241,16 +236,11 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         }
     }
 
-    //選択中のアイコンを設定
-    public setNowCharacterIcon(characterIcon: Phaser.GameObjects.Image) {
-        this.characterIcon = characterIcon;
-    }
-
-    show(data: Phaser.GameObjects.Sprite) {
+    show(playerSprite: Phaser.GameObjects.Sprite, playerCharacterIcon: Phaser.GameObjects.Image) {
 
         //選択中キャラクターの更新が必要な場合のみ更新（戻るボタンによる遷移の場合は未更新）
-        if (data) {
-            this.nowSelectCharacter = data;
+        if (playerSprite) {
+            this.nowSelectCharacter = playerSprite;
         }
         this.nowSelectNo = 0;
 
@@ -326,5 +316,10 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
             list.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
         });
         //this.columnWindow.setLineLightDown();
+    }
+
+    public destroy(fromScene?: boolean) {
+        this.subs.unsubscribe();
+        super.destroy(fromScene);
     }
 }

@@ -69,16 +69,7 @@ export class GameStateManager {
             }
             // それ以外は通常通り、値が同じなら true（通知しない）を返す
             return prev.state === curr.state;
-        }),
-
-        distinctUntilChanged((prev, curr) => {
-            // もし新しい状態が RESTART なら、目的地(fieldData)やキーが同じ場合のみ「変更なし(true)」と判定
-            if (curr.state === State.NOSTATE) {
-                return false
-            }
-            // それ以外は通常通り、値が同じなら true（通知しない）を返す
-            return prev.state === curr.state;
-        }),
+        })
     );
 
     //ゲームの状態が『FIELD』になった瞬間を一度だけ検知し、実行信号を送る

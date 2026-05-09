@@ -32,6 +32,7 @@ export class StateMachine {
 
     /** 次の状態へ進む */
     push(nextStateKey: string, payload?: Phaser.GameObjects.Sprite) {
+
         // 現在の状態があれば履歴に保存して終了
         if (this.currentStateKey) {
             this.history.push(this.currentStateKey);
@@ -46,7 +47,6 @@ export class StateMachine {
     /** 前の状態に戻る */
     pop() {
         if (this.history.length === 0) return;
-        //console.log(this.history)
 
         // 現在の終了
         if (this.currentStateKey) {

@@ -20,6 +20,7 @@ export class MessageOperation {
     private scrollTweenObject: Phaser.Tweens.Tween | null;
 
     private textObject: Phaser.GameObjects.Text;
+    private subs = new Subscription();
 
     constructor(eventScene: EventScene, usePatern: string, textLine: number, lineSpaceValue: number) {
         this.eventScene = eventScene;
@@ -74,17 +75,18 @@ export class MessageOperation {
                 //次の行が存在し、現在の行数が2だった場合はスクロールする
 
                 //決定ボタン（スペース、仮想パッド〇、ゲームパッド〇）でスクロール
-                const sub = inputManager.decideButton$.pipe(take(1)).subscribe(() => {//take(1) オペレータを使用し、1回だけ通知を受け取る安全なサブスクリプション
+                this.subs.add(inputManager.decideButton$.pipe(take(1)).subscribe(() => {//take(1) オペレータを使用し、1回だけ通知を受け取る安全なサブスクリプション
                     clickZone.off(pointerOperation);//マウス入力OFF
                     (async () => {
                         await this._scrollTween(scene, textObject);
                         resolve();
                     })();
-                });
+                }));
 
                 //ゾーンをクリックするとテキストがスクロールされる
                 clickZone.once(pointerOperation, () => {//一回限りのイベント
-                    sub.unsubscribe();//購読解除
+                    this.subs.unsubscribe();//購読解除
+                    this.subs = new Subscription(); // 再初期化
                     (async () => {
                         await this._scrollTween(scene, textObject);
                         resolve();
@@ -94,7 +96,7 @@ export class MessageOperation {
             } else if (allLineCount - lineCount === 0) {
 
                 //現在の行で終了の場合はテキストをクリアする
-                const sub = inputManager.decideButton$.pipe(take(1)).subscribe(() => {
+                this.subs.add(inputManager.decideButton$.pipe(take(1)).subscribe(() => {
                     clickZone.off(pointerOperation);//マウス入力OFF
                     if (this.usePatern === 'BubbleTalk') {
                         textObject.text = '';
@@ -106,11 +108,12 @@ export class MessageOperation {
                         this.deleteObject()
                         resolve();
                     }
-                });
+                }));
 
                 //ゾーンをクリックするとテキストがクリアされる
                 clickZone.once(pointerOperation, () => {//一回限りのイベント
-                    sub.unsubscribe();//購読解除
+                    this.subs.unsubscribe();//購読解除
+                    this.subs = new Subscription(); // 再初期化
                     if (this.usePatern === 'BubbleTalk') {
                         textObject.text = '';
                         (async () => {
@@ -183,10 +186,22 @@ export class MessageOperation {
     }
 
     //再設定
-    private reSetting() {
+    public reSetting() {
+        this.subs.unsubscribe();
+        this.subs = new Subscription(); // 次回利用のために再初期化
+        this.cleanupTweens();
+    }
 
-        //会話終了後、クリック操作などを再設定
-        this.typeWriterObject.destroy();
+    //完全破棄
+    public destroy() {
+        this.subs.unsubscribe();
+        this.cleanupTweens();
+    }
+
+    private cleanupTweens() {
+        if (this.typeWriterObject) {
+            this.typeWriterObject.destroy();
+        }
         this.scrollTweenObject = null;//基本的にtweenは自動的にGC対象となるためdestroy()するとExceptionとなる。
     }
 }

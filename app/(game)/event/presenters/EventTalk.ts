@@ -291,13 +291,19 @@ export class EventTalk {
         this.messageWindow.setVisible(flag);
     }
 
-    //再設定
-    private reSetting() {
-
-        //会話終了後、クリック操作などを再設定
-        this.textObject.destroy();
-        this.clickZone.destroy();
-        this.cropRectMask.destroy();
+    public destroy() {
+        if (this.messageOperation) {
+            this.messageOperation.destroy();
+        }
+        if (this.textObject) this.textObject.destroy();
+        if (this.clickZone) this.clickZone.destroy();
+        if (this.cropRectMask) this.cropRectMask.destroy();
     }
 
+    //再設定
+    private reSetting() {
+        if (this.messageOperation) {
+            this.messageOperation.reSetting();
+        }
+    }
 }

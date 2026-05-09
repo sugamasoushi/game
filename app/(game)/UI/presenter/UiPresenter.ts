@@ -61,7 +61,6 @@ export class UiPresenter {
 
         // ゲーム状態の監視
         this.subs.add(gameStateManager.state$.subscribe((stateData) => {
-            console.log(stateData);
 
             if (stateData.state == State.NOSTATE) {
                 // 通常状態
@@ -70,9 +69,6 @@ export class UiPresenter {
                 this.leftButton.fadeIn();
                 this.rightButton.fadeIn();
             }
-
-
-
         }));
 
         // シーン終了時の破棄

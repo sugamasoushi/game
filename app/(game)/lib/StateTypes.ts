@@ -34,6 +34,6 @@ export interface GameState {
 
 /** 状態（State）の振る舞い */
 export interface StateDefinition {
-  enter: (views: ViewsContainer, payload?: Phaser.GameObjects.Sprite | undefined) => void;
+  enter: (views: ViewsContainer, currentCharacter?: Phaser.GameObjects.Sprite, currentCharacterIcon?: Phaser.GameObjects.Image) => void;
   exit: (views: ViewsContainer) => void;
 }
