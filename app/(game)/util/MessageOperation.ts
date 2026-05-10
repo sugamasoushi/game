@@ -47,20 +47,68 @@ export class MessageOperation {
     }
 
     //文字描画
-    public async typeWriter(scene: Phaser.Scene, textObject: Phaser.GameObjects.Text, text: string) {
+    public async typeWriter(scene: Phaser.Scene, textObject: Phaser.GameObjects.Text, text: string, clickZone?: Phaser.GameObjects.Zone) {
+        const inputManager = InputManager.getInstance(scene);
+
         return new Promise<void>(resolve => {
             let i = 0;
+            let isSkipped = false;
+
+            const skipTypeWriter = () => {
+                if (isSkipped) return;
+                isSkipped = true;
+
+                if (this.typeWriterObject) {
+                    this.typeWriterObject.destroy();
+                }
+
+                if (sub) sub.unsubscribe();
+                if (clickZone) clickZone.off('pointerdown', skipTypeWriter);
+
+                // 残りの文字列を一気に表示（\n がある場合はそこまで）
+                const remainingText = text.substring(i);
+                const newlineIndex = remainingText.indexOf('\n');
+                if (newlineIndex !== -1) {
+                    textObject.text += remainingText.substring(0, newlineIndex + 1);
+                } else {
+                    textObject.text += remainingText;
+                }
+
+                resolve();
+            };
+
+            const sub = inputManager.decideButton$.pipe(take(1)).subscribe(() => {
+                skipTypeWriter();
+            });
+
+            if (clickZone) {
+                clickZone.once('pointerdown', skipTypeWriter);
+            }
+
             this.typeWriterObject = scene.time.addEvent({
                 callback: () => {
+                    if (isSkipped) return;
                     textObject.text += text[i];
                     this.soundScene.SE_message.play({ loop: false });
-                    if (text[i] === '\n') { resolve(); }
+                    
+                    if (text[i] === '\n') { 
+                        if (sub) sub.unsubscribe();
+                        if (clickZone) clickZone.off('pointerdown', skipTypeWriter);
+                        resolve(); 
+                        return;
+                    }
                     i++;
+
+                    if (i >= text.length) {
+                        if (sub) sub.unsubscribe();
+                        if (clickZone) clickZone.off('pointerdown', skipTypeWriter);
+                        resolve();
+                    }
                 },
                 repeat: text.length - 1,
                 delay: 50
-            })
-        })
+            });
+        });
     }
 
     //テキストのスクロールとクリアを実行する

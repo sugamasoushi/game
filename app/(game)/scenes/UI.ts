@@ -5,6 +5,7 @@ import { UiModel } from '../UI/model/UiModel';
 import { MenuButton } from '../UI/view/MenuButton';
 import { LeftButton } from '../UI/view/LeftButton';
 import { RightButton } from '../UI/view/RightButton';
+import { ExecutionEnvironment } from '../core/ExecutionEnvironment';
 
 export class UI extends Scene {
     private debugFlg: boolean | undefined;
@@ -28,6 +29,22 @@ export class UI extends Scene {
         this.menuButton = new MenuButton(this);
         this.leftButton = new LeftButton(this);
         this.rightButton = new RightButton(this);
+
+        const execEnv = new ExecutionEnvironment();
+        if (execEnv.isElectron()) {
+            // Electron環境の場合は仮想パッドを非表示（処理を無効化）
+            this.leftButton.execute = async () => {};
+            this.leftButton.fadeIn = () => {};
+            this.leftButton.fadeOut = () => {};
+            this.leftButton.setEnable = () => {};
+            this.leftButton.setDisable = () => {};
+
+            this.rightButton.execute = async () => {};
+            this.rightButton.fadeIn = () => {};
+            this.rightButton.fadeOut = () => {};
+            this.rightButton.setEnable = () => {};
+            this.rightButton.setDisable = () => {};
+        }
 
         this.uiPresenter = new UiPresenter(
             this,

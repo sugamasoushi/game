@@ -178,6 +178,9 @@ export class Player extends BaseSprite {
         const cursorsKeys = this.cursors;
         const vPadDir = this.inputManager?.virtualPadDirection;
 
+        // 仮想パッドの右側ボタン（決定・キャンセル等のfaceボタン）の場合は移動処理をしない
+        if (vPadDir?.startsWith('face')) return;
+
         //値が設定されている場合はクリックによる移動中のため処理しない
         if (this.moveToPositionX && this.moveToPositionY) return;
         this.setVelocity(0);

@@ -6,6 +6,7 @@ import { BaseEvent } from "../../core/BaseEvent";
 import { DataDefinition } from "../../Data/DataDefinition";
 
 import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
+import { InputManager } from "../../core/input/InputManager";
 
 //Event.tsは未使用
 export class EVENT010101 extends BaseEvent {
@@ -67,21 +68,32 @@ export class EVENT010101 extends BaseEvent {
 
         //テキストスクロール
         await new Promise<void>(resolve => {
+            let isResolved = false;
+
+            const doResolve = () => {
+                if (isResolved) return;
+                isResolved = true;
+                sub.unsubscribe();
+                resolve();
+            };
+
             const textScroll = this.eventScene.tweens.add({
                 targets: textObject,
                 y: -1 * (textObject.height),
                 flipY: true,
                 duration: 40000,
                 onComplete: () => {
-                    resolve();
+                    doResolve();
                 }
             });
 
-            this.eventScene.input.once('pointerdown', () => {
-                //textScroll.pause();
-                resolve();
+            this.eventScene.input.once('pointerdown', doResolve);
+
+            const inputManager = InputManager.getInstance(this.eventScene);
+            const sub = inputManager.decideButton$.subscribe(() => {
+                doResolve();
             });
-        })
+        });
 
         //フェードアウト
         await new Promise<void>(resolve => {

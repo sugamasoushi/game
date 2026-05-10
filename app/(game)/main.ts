@@ -40,6 +40,9 @@ const config: Phaser.Types.Core.GameConfig = {
             gravity: { x: 0, y: 0 }
         },
     },
+    input: {
+        gamepad: true // これが必須！
+    },
     // render: {
     //     //pixelArt: true,  // 拡大縮小時にピクセルの大きさを最適化してくれる
     //     //antialias: false, // 滑らかにする処理をオフにする

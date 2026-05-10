@@ -120,13 +120,21 @@ export class Game extends Scene implements GameScene {
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
 
+        // シーン再開時の共通処理（Menu, Battle等から戻った時）
+        this.events.on('resume', () => {
+            // シーン再開時にInputManagerの参照をこのシーンに戻す（ゲームパッド等の入力対象を元に戻すため）
+            const inputManager = InputManager.getInstance(this);
+            // シーン再開時の入力復活による誤爆を防ぐため、入力を一定時間受け付けない
+            inputManager.clearGamepadState();
+        });
+
         EventBus.emit('current-scene-ready', this);
     }
 
     //画面更新を再開。このメソッドは別シーンから参照される。
     public resumeScene() {
         this.mainCamera.postFX.clear();
-        this.scene.resume();
+        this.scene.resume(); // これにより上の 'resume' イベントが発火する
     }
 
     changeScene() {

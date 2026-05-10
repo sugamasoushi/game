@@ -21,10 +21,49 @@ export class InputManager {
     private actionSubject = new Subject<InputAction>();
     public action$ = this.actionSubject.asObservable();//外部公開用、asObservable()を設定すると読み取り専用になり、subscribe()は可能だがnext()が不可となる。
 
-    public virtualPadDirection: string | null = null;
+    private _virtualPadDirection: string | null = null;
+    public get virtualPadDirection(): string | null {
+        if (this._virtualPadDirection) return this._virtualPadDirection;
+
+        // ゲームパッドのアナログスティックまたは十字キーから方向を取得
+        const pad = this.scene?.input?.gamepad?.pad1;
+        if (!pad) return null;
+
+        const threshold = 0.5;
+        let dx = 0;
+        let dy = 0;
+        
+        if (pad.leftStick.x < -threshold || pad.left) dx = -1;
+        else if (pad.leftStick.x > threshold || pad.right) dx = 1;
+        
+        if (pad.leftStick.y < -threshold || pad.up) dy = -1;
+        else if (pad.leftStick.y > threshold || pad.down) dy = 1;
+
+        if (dx === -1 && dy === -1) return 'up-left';
+        if (dx === 1 && dy === -1) return 'up-right';
+        if (dx === -1 && dy === 1) return 'down-left';
+        if (dx === 1 && dy === 1) return 'down-right';
+        if (dy === -1) return 'up';
+        if (dy === 1) return 'down';
+        if (dx === -1) return 'left';
+        if (dx === 1) return 'right';
+
+        return null;
+    }
     private isExecuted: boolean = false;
 
-    constructor() { }
+    private previousPadButtons: { [index: number]: boolean } = {};
+    private inputAcceptable: boolean = true;
+
+    // 入力状態をリセットし、シーン遷移時などの誤爆（入力状態の復活）を防ぐ
+    public clearGamepadState() {
+        this.previousPadButtons = {};
+        this.inputAcceptable = false;
+        // 300ms間はゲームパッドの入力を無視する
+        setTimeout(() => {
+            this.inputAcceptable = true;
+        }, 300);
+    }
 
     public execute() {
         if (this.isExecuted) return;
@@ -33,7 +72,6 @@ export class InputManager {
         //設定
         this.scene.input.mouse!.disableContextMenu();//右クリックのコンテキストメニューを非表示にする
         this.cursors = this.scene.input.keyboard!.createCursorKeys();// Phaserのカーソルキー（上下左右+Space/Shift）を作成
-        //this.keys = this.input.keyboard!.addKeys("P,H,A,S,E,R") as GameKeys;
 
         // Phaserのキーイベントを監視し、Actionに変換してSubjectへ
         Object.entries(KEY_MAP).forEach(([action, keyCode]) => {
@@ -41,15 +79,9 @@ export class InputManager {
             keyObj.on('down', () => this.actionSubject.next(action as InputAction));
         });
 
-        /**
-         * ゲーム状態により入力切替
-         * シングルトンであるため、各シーンを設定して使用した後に他シーンで使用する場合はシーンを再設定する必要がある
-         * 
-         */
         this.subs.add(
             this.inputFlgSubject$.subscribe(inputFlg => {
                 if (this.scene?.input) {
-                    // console.log('input切替')
                     this.scene.input.enabled = inputFlg;
                 }
             })
@@ -57,17 +89,17 @@ export class InputManager {
 
         // 仮想パッドのイベント
         this.scene.game.events.on('VIRTUALPAD_ARROW_KEY_DOWN', (direction: string) => {
-            this.virtualPadDirection = direction;
+            this._virtualPadDirection = direction;
             if (direction === 'right') this.rightSubject.next();
             if (direction === 'left') this.leftSubject.next();
             if (direction === 'up') this.upSubject.next();
             if (direction === 'down') this.downSubject.next();
         });
         this.scene.game.events.on('VIRTUALPAD_ARROW_KEY_UP', () => {
-            this.virtualPadDirection = null;
+            this._virtualPadDirection = null;
         });
         this.scene.game.events.on('VIRTUALPAD_FACE_BUTTON_DOWN', (direction: string) => {
-            this.virtualPadDirection = direction;
+            this._virtualPadDirection = direction;
             if (direction === 'faceCircle') {
                 this.decideSubject.next();
             }
@@ -82,7 +114,7 @@ export class InputManager {
             }
         });
         this.scene.game.events.on('VIRTUALPAD_FACE_BUTTON_UP', () => {
-            this.virtualPadDirection = null;
+            this._virtualPadDirection = null;
         });
 
         // キーボード入力からの変換
@@ -99,15 +131,34 @@ export class InputManager {
             if (action === 'ESC') this.cancelSubject.next();
         }));
 
-        // ゲームパッド入力（接続されている場合）
-        if (this.scene.input.gamepad) {
-            this.scene.input.gamepad.on('down', (pad: Phaser.Input.Gamepad.Gamepad, button: Phaser.Input.Gamepad.Button) => {
-                // button.index: 0=A/✕, 1=B/〇 と仮定し、両方を決定ボタンとして扱う
-                if (button.index === 0 || button.index === 1) {
-                    this.decideSubject.next();
+        // ゲームパッド入力（ポーリング方式：シーン破棄によるイベント無効化を防ぐため）
+        this.scene.game.events.on('step', () => {
+            if (!this.inputAcceptable) return;
+
+            const pad = this.scene?.input?.gamepad?.pad1;
+            if (!pad) return;
+
+            const buttons = pad.buttons;
+            for (let i = 0; i < buttons.length; i++) {
+                const isDown = buttons[i].pressed;
+                const wasDown = this.previousPadButtons[i] || false;
+                
+                if (isDown && !wasDown) {
+                    // ボタンマッピング: 0=南(A/✕), 1=東(B/〇), 2=西(X/□), 3=北(Y/△)
+                    if (i === 1) this.decideSubject.next();
+                    if (i === 0) this.cancelSubject.next();
+                    if (i === 2) this.fieldAttackSubject.next();
+                    if (i === 3) this.menuSubject.next();
+
+                    // 十字キー（メニュー操作などの単発入力用）
+                    if (i === 12) this.upSubject.next();
+                    if (i === 13) this.downSubject.next();
+                    if (i === 14) this.leftSubject.next();
+                    if (i === 15) this.rightSubject.next();
                 }
-            });
-        }
+                this.previousPadButtons[i] = isDown;
+            }
+        });
     }
 
     public static getInstance(scene: Phaser.Scene) {
@@ -121,7 +172,7 @@ export class InputManager {
 
     // 入力状態の更新
     public setState(inputFlg: boolean) { this.inputFlgSubject$.next(inputFlg); }
-    public setVirtualPadDirectionNull() { this.virtualPadDirection = null; }
+    public setVirtualPadDirectionNull() { this._virtualPadDirection = null; }
 
     public destroy() { this.subs.unsubscribe(); }
 

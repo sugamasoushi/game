@@ -6,13 +6,14 @@ import { BubbleTalk } from './Action/BubbleTalk';
 import { GameStateManager } from '../../../GameAllState/GameStateManager';
 import { State } from '@/app/(game)/lib/StateTypes';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
+import { Subscription } from 'rxjs';
 
 export class Npc extends BaseSprite {
     private npcType: string;
     private inputManager: InputManager;
     protected bubbleTalkKey;
     protected currentBubbleTalk: BubbleTalk | null = null;
-    private wasCirclePressed = false;
+    private subs = new Subscription();
 
     protected spriteObjList: Phaser.Physics.Arcade.Sprite[] = [];
     private graphicsObjList: Phaser.GameObjects.Graphics[] = [];
@@ -56,7 +57,6 @@ export class Npc extends BaseSprite {
         this.setDepth(this.y + (32 / 2) * this.scale);
         this.updateRandomMoveToPosition();
         this._setInput();
-        this._checkVirtualPadTalk();
         this.energyHP();
         this.delete();
     }
@@ -151,36 +151,7 @@ export class Npc extends BaseSprite {
         }
     }
 
-    private _checkVirtualPadTalk() {
-        if (!this.inputManager) return;
-        if (!this.currentBubbleTalk) return;
-
-        const dir = this.inputManager.virtualPadDirection;
-        const isCirclePressed = dir === 'faceCircle';
-
-        if (isCirclePressed && !this.wasCirclePressed) {
-            const manager = GameStateManager.getInstance();
-            if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
-                // 会話不可の状態
-            } else {
-                //プレイヤーとの距離が近い場合
-                // if (Phaser.Math.Difference(this.x, this.gameScene.getPlayer().x) < 40 &&
-                //     Phaser.Math.Difference(this.y, this.gameScene.getPlayer().y) < 40 &&
-                //     this.state === CharacterState.normal) {
-
-                //     this.execNpcTalk(manager, this.currentBubbleTalk);
-                // }
-
-                // player と target の矩形が重なっているか
-                if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), this.gameScene.getPlayer().getBounds()) &&
-                    this.state === CharacterState.normal) {
-
-                    this.execNpcTalk(manager, this.currentBubbleTalk);
-                }
-            }
-        }
-        this.wasCirclePressed = isCirclePressed;
-    }
+    // 以前の_checkVirtualPadTalkは廃止
 
     private execNpcTalk(manager: GameStateManager, bubbleTalk: BubbleTalk) {
         if (this.state === CharacterState.talking) return;
@@ -221,6 +192,28 @@ export class Npc extends BaseSprite {
 
     public setInputManager(inputManager: InputManager) {
         this.inputManager = inputManager;
+
+        // decideButtonの購読を追加
+        if (this.currentBubbleTalk) {
+            this.subs.add(this.inputManager.decideButton$.subscribe(() => {
+                const manager = GameStateManager.getInstance();
+                if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
+                    // 会話不可の状態
+                } else {
+                    // player と target の矩形が重なっているか
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), this.gameScene.getPlayer().getBounds()) &&
+                        this.state === CharacterState.normal) {
+
+                        this.execNpcTalk(manager, this.currentBubbleTalk!);
+                    }
+                }
+            }));
+        }
+
+        // オブジェクト破棄時に購読解除
+        this.once('destroy', () => {
+            this.subs.unsubscribe();
+        });
     }
 
     //enemy衝突

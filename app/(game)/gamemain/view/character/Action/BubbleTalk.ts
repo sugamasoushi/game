@@ -128,7 +128,7 @@ export class BubbleTalk {
                 let lineCount = 0;
                 for (const text of talks) {
                     lineCount++;
-                    await this.messageOperation.typeWriter(this.gameScene, this.textObject, text);
+                    await this.messageOperation.typeWriter(this.gameScene, this.textObject, text, this.clickZone);
                     await this.messageOperation.textScroll(this.gameScene, this.textObject, this.clickZone, lineCount, talks.length, this.textLine);
                 }
 

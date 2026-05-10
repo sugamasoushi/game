@@ -240,9 +240,12 @@ export class MainColumnWindow {
 
     private tryEnterItemSelectMode() {
         if (!this.isItemSelectMode) {
+            // コンディション画面のみ決定操作を受け付けない
+            if (this.nowMainColumnNo === MenuTab.Condition) return;
+
             let eventName = '';
             switch(this.nowMainColumnNo) {
-                case MenuTab.Condition: eventName = 'ConditionSelectModeStart'; break;
+                //case MenuTab.Condition: eventName = 'ConditionSelectModeStart'; break;
                 case MenuTab.Status: eventName = 'StatusSelectModeStart'; break;
                 case MenuTab.Item: eventName = 'ItemSelectModeStart'; break;
                 case MenuTab.Equip: eventName = 'EquipSelectModeStart'; break;

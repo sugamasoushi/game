@@ -153,16 +153,20 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
             if (!this.visible || !this.active) return;
             if (this.nowSelectNo + 1 < this.selectList.length) {
                 this.nowSelectNo++;
-                this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+            } else {
+                this.nowSelectNo = 0; // ループして最初に戻る
             }
+            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
         }));
 
         this.subs.add(inputManager.upButton$.subscribe(() => {
             if (!this.visible || !this.active) return;
             if (this.nowSelectNo - 1 >= 0) {
                 this.nowSelectNo--;
-                this.allow.updatePosition(this.selectList[this.nowSelectNo]);
+            } else {
+                this.nowSelectNo = this.selectList.length - 1; // ループして最後に移動する
             }
+            this.allow.updatePosition(this.selectList[this.nowSelectNo]);
         }));
 
         this.subs.add(inputManager.decideButton$.subscribe(() => {

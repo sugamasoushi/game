@@ -131,7 +131,7 @@ export class EventTalk {
             }
 
             lineCount++;
-            await this.messageOperation.typeWriter(this.eventScene, this.textObject, text);
+            await this.messageOperation.typeWriter(this.eventScene, this.textObject, text, this.clickZone);
             await this.messageOperation.textScroll(this.eventScene, this.textObject, this.clickZone, lineCount, talks.length, this.textLine);
         }
 

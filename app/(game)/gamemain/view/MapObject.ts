@@ -16,13 +16,14 @@ import { TiledObjectEntity } from './character/TiledObjectEntity';
 import { CacheDataUpdate } from '@/app/(game)/core/CacheDataUpdate';
 import { InputManager } from '../../core/input/InputManager';
 import { State } from "../../lib/types";
+import { Subscription } from "rxjs";
 
 export class MapObject extends Phaser.GameObjects.Container {
     private fieldData: FieldData;
 
     private phaserEvents: Phaser.Events.EventEmitter;
     private inputManager: InputManager
-    private wasCirclePressed = false;
+    private subs = new Subscription();
 
     private gameScene: GameScene;
     private TileMap: TileMap;
@@ -49,10 +50,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.soundScene = this.gameScene.scene.get('Sound') as Sound;
     }
 
-    preUpdate(time: number) {
-        this.checkVirtualPad();
-    }
-
     public async execute(phaserEvents: Phaser.Events.EventEmitter, tileMap: TileMap, fieldData: FieldData, sceneKey: string, inputManager: InputManager) {
         this.phaserEvents = phaserEvents;
         this.fieldData = fieldData;
@@ -67,7 +64,33 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.createPlayer(sceneKey);
         this.createNPC();
         this.createObject();
+        this.setupInput();
 
+        this.gameScene.events.once('shutdown', () => {
+            this.subs.unsubscribe();
+        });
+    }
+
+    private setupInput() {
+        this.subs.add(this.inputManager.decideButton$.subscribe(() => {
+            //操作ロックされている場合、何もしない
+            const manager = GameStateManager.getInstance();
+            if (manager.currentState !== State.NOSTATE) return;
+
+            //クリックイベント
+            for (const obj of this.clickEventObjects) {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(obj.getBounds(), this.gameScene.getPlayer().getBounds())) {
+                    this.execClickEvent(obj);
+                }
+            }
+
+            //宝箱を開ける
+            for (const obj of this.chestSpriteObjects) {
+                if (Phaser.Geom.Intersects.RectangleToRectangle(obj.getBounds(), this.gameScene.getPlayer().getBounds())) {
+                    this.execOpenChest(obj);
+                }
+            }
+        }));
     }
 
     private createPlayer(sceneKey: string) {
@@ -146,52 +169,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         // 状態管理クラスのパーティリストを更新
         gameStateManager.setPlayerPartyList(this.playerPartyList);
     }
-
-    // private old_createNPC() {
-
-    //     //NPC作成
-    //     if (this.TileMap.getMakeTilemap().objects) {
-    //         for (const makeTilemapObj of this.TileMap.getMakeTilemap().objects) {
-    //             if (makeTilemapObj.name === 'NPC') {
-    //                 for (const npcObj of makeTilemapObj.objects) {
-    //                     const nameArray = npcObj.name.split(',');
-
-    //                     try {
-    //                         const npc = this.createSprite(
-    //                             nameArray[0], //npcType : npcのタイプ
-    //                             nameArray[1], //spritetype : spriteのタイプ
-    //                             this.gameScene,
-    //                             npcObj.x!,
-    //                             npcObj.y!,
-    //                             nameArray[2], //spriteSheetKey : タイル画像のキー
-    //                             nameArray[3], //name : ゲーム内変数としてのキャラ名、画像などで使用
-    //                             nameArray[4] ? nameArray[4] : 'stand_down',//指定されていなければ下向き配置
-    //                             nameArray[5] ? nameArray[5] : '', //imageKey : 立ち絵のキー、アイコンにも使用
-    //                             nameArray[6] ? nameArray[6] : ''//指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
-    //                         );
-
-    //                         npc!.init();
-
-    //                         if (nameArray[0] === 'normal') {
-    //                             this.npcNormalList.push(npc as Npc);
-    //                         } else {
-    //                             this.npcEnemyList.push(npc as Npc);
-    //                         }
-
-    //                         if (this.TileMap.getCollisionLayer()) {
-    //                             this.gameScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, this.TileMap.getCollisionLayer());
-    //                         }
-
-    //                     } catch {
-    //                         console.log('NPC作成エラー')
-    //                         console.log(nameArray)
-    //                     }
-
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
     private createNPC() {
 
@@ -605,32 +582,6 @@ export class MapObject extends Phaser.GameObjects.Container {
     }
     public getFieldNpclList(): Npc[] {
         return this.npcNormalList;
-    }
-
-    private checkVirtualPad() {
-        if (!this.inputManager) return;
-
-        const dir = this.inputManager.virtualPadDirection;
-        const isCirclePressed = dir === 'faceCircle';
-
-        //〇ボタンが押された場合
-        if (isCirclePressed && !this.wasCirclePressed) {
-
-            //クリックイベント
-            for (const obj of this.clickEventObjects) {
-                if (Phaser.Geom.Intersects.RectangleToRectangle(obj.getBounds(), this.gameScene.getPlayer().getBounds())) {
-                    this.execClickEvent(obj);
-                }
-            }
-
-            //宝箱を開ける
-            for (const obj of this.chestSpriteObjects) {
-                if (Phaser.Geom.Intersects.RectangleToRectangle(obj.getBounds(), this.gameScene.getPlayer().getBounds())) {
-                    this.execOpenChest(obj);
-                }
-            }
-        }
-        this.wasCirclePressed = isCirclePressed;
     }
 
     private execClickEvent(obj: Phaser.Physics.Arcade.Sprite) {

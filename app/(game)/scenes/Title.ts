@@ -4,6 +4,8 @@ import { EventBus } from '../EventBus';
 import { GameStateManager } from '../GameAllState/GameStateManager';
 import { DataDefinition } from '../Data/DataDefinition';
 import { SaveDataManager } from '../core/SaveDataManager';
+import { InputManager } from '../core/input/InputManager';
+import { Subscription } from 'rxjs';
 
 export class Title extends Scene {
     private debugFlg: boolean | undefined;
@@ -16,6 +18,13 @@ export class Title extends Scene {
     private ContinueStart: GameObjects.Text;
     private logoTween: Phaser.Tweens.Tween | null;
     private saveDataManager: SaveDataManager;
+
+    private inputManager: InputManager;
+    private subs = new Subscription();
+    private nowSelectNo: number = 0;
+    private maxSelectNo: number = 1;
+    private hasContinueData: boolean = false;
+    private selectTween: Phaser.Tweens.Tween | null = null;
 
     constructor() { super('Title'); }
 
@@ -45,16 +54,25 @@ export class Title extends Scene {
 
         //セーブデータ
         this.saveDataManager = new SaveDataManager();
+        this.hasContinueData = await this.saveDataManager.checkSaveData(this);
+        this.maxSelectNo = this.hasContinueData ? 1 : 0;
+        this.nowSelectNo = this.hasContinueData ? 1 : 0; // セーブデータがあればコンティニューをデフォルトにする
 
         await this.opening();
         await this.title();
         this.newGame();
-        this.continue();
+        await this.continue();
+
+        this.inputManager = InputManager.getInstance(this);
+        this.setupInput();
+        this.updateSelection();
 
         //EventBusにシーンを登録するとuseEffect経由で外部から操作できる
         EventBus.emit('current-scene-ready', this);
 
-        //this.scene.start('MainMenu');
+        this.events.once('shutdown', () => {
+            this.subs.unsubscribe();
+        });
     }
 
     //EventBus経由で外部から参照され、シーン切替が可能
@@ -242,35 +260,40 @@ export class Title extends Scene {
 
         //NewGame
         this.newGameStart = this.add.text(
-            gameWidth / 2, gameHeight / 2,
+            gameWidth / 2, gameHeight / 2 + 25,
             "New Game", { fontFamily: "Arial Black", fontSize: 50, color: "#00a6ed" });
-        this.newGameStart.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
+        this.newGameStart.setOrigin(0.5, 0.5).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
         this.newGameStart.setDepth(gameHeight);
 
         this.newGameStart.setInteractive({ useHandCursor: true });
 
 
         this.newGameStart.on('pointerdown', () => {
-            this.newGameStart.disableInteractive();
-
-            //状態をスタートに更新
-            this.manager.updateState({
-                state: State.LOAD,
-                fieldData: {
-                    gameMode: 'New Game',
-                    mapKey: '0101',
-                    x: 495,
-                    y: 337,
-                    x2: 0,
-                    y2: 0,
-                    initStandKey: 'stand_left',
-                }
-            }, 'New Game')
-
-            this.events.emit('OPENING_MUSIC_END');
-
-            this.scene.stop();
+            this.execNewGame();
         });
+    }
+
+    private execNewGame() {
+        this.newGameStart.disableInteractive();
+        if (this.ContinueStart) this.ContinueStart.disableInteractive();
+
+        //状態をスタートに更新
+        this.manager.updateState({
+            state: State.LOAD,
+            fieldData: {
+                gameMode: 'New Game',
+                mapKey: '0101',
+                x: 495,
+                y: 337,
+                x2: 0,
+                y2: 0,
+                initStandKey: 'stand_left',
+            }
+        }, 'New Game')
+
+        this.events.emit('OPENING_MUSIC_END');
+
+        this.scene.stop();
     }
 
     async continue() {
@@ -279,49 +302,113 @@ export class Title extends Scene {
 
         //Continue
         this.ContinueStart = this.add.text(
-            gameWidth / 2, gameHeight / 2 + 100,
+            gameWidth / 2, gameHeight / 2 + 125,
             "Continue", { fontFamily: "Arial Black", fontSize: 50, color: "#00a6ed" });
-        this.ContinueStart.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
+        this.ContinueStart.setOrigin(0.5, 0.5).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
         this.ContinueStart.setDepth(gameHeight);
 
         this.ContinueStart.setInteractive({ useHandCursor: true });
 
         //セーブデータが存在しない場合
-        const hasData = await this.saveDataManager.checkSaveData(this);
-        if (!hasData) {
+        if (!this.hasContinueData) {
             this.ContinueStart.setAlpha(0.5);
             this.ContinueStart.disableInteractive();
             return;
         }
 
         this.ContinueStart.on('pointerdown', async () => {
-            this.ContinueStart.disableInteractive();
-
-            //ローカルストレージ等のデータを読み込み
-            await this.saveDataManager.loadSaveData(this);
-
-            //状態を更新
-            this.manager.updateState({
-                state: State.LOAD,
-                fieldData: {
-                    gameMode: 'Continue',
-                    mapKey: this.cache.json.get('savedata').playerData.PlayerMapKey,
-                    x: this.cache.json.get('savedata').playerData.PlayerPosition.x,
-                    y: this.cache.json.get('savedata').playerData.PlayerPosition.y,
-                    x2: 0,
-                    y2: 0,
-                    initStandKey: this.cache.json.get('savedata').playerData.initStandKey,
-                }
-            }, 'Continue')
-
-            //コンティニューの場合、初期イベントのフラグを倒す
-            const settingData = new DataDefinition();
-            settingData.updateEventFlg(this, 'EVENT0001', false);
-
-            this.events.emit('OPENING_MUSIC_END');
-
-            this.scene.stop();
+            this.execContinue();
         });
     }
 
+    private async execContinue() {
+        this.ContinueStart.disableInteractive();
+        if (this.newGameStart) this.newGameStart.disableInteractive();
+
+        //ローカルストレージ等のデータを読み込み
+        await this.saveDataManager.loadSaveData(this);
+
+        //状態を更新
+        this.manager.updateState({
+            state: State.LOAD,
+            fieldData: {
+                gameMode: 'Continue',
+                mapKey: this.cache.json.get('savedata').playerData.PlayerMapKey,
+                x: this.cache.json.get('savedata').playerData.PlayerPosition.x,
+                y: this.cache.json.get('savedata').playerData.PlayerPosition.y,
+                x2: 0,
+                y2: 0,
+                initStandKey: this.cache.json.get('savedata').playerData.initStandKey,
+            }
+        }, 'Continue')
+
+        //コンティニューの場合、初期イベントのフラグを倒す
+        const settingData = new DataDefinition();
+        settingData.updateEventFlg(this, 'EVENT0001', false);
+
+        this.events.emit('OPENING_MUSIC_END');
+
+        this.scene.stop();
+    }
+
+    private setupInput() {
+        this.subs.add(this.inputManager.downButton$.subscribe(() => {
+            if (this.nowSelectNo < this.maxSelectNo) {
+                this.nowSelectNo++;
+                this.updateSelection();
+            }
+        }));
+
+        this.subs.add(this.inputManager.upButton$.subscribe(() => {
+            if (this.nowSelectNo > 0) {
+                this.nowSelectNo--;
+                this.updateSelection();
+            }
+        }));
+
+        this.subs.add(this.inputManager.decideButton$.subscribe(() => {
+            if (this.nowSelectNo === 0) {
+                this.execNewGame();
+            } else if (this.nowSelectNo === 1 && this.hasContinueData) {
+                this.execContinue();
+            }
+        }));
+    }
+
+    private updateSelection() {
+        if (this.selectTween) {
+            this.selectTween.stop();
+            this.selectTween = null;
+        }
+
+        // 全てリセット
+        this.newGameStart.setScale(1);
+        if (this.ContinueStart) this.ContinueStart.setScale(1);
+
+        let target: GameObjects.Text;
+
+        if (this.nowSelectNo === 0) {
+            this.newGameStart.setTint(Phaser.Display.Color.GetColor(255, 255, 255)); // White
+            if (this.hasContinueData) {
+                this.ContinueStart.setTint(Phaser.Display.Color.GetColor(128, 128, 128)); // Gray
+            }
+            target = this.newGameStart;
+        } else {
+            this.newGameStart.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+            if (this.hasContinueData) {
+                this.ContinueStart.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
+            }
+            target = this.ContinueStart;
+        }
+
+        // 選択中のテキストを拡大縮小アニメーション
+        this.selectTween = this.tweens.add({
+            targets: target,
+            scale: 1.1,
+            duration: 500,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+    }
 }

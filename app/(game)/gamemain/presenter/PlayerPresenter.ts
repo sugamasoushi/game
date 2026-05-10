@@ -127,6 +127,9 @@ export class PlayerPresenter {
             //状態がNOSTATE以外の場合は、メニューを開かない
             if (gameStateManager.currentState !== State.NOSTATE) { return; }
 
+            // シーン遷移時の誤爆（入力状態の復活）を防ぐために入力を一旦破棄する
+            this.inputManager.clearGamepadState();
+
             //ぼかし
             //https://newdocs.phaser.io/docs/3.70.0/Phaser.GameObjects.Components.FX#addBlur
             const mainCamera: Phaser.Cameras.Scene2D.Camera = this.gameScene.cameras.main;
