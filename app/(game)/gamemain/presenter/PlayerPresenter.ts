@@ -33,13 +33,14 @@ export class PlayerPresenter {
         //プレイヤーのパーティメンバーを作成
         const playerPartyList = gameStateManager.currentPlayerPartyList;
         if (playerPartyList[1]) {
+            (playerPartyList[1] as Player).setLeader(playerPartyList[0] as Player);
             (playerPartyList[1] as Player).setCursors(this.inputManager.phaserCursors);
             (playerPartyList[1] as Player).setInputManager(this.inputManager);
-            //this.player.setPlayer1(this.player);
         }
 
         //プレイヤーのパーティメンバーを作成
         if (playerPartyList[2]) {
+            (playerPartyList[2] as Player).setLeader(playerPartyList[0] as Player);
             (playerPartyList[2] as Player).setCursors(this.inputManager.phaserCursors);
             (playerPartyList[2] as Player).setInputManager(this.inputManager);
         }
@@ -73,6 +74,7 @@ export class PlayerPresenter {
                     this.inputManager.phaserInput.activePointer.worldX,
                     this.inputManager.phaserInput.activePointer.worldY,
                     0, false, 50, 1000);
+                this.player.setInputClickFlg(true);
 
                 const playerPartyList = gameStateManager.currentPlayerPartyList;
 
@@ -81,6 +83,7 @@ export class PlayerPresenter {
                         this.inputManager.phaserInput.activePointer.worldX,
                         this.inputManager.phaserInput.activePointer.worldY,
                         1, false, 40, 1100);
+                    (playerPartyList[1] as Player).setInputClickFlg(true);
                 }
 
                 if (playerPartyList[2]) {
@@ -88,6 +91,7 @@ export class PlayerPresenter {
                         this.inputManager.phaserInput.activePointer.worldX,
                         this.inputManager.phaserInput.activePointer.worldY,
                         2, false, 40, 1100);
+                    (playerPartyList[2] as Player).setInputClickFlg(true);
                 }
             }
         });

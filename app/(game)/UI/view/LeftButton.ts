@@ -6,7 +6,8 @@ export class LeftButton {
 
     private uiScene: Phaser.Scene;
     private gameScene: Phaser.Scene;
-    private buttons: Phaser.GameObjects.Text[] = [];
+    private buttonTexts: Phaser.GameObjects.Text[] = [];  // 表示用テキスト
+    private buttonZones: Phaser.GameObjects.Zone[] = [];   // クリック判定用ゾーン
     private menuWindow: MessageWindow;
     private hitZone: Phaser.GameObjects.Zone;
 
@@ -20,92 +21,100 @@ export class LeftButton {
     }
 
     private createMenuButton() {
-        const gameConfigWidth: number = Number(this.uiScene.game.canvas.width);
         const gameConfigHeight: number = Number(this.uiScene.game.canvas.height);
 
         const buttonSize = 48; // ボタン1つ分のサイズ
-        const centerX = buttonSize * 1.5 + 32; // 左端から余白
-        const centerY = gameConfigHeight - buttonSize * 1.5 - 32;
+        const centerX = buttonSize * 1.5 + 32; // 十字パッドの中心X
+        const centerY = gameConfigHeight - buttonSize * 1.5 - 32; // 十字パッドの中心Y
 
         const messageObjectInstance = new MessageObject();
         messageObjectInstance.init(this.uiScene);
 
-        // ウィンドウを作成
+        // 背景ウィンドウを作成
         this.menuWindow = new MessageWindow(this.uiScene);
         this.menuWindow.init();
         this.menuWindow.createCrossWindow(centerX, centerY, buttonSize);
         this.menuWindow.setDepth(400);
 
+        // 全体をまとめる円形ヒットゾーン（伝播防止用）
         const radius = buttonSize * 1.6;
         this.hitZone = this.uiScene.add.zone(centerX, centerY, radius * 2, radius * 2);
         this.hitZone.setDepth(405);
         this.hitZone.setInteractive(new Phaser.Geom.Circle(radius, radius, radius), Phaser.Geom.Circle.Contains);
-        this.hitZone.on(Phaser.Input.Events.POINTER_DOWN, (pointer: Phaser.Input.Pointer, localX: number, localY: number, event: Phaser.Types.Input.EventData) => {
+        this.hitZone.on(Phaser.Input.Events.POINTER_DOWN, (_p: Phaser.Input.Pointer, _lx: number, _ly: number, event: Phaser.Types.Input.EventData) => {
             event.stopPropagation();
         });
-        this.hitZone.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer, localX: number, localY: number, event: Phaser.Types.Input.EventData) => {
+        this.hitZone.on(Phaser.Input.Events.POINTER_UP, (_p: Phaser.Input.Pointer, _lx: number, _ly: number, event: Phaser.Types.Input.EventData) => {
             event.stopPropagation();
         });
         this.hitZone.disableInteractive();
 
+        // 斜め方向のオフセット距離
+        const d = Math.round(buttonSize * 0.8);
+
+        /**
+         * 8方向ボタン定義
+         * x/y は各ゾーン・テキストの「中央座標」（centerX/centerY を基準に指定）
+         */
         const padInfo = [
-            { char: '▲', x: centerX, y: centerY - buttonSize, dir: 'up' },
-            { char: '▼', x: centerX, y: centerY + buttonSize, dir: 'down' },
-            { char: '◀', x: centerX - buttonSize, y: centerY, dir: 'left' },
-            { char: '▶', x: centerX + buttonSize, y: centerY, dir: 'right' },
+            { char: '⇑', x: centerX,         y: centerY - buttonSize, dir: 'up'         },
+            { char: '⇓', x: centerX,         y: centerY + buttonSize, dir: 'down'       },
+            { char: '⇐', x: centerX - buttonSize, y: centerY,         dir: 'left'       },
+            { char: '⇒', x: centerX + buttonSize, y: centerY,         dir: 'right'      },
+            { char: '⇖', x: centerX - d,     y: centerY - d,          dir: 'up-left'    },
+            { char: '⇗', x: centerX + d,     y: centerY - d,          dir: 'up-right'   },
+            { char: '⇙', x: centerX - d,     y: centerY + d,          dir: 'down-left'  },
+            { char: '⇘', x: centerX + d,     y: centerY + d,          dir: 'down-right' },
         ];
 
         for (const info of padInfo) {
-            const text = messageObjectInstance.createTextObject(this.uiScene, 0, 0, [info.char], 32);
+            // 表示用テキスト（クリック判定には使わない）
+            const text = messageObjectInstance.createTextObject(this.uiScene, 0, 0, [info.char], 28);
             text.setOrigin(0.5);
-            text.x = info.x;
-            text.y = info.y;
+            text.setPosition(info.x, info.y);
             text.setDepth(410);
             text.setAlpha(0);
+            this.buttonTexts.push(text);
 
-            text.on(Phaser.Input.Events.POINTER_DOWN, () => {
+            // クリック判定用ゾーン（中央座標 = info.x, info.y）
+            const zone = this.uiScene.add.zone(info.x, info.y, buttonSize, buttonSize);
+            zone.setDepth(415);
+
+            zone.on(Phaser.Input.Events.POINTER_DOWN, () => {
                 this.uiScene.game.events.emit('VIRTUALPAD_ARROW_KEY_DOWN', info.dir);
             });
-
-            text.on(Phaser.Input.Events.POINTER_UP, async (
-                pointer: Phaser.Input.Pointer,
-                localX: number,
-                localY: number,
-                event: Phaser.Types.Input.EventData) => {
-
+            zone.on(Phaser.Input.Events.POINTER_UP, (_p: Phaser.Input.Pointer, _lx: number, _ly: number, event: Phaser.Types.Input.EventData) => {
                 this.uiScene.game.events.emit('VIRTUALPAD_ARROW_KEY_UP');
-                //下層のオブジェクトのイベントを止める
                 event.stopPropagation();
             });
-
-            text.on(Phaser.Input.Events.POINTER_OUT, () => {
+            zone.on(Phaser.Input.Events.POINTER_OUT, () => {
                 this.uiScene.game.events.emit('VIRTUALPAD_ARROW_KEY_UP');
             });
 
-
-            this.buttons.push(text);
+            zone.disableInteractive();
+            this.buttonZones.push(zone);
         }
 
         this.menuWindow.setAlpha(0);
     }
 
     public fadeIn() {
-         const duration = 200;
+        const duration = 200;
 
         const radius = 48 * 1.6;
         this.hitZone.setInteractive(new Phaser.Geom.Circle(radius, radius, radius), Phaser.Geom.Circle.Contains);
 
-        for (const button of this.buttons) {
+        for (const text of this.buttonTexts) {
             this.uiScene.tweens.add({
-                targets: button,
+                targets: text,
                 alpha: 1,
                 duration: duration,
                 ease: 'Power1',
-                onComplete: () => {
-                    button.setInteractive({ useHandCursor: true });
-
-                }
             });
+        }
+
+        for (const zone of this.buttonZones) {
+            zone.setInteractive({ useHandCursor: true });
         }
 
         this.uiScene.tweens.add({
@@ -121,16 +130,17 @@ export class LeftButton {
 
         this.hitZone.disableInteractive();
 
-        for (const button of this.buttons) {
+        for (const text of this.buttonTexts) {
             this.uiScene.tweens.add({
-                targets: button,
+                targets: text,
                 alpha: 0,
                 duration: duration,
                 ease: 'Power1',
-                onStart: () => {
-                    button.disableInteractive();
-                }
             });
+        }
+
+        for (const zone of this.buttonZones) {
+            zone.disableInteractive();
         }
 
         this.uiScene.tweens.add({
@@ -140,22 +150,26 @@ export class LeftButton {
             ease: 'Power1'
         });
     }
+
     public setEnable() {
         this.hitZone.setInteractive();
-        for (const button of this.buttons) {
-            button.setAlpha(1);
-            button.setInteractive({ useHandCursor: true });
+        for (const text of this.buttonTexts) {
+            text.setAlpha(1);
+        }
+        for (const zone of this.buttonZones) {
+            zone.setInteractive({ useHandCursor: true });
         }
         this.menuWindow.setAlpha(this.menuWindow.currentAlphaValue);
     }
 
     public setDisable() {
         this.hitZone.disableInteractive();
-        for (const button of this.buttons) {
-            button.setAlpha(0.3);
-            button.disableInteractive();
+        for (const text of this.buttonTexts) {
+            text.setAlpha(0.3);
+        }
+        for (const zone of this.buttonZones) {
+            zone.disableInteractive();
         }
         this.menuWindow.setAlpha(0.3);
     }
 }
-

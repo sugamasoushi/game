@@ -6,6 +6,8 @@ import { GameStateManager, gameStateManager } from '../../../GameAllState/GameSt
 import { InputManager } from "@/app/(game)/core/input/InputManager";
 
 export class Player extends BaseSprite {
+    private debugFlg: boolean | undefined;
+
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     private inputManager: InputManager;
 
@@ -15,13 +17,21 @@ export class Player extends BaseSprite {
     private tileSize: number = 32;
     private depthValue: number | null = null;
     private cropRectMask: Phaser.GameObjects.Graphics;
-    private cropRectMask2: Phaser.Display.Masks.GeometryMask;
+    private GeometryMask: Phaser.Display.Masks.GeometryMask;
 
+    //クリック移動とキーボード移動の検知と二人目以降の追従処理に使用する
+    private inputKeyboardOrPadFlg = false;
+    private inputClickFlg = false;
+
+    private positionHistory: { x: number, y: number }[] = [];
+    private leader: Player | null = null;
 
     constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
         super(scene, x, y, 'tex_' + spriteSheetKey, initStandKey);
         this.gameScene = scene;
         this.name = spriteSheetKey;
+
+        this.debugFlg = scene.game.config.physics.arcade?.debug;
 
         //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
         this.gameScene.physics.add.existing(this);
@@ -52,9 +62,25 @@ export class Player extends BaseSprite {
 
     preUpdate(time: number, delta: number) {
         super.preUpdate(time, delta);
-        this._updateKeyWalk();
+
+        // 位置履歴を記録（4px以上動いたら記録）
+        const lastPos = this.positionHistory[this.positionHistory.length - 1];
+        if (!lastPos || Phaser.Math.Distance.Between(this.x, this.y, lastPos.x, lastPos.y) > 4) {
+
+            //移動履歴を保存し、古いのから削除
+            this.positionHistory.push({ x: this.x, y: this.y });
+            if (this.positionHistory.length > 100) this.positionHistory.shift();
+        }
+
+        //移動制御
+        if (this.leader) {
+            this.updateKeyWalkMember();
+        } else {
+            this.updateKeyWalkLeader();
+        }
         this._updateStopWalk();
 
+        //depthの設定
         this.depthValue = this.y + (32 / 2) * this.scale
         if (this.name === 'meina') {
             this.setDepth(this.depthValue);
@@ -62,16 +88,23 @@ export class Player extends BaseSprite {
             this.setDepth(this.depthValue - 1);
         }
 
-        this._updateRectMask();
+        //キャラクターの下側を非表示にするマスク
+        this.updateCharacterShapesMask();
 
-        if (this.name !== 'meina' && Phaser.Math.Distance.BetweenPoints(this, this.gameScene.getPlayer()) > 500 && this.state === CharacterState.normal) {
+        //クリック操作による移動でプレイヤーから一定距離以上離れたら強制的にプレイヤーの位置に更新する
+        if (this.name !== 'meina' && !this.leader && Phaser.Math.Distance.BetweenPoints(this, this.gameScene.getPlayer()) > 500 && this.state === CharacterState.normal) {
             this.setMapPosition(this.gameScene.getPlayer().x, this.gameScene.getPlayer().y);
         }
     }
 
+    public setLeader(leader: Player) { this.leader = leader; }
+    public setInputKeyboardOrPadFlg(inputKeyboardOrPadFlg: boolean) { this.inputKeyboardOrPadFlg = inputKeyboardOrPadFlg; }
+    public setInputClickFlg(inputClickFlg: boolean) { this.inputClickFlg = inputClickFlg; }
+    public getPositionHistory() { return this.positionHistory; }
+    public clearPositionHistory() { this.positionHistory = []; }
+
     //キー入力による移動
-    //※本来はinputmanagerのキー管理を通したいが、難しそうなのでこのまま使用
-    _updateKeyWalk() {
+    private updateKeyWalkLeader() {
 
         if (!this.body) return;
         if (!this.cursors) return;
@@ -79,7 +112,11 @@ export class Player extends BaseSprite {
 
         //状態管理クラス
         const manager = GameStateManager.getInstance();
-        if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) { return; }
+        if (manager.currentState === State.BUBBLE_TALK ||
+            manager.currentState === State.EVENT ||
+            manager.currentState === State.MENU ||
+            manager.currentState === State.BATTLE
+        ) { return; }
 
         //十字キーを取得
         const cursorsKeys = this.cursors;
@@ -89,20 +126,20 @@ export class Player extends BaseSprite {
         if (this.moveToPositionX && this.moveToPositionY) return;
         this.setVelocity(0);
 
-        if (cursorsKeys.left.isDown || vPadDir === 'left') {
+        if (cursorsKeys.left.isDown || vPadDir === 'left' || vPadDir === 'up-left' || vPadDir === 'down-left') {
             this.moveDirection = this.walkLeft;
             this.standframe = this.standLeft;
             this.setVelocityX(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.right.isDown || vPadDir === 'right') {
+        } else if (cursorsKeys.right.isDown || vPadDir === 'right' || vPadDir === 'up-right' || vPadDir === 'down-right') {
             this.moveDirection = this.walkRight;
             this.standframe = this.standRight;
             this.setVelocityX(this.playerDefaultVelocity);
         }
-        if (cursorsKeys.up.isDown || vPadDir === 'up') {
+        if (cursorsKeys.up.isDown || vPadDir === 'up' || vPadDir === 'up-left' || vPadDir === 'up-right') {
             this.moveDirection = this.walkUp;
             this.standframe = this.standUp;
             this.setVelocityY(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.down.isDown || vPadDir === 'down') {
+        } else if (cursorsKeys.down.isDown || vPadDir === 'down' || vPadDir === 'down-left' || vPadDir === 'down-right') {
             this.moveDirection = this.walkDown;
             this.standframe = this.standDown;
             this.setVelocityY(this.playerDefaultVelocity);
@@ -121,6 +158,111 @@ export class Player extends BaseSprite {
             this.stopAnimation();
             this.moveDirection = this.walkStop;
         }
+
+    }
+
+    //メンバー追従
+    private updateKeyWalkMember() {
+
+        if (!this.body) return;
+        if (!this.cursors) return;
+        if (this.state !== CharacterState.normal) return;
+        if (this.leader?.state === CharacterState.stop) { this.setVelocity(0); return; }
+        if (this.leader?.body.touching.left || this.leader?.body.touching.right || this.leader?.body.touching.up || this.leader?.body.touching.down) return
+
+        //状態管理クラス
+        const manager = GameStateManager.getInstance();
+        if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) { return; }
+
+        //十字キーを取得
+        const cursorsKeys = this.cursors;
+        const vPadDir = this.inputManager?.virtualPadDirection;
+
+        //値が設定されている場合はクリックによる移動中のため処理しない
+        if (this.moveToPositionX && this.moveToPositionY) return;
+        this.setVelocity(0);
+
+        // リーダーの履歴を取得
+        const history = this.leader!.getPositionHistory();
+        const followDelay = 8; // 追従ディレイ
+
+        let targetposition: { x: number, y: number } = { x: 0, y: 0 };
+        let beforeTargetposition: { x: number, y: number } = { x: 0, y: 0 };
+
+        //履歴が足りない場合は何もしない
+        if (history.length <= followDelay) return;
+
+        //移動先履歴を取得
+        targetposition = history[history.length - followDelay];
+        beforeTargetposition = history[history.length - followDelay - 1];
+
+        // leaderが前フレームで壁に衝突していた場合は追従しない
+        // body.blocked は物理エンジンが実行済みの前フレームの衝突状態を保持しており
+        // preUpdate（物理実行前）の時点で正しく参照できる
+        const leaderBody = this.leader!.body as Phaser.Physics.Arcade.Body;
+        if (!leaderBody.blocked.none) { this.setVelocity(0); return; }
+
+        /**
+         * キーボードまたはパッド入力が発生した場合のみポジションをリセット
+         * 状態を明確にするためクリック移動とキーボード移動をフラグ管理している
+         */
+        if (!this.inputKeyboardOrPadFlg && this.inputClickFlg
+            && (cursorsKeys.left.isDown
+                || cursorsKeys.right.isDown
+                || cursorsKeys.up.isDown
+                || cursorsKeys.down.isDown
+                || vPadDir)) {
+            this.setPosition(this.leader!.x, this.leader!.y)
+            this.leader!.clearPositionHistory();
+            this.inputKeyboardOrPadFlg = true;
+            this.inputClickFlg = false;
+        }
+
+        //リーダーとの距離が一定以上離れた場合は強制的にターゲットポジションに移動させる
+        if (Phaser.Math.Distance.Between(this.leader!.x, this.leader!.y, this.x, this.y) > 64) {
+            this.setPosition(targetposition.x, targetposition.y);
+        }
+
+        //クリック移動ではない場合に処理する
+        if (!this.inputClickFlg) {
+
+            if (beforeTargetposition.x - targetposition.x < 0) {
+                this.moveDirection = this.walkRight;
+                this.standframe = this.standRight;
+                this.setVelocityX(this.playerDefaultVelocity);
+            }
+            else if (beforeTargetposition.x - targetposition.x > 0) {
+                this.moveDirection = this.walkLeft;
+                this.standframe = this.standLeft;
+                this.setVelocityX(-1 * this.playerDefaultVelocity);
+            }
+            if (beforeTargetposition.y - targetposition.y < 0) {
+                this.moveDirection = this.walkDown;
+                this.standframe = this.standDown;
+                this.setVelocityY(this.playerDefaultVelocity);
+            }
+            else if (beforeTargetposition.y - targetposition.y > 0) {
+                this.moveDirection = this.walkUp;
+                this.standframe = this.standUp;
+                this.setVelocityY(-1 * this.playerDefaultVelocity);
+            }
+        }
+
+        //停止
+        if (!this.moveToPositionX
+            && !this.moveToPositionY
+            && !cursorsKeys.left.isDown
+            && !cursorsKeys.right.isDown
+            && !cursorsKeys.up.isDown
+            && !cursorsKeys.down.isDown
+            && !vPadDir
+            && this.moveDirection !== this.walkStop) {
+            this.setVelocity(0);
+            this.stopAnimation();
+            this.moveDirection = this.walkStop;
+            this.inputKeyboardOrPadFlg = false;
+            //※クリックフラグ更新はPlayerPresenterで処理
+        }
     }
 
     //移動不能チェック
@@ -128,6 +270,7 @@ export class Player extends BaseSprite {
     _updateStopWalk() {
         if (!this.body) return;
         if (this.state !== CharacterState.normal) return;
+        if (this.leader?.state === CharacterState.stop) { this.setVelocity(0); return; }
 
         //値が設定されていない場合は処理しない
         if (!this.moveToPositionX && !this.moveToPositionY) return;
@@ -212,68 +355,92 @@ export class Player extends BaseSprite {
     }
 
     //キャラの一部を非表示にするマスク
-    _updateRectMask() {
+    private updateCharacterShapesMask() {
 
         const makeTilemap: Phaser.Tilemaps.Tilemap = this.gameScene.getTilemap().getMakeTilemap();
 
-        const playerWithDepthMapName: Array<string> = this.gameScene.getTilemap().getPlayerWithDepthMapName();
+        //以下のチェックはGraphicsの処理を減らすため、対象タイルマップの存在有無チェックを行っていたが、一つのGraphicsに複数描画する分には殆ど処理は重くならないため不要とする
+        // if (!makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x - this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x - this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x, this.y - maskHeight, false, undefined, mapName)) {
+        //     this.clearMask();
+        //     return;
+        // }
 
-        for (const mapName of playerWithDepthMapName) {
-            // console.log("depthCheck.mapName = " + mapName);
-            const maskHeight = 16;//マップ名から取得したい
+        //更新前にマスクを削除
+        if (this.GeometryMask) { this.clearMask(); }
 
-            //タイルが存在しない場合はマスクを初期化
-            if (!makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&
-                !makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, undefined, mapName) &&
-                !makeTilemap.getTileAtWorldXY(this.x - this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&
-                !makeTilemap.getTileAtWorldXY(this.x - this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, undefined, mapName) &&
-                !makeTilemap.getTileAtWorldXY(this.x, this.y - maskHeight, false, undefined, mapName)) {
-                this.clearMask();
-                return;
-            }
+        //初回作成時
+        if (!this.cropRectMask) { this.cropRectMask = this.scene.add.graphics(); };
 
-            //下側チェック
-            // if ((this.scene.map.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, null, mapName) ||
-            //     this.scene.map.getTileAtWorldXY(this.x - this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, null, mapName)) &&
-            //     !this.scene.map.getTileAtWorldXY(this.x, this.y - maskHeight, false, null, mapName)) {
-            //     this.setDepth(this.depthValue - 2);
-            //     //this.scene.map.getLayer(mapName).tilemapLayer.setDepth(5000);//タイルを設定するならこの書き方、しかし仲間キャラとか考えた場合はキャラオブジェクト毎に設定した方が良い
-            // }
+        //デバッグ用、trueの場合は非表示
+        if (!this.debugFlg) {
+            this.cropRectMask.setVisible(false);
+        }
+        this.cropRectMask.setDepth(5000);
+        this.cropRectMask.clear();//再描画のためクリア
 
-            //初回作成時
-            if (!this.cropRectMask) {
-                this.cropRectMask = this.scene.add.graphics();//make.graphics()でも良いがsetVisible()で非表示にするから不要
-            };
-            this.cropRectMask.setVisible(false);//非表示にする
-            this.cropRectMask.setDepth(5000);
-            this.cropRectMask.clear();//再描画のためクリア
+        const whiteColor = Phaser.Display.Color.HexStringToColor('#ffffff').color;
+        this.cropRectMask.fillStyle(whiteColor);
 
-            const whiteColor = Phaser.Display.Color.HexStringToColor('#ffffff').color;
-            this.cropRectMask.fillStyle(whiteColor);
+        //キャラクターの足元を基準とする、値はタイルサイズ32を基準
+        const maskY = this.y + 32 / 2;
 
-            //マップのオブジェクトを読み込んでマスクを作成
-            this.gameScene.getTilemap().getMakeTilemap().objects.forEach(obj => {
-                if (obj.name === "MASK") {
-                    obj.objects.forEach(rect => {
-                        this.cropRectMask.fillRect(
-                            rect.x!,
-                            this.y > rect.y! ? this.y : rect.y!,
-                            rect.width!,
-                            (rect.y! + rect.height! - this.y) < 0 ? 0 : (rect.y! + rect.height! - this.y))
-                    })
+        //四角形オブジェクト作成
+        for (const obj of makeTilemap.objects) {
+            if (obj.name === "MASK_RECT") {
+                for (const rect of obj.objects) {
+                    for (const property of rect.properties) {
+                        if (property.name === "height") {
+                            this.cropRectMask.fillRect(
+                                rect.x!,
+                                maskY - property.value! > rect.y! ? maskY - property.value! : rect.y!,
+                                rect.width!,
+                                (rect.y! + rect.height! - maskY + property.value!) < 0 ? 0 : (rect.y! + rect.height! - maskY + property.value!)
+                            )
+                        }
+                    }
                 }
-            })
+            }
+        }
+
+        //多角形オブジェクト作成
+        for (const obj of makeTilemap.objects) {
+            if (obj.name === "MASK_POLYGON") {
+                for (const polygon of obj.objects) {
+                    for (const property of polygon.properties) {
+                        if (property.name === "height") {
+                            if (polygon.polygon) {
+                                // 1. 座標を修正してポイント配列を作成（前回のアドバイス通り）
+                                const points = polygon.polygon.map(p => ({
+                                    x: (polygon.x || 0) + p.x,
+                                    y: (polygon.y || 0) + p.y
+                                }));
+
+                                // 2. ポリゴンを「this.y 以下」にクリッピングして描画する
+                                // ※ GeometryMaskはステンシルバッファで動作するためERASEブレンドモードが効かない
+                                //    そのため、描画する領域自体を数学的に絞り込む（Sutherland-Hodgman法）
+                                const clippedPoints = clipPolygonToBottom(points, maskY - property.value!);
+                                if (clippedPoints.length >= 3) {
+                                    this.cropRectMask.fillStyle(0xffffff, 1);
+                                    this.cropRectMask.setBlendMode(Phaser.BlendModes.NORMAL);
+                                    this.cropRectMask.fillPoints(clippedPoints, true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // //図形を作成
             this.cropRectMask.fillPath();
 
             //マスク作成のためcreateGeometryMaskを作成し、マスク処理を反転
-            //初回作成時
-            if (!this.cropRectMask2) {
-                this.cropRectMask2 = this.cropRectMask.createGeometryMask();
-            };
-            this.cropRectMask2.setInvertAlpha();
-            this.setMask(this.cropRectMask2);
+            this.GeometryMask = this.cropRectMask.createGeometryMask();
+            this.GeometryMask.setInvertAlpha();
+            this.setMask(this.GeometryMask);
         }
     }
 
@@ -285,4 +452,39 @@ export class Player extends BaseSprite {
         this.inputManager = inputManager;
     }
 }
+
+
+
+/**
+ * Sutherland-Hodgman法でポリゴンを「y >= clipY」の半平面にクリッピングする
+ * キャラクターのY座標以下の部分だけを残すために使用
+ */
+function clipPolygonToBottom(points: { x: number; y: number }[], clipY: number): { x: number; y: number }[] {
+    const result: { x: number; y: number }[] = [];
+    const n = points.length;
+
+    for (let i = 0; i < n; i++) {
+        const current = points[i];
+        const next = points[(i + 1) % n];
+
+        const currentInside = current.y >= clipY;
+        const nextInside = next.y >= clipY;
+
+        if (currentInside) {
+            result.push(current);
+        }
+
+        // エッジがクリップ境界（y = clipY）を跨ぐ場合は交点を追加
+        if (currentInside !== nextInside) {
+            const t = (clipY - current.y) / (next.y - current.y);
+            result.push({
+                x: current.x + t * (next.x - current.x),
+                y: clipY
+            });
+        }
+    }
+
+    return result;
+}
+
 

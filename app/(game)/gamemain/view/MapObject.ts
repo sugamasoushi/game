@@ -504,6 +504,10 @@ export class MapObject extends Phaser.GameObjects.Container {
             const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
             cacheDataUpdate.phaserCacheDataUpdate();
 
+            //プレイヤーを停止（FIELD_RESTARTによりプレイヤーが再生成されるため、リセットされる）
+            this.gameScene.getPlayer().state = CharacterState.stop;
+            this.gameScene.getPlayer().setVelocity(0);
+
         }, undefined, this.gameScene);
 
         // シーン終了時にイベントを破棄
@@ -515,7 +519,7 @@ export class MapObject extends Phaser.GameObjects.Container {
     private settingChestSpriteObject(obj: Phaser.Physics.Arcade.Sprite, imageKey: string) {
 
         //id無し宝箱はランダム生成
-        if (!obj.getData('id') === null || obj.getData('id') === undefined) {
+        if (obj.getData('id') == null) {
             if (new Phaser.Math.RandomDataGenerator().between(0, 2) >= 1) {//2/3の確率で出現
                 //ランダム生成した宝箱の場合は、配置しない（削除する）
                 obj.destroy();
@@ -546,7 +550,8 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
 
         //配置時の状態設定
-        if (obj.getData('id') !== null && this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] === 0) {
+        const boxId = obj.getData('id');
+        if (boxId != null && this.gameScene.cache.json.get('savedata').itemboxFlg[boxId] === 0) {
             obj.play('chest_open');
         } else {
 
@@ -555,65 +560,6 @@ export class MapObject extends Phaser.GameObjects.Container {
 
             //クリックイベント
             obj.on('pointerdown', async () => {
-                // if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
-
-                //     const getItemName = obj.getData('item');
-                //     const getItemNum = obj.getData('num');
-                //     const bubbleTalkKey = obj.getData('bubbleTalkKey');
-
-                //     //吹き出し会話を設定
-                //     let bubbleTalk: BubbleTalk;
-                //     if (bubbleTalkKey) {
-                //         bubbleTalk = new BubbleTalk(this.gameScene, undefined, bubbleTalkKey);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
-                //         bubbleTalk.init();
-                //     }
-
-                //     //プレイヤーとオブジェクトのチェック
-                //     const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
-
-                //     //キャラ向きとオブジェクト位置からイベント発生可否をチェック
-                //     if (fieldPlayerChk.checkPlayerClickEvent()) {
-
-                //         //メッセージ表示
-                //         new Promise<void>(resolve => {
-                //             const time = 1500
-                //             this.gameScene.time.delayedCall(time, () => {
-
-                //                 //待機時間後、吹き出しメッセージがある場合は開始
-                //                 if (bubbleTalk) { bubbleTalk.execTalk(); }
-                //                 this.gameScene.events.emit('GAME_INPUT_TRUE');
-                //                 resolve();
-                //             }, [], this.scene);
-                //             this.gameScene.events.emit('GAME_INPUT_FALSE');
-                //             this.gameScene.events.emit('FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
-                //         });
-
-                //         obj.play('chest_open');
-                //         this.soundScene.SE_chestOpen.play();
-
-                //         //プレイヤーの持ち物を更新
-                //         this.gameScene.getPlayer().stopAnimation();
-
-                //         //アイテムを持ってない場合、初期化
-                //         if (!this.gameScene.getPlayer().getData(getItemName)) {
-                //             this.gameScene.getPlayer().setData(getItemName, 0);
-                //         }
-                //         this.gameScene.getPlayer().data.values[getItemName] += getItemNum;
-
-                //         //idが存在する場合はキャッシュのフラグを更新
-                //         if (obj.getData('id') !== null) {
-                //             this.gameScene.cache.json.get('savedata').itemboxFlg[obj.getData('id')] = 0;
-                //         }
-
-                //         //キャッシュを更新
-                //         const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
-                //         cacheDataUpdate.phaserCacheDataUpdate();
-
-                //         //オブジェクトのインタラクティブを無効化
-                //         obj.setInteractive({ useHandCursor: false });
-                //         obj.off('pointerdown');
-                //     }
-                // }
                 this.execOpenChest(obj);
             })
 
