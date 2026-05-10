@@ -65,6 +65,24 @@ export class InputManager {
         }, 300);
     }
 
+    public reset() {
+        if (!this.isExecuted) return;
+        this.isExecuted = false;
+        if (this.subs) this.subs.unsubscribe();
+        this.subs = new Subscription();
+        this._virtualPadDirection = null;
+        this.inputAcceptable = true;
+        this.previousPadButtons = {};
+        
+        if (this.scene && this.scene.game) {
+            this.scene.game.events.off('VIRTUALPAD_ARROW_KEY_DOWN', undefined, this);
+            this.scene.game.events.off('VIRTUALPAD_ARROW_KEY_UP', undefined, this);
+            this.scene.game.events.off('VIRTUALPAD_FACE_BUTTON_DOWN', undefined, this);
+            this.scene.game.events.off('VIRTUALPAD_FACE_BUTTON_UP', undefined, this);
+            this.scene.game.events.off('step', this.stepCallback, this);
+        }
+    }
+
     public execute() {
         if (this.isExecuted) return;
         this.isExecuted = true;
@@ -94,10 +112,10 @@ export class InputManager {
             if (direction === 'left') this.leftSubject.next();
             if (direction === 'up') this.upSubject.next();
             if (direction === 'down') this.downSubject.next();
-        });
+        }, this);
         this.scene.game.events.on('VIRTUALPAD_ARROW_KEY_UP', () => {
             this._virtualPadDirection = null;
-        });
+        }, this);
         this.scene.game.events.on('VIRTUALPAD_FACE_BUTTON_DOWN', (direction: string) => {
             this._virtualPadDirection = direction;
             if (direction === 'faceCircle') {
@@ -112,10 +130,10 @@ export class InputManager {
             if (direction === 'faceTriangle') {
                 this.menuSubject.next();
             }
-        });
+        }, this);
         this.scene.game.events.on('VIRTUALPAD_FACE_BUTTON_UP', () => {
             this._virtualPadDirection = null;
-        });
+        }, this);
 
         // キーボード入力からの変換
         this.subs.add(this.action$.subscribe(action => {
@@ -132,33 +150,35 @@ export class InputManager {
         }));
 
         // ゲームパッド入力（ポーリング方式：シーン破棄によるイベント無効化を防ぐため）
-        this.scene.game.events.on('step', () => {
-            if (!this.inputAcceptable) return;
+        this.scene.game.events.on('step', this.stepCallback, this);
+    }
 
-            const pad = this.scene?.input?.gamepad?.pad1;
-            if (!pad) return;
+    private stepCallback() {
+        if (!this.inputAcceptable) return;
 
-            const buttons = pad.buttons;
-            for (let i = 0; i < buttons.length; i++) {
-                const isDown = buttons[i].pressed;
-                const wasDown = this.previousPadButtons[i] || false;
-                
-                if (isDown && !wasDown) {
-                    // ボタンマッピング: 0=南(A/✕), 1=東(B/〇), 2=西(X/□), 3=北(Y/△)
-                    if (i === 1) this.decideSubject.next();
-                    if (i === 0) this.cancelSubject.next();
-                    if (i === 2) this.fieldAttackSubject.next();
-                    if (i === 3) this.menuSubject.next();
+        const pad = this.scene?.input?.gamepad?.pad1;
+        if (!pad) return;
 
-                    // 十字キー（メニュー操作などの単発入力用）
-                    if (i === 12) this.upSubject.next();
-                    if (i === 13) this.downSubject.next();
-                    if (i === 14) this.leftSubject.next();
-                    if (i === 15) this.rightSubject.next();
-                }
-                this.previousPadButtons[i] = isDown;
+        const buttons = pad.buttons;
+        for (let i = 0; i < buttons.length; i++) {
+            const isDown = buttons[i].pressed;
+            const wasDown = this.previousPadButtons[i] || false;
+            
+            if (isDown && !wasDown) {
+                // ボタンマッピング: 0=南(A/✕), 1=東(B/〇), 2=西(X/□), 3=北(Y/△)
+                if (i === 1) this.decideSubject.next();
+                if (i === 0) this.cancelSubject.next();
+                if (i === 2) this.fieldAttackSubject.next();
+                if (i === 3) this.menuSubject.next();
+
+                // 十字キー（メニュー操作などの単発入力用）
+                if (i === 12) this.upSubject.next();
+                if (i === 13) this.downSubject.next();
+                if (i === 14) this.leftSubject.next();
+                if (i === 15) this.rightSubject.next();
             }
-        });
+            this.previousPadButtons[i] = isDown;
+        }
     }
 
     public static getInstance(scene: Phaser.Scene) {

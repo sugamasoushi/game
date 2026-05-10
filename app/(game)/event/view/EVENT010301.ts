@@ -9,6 +9,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { SpriteType_3x4 } from "../../gamemain/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
 import { CaharacterNameData } from '../../Data/NameData';
+import { InputManager } from "../../core/input/InputManager";
 
 export class EVENT010301 extends BaseEvent {
     private gameScene: GameScene;
@@ -137,6 +138,7 @@ export class EVENT010301 extends BaseEvent {
         const battleScene = this.eventScene.scene.get('Battle');
         await new Promise<void>(resolve => {
             battleScene.events.on('shutdown', () => {
+                console.log('再開');
                 this.eventScene.scene.resume();
                 resolve();
             });
@@ -178,6 +180,7 @@ export class EVENT010301 extends BaseEvent {
                 //イベント後のキャラに吹き出し会話を設定
                 this.lamyNPC.setBubbleTalkKey('bubbleTalk0001.talk002');
                 this.lamyNPC.talkSetting();
+                this.lamyNPC.setInputManager(InputManager.getInstance(this.gameScene));
                 (this.lamyNPC as SpriteType_3x4).setBubble();
                 this.lamyNPC.setData('ImageKey', '20240908');
                 this.lamyNPC.state = CharacterState.normal;

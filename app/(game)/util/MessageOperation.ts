@@ -3,6 +3,7 @@ import { Sound } from '../scenes/Sound';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from "rxjs";
 import { take } from "rxjs/operators";
+import { filter } from "rxjs/operators";
 
 export class MessageOperation {
     private eventScene: GameScene | EventScene;
@@ -77,7 +78,10 @@ export class MessageOperation {
                 resolve();
             };
 
-            const sub = inputManager.decideButton$.pipe(take(1)).subscribe(() => {
+            const sub = inputManager.decideButton$.pipe(
+                filter(() => scene.sys.isActive()),
+                take(1)
+            ).subscribe(() => {
                 skipTypeWriter();
             });
 
@@ -123,7 +127,10 @@ export class MessageOperation {
                 //次の行が存在し、現在の行数が2だった場合はスクロールする
 
                 //決定ボタン（スペース、仮想パッド〇、ゲームパッド〇）でスクロール
-                this.subs.add(inputManager.decideButton$.pipe(take(1)).subscribe(() => {//take(1) オペレータを使用し、1回だけ通知を受け取る安全なサブスクリプション
+                this.subs.add(inputManager.decideButton$.pipe(
+                    filter(() => scene.sys.isActive()),//シーンがアクティブであることを確認
+                    take(1)
+                ).subscribe(() => {//take(1) オペレータを使用し、1回だけ通知を受け取る安全なサブスクリプション
                     clickZone.off(pointerOperation);//マウス入力OFF
                     (async () => {
                         await this._scrollTween(scene, textObject);
@@ -144,7 +151,10 @@ export class MessageOperation {
             } else if (allLineCount - lineCount === 0) {
 
                 //現在の行で終了の場合はテキストをクリアする
-                this.subs.add(inputManager.decideButton$.pipe(take(1)).subscribe(() => {
+                this.subs.add(inputManager.decideButton$.pipe(
+                    filter(() => scene.sys.isActive()),//シーンがアクティブであることを確認
+                    take(1)
+                ).subscribe(() => {
                     clickZone.off(pointerOperation);//マウス入力OFF
                     if (this.usePatern === 'BubbleTalk') {
                         textObject.text = '';

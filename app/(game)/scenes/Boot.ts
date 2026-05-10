@@ -24,7 +24,9 @@ export class Boot extends Scene {
     }
 
     create() {
-        // 入力管理を一度だけ実行
+        // シーン再起動時（タイトルへ戻る等）に備えて一度リセットする
+        InputManager.getInstance(this).reset();
+        // 入力管理を実行
         InputManager.getInstance(this).execute();
 
         this.scene.launch('SceneController');
