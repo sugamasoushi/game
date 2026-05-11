@@ -5,7 +5,8 @@ import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import { SearchSkill } from "../../Data/SearchSkill";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class CharStatusWindow extends Phaser.GameObjects.Container {
 
@@ -82,11 +83,12 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const onStart = () => {
             this.isConditionSelectMode = true;
-            
+
             // 矢印を強調するアニメーション
             if (this.arrowTween) this.arrowTween.stop();
             this.arrowTween = this.scene.tweens.add({
@@ -115,12 +117,16 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
         this.scene.events.on('ConditionSelectModeEnd', onEnd);
         this.scene.events.on('StatusSelectModeEnd', onEnd);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isConditionSelectMode) return;
             this.scroll('down');
         }));
 
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isConditionSelectMode) return;
             this.scroll('up');
         }));

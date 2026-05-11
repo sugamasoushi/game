@@ -3,7 +3,8 @@ import { MessageObject } from "../../util/MessageObject";
 import { SelectAllow } from "../../util/SelectAllow";
 import { MessageWindow } from "../../util/MessageWindow";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class MenuListWindow extends Phaser.GameObjects.Container {
 
@@ -95,27 +96,38 @@ export class MenuListWindow extends Phaser.GameObjects.Container {
             this.selectAllow.updatePosition(this.options[0]);
         }
 
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
-            if (this.selectedIndex + 1 < this.options.length) {
-                this.selectedIndex += 1;
-                this.selectAllow.updatePosition(this.options[this.selectedIndex]);
-            }
-        }));
+        //このウィンドウを開いてから少し時間を空けないと、前の入力が残っていてすぐに反応してしまうことがあるため、少し遅らせてからイベントを設定する
+        this.scene.time.delayedCall(100, () => {
 
-        this.subs.add(inputManager.upButton$.subscribe(() => {
-            if (this.selectedIndex - 1 >= 0) {
-                this.selectedIndex -= 1;
-                this.selectAllow.updatePosition(this.options[this.selectedIndex]);
-            }
-        }));
+            this.subs.add(inputManager.downButton$.pipe(
+                throttleTime(duration)
+            ).subscribe(() => {
+                if (this.selectedIndex + 1 < this.options.length) {
+                    this.selectedIndex += 1;
+                    this.selectAllow.updatePosition(this.options[this.selectedIndex]);
+                }
+            }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
-            if (this.onSelect) {
-                this.onSelect(this.selectedIndex);
-            }
-        }));
+            this.subs.add(inputManager.upButton$.pipe(
+                throttleTime(duration)
+            ).subscribe(() => {
+                if (this.selectedIndex - 1 >= 0) {
+                    this.selectedIndex -= 1;
+                    this.selectAllow.updatePosition(this.options[this.selectedIndex]);
+                }
+            }));
+
+            this.subs.add(inputManager.decideButton$.pipe(
+                throttleTime(duration)
+            ).subscribe(() => {
+                if (this.onSelect) {
+                    this.onSelect(this.selectedIndex);
+                }
+            }));
+        }, [], this.scene);
     }
 
     public destroy(fromScene?: boolean) {

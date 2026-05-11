@@ -11,6 +11,9 @@ export class Boot extends Scene {
         //状態管理クラスをリセット（Game Over時などの再スタート用）
         GameStateManager.getInstance().reset();
 
+        // 入力管理を実行
+        InputManager.getInstance(this).execute();
+
         //キャッシュクリア
         if (this.cache.json.exists('savedata')) {
             this.cache.json.remove('savedata');
@@ -25,10 +28,11 @@ export class Boot extends Scene {
 
     create() {
         // シーン再起動時（タイトルへ戻る等）に備えて一度リセットする
-        InputManager.getInstance(this).reset();
+        //InputManager.getInstance(this).reset();
         // 入力管理を実行
-        InputManager.getInstance(this).execute();
+        //InputManager.getInstance(this).execute();
 
         this.scene.launch('SceneController');
+        this.scene.stop();
     }
 }

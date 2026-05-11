@@ -1,4 +1,4 @@
-import { EnemyData } from "../lib/EnemyDataTypes";
+import { EnemyData, EnemyStatus } from "../lib/EnemyDataTypes";
 
 export class SearchEnemyData {
 
@@ -9,23 +9,25 @@ export class SearchEnemyData {
         this.enemyData = cache.get('enemydata');
     }
 
-    /**
-     * 敵名（画像キー）から表示用の名前を取得する
-     * @param enemyName 敵名 (例: 'enemy01')
-     * @returns 敵表示名 (例: 'ラミア')
-     */
-    public getEnemyData(enemyName: string): string {
-        const query = enemyName.toLowerCase();
-        
-        const enemyNameData = this.enemyData.EnemyNameData;
-        if (enemyNameData) {
-            for (const key in enemyNameData) {
-                if (key.toLowerCase() === query) {
-                    return enemyNameData[key];
-                }
+    // imageKey(enemy00等)から敵データを取得
+    public getEnemyData(enemyKey: string): EnemyStatus | null {
+        if (!enemyKey) return null;
+        const query = enemyKey.toLowerCase();
+
+        const enemyNameData = this.enemyData?.EnemyNameData;
+        if (!enemyNameData) return null;
+
+        for (const key in enemyNameData) {
+            if (key.toLowerCase() === query) {
+                return enemyNameData[key];
             }
         }
+        return null;
+    }
 
-        return "Unknown";
+    // 互換用: 名前だけ欲しいケース向け
+    public getEnemyName(enemyKey: string): string {
+        const data = this.getEnemyData(enemyKey);
+        return data?.name ?? "Unknown";
     }
 }

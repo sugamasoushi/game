@@ -3,7 +3,8 @@ import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
 import { MenuTab } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class MainColumnWindow {
 
@@ -193,10 +194,13 @@ export class MainColumnWindow {
     }
 
     private windowTweenPadKeyBoard() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         // 右に入力された場合
-        this.subs.add(inputManager.rightButton$.subscribe(() => {
+        this.subs.add(inputManager.rightButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (this.isItemSelectMode) return; // アイテム選択モード中はタブを切り替えない
             let nextIndex = this.nowMainColumnNo + 1;
             if (nextIndex >= this.mainColumnLabelText.length) {
@@ -206,7 +210,9 @@ export class MainColumnWindow {
         }));
 
         // 左に入力された場合
-        this.subs.add(inputManager.leftButton$.subscribe(() => {
+        this.subs.add(inputManager.leftButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (this.isItemSelectMode) return; // アイテム選択モード中はタブを切り替えない
             let nextIndex = this.nowMainColumnNo - 1;
             if (nextIndex < 0) {
@@ -216,15 +222,17 @@ export class MainColumnWindow {
         }));
 
         // キャンセル（×ボタン）が入力された場合
-        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+        this.subs.add(inputManager.cancelButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (this.isItemSelectMode) {
                 // 詳細選択モードならタブ選択に戻す
                 this.isItemSelectMode = false;
-                
+
                 // 全てのモード終了イベントを一律で投げるか、現在に合わせて投げる
                 const eventNames = ['ConditionSelectModeEnd', 'StatusSelectModeEnd', 'ItemSelectModeEnd', 'EquipSelectModeEnd', 'SkillSelectModeEnd', 'SaveSelectModeEnd', 'MovieSelectModeEnd'];
                 eventNames.forEach(name => this.scene.events.emit(name));
-                
+
                 this.updateTabAnimation(); // アニメーション再開
             } else {
                 // タブ選択中ならメニューを閉じる
@@ -233,7 +241,9 @@ export class MainColumnWindow {
         }));
 
         // 決定（〇ボタン）が入力された場合
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             this.tryEnterItemSelectMode();
         }));
     }
@@ -244,7 +254,7 @@ export class MainColumnWindow {
             if (this.nowMainColumnNo === MenuTab.Condition) return;
 
             let eventName = '';
-            switch(this.nowMainColumnNo) {
+            switch (this.nowMainColumnNo) {
                 //case MenuTab.Condition: eventName = 'ConditionSelectModeStart'; break;
                 case MenuTab.Status: eventName = 'StatusSelectModeStart'; break;
                 case MenuTab.Item: eventName = 'ItemSelectModeStart'; break;

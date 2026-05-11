@@ -1,10 +1,10 @@
-import { SkillDetail } from "../../lib/types";
 import { BattleScene } from "../../lib/types";
 import { EnergyGauge } from "../../util/EnergyGauge";
 import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class EnemySelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
@@ -154,6 +154,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const navigate = (dir: 'next' | 'prev') => {
@@ -177,24 +178,34 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
             this.updateSelection();
         };
 
-        this.subs.add(inputManager.rightButton$.subscribe(() => {
+        this.subs.add(inputManager.rightButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             navigate('next');
         }));
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             navigate('next');
         }));
-        this.subs.add(inputManager.leftButton$.subscribe(() => {
+        this.subs.add(inputManager.leftButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             navigate('prev');
         }));
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             navigate('prev');
         }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             if (this.nowSelectNo !== -1) {
                 this.submit(this.enemyPartyList[this.nowSelectNo]);
@@ -204,7 +215,9 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+        this.subs.add(inputManager.cancelButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             this.backSubmit();
         }));

@@ -43,7 +43,7 @@ export class UiPresenter {
         // 全てフェードイン
         this.uiScene.events.on('UI_FADEIN_START', () => {
             const state = gameStateManager.currentState;
-            if (state === State.START || state === State.LOAD || state === State.EVENT || state === State.FIELD) {
+            if (state === State.TITLE || state === State.LOAD || state === State.EVENT || state === State.FIELD) {
                 return;
             }
             console.log("UI_FADEIN_START");

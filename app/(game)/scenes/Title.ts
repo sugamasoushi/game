@@ -20,7 +20,7 @@ export class Title extends Scene {
     private saveDataManager: SaveDataManager;
 
     private inputManager: InputManager;
-    private subs = new Subscription();
+    private subs: Subscription;
     private nowSelectNo: number = 0;
     private maxSelectNo: number = 1;
     private hasContinueData: boolean = false;
@@ -51,6 +51,17 @@ export class Title extends Scene {
 
         //状態管理クラス
         this.manager = GameStateManager.getInstance();
+
+        /**
+         * サブスクリプション管理用のオブジェクトを初期化
+         * 
+         * subuscriptionの注意点
+         * unSubscriptionするとclose:trueとなり購読解除となるが、インスタンスは残り続ける。
+         * 購読解除したインスタンスは再講読する事は出来ず、この状態でsub.add()で追加しても即座に購読解除となる。
+         * そのため、購読を再開したい場合は、新しいSubscriptionインスタンスを作成してsubに代入する必要がある。
+         * Titleシーンで上記問題が発生したが、他シーンではsubscriptionを再定義しているため発生していない。
+         */
+        this.subs = new Subscription();
 
         //セーブデータ
         this.saveDataManager = new SaveDataManager();
@@ -187,7 +198,6 @@ export class Title extends Scene {
         this.titleText = this.add.text(
             gameWidth / 2, gameHeight / 2 - 200,
             "ちょっとだけRPG", { fontFamily: "Arial Black", fontSize: 128, color: "#00a6ed" });
-
         this.titleText.setDepth(gameHeight);
         this.titleText.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true).setAlpha(0);
 
@@ -274,6 +284,7 @@ export class Title extends Scene {
     }
 
     private execNewGame() {
+
         this.newGameStart.disableInteractive();
         if (this.ContinueStart) this.ContinueStart.disableInteractive();
 
@@ -322,6 +333,7 @@ export class Title extends Scene {
     }
 
     private async execContinue() {
+
         this.ContinueStart.disableInteractive();
         if (this.newGameStart) this.newGameStart.disableInteractive();
 

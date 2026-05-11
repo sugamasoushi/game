@@ -35,9 +35,6 @@ export class GameOver extends Scene {
             "GameOver", { fontFamily: "Arial Black", fontSize: 128, color: "#00a6ed" });
         titleText.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
 
-        this.scene.stop('Battle');
-        this.scene.stop('Game');
-
         this.time.delayedCall(2000, () => {
             this.backTitleScene();
         }, [], this);
@@ -51,13 +48,10 @@ export class GameOver extends Scene {
             amount: 40,
             onComplete: () => {
                 this.cameras.main.fadeOut(100);
-                this.scene.moveAbove('GameOver', 'Title');
 
-                //状態をスタートに更新
+                //リスタート
                 const manager = GameStateManager.getInstance();
-                manager.updateState({ state: State.NOSTATE }, '')
-
-                this.scene.start('Boot');
+                manager.updateState({ state: State.GAME_RESTART }, 'GameOver');
 
                 this.game.events.emit('BGM_ALL_STOP');
             }

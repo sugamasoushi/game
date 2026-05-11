@@ -104,6 +104,9 @@
             "backColor": "0x191970",
             "alphaValue": 0.7,
             "lineColor": "0xFFFFFF"
+        },
+        "input": {
+            "duration": 100
         }
     },
     "EventFlag": {
@@ -116,5 +119,18 @@
         "EVENT020101": false,
         "EVENT020201": false
     },
-    "itemboxFlg": [1,1,1,1,1,1,1,1,1,1,1,1]
+    "itemboxFlg": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+    ]
 }

@@ -69,6 +69,15 @@ export class DataDefinition {
         }
     }
 
+    //入力関連の設定情報を取得
+    public getInputInfomation(scene: Phaser.Scene): { duration: number; } {
+        const settingTextData = scene.cache.json.get('savedata').GameSetting.input;
+        const duration = settingTextData.duration;
+        return {
+            duration: Number(duration)
+        }
+    }
+
     //キャラクターの画像キーを取得
     public getImageKeyDataInfomation(scene: Phaser.Scene) {
         //normal: imageKeyData.normal,

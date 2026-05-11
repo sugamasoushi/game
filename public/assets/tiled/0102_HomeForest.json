@@ -3072,11 +3072,6 @@
                  "name":"chest",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
                          "name":"id",
                          "type":"string",
                          "value":"2"
@@ -3503,11 +3498,6 @@
                          "value":"enemy02"
                         }, 
                         {
-                         "name":"link",
-                         "type":"object",
-                         "value":0
-                        }, 
-                        {
                          "name":"name",
                          "type":"string",
                          "value":"slime"
@@ -3569,11 +3559,6 @@
                          "name":"imageKey",
                          "type":"string",
                          "value":"enemy02"
-                        }, 
-                        {
-                         "name":"link",
-                         "type":"object",
-                         "value":0
                         }, 
                         {
                          "name":"name",

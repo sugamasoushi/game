@@ -74,7 +74,7 @@ export class GameStateManager {
 
     //ゲームの状態が『FIELD』になった瞬間を一度だけ検知し、実行信号を送る
     public readonly onStartField$: Observable<void> = this.gameState$.pipe(
-        filter(gameState => gameState.state === State.START),
+        filter(gameState => gameState.state === State.TITLE),
         //gameState$ という全体の流れの中から、state が FIELD である時だけを通過させます。それ以外の状態（BATTLEやTITLEなど）の時は、この先には何も流れません。
 
         map(() => undefined),

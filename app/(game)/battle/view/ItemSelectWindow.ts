@@ -8,7 +8,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { SelectListWindow } from "./SelectListWindow";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
 
 export class ItemSelectWindow extends Phaser.GameObjects.Container {
     private battleScene: BattleScene;
@@ -186,26 +186,37 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             this.navigate(this.maxColumns);
         }));
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             this.navigate(-this.maxColumns);
         }));
-        this.subs.add(inputManager.rightButton$.subscribe(() => {
+        this.subs.add(inputManager.rightButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             this.navigate(1);
         }));
-        this.subs.add(inputManager.leftButton$.subscribe(() => {
+        this.subs.add(inputManager.leftButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             this.navigate(-1);
         }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             if (this.selectList.length > 0) {
                 const itemText = this.selectList[this.nowSelectNo];
@@ -214,7 +225,9 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+        this.subs.add(inputManager.cancelButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             this.backSubmit();
         }));

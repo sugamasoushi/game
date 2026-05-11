@@ -6,7 +6,8 @@ import DebugMessage from "../../util/DebugMessage";
 import { Sound } from "../../scenes/Sound";
 import { ItemUpdate } from "../../Data/ItemUpdate";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class BattleSelectWindow extends Phaser.GameObjects.Container {
     private getCanNotRunawayFlg: boolean = false;
@@ -147,9 +148,13 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            // 一定時間、最初の1回以外の入力を無視する
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             if (this.nowSelectNo + 1 < this.selectList.length) {
                 this.nowSelectNo++;
@@ -159,7 +164,10 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
             this.allow.updatePosition(this.selectList[this.nowSelectNo]);
         }));
 
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            // 一定時間、最初の1回以外の入力を無視する
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             if (this.nowSelectNo - 1 >= 0) {
                 this.nowSelectNo--;
@@ -169,7 +177,10 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
             this.allow.updatePosition(this.selectList[this.nowSelectNo]);
         }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            // 一定時間、最初の1回以外の入力を無視する
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             this.selectExec(this.nowSelectNo);
         }));

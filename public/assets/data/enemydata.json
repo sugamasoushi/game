@@ -1,9 +1,53 @@
 {
     "infomation": "敵名前データ",
     "EnemyNameData": {
-        "enemy00": "ラミア娘",
-        "enemy01": "ラミア",
-        "enemy02": "いらすとやのスライム",
-        "enemy03": "いらすとやの熊"
+        "enemy00": {
+            "name": "ラミア娘",
+            "level": 1,
+            "HP": 40,
+            "MP": 0,
+            "MaxHP": 40,
+            "MaxMP": 20,
+            "Attack": 12,
+            "Guard": 1,
+            "Speed": 9,
+            "gold": 2
+        },
+        "enemy01": {
+            "name": "ラミア",
+            "level": 2,
+            "HP": 50,
+            "MP": 0,
+            "MaxHP": 50,
+            "MaxMP": 0,
+            "Attack": 40,
+            "Guard": 1,
+            "Speed": 5,
+            "gold": 2
+        },
+        "enemy02":{
+            "name": "いらすとやのスライム",
+            "level": 1,
+            "HP": 30,
+            "MP": 0,
+            "MaxHP": 30,
+            "MaxMP": 0,
+            "Attack": 10,
+            "Guard": 1,
+            "Speed": 9,
+            "gold": 2
+        },
+        "enemy03": {
+            "name": "グレートベア",
+            "level": 1,
+            "HP": 90,
+            "MP": 0,
+            "MaxHP": 90,
+            "MaxMP": 20,
+            "Attack": 45,
+            "Guard": 10,
+            "Speed": 5,
+            "gold": 2
+        }
     }
 }

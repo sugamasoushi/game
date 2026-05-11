@@ -6,7 +6,7 @@ import { ActorState } from "../core/ActorState";
 
 export enum State {
   NOSTATE = 0,
-  START = 10,
+  TITLE = 10,
   LOAD = 150,
   FIELD = 20,
   FIELD_RESTART = 21,
@@ -15,7 +15,8 @@ export enum State {
   MENU = 35,
   EVENT = 40,
   BUBBLE_TALK = 45,
-  GAMEOVER = 50
+  GAMEOVER = 50,
+  GAME_RESTART = 55
 }
 
 export interface GameState {

@@ -7,7 +7,8 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { CacheDataUpdate } from "../../core/CacheDataUpdate";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class SaveWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
@@ -35,9 +36,6 @@ export class SaveWindow extends Phaser.GameObjects.Container {
         const niwatori = this.scene.add.image(800, 250, '20240622_鶏').setScale(0.2);
         const meina = this.scene.add.image(260, 280, '20240713_2').setScale(0.7);
         const lamy = this.scene.add.image(450, 250, '20240907_3').setScale(0.9);
-        const clickCharacter: Phaser.GameObjects.Image[] = [niwatori, meina, lamy];
-
-
 
         //コンテナの位置設定
         this.x = mainColumn.containtsX + mainColumn.scrollValue * MenuTab.Save;
@@ -48,7 +46,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
         messageObjectInstance.init(this.scene);
         this.messageObject = messageObjectInstance.createTextObject(this.scene, 0, 0, ['セーブする'], 56);
         this.messageObject.setDepth(100)
-        
+
         // 中央基準に設定
         this.messageObject.setOrigin(0.5);
         this.messageObject.x = mainColumn.scrollValue / 2;
@@ -61,7 +59,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
         this.messageObject.setOrigin(0);
         this.messageObject.x -= this.messageObject.width / 2;
         this.messageObject.y -= this.messageObject.height / 2;
-        
+
         messageWindowInstance.createOneColumnOneWindow(this.messageObject);
         this.messageWindow = messageWindowInstance;
 
@@ -142,13 +140,14 @@ export class SaveWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         this.scene.events.on('SaveSelectModeStart', () => {
             this.isSaveSelectMode = true;
             this.canDecide = false;
             this.scene.time.delayedCall(10, () => { this.canDecide = true; });
-            
+
             // 拡大縮小アニメーション開始
             if (this.saveTween) this.saveTween.stop();
             this.saveTween = this.scene.tweens.add({
@@ -172,7 +171,9 @@ export class SaveWindow extends Phaser.GameObjects.Container {
             this.messageWindow.setScale(1);
         });
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isSaveSelectMode || !this.canDecide) return;
             // POINTER_UPイベントを発火させる
             this.messageWindow.emit(Phaser.Input.Events.POINTER_UP);

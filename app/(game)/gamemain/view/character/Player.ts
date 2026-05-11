@@ -25,6 +25,7 @@ export class Player extends BaseSprite {
 
     private positionHistory: { x: number, y: number }[] = [];
     private leader: Player | null = null;
+    public lastHistoryUpdateTime: number = 0;
 
     constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
         super(scene, x, y, 'tex_' + spriteSheetKey, initStandKey);
@@ -70,11 +71,14 @@ export class Player extends BaseSprite {
             //移動履歴を保存し、古いのから削除
             this.positionHistory.push({ x: this.x, y: this.y });
             if (this.positionHistory.length > 100) this.positionHistory.shift();
+
+            // 履歴を更新した時間を記録
+            this.lastHistoryUpdateTime = time;
         }
 
         //移動制御
         if (this.leader) {
-            this.updateKeyWalkMember();
+            this.updateKeyWalkMember(time);
         } else {
             this.updateKeyWalkLeader();
         }
@@ -126,20 +130,20 @@ export class Player extends BaseSprite {
         if (this.moveToPositionX && this.moveToPositionY) return;
         this.setVelocity(0);
 
-        if (cursorsKeys.left.isDown || vPadDir === 'left' || vPadDir === 'up-left' || vPadDir === 'down-left') {
+        if (cursorsKeys.left.isDown || this.inputManager.phaserGameKeys['A']?.isDown || vPadDir === 'left' || vPadDir === 'up-left' || vPadDir === 'down-left') {
             this.moveDirection = this.walkLeft;
             this.standframe = this.standLeft;
             this.setVelocityX(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.right.isDown || vPadDir === 'right' || vPadDir === 'up-right' || vPadDir === 'down-right') {
+        } else if (cursorsKeys.right.isDown || this.inputManager.phaserGameKeys['D']?.isDown || vPadDir === 'right' || vPadDir === 'up-right' || vPadDir === 'down-right') {
             this.moveDirection = this.walkRight;
             this.standframe = this.standRight;
             this.setVelocityX(this.playerDefaultVelocity);
         }
-        if (cursorsKeys.up.isDown || vPadDir === 'up' || vPadDir === 'up-left' || vPadDir === 'up-right') {
+        if (cursorsKeys.up.isDown || this.inputManager.phaserGameKeys['W']?.isDown || vPadDir === 'up' || vPadDir === 'up-left' || vPadDir === 'up-right') {
             this.moveDirection = this.walkUp;
             this.standframe = this.standUp;
             this.setVelocityY(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.down.isDown || vPadDir === 'down' || vPadDir === 'down-left' || vPadDir === 'down-right') {
+        } else if (cursorsKeys.down.isDown || this.inputManager.phaserGameKeys['S']?.isDown || vPadDir === 'down' || vPadDir === 'down-left' || vPadDir === 'down-right') {
             this.moveDirection = this.walkDown;
             this.standframe = this.standDown;
             this.setVelocityY(this.playerDefaultVelocity);
@@ -148,6 +152,10 @@ export class Player extends BaseSprite {
         //停止
         if (!this.moveToPositionX
             && !this.moveToPositionY
+            && !this.inputManager.phaserGameKeys['A']?.isDown
+            && !this.inputManager.phaserGameKeys['D']?.isDown
+            && !this.inputManager.phaserGameKeys['W']?.isDown
+            && !this.inputManager.phaserGameKeys['S']?.isDown
             && !cursorsKeys.left.isDown
             && !cursorsKeys.right.isDown
             && !cursorsKeys.up.isDown
@@ -162,7 +170,7 @@ export class Player extends BaseSprite {
     }
 
     //メンバー追従
-    private updateKeyWalkMember() {
+    private updateKeyWalkMember(time: number) {
 
         if (!this.body) return;
         if (!this.cursors) return;
@@ -202,19 +210,32 @@ export class Player extends BaseSprite {
         // leaderが前フレームで壁に衝突していた場合は追従しない
         // body.blocked は物理エンジンが実行済みの前フレームの衝突状態を保持しており
         // preUpdate（物理実行前）の時点で正しく参照できる
-        const leaderBody = this.leader!.body as Phaser.Physics.Arcade.Body;
-        if (!leaderBody.blocked.none) { this.setVelocity(0); return; }
+        // const leaderBody = this.leader!.body as Phaser.Physics.Arcade.Body;
+        // if (!leaderBody.blocked.none) { this.setVelocity(0); return; }
+
+        // リーダーの履歴が一定時間（例：100ms）更新されていなければ停止とみなす
+        // 滑り移動中であっても、4px動いて履歴が更新されない限りはここに入る
+        if (time - this.leader!.lastHistoryUpdateTime > 20) {
+            this.setVelocity(0);
+            this.stopAnimation();
+            return;
+        }
 
         /**
          * キーボードまたはパッド入力が発生した場合のみポジションをリセット
          * 状態を明確にするためクリック移動とキーボード移動をフラグ管理している
          */
-        if (!this.inputKeyboardOrPadFlg && this.inputClickFlg
-            && (cursorsKeys.left.isDown
-                || cursorsKeys.right.isDown
-                || cursorsKeys.up.isDown
-                || cursorsKeys.down.isDown
-                || vPadDir)) {
+        if (!this.inputKeyboardOrPadFlg &&
+            this.inputClickFlg && (
+                this.inputManager.phaserGameKeys['A']?.isDown ||
+                this.inputManager.phaserGameKeys['D']?.isDown ||
+                this.inputManager.phaserGameKeys['W']?.isDown ||
+                this.inputManager.phaserGameKeys['S']?.isDown ||
+                cursorsKeys.left.isDown ||
+                cursorsKeys.right.isDown ||
+                cursorsKeys.up.isDown ||
+                cursorsKeys.down.isDown ||
+                vPadDir)) {
             this.setPosition(this.leader!.x, this.leader!.y)
             this.leader!.clearPositionHistory();
             this.inputKeyboardOrPadFlg = true;
@@ -222,7 +243,7 @@ export class Player extends BaseSprite {
         }
 
         //リーダーとの距離が一定以上離れた場合は強制的にターゲットポジションに移動させる
-        if (Phaser.Math.Distance.Between(this.leader!.x, this.leader!.y, this.x, this.y) > 64) {
+        if (Phaser.Math.Distance.Between(this.leader!.x, this.leader!.y, this.x, this.y) > 48) {
             this.setPosition(targetposition.x, targetposition.y);
         }
 
@@ -252,14 +273,17 @@ export class Player extends BaseSprite {
         }
 
         //停止
-        if (!this.moveToPositionX
-            && !this.moveToPositionY
-            && !cursorsKeys.left.isDown
-            && !cursorsKeys.right.isDown
-            && !cursorsKeys.up.isDown
-            && !cursorsKeys.down.isDown
-            && !vPadDir
-            && this.moveDirection !== this.walkStop) {
+        if (!this.moveToPositionX && !this.moveToPositionY &&
+            !this.inputManager.phaserGameKeys['A']?.isDown &&
+            !this.inputManager.phaserGameKeys['D']?.isDown &&
+            !this.inputManager.phaserGameKeys['W']?.isDown &&
+            !this.inputManager.phaserGameKeys['S']?.isDown &&
+            !cursorsKeys.left.isDown &&
+            !cursorsKeys.right.isDown &&
+            !cursorsKeys.up.isDown &&
+            !cursorsKeys.down.isDown &&
+            !vPadDir &&
+            this.moveDirection !== this.walkStop) {
             this.setVelocity(0);
             this.stopAnimation();
             this.moveDirection = this.walkStop;

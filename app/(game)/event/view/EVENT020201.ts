@@ -1,4 +1,5 @@
 import { Event } from "../../scenes/Event";
+import { State } from "../../lib/StateTypes";
 import { BaseEvent } from "../../core/BaseEvent";
 import { GameScene, EventObjState, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
@@ -8,6 +9,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { InputManager } from "../../core/input/InputManager";
 
 export class EVENT020201 extends BaseEvent {
     private gameScene: GameScene;
@@ -188,6 +190,7 @@ export class EVENT020201 extends BaseEvent {
 
         // エンドロール
         await new Promise<void>(resolve => {
+
             this.eventScene.time.addEvent({
                 delay: 10,// 1000ミリ秒（1秒）ごとに実行
                 callback: () => {
@@ -204,6 +207,12 @@ export class EVENT020201 extends BaseEvent {
             //クリックで次のフェードアウトを実行
             this.eventScene.input.once('pointerdown', () => {
                 resolve();
+            });
+
+            const inputManager = InputManager.getInstance(this.eventScene);
+            const sub = inputManager.decideButton$.subscribe(() => {
+                resolve();
+                sub.unsubscribe();
             });
         })
 
@@ -261,12 +270,9 @@ export class EVENT020201 extends BaseEvent {
                     onComplete: () => {
                         this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
 
-                            this.eventScene.scene.moveAbove('Event', 'Title');
-
-                            this.eventScene.scene.start('Boot');
-
-                            this.eventScene.scene.stop('Game');
-                            this.eventScene.scene.stop('Event');
+                            //リスタート
+                            const manager = GameStateManager.getInstance();
+                            manager.updateState({ state: State.GAME_RESTART }, 'Event');
 
                             this.eventScene.game.events.emit('BGM_ALL_STOP');
 

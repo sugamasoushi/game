@@ -95,21 +95,22 @@ export class EVENT020101 extends BaseEvent {
             { lamy: ['任せときなって！\n', 'まずあたしが軽くジャブ打ってぇ！\n', 'それからぁ！\n'] }
         ], this.characterGameObject);
 
-        //キャラステータス設定
-        this.bossNPC.setData({
-            level: 1,
-            HP: 90,
-            MP: 0,
-            MaxHP: 90,
-            MaxMP: 20,
-            Attack: 45,
-            Guard: 10,
-            Speed: 5,
-            gold: 2
-        });
-
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
-        this.bossNPC.setData('name', searchEnemyData.getEnemyData('enemy03'));
+        const bossEnemyData = searchEnemyData.getEnemyData(this.bossNPC.getData('ImageKey'));
+        if (bossEnemyData) {
+            this.bossNPC.setData({
+                level: bossEnemyData.level,
+                HP: bossEnemyData.HP,
+                MP: bossEnemyData.MP,
+                MaxHP: bossEnemyData.MaxHP,
+                MaxMP: bossEnemyData.MaxMP,
+                Attack: bossEnemyData.Attack,
+                Guard: bossEnemyData.Guard,
+                Speed: bossEnemyData.Speed,
+                gold: bossEnemyData.gold
+            });
+            this.bossNPC.setData('name', bossEnemyData.name);
+        }
 
         //イベントバトル開始
         this.gameScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.bossNPC, canNotRunaway: true });

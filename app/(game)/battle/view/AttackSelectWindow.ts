@@ -3,7 +3,8 @@ import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class AttackSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
@@ -150,9 +151,12 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             if (this.nowSelectNo + 1 < this.selectList.length) {
                 this.nowSelectNo++;
@@ -160,7 +164,9 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             if (this.nowSelectNo - 1 >= 0) {
                 this.nowSelectNo--;
@@ -168,12 +174,16 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             this.selectExec(this.nowSelectNo);
         }));
 
-        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+        this.subs.add(inputManager.cancelButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             this.backSubmit();
         }));

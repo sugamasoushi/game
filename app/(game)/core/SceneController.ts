@@ -30,7 +30,7 @@ export class SceneController extends Scene {
         this.load.image('spark', 'assets/img/effect/elec3.png');
     }
 
-    async create() {
+    async create(data: { sceneKey?: string }) {
         console.log("SceneController")
 
         //スマホの画面回転時、100ミリ秒後に画面更新。
@@ -66,8 +66,14 @@ export class SceneController extends Scene {
             }
         });
 
+        //もし、Bootシーンから「GAME_RESTART」というキーで遷移してきた場合は、状態を GAME_RESTART に更新してからタイトルへ遷移する
+        if (data.sceneKey === 'GAME_RESTART') {
+            manager.updateState({ state: State.GAME_RESTART }, 'GAME_RESTART');
+            return;
+        }
+
         //状態をスタートに更新
-        manager.updateState({ state: State.START }, '')
+        manager.updateState({ state: State.TITLE }, '')
 
         this.scene.launch('UI');
         this.scene.bringToTop('UI');
@@ -75,14 +81,13 @@ export class SceneController extends Scene {
     }
 
     private handleStateChange(state: State, sceneKey: string) {
-        //状態管理クラス
-        const manager = GameStateManager.getInstance();
+        //console.log(`SceneController:  (sceneKey: ${sceneKey})`);
 
         switch (state) {
             case State.NOSTATE:
                 //処理無
                 break;
-            case State.START:
+            case State.TITLE:
                 console.log('Title')
                 this.scene.launch('Title', { sceneKey });
                 break;
@@ -97,6 +102,7 @@ export class SceneController extends Scene {
             case State.FIELD_RESTART:
                 console.log('Game restart', sceneKey)
                 this.scene.get('Game').scene.restart({ sceneKey });
+                this.scene.moveBelow('UI', 'Game')
                 break;
             case State.FIELD_RESUME:
                 console.log('Game resume', sceneKey)
@@ -130,11 +136,24 @@ export class SceneController extends Scene {
                 break;
             case State.GAMEOVER:
                 console.log('GameOver transition')
-                this.scene.stop('Game');
-                this.scene.stop('Battle');
-                this.scene.stop('Event');
-                this.scene.stop('Menu');
                 this.scene.launch('GameOver');
+                break;
+            case State.GAME_RESTART:
+                console.log('Game restart', sceneKey)
+                this.scene.stop('Game');
+                this.scene.stop('Menu');
+                this.scene.stop('Event');
+                this.scene.stop('Battle');
+                this.scene.stop('SceneController');
+
+                this.scene.start('Boot');
+
+                /**
+                 * this.scene.stop()とsubscriptionについて
+                 * Titleにも記載したが、購読の定義と解除を間違えると操作不能状態が発生するため注意。
+                 * 各シーンではstop()によるshutdownイベントをトリガーに購読解除等を行っているため、stop()を呼ぶ際は各シーンのshutdownイベントと購読の定義を確認する事。
+                 */
+
                 break;
         }
 

@@ -8,8 +8,8 @@ import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { SpriteType_3x4 } from "../../gamemain/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
-import { CaharacterNameData } from '../../Data/NameData';
 import { InputManager } from "../../core/input/InputManager";
+import { SearchEnemyData } from "../../Data/SearchEnemyData";
 
 export class EVENT010301 extends BaseEvent {
     private gameScene: GameScene;
@@ -115,21 +115,23 @@ export class EVENT010301 extends BaseEvent {
             { lamy: ['へぁ？\n'] }
         ], this.characterGameObject);
 
-        //キャラステータス設定
-        this.lamyNPC.setData({
-            level: 1,
-            HP: 40,
-            MP: 0,
-            MaxHP: 40,
-            MaxMP: 20,
-            Attack: 12,
-            Guard: 1,
-            Speed: 9,
-            gold: 2
-        });
-
-        this.lamyNPC.setData('name', CaharacterNameData['lamy' as keyof typeof CaharacterNameData])
-        //console.log(this.lamy.getData('name'))
+        //キャラステータス設定（imageKeyに対応するenemydataを適用）
+        const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
+        const lamyEnemyData = searchEnemyData.getEnemyData(this.lamyNPC.getData('ImageKey'));
+        if (lamyEnemyData) {
+            this.lamyNPC.setData({
+                level: lamyEnemyData.level,
+                HP: lamyEnemyData.HP,
+                MP: lamyEnemyData.MP,
+                MaxHP: lamyEnemyData.MaxHP,
+                MaxMP: lamyEnemyData.MaxMP,
+                Attack: lamyEnemyData.Attack,
+                Guard: lamyEnemyData.Guard,
+                Speed: lamyEnemyData.Speed,
+                gold: lamyEnemyData.gold
+            });
+            this.lamyNPC.setData('name', lamyEnemyData.name);
+        }
 
         //イベントバトル開始
         this.gameScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.lamyNPC, canNotRunaway: true });
@@ -138,7 +140,6 @@ export class EVENT010301 extends BaseEvent {
         const battleScene = this.eventScene.scene.get('Battle');
         await new Promise<void>(resolve => {
             battleScene.events.on('shutdown', () => {
-                console.log('再開');
                 this.eventScene.scene.resume();
                 resolve();
             });

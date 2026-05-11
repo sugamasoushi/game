@@ -382,17 +382,6 @@ export class MapObject extends Phaser.GameObjects.Container {
             this.gameScene.getPlayer().stopAnimation();
             if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
 
-                // //吹き出し会話を設定
-                // const bubbleTalk = new BubbleTalk(this.gameScene, undefined, obj.name);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
-                // bubbleTalk.init();
-
-                // //プレイヤーとオブジェクトのチェック
-                // const fieldPlayerChk = new FieldObjectCheck(this.gameScene.getPlayer(), obj as BaseSprite);
-
-                // //キャラ向きとオブジェクト位置からイベント発生可否をチェック
-                // if (fieldPlayerChk.checkPlayerClickEvent()) {
-                //     bubbleTalk!.execTalk();
-                // }
                 this.execClickEvent(obj);
             }
         })
@@ -611,6 +600,12 @@ export class MapObject extends Phaser.GameObjects.Container {
 
         //プレイヤーとの距離が近い場合
         if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
+
+            for (const player of this.playerPartyList) {
+                player.state = CharacterState.event;
+                player.setVelocity(0);
+            }
+
             const getItemName = obj.getData('item');
             const getItemNum = obj.getData('num');
             const bubbleTalkKey = obj.getData('bubbleTalkKey');
@@ -636,6 +631,7 @@ export class MapObject extends Phaser.GameObjects.Container {
                         //待機時間後、吹き出しメッセージがある場合は開始
                         if (bubbleTalk) { bubbleTalk.execTalk(); }
                         this.gameScene.events.emit('GAME_INPUT_TRUE');
+                        for (const player of this.playerPartyList) { player.state = CharacterState.normal; }
                         resolve();
                     }, [], this.scene);
                     this.gameScene.events.emit('GAME_INPUT_FALSE');

@@ -16,7 +16,10 @@ export const KEY_MAP = {
     A: Phaser.Input.Keyboard.KeyCodes.A,
     S: Phaser.Input.Keyboard.KeyCodes.S,
     E: Phaser.Input.Keyboard.KeyCodes.E,
-    R: Phaser.Input.Keyboard.KeyCodes.R
+    R: Phaser.Input.Keyboard.KeyCodes.R,
+    W: Phaser.Input.Keyboard.KeyCodes.W,
+    D: Phaser.Input.Keyboard.KeyCodes.D,
+    M: Phaser.Input.Keyboard.KeyCodes.M
 } as const;
 
 export type InputAction = keyof typeof KEY_MAP;

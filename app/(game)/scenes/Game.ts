@@ -123,9 +123,7 @@ export class Game extends Scene implements GameScene {
         // シーン再開時の共通処理（Menu, Battle等から戻った時）
         this.events.on('resume', () => {
             // シーン再開時にInputManagerの参照をこのシーンに戻す（ゲームパッド等の入力対象を元に戻すため）
-            const inputManager = InputManager.getInstance(this);
-            // シーン再開時の入力復活による誤爆を防ぐため、入力を一定時間受け付けない
-            inputManager.clearGamepadState();
+            InputManager.getInstance(this);
         });
 
         EventBus.emit('current-scene-ready', this);

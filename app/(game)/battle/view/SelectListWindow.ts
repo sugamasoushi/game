@@ -3,7 +3,7 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
 
 export class SelectListWindow extends Phaser.GameObjects.Container {
     private options: Phaser.GameObjects.Text[] = [];
@@ -122,23 +122,32 @@ export class SelectListWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             this.navigate(1);
         }));
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active) return;
             this.navigate(-1);
         }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             this.submitDecide(this.nowSelectNo);
         }));
 
-        this.subs.add(inputManager.cancelButton$.subscribe(() => {
+        this.subs.add(inputManager.cancelButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             this.submitBack();
         }));

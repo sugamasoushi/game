@@ -60,34 +60,37 @@ export class BattleModel {
                 const npcImageObject = this.battleScene.add.image(0, 0, this.fieldHitEnemy.getData('ImageKey'));
                 npcImageObject.setData(data);
                 npcImageObject.setData('NpcType', 'enemy');
-                npcImageObject.setData('name', searchEnemyData.getEnemyData(this.fieldHitEnemy.getData('ImageKey')));
+                npcImageObject.setData('name', searchEnemyData.getEnemyName(this.fieldHitEnemy.getData('ImageKey')));
 
                 this.enemyPartyList.push(npcImageObject);
 
                 this.fieldHitEnemy.deleteCharacter();
 
             } else {
-                //2体目以降、一旦ラミアのみ作成とする
-                const lamia = this.battleScene.add.image(0, 0, 'enemy01');
+                //2体目以降はenemydata(enemy01)からステータスを作成
+                const enemyKey = 'enemy01';
+                const enemyData = searchEnemyData.getEnemyData(enemyKey);
+                const enemy = this.battleScene.add.image(0, 0, enemyKey);
+                enemy.setData('ImageKey', enemyKey);
+                enemy.setData('NpcType', 'enemy');
 
-                lamia.setData('ImageKey', 'enemy01');
-                lamia.setData({
-                    level: 2,
-                    HP: 50,
-                    MP: 0,
-                    MaxHP: 50,
-                    MaxMP: 0,
-                    Attack: 40,//40
-                    Guard: 1,
-                    Speed: 5,
-                    gold: 2
-                });
-
-                lamia.setData('NpcType', 'enemy');
-
-                //名前の検索と設定
-                lamia.setData('name', searchEnemyData.getEnemyData(lamia.getData('ImageKey')));
-                this.enemyPartyList.push(lamia);
+                if (enemyData) {
+                    enemy.setData({
+                        level: enemyData.level,
+                        HP: enemyData.HP,
+                        MP: enemyData.MP,
+                        MaxHP: enemyData.MaxHP,
+                        MaxMP: enemyData.MaxMP,
+                        Attack: enemyData.Attack,
+                        Guard: enemyData.Guard,
+                        Speed: enemyData.Speed,
+                        gold: enemyData.gold
+                    });
+                    enemy.setData('name', enemyData.name);
+                } else {
+                    enemy.setData('name', searchEnemyData.getEnemyName(enemyKey));
+                }
+                this.enemyPartyList.push(enemy);
             }
         }
     }
@@ -118,7 +121,7 @@ export class BattleModel {
         enemy.setData('NpcType', 'enemy');
 
         //名前の検索と設定
-        enemy.setData('name', searchEnemyData.getEnemyData(enemy.getData('ImageKey')));
+        enemy.setData('name', searchEnemyData.getEnemyName(enemy.getData('ImageKey')));
         this.enemyPartyList.push(enemy);
     }
 

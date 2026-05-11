@@ -5,7 +5,8 @@ import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class MovieWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
@@ -84,6 +85,7 @@ export class MovieWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const onSelectStart = () => {
@@ -106,7 +108,9 @@ export class MovieWindow extends Phaser.GameObjects.Container {
         this.scene.events.on('MovieSelectModeStart', onSelectStart);
         this.scene.events.on('MovieSelectModeEnd', onSelectEnd);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isMovieSelectMode) return;
             if (this.selectedIndex + 1 < this.movieLabels.length) {
                 this.selectedIndex += 1;
@@ -114,7 +118,9 @@ export class MovieWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isMovieSelectMode) return;
             if (this.selectedIndex - 1 >= 0) {
                 this.selectedIndex -= 1;
@@ -122,7 +128,9 @@ export class MovieWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isMovieSelectMode || !this.canDecide) return;
             this.playVideo(this.videoArray[this.selectedIndex]);
         }));

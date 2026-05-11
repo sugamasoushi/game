@@ -238,6 +238,10 @@ export class Load extends Scene {
             this.scene.wake('UI');
         });
 
+        this.scene.scene.time.delayedCall(10, () => {
+            //待機
+            }, [], this.scene);
+
         // アセットのロードを開始（preload外でロードを行う場合はこのメソッドを呼ぶ必要がある）
         //多分今時点で使われてない
         this.load.start();

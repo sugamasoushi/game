@@ -62,7 +62,7 @@ export class PlayerPresenter {
     private execClickMove() {
         this.inputManager.phaserInput.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer) => {//pointerdownでもいい
 
-            //状態管理クラス
+            //ゲーム状態の確認
             const manager = GameStateManager.getInstance();
             if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.BATTLE) { return; }
 
@@ -103,15 +103,20 @@ export class PlayerPresenter {
         this.subs.add(this.inputManager.action$.subscribe((action) => {
             if (action === 'P') {
                 console.log("Pキー押下")
+
+                //ゲーム状態の確認
+                const gameStateManager = GameStateManager.getInstance();
+                if (gameStateManager.currentState !== State.NOSTATE) { return; }
+
                 const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
                 fieldAttack.frameBullet(this.player.x, this.player.y);
             }
         }));
 
         this.subs.add(this.inputManager.fieldAttackButton$.subscribe(() => {
-            //状態管理クラス
-            const manager = GameStateManager.getInstance();
-            if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.BATTLE) { return; }
+            //ゲーム状態の確認
+            const gameStateManager = GameStateManager.getInstance();
+            if (gameStateManager.currentState !== State.NOSTATE) { return; }
 
             console.log("FieldAttackボタン押下")
             const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
@@ -121,14 +126,11 @@ export class PlayerPresenter {
         this.subs.add(this.inputManager.menuButton$.subscribe(() => {
             console.log("メニューボタン押下")
 
-            //状態管理クラス
+            //ゲーム状態の確認
             const gameStateManager = GameStateManager.getInstance();
 
             //状態がNOSTATE以外の場合は、メニューを開かない
             if (gameStateManager.currentState !== State.NOSTATE) { return; }
-
-            // シーン遷移時の誤爆（入力状態の復活）を防ぐために入力を一旦破棄する
-            this.inputManager.clearGamepadState();
 
             //ぼかし
             //https://newdocs.phaser.io/docs/3.70.0/Phaser.GameObjects.Components.FX#addBlur
@@ -142,6 +144,11 @@ export class PlayerPresenter {
 
         //右クリック
         this.inputManager.phaserInput.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+
+            //ゲーム状態の確認
+            const gameStateManager = GameStateManager.getInstance();
+            if (gameStateManager.currentState !== State.NOSTATE) { return; }
+
             if (pointer.rightButtonDown()) {
                 pointer.reset();//入力状態をリセット、リセットしないと押下中に連続で処理される
                 const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);

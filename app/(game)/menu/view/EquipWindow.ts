@@ -5,7 +5,8 @@ import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class EquipWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
@@ -102,6 +103,7 @@ export class EquipWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const onSelectStart = () => {
@@ -126,7 +128,9 @@ export class EquipWindow extends Phaser.GameObjects.Container {
         this.scene.events.on('EquipSelectModeStart', onSelectStart);
         this.scene.events.on('EquipSelectModeEnd', onSelectEnd);
 
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isEquipSelectMode) return;
             if (this.selectedIndex + 2 < this.equipLabels.length) {
                 this.selectedIndex += 2;
@@ -134,7 +138,9 @@ export class EquipWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isEquipSelectMode) return;
             if (this.selectedIndex - 2 >= 0) {
                 this.selectedIndex -= 2;
@@ -142,7 +148,9 @@ export class EquipWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.rightButton$.subscribe(() => {
+        this.subs.add(inputManager.rightButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isEquipSelectMode) return;
             if (this.selectedIndex + 1 < this.equipLabels.length && this.selectedIndex % 2 === 0) {
                 this.selectedIndex += 1;
@@ -150,7 +158,9 @@ export class EquipWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.leftButton$.subscribe(() => {
+        this.subs.add(inputManager.leftButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isEquipSelectMode) return;
             if (this.selectedIndex - 1 >= 0 && this.selectedIndex % 2 === 1) {
                 this.selectedIndex -= 1;
@@ -158,7 +168,9 @@ export class EquipWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isEquipSelectMode || !this.canDecide) return;
             this.execEquipAction(this.selectedIndex);
         }));

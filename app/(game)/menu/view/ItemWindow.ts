@@ -9,7 +9,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageWindow } from "../../util/MessageWindow";
 import { MenuListWindow } from "./MenuListWindow";
 import { InputManager } from "../../core/input/InputManager";
-import { Subscription } from "rxjs";
+import { Subscription, throttleTime } from "rxjs";
 
 export class ItemWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
@@ -238,6 +238,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
 
             // 選択時の処理
             this.menuListWindow.onSelect = (memberIndex: number) => {
+                
                 // 使用後の個数を反映
                 this.useItem(itemName.text, memberIndex);
                 this.closeMenuListWindow();
@@ -254,6 +255,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const onSelectStart = () => {
@@ -278,7 +280,9 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         this.scene.events.on('ItemSelectModeEnd', onSelectEnd);
 
         // カーソル移動
-        this.subs.add(inputManager.downButton$.subscribe(() => {
+        this.subs.add(inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isItemSelectMode || this.menuListWindow) return;
             if (this.selectedIndex + 2 < this.itemNameList.length) {
                 this.selectedIndex += 2;
@@ -286,7 +290,9 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.upButton$.subscribe(() => {
+        this.subs.add(inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isItemSelectMode || this.menuListWindow) return;
             if (this.selectedIndex - 2 >= 0) {
                 this.selectedIndex -= 2;
@@ -294,7 +300,9 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.rightButton$.subscribe(() => {
+        this.subs.add(inputManager.rightButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isItemSelectMode || this.menuListWindow) return;
             if (this.selectedIndex + 1 < this.itemNameList.length && this.selectedIndex % 2 === 0) {
                 this.selectedIndex += 1;
@@ -302,7 +310,9 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             }
         }));
 
-        this.subs.add(inputManager.leftButton$.subscribe(() => {
+        this.subs.add(inputManager.leftButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isItemSelectMode || this.menuListWindow) return;
             if (this.selectedIndex - 1 >= 0 && this.selectedIndex % 2 === 1) {
                 this.selectedIndex -= 1;
@@ -311,7 +321,9 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         }));
 
         // 決定
-        this.subs.add(inputManager.decideButton$.subscribe(() => {
+        this.subs.add(inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
             if (!this.isItemSelectMode || !this.canDecide || this.menuListWindow) return;
             this.execItemUse(this.selectedIndex);
         }));

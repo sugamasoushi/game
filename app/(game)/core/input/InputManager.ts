@@ -1,7 +1,5 @@
-// Phaserの入力をRxJSに変換する基盤
-
 /**
- * ゲーム全体のマウス入力有無くらいしか使用していない
+ * キーの押しっぱなしは実装しない
  */
 
 import { Subject, BehaviorSubject, Observable, Subscription } from "rxjs";
@@ -12,6 +10,7 @@ export class InputManager {
     private scene: Phaser.Scene;
 
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    private gameKeys: { [key: string]: Phaser.Input.Keyboard.Key } = {};
 
     private subs = new Subscription(); // 購読をまとめる箱
 
@@ -32,10 +31,10 @@ export class InputManager {
         const threshold = 0.5;
         let dx = 0;
         let dy = 0;
-        
+
         if (pad.leftStick.x < -threshold || pad.left) dx = -1;
         else if (pad.leftStick.x > threshold || pad.right) dx = 1;
-        
+
         if (pad.leftStick.y < -threshold || pad.up) dy = -1;
         else if (pad.leftStick.y > threshold || pad.down) dy = 1;
 
@@ -55,48 +54,13 @@ export class InputManager {
     private previousPadButtons: { [index: number]: boolean } = {};
     private inputAcceptable: boolean = true;
 
-    // 入力状態をリセットし、シーン遷移時などの誤爆（入力状態の復活）を防ぐ
-    public clearGamepadState() {
-        this.previousPadButtons = {};
-        this.inputAcceptable = false;
-        // 300ms間はゲームパッドの入力を無視する
-        setTimeout(() => {
-            this.inputAcceptable = true;
-        }, 300);
-    }
-
-    public reset() {
-        if (!this.isExecuted) return;
-        this.isExecuted = false;
-        if (this.subs) this.subs.unsubscribe();
-        this.subs = new Subscription();
-        this._virtualPadDirection = null;
-        this.inputAcceptable = true;
-        this.previousPadButtons = {};
-        
-        if (this.scene && this.scene.game) {
-            this.scene.game.events.off('VIRTUALPAD_ARROW_KEY_DOWN', undefined, this);
-            this.scene.game.events.off('VIRTUALPAD_ARROW_KEY_UP', undefined, this);
-            this.scene.game.events.off('VIRTUALPAD_FACE_BUTTON_DOWN', undefined, this);
-            this.scene.game.events.off('VIRTUALPAD_FACE_BUTTON_UP', undefined, this);
-            this.scene.game.events.off('step', this.stepCallback, this);
-        }
-    }
-
     public execute() {
+
         if (this.isExecuted) return;
         this.isExecuted = true;
         console.log('InputManager.execute()');
-        //設定
-        this.scene.input.mouse!.disableContextMenu();//右クリックのコンテキストメニューを非表示にする
-        this.cursors = this.scene.input.keyboard!.createCursorKeys();// Phaserのカーソルキー（上下左右+Space/Shift）を作成
 
-        // Phaserのキーイベントを監視し、Actionに変換してSubjectへ
-        Object.entries(KEY_MAP).forEach(([action, keyCode]) => {
-            const keyObj = this.scene.input.keyboard!.addKey(keyCode);
-            keyObj.on('down', () => this.actionSubject.next(action as InputAction));
-        });
-
+        // 入力の有効/無効を切り替える（このクラスで管理）
         this.subs.add(
             this.inputFlgSubject$.subscribe(inputFlg => {
                 if (this.scene?.input) {
@@ -135,24 +99,12 @@ export class InputManager {
             this._virtualPadDirection = null;
         }, this);
 
-        // キーボード入力からの変換
-        this.subs.add(this.action$.subscribe(action => {
-            if (action === 'CURSOR_RIGHT') this.rightSubject.next();
-            if (action === 'CURSOR_LEFT') this.leftSubject.next();
-            if (action === 'CURSOR_UP') this.upSubject.next();
-            if (action === 'CURSOR_DOWN') this.downSubject.next();
-            if (action === 'RIGHT') this.rightSubject.next();
-            if (action === 'LEFT') this.leftSubject.next();
-            if (action === 'UP') this.upSubject.next();
-            if (action === 'DOWN') this.downSubject.next();
-            if (action === 'SPACE') this.decideSubject.next();
-            if (action === 'ESC') this.cancelSubject.next();
-        }));
-
-        // ゲームパッド入力（ポーリング方式：シーン破棄によるイベント無効化を防ぐため）
+        // ゲームパッド入力の監視
+        // ポーリング方式：特定のシーンの寿命に縛られず、ゲーム全体が動いている間はずっと一定間隔（1フレーム）で入力を監視し続ける
         this.scene.game.events.on('step', this.stepCallback, this);
     }
 
+    // ゲームパッド設定
     private stepCallback() {
         if (!this.inputAcceptable) return;
 
@@ -163,7 +115,7 @@ export class InputManager {
         for (let i = 0; i < buttons.length; i++) {
             const isDown = buttons[i].pressed;
             const wasDown = this.previousPadButtons[i] || false;
-            
+
             if (isDown && !wasDown) {
                 // ボタンマッピング: 0=南(A/✕), 1=東(B/〇), 2=西(X/□), 3=北(Y/△)
                 if (i === 1) this.decideSubject.next();
@@ -181,12 +133,47 @@ export class InputManager {
         }
     }
 
+    // キーボード設定
+    public setKeyboardInput() {
+
+        //設定
+        this.scene.input.mouse!.disableContextMenu();//右クリックのコンテキストメニューを非表示にする
+        this.cursors = this.scene.input.keyboard!.createCursorKeys();// Phaserのカーソルキー（上下左右+Space/Shift）を作成
+
+        // Phaserのキーイベントを監視し、Actionに変換してSubjectへ
+        Object.entries(KEY_MAP).forEach(([action, keyCode]) => {
+            const keyObj = this.scene.input.keyboard!.addKey(keyCode);
+            keyObj.on('down', () => {
+                this.actionSubject.next(action as InputAction)
+            });
+            this.gameKeys[action] = keyObj;
+        });
+
+        // キーボード入力からの変換
+        this.subs.add(this.action$.subscribe(action => {
+            if (action === 'CURSOR_RIGHT') this.rightSubject.next();
+            if (action === 'CURSOR_LEFT') this.leftSubject.next();
+            if (action === 'CURSOR_UP') this.upSubject.next();
+            if (action === 'CURSOR_DOWN') this.downSubject.next();
+            if (action === 'RIGHT') this.rightSubject.next();
+            if (action === 'LEFT') this.leftSubject.next();
+            if (action === 'UP') this.upSubject.next();
+            if (action === 'DOWN') this.downSubject.next();
+            if (action === 'SPACE') this.decideSubject.next();
+            if (action === 'ESC') this.cancelSubject.next();
+            if (action === 'M') this.menuSubject.next();
+            //if (action === 'P') this.fieldAttackSubject.next();//FieldPreseterで実装してる
+        }));
+
+    }
+
     public static getInstance(scene: Phaser.Scene) {
         if (!this.instance) {
             console.log('new InputManager()');
             this.instance = new InputManager();
         }
         this.instance.scene = scene;
+        this.instance.setKeyboardInput();
         return this.instance;
     }
 
@@ -224,6 +211,8 @@ export class InputManager {
     public get currentInputFlg(): boolean { return this.inputFlgSubject$.value; }
     public get phaserInput(): Phaser.Input.InputPlugin { return this.scene.input; }
     public get phaserCursors(): Phaser.Types.Input.Keyboard.CursorKeys { return this.cursors }
+    public get phaserGameKeys(): { [key: string]: Phaser.Input.Keyboard.Key } { return this.gameKeys }
+    public get activeScene(): string | null { return this.scene.scene.key; }
 }
 
 // 4. なぜ「InputPresenter」を独立させないのか？

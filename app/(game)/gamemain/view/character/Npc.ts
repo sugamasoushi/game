@@ -7,6 +7,7 @@ import { GameStateManager } from '../../../GameAllState/GameStateManager';
 import { State } from '@/app/(game)/lib/StateTypes';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from 'rxjs';
+import { SearchEnemyData } from '@/app/(game)/Data/SearchEnemyData';
 
 export class Npc extends BaseSprite {
     private npcType: string;
@@ -116,19 +117,24 @@ export class Npc extends BaseSprite {
 
     private statusSetting() {
         if (this.npcType === 'enemy') {
+            const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
+            const imageKey = this.getData('ImageKey');
+            const enemyData = searchEnemyData.getEnemyData(imageKey);
 
-            //ダミーデータ
-            this.setData({
-                level: 1,
-                HP: 30,
-                MP: 0,
-                MaxHP: 30,
-                MaxMP: 0,
-                Attack: 10,//10
-                Guard: 1,
-                Speed: 9,
-                gold: 2
-            });
+            if (enemyData) {
+                this.setData({
+                    level: enemyData.level,
+                    HP: enemyData.HP,
+                    MP: enemyData.MP,
+                    MaxHP: enemyData.MaxHP,
+                    MaxMP: enemyData.MaxMP,
+                    Attack: enemyData.Attack,
+                    Guard: enemyData.Guard,
+                    Speed: enemyData.Speed,
+                    gold: enemyData.gold
+                });
+                this.setData('name', enemyData.name);
+            }
         }
     }
 
