@@ -1,12 +1,18 @@
 import { SaveDataManager } from "../core/SaveDataManager";
 import { GameStateManager } from "../GameAllState/GameStateManager";
+import { Sound } from "../scenes/Sound";
+import { SearchItem } from "./SearchItem";
 
 export class ItemUpdate {
 
     private scene: Phaser.Scene;
+    private soundScene: Sound;
+    private searchItem: SearchItem;
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
+        this.soundScene = this.scene.scene.get('Sound') as Sound;
+        this.searchItem = new SearchItem(this.scene.cache.json);
     }
 
     // アイテムリストから表示不要なステータス項目を除外して返す
@@ -40,19 +46,17 @@ export class ItemUpdate {
         if (!targetMember) return;
         const memberData = targetMember.data.values;
 
+        // アイテムデータを検索
+        const itemDetail = this.searchItem.getItemDataByName(itemName);
+        if (!itemDetail) return;
+
+        // 効果音再生
+        this.soundScene.SE_idea.play();
+
         // アイテムごとの回復処理
-        switch (itemName) {
-            case 'やくそう':
-                memberData['HP'] += 10;
-                break;
-            case 'おにぎり':
-                memberData['HP'] += memberData['MaxHP'];
-                break;
-            case 'ばんそうこう':
-                memberData['MP'] += 10;
-                break;
-            default:
-                break;
+        if (itemDetail.type === 'heal' && itemDetail.subject) {
+            // subjectに指定されたステータスを回復
+            memberData[itemDetail.subject] += itemDetail.value;
         }
 
         // 回復後の最大値チェック

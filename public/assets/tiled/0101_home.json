@@ -377,7 +377,7 @@
          "name":"NPC",
          "objects":[
                 {
-                 "gid":8038,
+                 "gid":8026,
                  "height":32,
                  "id":14,
                  "name":"grandpa",
@@ -468,7 +468,7 @@
          "name":"SPRITE",
          "objects":[
                 {
-                 "gid":8046,
+                 "gid":8034,
                  "height":32,
                  "id":17,
                  "name":"chest",
@@ -499,6 +499,83 @@
                  "width":32,
                  "x":672,
                  "y":416
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":22,
+         "name":"LIGHT",
+         "objects":[
+                {
+                 "height":0,
+                 "id":20,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"intensity",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"radius",
+                         "type":"int",
+                         "value":80
+                        }, 
+                        {
+                         "name":"rgb",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"fire"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":448.25,
+                 "y":275.25
+                }, 
+                {
+                 "height":0,
+                 "id":21,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"intensity",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"radius",
+                         "type":"int",
+                         "value":40
+                        }, 
+                        {
+                         "name":"rgb",
+                         "type":"string",
+                         "value":""
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"fire"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":656,
+                 "y":269
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -633,14 +710,24 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":22,
- "nextobjectid":18,
+ "nextlayerid":23,
+ "nextobjectid":22,
  "orientation":"orthogonal",
  "properties":[
         {
-         "name":"battleBackground",
+         "name":"background",
          "type":"string",
          "value":"meinaOpImageHome"
+        }, 
+        {
+         "name":"battleFieldKey",
+         "type":"string",
+         "value":"meinaOpImageHome"
+        }, 
+        {
+         "name":"room",
+         "type":"string",
+         "value":""
         }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
@@ -873,21 +960,8 @@
          "tilewidth":32
         }, 
         {
-         "columns":3,
-         "firstgid":8018,
-         "image":"..\/img\/spritesheet\/enemy02.png",
-         "imageheight":128,
-         "imagewidth":96,
-         "margin":0,
-         "name":"enemy02",
-         "spacing":0,
-         "tilecount":12,
-         "tileheight":32,
-         "tilewidth":32
-        }, 
-        {
          "columns":4,
-         "firstgid":8030,
+         "firstgid":8018,
          "image":"..\/img\/spritesheet\/chicken_walk.png",
          "imageheight":128,
          "imagewidth":128,
@@ -900,8 +974,21 @@
         }, 
         {
          "columns":4,
-         "firstgid":8046,
+         "firstgid":8034,
          "image":"..\/img\/spritesheet\/Chests.png",
+         "imageheight":96,
+         "imagewidth":128,
+         "margin":0,
+         "name":"Chests",
+         "spacing":0,
+         "tilecount":12,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":4,
+         "firstgid":8046,
+         "image":"..\/img\/tilesets\/Chests.png",
          "imageheight":96,
          "imagewidth":128,
          "margin":0,

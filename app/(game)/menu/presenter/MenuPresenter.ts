@@ -4,11 +4,13 @@ import { MenuView } from "../view/MenuView";
 import { CacheDataUpdate } from "../../core/CacheDataUpdate";
 import { GameStateManager } from '../../GameAllState/GameStateManager';
 import { State } from '../../lib/types';
+import { Sound } from '../../scenes/Sound';
 
 export class MenuPresenter {
 
     private scene: Phaser.Scene;
     private gameScene: GameScene;
+    private soundScene: Sound;
 
     private menuModel: MenuModel;
     private menuView: MenuView;
@@ -23,6 +25,7 @@ export class MenuPresenter {
         this.gameScene = gameScene;
         this.menuModel = menuModel;
         this.menuView = menuView;
+        this.soundScene = this.scene.scene.get('Sound') as Sound;
     }
 
     public init() {
@@ -31,6 +34,8 @@ export class MenuPresenter {
 
         // マウスポインタの初期化
         this.scene.input.setDefaultCursor('default');
+
+        this.soundScene.SE_cardOpen.play();
     }
 
     public create() {
@@ -56,12 +61,14 @@ export class MenuPresenter {
     }
 
     private onCloseMenu() {
+        this.soundScene.SE_bookClose.play();
 
         //Phaserのトップレベルのイベント
         this.scene.game.events.emit('UI_CLOSE');
 
         // メニューの閉じるアニメーションを実行し、完了時にシーンを再開させる
         this.menuView.executeEndAnimation(() => {
+
             // アニメーション完了後の処理
             this.scene.scene.stop();
 

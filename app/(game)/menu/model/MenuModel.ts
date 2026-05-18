@@ -1,6 +1,6 @@
 import { GameScene } from '../../lib/SceneTypes';
-import { SaveDataManager } from "../../core/SaveDataManager";
 import { GameStateManager } from '../../GameAllState/GameStateManager';
+import { ItemUpdate } from '../../Data/ItemUpdate';
 
 export class MenuModel {
 
@@ -18,7 +18,7 @@ export class MenuModel {
     public alphaValue: number;
     public lineColor: number;
 
-    private saveDataManager: SaveDataManager;
+    private itemUpdate: ItemUpdate;
 
     constructor(scene: Phaser.Scene, gameScene: GameScene) {
         this.scene = scene;
@@ -40,7 +40,7 @@ export class MenuModel {
         this.alphaValue = settingBubbleData.alphaValue;
         this.lineColor = settingBubbleData.lineColor;
 
-        this.saveDataManager = new SaveDataManager();
+        this.itemUpdate = new ItemUpdate(this.scene);
     }
 
     public getPlayerData() {
@@ -66,53 +66,10 @@ export class MenuModel {
 
     // アイテムリストから表示不要なステータス項目を除外して返す
     public getValidItemList(): string[] {
-        const itemList: string[] = [];
-        const playerData = this.getPlayerDataList();
-
-        // Lvやスキル等、アイテム以外の項目を除外
-        Object.keys(playerData).forEach(array => {
-            if (this.saveDataManager.checkItemListData(array)) {
-                itemList.push(array);
-            }
-        });
-        return itemList;
+        return this.itemUpdate.getValidItemList();
     }
 
     public useItem(itemName: string, count: number, memberIndex: number = 0) {
-
-        // 更新後のアイテム数が0以下なら登録情報を削除
-        if (count <= 0 || count == undefined) {
-            this.gameScene.getPlayer().data.remove(itemName);
-            console.log(itemName, this.gameScene.getPlayer().data);
-        }
-
-        // 使用対象のメンバーデータを取得
-        const gameStateManager = GameStateManager.getInstance();
-        const targetMember = gameStateManager.currentPlayerPartyList[memberIndex];
-        if (!targetMember) return;
-        const memberData = targetMember.data.values;
-
-        // アイテムごとの回復処理
-        switch (itemName) {
-            case 'やくそう':
-                memberData['HP'] += 10;
-                break;
-            case 'おにぎり':
-                memberData['HP'] += memberData['MaxHP'];
-                break;
-            case 'ばんそうこう':
-                memberData['MP'] += 10;
-                break;
-            default:
-                break;
-        }
-
-        // 回復後の最大値チェック
-        if (memberData['HP'] > memberData['MaxHP']) {
-            memberData['HP'] = memberData['MaxHP'];
-        }
-        if (memberData['MP'] > memberData['MaxMP']) {
-            memberData['MP'] = memberData['MaxMP'];
-        }
+        this.itemUpdate.useItem(itemName, count, memberIndex);
     }
 }

@@ -1,5 +1,5 @@
 import { GameScene } from "@/app/(game)/lib/SceneTypes";
-import { CharacterState } from "@/app/(game)/lib/FieldTypes";
+import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
 import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { BubbleTalk } from './Action/BubbleTalk';
@@ -55,7 +55,7 @@ export class Npc extends BaseSprite {
 
     preUpdate(time: number, delta: number) {
         super.preUpdate(time, delta);
-        this.setDepth(this.y + (32 / 2) * this.scale);
+        this.setDepth(MapLayerDepth.High + this.y);
         this.updateRandomMoveToPosition();
         this._setInput();
         this.energyHP();

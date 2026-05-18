@@ -23,7 +23,12 @@ export class MessageObject {
     public init(scene: Phaser.Scene, usePatern?: string) {
         this.scene = scene;
 
-        if ((scene.scene.key === 'Game' && usePatern !== 'BubbleTalk') || scene.scene.key === 'Event' || scene.scene.key === 'Battle' || scene.scene.key === 'Menu') {
+        if (
+            (scene.scene.key === 'Game' && usePatern !== 'BubbleTalk') ||
+            scene.scene.key === 'Event' ||
+            scene.scene.key === 'Battle'
+            //scene.scene.key === 'Menu'
+        ) {
             const settingTextData = scene.cache.json.get('savedata').GameSetting.EventWindow;
             this.fontFamily = settingTextData.fontFamily;
             this.fontColor = settingTextData.fontColor;

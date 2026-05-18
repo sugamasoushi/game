@@ -40,11 +40,15 @@ export class Load extends Scene {
         this.load.json('enemydata', 'assets/data/enemydata.json');
         this.load.json('skilldata', 'assets/data/skilldata.json');
         this.load.json('characterdata', 'assets/data/characterdata.json');
+        this.load.json('itemdata', 'assets/data/itemdata.json');
+        this.load.json('tilemapdata', 'assets/data/tilemapdata.json');
+        this.load.json('battlefieldData', 'assets/data/battlefieldData.json');
 
         this.load.image('enemy00', 'assets/img/CharaStand/enemy00.png');
         this.load.image('enemy01', 'assets/img/CharaStand/enemy01.png');
         this.load.image('enemy02', 'assets/img/CharaStand/enemy02.png');
-        this.load.image('enemy03', 'assets/img/CharaStand/enemy03.png');
+        this.load.image('enemy03', ['assets/img/CharaStand/enemy03.png', 'assets/img/CharaStand/enemy03_n.png']);
+
         this.load.image('20230905', 'assets/img/CharaStand/20230905.png');
         this.load.image('20230427', 'assets/img/CharaStand/20230427.png');
         this.load.image('20230927', 'assets/img/CharaStand/20230927.png');
@@ -62,9 +66,23 @@ export class Load extends Scene {
         this.load.image('20250603', 'assets/img/eventpicture/20250603.jpg');
 
         this.load.image('battle_hill', 'assets/img/background/ComfyUI_temp_izzuc_00031_.png');
-        this.load.image('battle_cave', 'assets/img/background/ComfyUI_temp_xpgcm_00020_.png');
+        this.load.image('battle_hill_01', 'assets/img/background/battle_hill_01.png');
+        this.load.image('battle_hill_02', 'assets/img/background/battle_hill_02.png');
+        this.load.image('battle_hill_03', 'assets/img/background/battle_hill_03.png');
+        this.load.image('battle_cave', ['assets/img/background/ComfyUI_temp_xpgcm_00020_.png', 'assets/img/background/ComfyUI_temp_xpgcm_00020__n.png']);
 
         this.load.atlas('flares', 'assets/img/effect/flares.png', 'assets/img/effect/flares.json');
+
+        this.load.glsl('fireball', 'assets/img/effect/shader/shader0.frag');
+        this.load.glsl('cloud', 'assets/img/effect/shader/cloud.frag');
+        this.load.glsl('blueSky', 'assets/img/effect/shader/bulesky.frag');
+        this.load.glsl('nightsky', 'assets/img/effect/shader/nightsky.frag');
+        this.load.glsl('circleMask', 'assets/img/effect/shader/circlemask.frag');
+
+        this.load.glsl('watershader', 'assets/img/effect/shader/water.frag');
+
+        this.load.image('noise', 'assets/img/effect/noise/Super Noise/Super Noise 14 - 512x512.png');
+        this.load.image('noise2', 'assets/img/effect/noise/Super Perlin/Super Perlin 12 - 512x512.png');
 
         this.load.spritesheet('girl', 'assets/img/spritesheet/char_45_75.png',
             { frameWidth: 45, frameHeight: 75 }
@@ -193,6 +211,15 @@ export class Load extends Scene {
         this.load.audio('SE_windCutter', 'assets/sound/刀で斬る3.mp3');
         this.load.audio('SE_jajaann', 'assets/sound/ジャジャーン.mp3');
         this.load.audio('SE_newsTitle', 'assets/sound/ニュースタイトル表示1.mp3');
+        this.load.audio('SE_decideButton', 'assets/sound/決定ボタンを押す44.mp3');
+        this.load.audio('SE_cancelButton', 'assets/sound/キャンセル4.mp3');
+        this.load.audio('SE_cardTurnOver', 'assets/sound/カードをめくる.mp3');
+        this.load.audio('SE_idea', 'assets/sound/ひらめく2.mp3');
+        this.load.audio('SE_syakiin', 'assets/sound/シャキーン3.mp3');
+        this.load.audio('SE_cardOpen', 'assets/sound/カードを扇状に開く.mp3');
+        this.load.audio('SE_bookClose', 'assets/sound/本を閉じる1.mp3');
+        this.load.audio('SE_Beep5', 'assets/sound/ビープ音5.mp3');
+        this.load.audio('SE_decisionButton15', 'assets/sound/決定ボタンを押す15.mp3');
         //https://soundeffect-lab.info/sound/battle/
 
         this.load.video('meina_video', 'assets/video/ComfyUI_00010_.mp4');
@@ -233,14 +260,14 @@ export class Load extends Scene {
             //状態更新
             manager.updateState({ state: State.FIELD }, data.sceneKey)
             if (data.sceneKey === 'New Game') return;
-            
+
             // 再表示する（起こす）
             this.scene.wake('UI');
         });
 
         this.scene.scene.time.delayedCall(10, () => {
             //待機
-            }, [], this.scene);
+        }, [], this.scene);
 
         // アセットのロードを開始（preload外でロードを行う場合はこのメソッドを呼ぶ必要がある）
         //多分今時点で使われてない

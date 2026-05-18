@@ -4,23 +4,20 @@ import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
-import { ListWindow } from "../../util/ListWindow";
 import { DataDefinition } from "../../Data/DataDefinition";
-import { MessageWindow } from "../../util/MessageWindow";
-import { MenuListWindow } from "./MenuListWindow";
+
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
+import { Sound } from "../../scenes/Sound";
+import { CharacterSelectWindow } from "../../util/CharacterSelectWindow";
 
 export class ItemWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
     public selectAllow: SelectAllow;
     private itemNameList: Phaser.GameObjects.Text[] = [];
 
-    private listWindow: ListWindow;
-    private backButton: Phaser.GameObjects.Text | null;
-    private backButtonWindow: MessageWindow | null;
 
-    private menuListWindow: MenuListWindow | null;
+    private characterSelectWindow: CharacterSelectWindow | null;
 
     private itemValueList: Phaser.GameObjects.Text[] = [];
     private isItemSelectMode: boolean = false;
@@ -30,9 +27,12 @@ export class ItemWindow extends Phaser.GameObjects.Container {
 
     private mainColumn: MainColumnWindow;
 
+    private soundScene: Sound;
+
     constructor(scene: Phaser.Scene, private menuModel: MenuModel) {
         super(scene);
         this.scene.add.existing(this);
+        this.soundScene = this.scene.scene.get('Sound') as Sound;
     }
 
     public create(mainColumn: MainColumnWindow) {
@@ -99,7 +99,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             // マウスオーバーで選択位置を更新
             itemName.setInteractive({ useHandCursor: true });
             itemName.on('pointerover', () => {
-                if (this.isItemSelectMode && !this.menuListWindow) {
+                if (this.isItemSelectMode && (!this.characterSelectWindow || !this.characterSelectWindow.visible)) {
                     this.selectedIndex = i;
                     this.selectAllow.updatePosition(itemName);
                 }
@@ -109,6 +109,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             itemName.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
                 if (pointer.leftButtonDown()) {
                     pointer.reset();
+                    this.soundScene.SE_decideButton.play();
                     this.selectedIndex = i;
                     this.execItemUse(i);
                 }
@@ -123,44 +124,13 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         }
     }
 
-    private backButtonCreate(x: number, y: number) {
 
-        const messageObjectInstance = new MessageObject();
-        messageObjectInstance.init(this.scene);
 
-        this.backButton = messageObjectInstance.createTextObject(this.scene, x, y + 16, "✖");
+    private closeCharacterSelectWindow() {
+        this.soundScene.SE_cancelButton.play();
 
-        //ウィンドウ作成
-        this.backButtonWindow = new MessageWindow(this.scene);
-        this.backButtonWindow.init();
-        this.backButtonWindow.createOneColumnOneWindow(this.backButton, 16);
-
-        this.backButtonWindow.x = x;
-        this.backButtonWindow.y = y + 16;
-
-        // 深度設定
-        const baseDepth = this.menuListWindow ? this.menuListWindow.depth + 10 : 1000;
-        this.backButtonWindow.setDepth(baseDepth);
-        this.backButton.setDepth(baseDepth + 1);
-
-        this.backButton.setInteractive({ useHandCursor: true });
-        this.backButton.on('pointerdown', () => {
-            this.closeMenuListWindow();
-        }, this);
-    }
-
-    private closeMenuListWindow() {
-        if (this.menuListWindow) {
-            this.menuListWindow.destroy();
-            this.menuListWindow = null;
-        }
-        if (this.backButton) {
-            this.backButton.destroy();
-            this.backButton = null;
-        }
-        if (this.backButtonWindow) {
-            this.backButtonWindow.destroy();
-            this.backButtonWindow = null;
+        if (this.characterSelectWindow) {
+            this.characterSelectWindow.hide();
         }
 
         this.drawItemList();
@@ -230,21 +200,29 @@ export class ItemWindow extends Phaser.GameObjects.Container {
                 partyname.push(charcterName);
             }
 
-            this.menuListWindow = new MenuListWindow(this.scene, this.menuModel);
+            if (!this.characterSelectWindow) {
+                this.characterSelectWindow = new CharacterSelectWindow(this.scene);
+                // 深度を調整（必要に応じて）
+                this.characterSelectWindow.setDepth(this.mainWindowDepth + 100);
+            }
+
             // ウィンドウの位置を中央付近に設定
-            this.menuListWindow.x = 600;
-            this.menuListWindow.y = 250;
-            this.menuListWindow.create(partyname);
+            this.characterSelectWindow.create(partyname);
+            this.characterSelectWindow.x = 600;
+            this.characterSelectWindow.y = 250;
+            this.characterSelectWindow.show();
 
             // 選択時の処理
-            this.menuListWindow.onSelect = (memberIndex: number) => {
-                
+            this.characterSelectWindow.onSelect = (memberIndex: number) => {
                 // 使用後の個数を反映
                 this.useItem(itemName.text, memberIndex);
-                this.closeMenuListWindow();
+                this.closeCharacterSelectWindow();
             };
 
-            this.backButtonCreate(this.menuListWindow.x + 116, this.menuListWindow.y - 40);
+            // 戻るボタン押下時の処理
+            this.characterSelectWindow.onBack = () => {
+                this.closeCharacterSelectWindow();
+            };
 
         } else {
             // 使用後の個数を反映（メンバー1人の場合はインデックス0）
@@ -283,7 +261,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         this.subs.add(inputManager.downButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (!this.isItemSelectMode || (this.characterSelectWindow && this.characterSelectWindow.visible)) return;
             if (this.selectedIndex + 2 < this.itemNameList.length) {
                 this.selectedIndex += 2;
                 this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
@@ -293,7 +271,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         this.subs.add(inputManager.upButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (!this.isItemSelectMode || (this.characterSelectWindow && this.characterSelectWindow.visible)) return;
             if (this.selectedIndex - 2 >= 0) {
                 this.selectedIndex -= 2;
                 this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
@@ -303,7 +281,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         this.subs.add(inputManager.rightButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (!this.isItemSelectMode || (this.characterSelectWindow && this.characterSelectWindow.visible)) return;
             if (this.selectedIndex + 1 < this.itemNameList.length && this.selectedIndex % 2 === 0) {
                 this.selectedIndex += 1;
                 this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
@@ -313,7 +291,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         this.subs.add(inputManager.leftButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.isItemSelectMode || this.menuListWindow) return;
+            if (!this.isItemSelectMode || (this.characterSelectWindow && this.characterSelectWindow.visible)) return;
             if (this.selectedIndex - 1 >= 0 && this.selectedIndex % 2 === 1) {
                 this.selectedIndex -= 1;
                 this.selectAllow.updatePosition(this.itemNameList[this.selectedIndex]);
@@ -324,7 +302,8 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         this.subs.add(inputManager.decideButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.isItemSelectMode || !this.canDecide || this.menuListWindow) return;
+            if (!this.isItemSelectMode || !this.canDecide || (this.characterSelectWindow && this.characterSelectWindow.visible)) return;
+            this.soundScene.SE_decideButton.play();
             this.execItemUse(this.selectedIndex);
         }));
     }
@@ -333,6 +312,10 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         this.subs.unsubscribe();
         this.scene.events.off('ItemSelectModeStart');
         this.scene.events.off('ItemSelectModeEnd');
+        if (this.characterSelectWindow) {
+            this.characterSelectWindow.destroy();
+            this.characterSelectWindow = null;
+        }
         super.destroy(fromScene);
     }
 

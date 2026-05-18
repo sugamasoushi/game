@@ -29,7 +29,7 @@ export interface GameState {
   isGameOver: boolean;
   fieldData: FieldData;
   battleData: { usePatern: string, fieldHitEnemy?: Npc, canNotRunaway: boolean };
-  battleBackGroundKey: string;
+  battleFieldKey: string;
   eventObj?: Phaser.Physics.Arcade.Sprite;
 }
 

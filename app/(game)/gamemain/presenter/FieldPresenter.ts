@@ -46,16 +46,38 @@ export class FieldPresenter {
     }
 
     public async create(sceneKey: string) {
+        console.log("FieldPresenter")
 
         //this.cameraManager.getMainCamera().setZoom(1.2);
         // this.cameraManager.getMainCamera().postFX.addTiltShift(
         //     0.5,//radius: ボケ効果の半径。デフォルト値は 0.5。
         //     0.5,//amount: ボケ効果の量。デフォルト値は 1。 
-        //     1.5,//contrast: ボケ効果の色のコントラスト。デフォルト値は 0.2
+        //     0.1,//contrast: ボケ効果の色のコントラスト。デフォルト値は 0.2
         //     0.5,//blurX水平方向のぼかしの量。 
         //     0.5,//blurY垂直方向のぼかしの量。 
         //     0.5//strengthぼかしの強さ。 
         // );
+
+        const mainCamera = this.gameScene.cameras.main;
+
+        if (mainCamera.postFX) {
+            // カラーマトリックスエフェクトをカメラに追加
+            const cameraFilter = mainCamera.postFX.addColorMatrix();
+
+            // 【調整例A】コントラストを高めて、陰影をクッキリさせる
+            cameraFilter.contrast(0.5);      // 1.0が基準。1.4でかなりクッキリします
+
+            // 【調整例B】全体を少し暗くして、ライトの光（懐中電灯など）を引き立たせる
+            cameraFilter.brightness(-0.2);   // 0.0が基準。-0.1でほんのりダークに
+
+            // 【調整例C】彩度を少し下げて、ドット絵のギラギラ感を抑えトーンを馴染ませる
+            cameraFilter.saturate(0.5);     // 1.0が基準。0.85で少し渋い色合いに
+
+            //cameraFilter.hue(180);
+        }
+
+
+
 
         //マップ情報の判定、検索処理とか実装する必要がある
         if (this.fieldMapModel.getFieldData().mapKey === '0102') {
@@ -64,18 +86,14 @@ export class FieldPresenter {
             this.gameScene.game.events.emit('BGM_FIELD', sceneKey, '');
         }
 
-        // イベントエミッター設定
-        this.setEventEmitter();
+        // 💡【重要】ここで動的ロードを実行し、完全に終わるまで次の行（execute）に進ませない
+        //console.log("タイルセットのロードを開始します...");
+        await this.tileMap.loadTileSetFile(this.fieldMapModel.getFieldData());
 
-        //シーン開始時にフェードイン
-        if (sceneKey !== 'menu') {
-            this.cameraManager.execFadeInStart();
-            this.cameraManager.execFadeIn();
-        }
-
-        //マップやオブジェクトを作成
-        this.tileMap.execute(this.fieldMapModel.getFieldData());
-        this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData(), sceneKey, this.inputManager);
+        // 💡【重要】ロードが100%完了した後に、マップやオブジェクト（TilemapLayer）を作成する
+        //console.log("ロード完了。マップの描画を実行します。");
+        await this.tileMap.execute(this.fieldMapModel.getFieldData());
+        await this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData(), sceneKey, this.inputManager);
         //this.menuButton.execute();
         //this.saveButton.execute();
         //this.fireButton.execute();
@@ -84,9 +102,20 @@ export class FieldPresenter {
         //オブジェクト作成、各種設定
         this.cameraManager.execute(this.tileMap.getMakeTilemap(), this.mapObject.getPlayer());
         this.fieldMapModel.execute(this.mapObject);
+
+        // イベントエミッター設定
+        this.setGameEvent();
+
+        //シーン開始時にフェードイン
+        if (sceneKey !== 'menu') {
+            this.cameraManager.execFadeInStart();
+            this.cameraManager.execFadeIn();
+        }
+
+        this.gameScene.game.events.emit('FIELD_LOADED_COMPLETE');
     }
 
-    private setEventEmitter() {
+    private setGameEvent() {
         //状態管理クラス
         const gameStateManager = GameStateManager.getInstance();
 
@@ -229,13 +258,13 @@ export class FieldPresenter {
         return this.mapObject.getPlayer();
     }
 
-    public getPlayerPartyList() {
-        const gameStateManager = GameStateManager.getInstance();
-        return gameStateManager.currentPlayerPartyList;
-    }
+    // public getPlayerPartyList() {
+    //     const gameStateManager = GameStateManager.getInstance();
+    //     return gameStateManager.currentPlayerPartyList;
+    // }
 
-    public getTilemap(): TileMap {
-        return this.tileMap;
-    }
+    // public getTilemap(): TileMap {
+    //     return this.tileMap;
+    // }
 
 }

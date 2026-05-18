@@ -5,6 +5,7 @@ import { MenuTab } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
 import { DataDefinition } from "../../Data/DataDefinition";
+import { Sound } from "../../scenes/Sound";
 
 export class MainColumnWindow {
 
@@ -42,12 +43,15 @@ export class MainColumnWindow {
     private isItemSelectMode: boolean = false;
     private scaleTween: Phaser.Tweens.Tween | null = null;
 
+    private soundScene: Sound;
+
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         this.scene = scene;
         this.menuModel = menuModel;
 
         this.displayWidth = Number(this.scene.game.config.width);
         this.displayHeight = Number(this.scene.game.config.height);
+        this.soundScene = this.scene.scene.get('Sound') as Sound;
     }
 
     public create() {
@@ -189,6 +193,13 @@ export class MainColumnWindow {
         for (let i = 0; i < this.mainColumnLabelText.length; i++) {
             this.mainColumnLabelText[i].on('pointerdown', () => {
                 this.shiftToTab(i);
+
+                // 詳細選択モードならタブ選択に戻す
+                this.isItemSelectMode = false;
+
+                // 全てのモード終了イベントを一律で投げるか、現在に合わせて投げる
+                const eventNames = ['ConditionSelectModeEnd', 'StatusSelectModeEnd', 'ItemSelectModeEnd', 'EquipSelectModeEnd', 'SkillSelectModeEnd', 'SaveSelectModeEnd', 'MovieSelectModeEnd'];
+                eventNames.forEach(name => this.scene.events.emit(name));
             }, this.scene);
         }
     }
@@ -282,6 +293,8 @@ export class MainColumnWindow {
         this.isAnimating = true;
         this.updateTabAnimation(); // スクロール開始時にアニメーションを停止
         const duration = 200;
+
+        this.soundScene.SE_cardTurnOver.play();
 
         // 全てのラベルの色を灰色に戻す
         for (const ColumnLabelText of this.mainColumnLabelText) {

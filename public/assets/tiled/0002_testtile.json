@@ -205,9 +205,9 @@
                  "y":64
                 }, 
                 {
-                 "height":378,
-                 "id":2,
-                 "name":"0001_0000_0100_R",
+                 "height":416,
+                 "id":9,
+                 "name":"GendouMap_Left",
                  "properties":[
                         {
                          "name":"direction",
@@ -217,7 +217,7 @@
                         {
                          "name":"moveToMap",
                          "type":"string",
-                         "value":"0001"
+                         "value":"0201"
                         }, 
                         {
                          "name":"moveX",
@@ -227,7 +227,7 @@
                         {
                          "name":"moveY",
                          "type":"int",
-                         "value":100
+                         "value":532
                         }, 
                         {
                          "name":"note",
@@ -239,7 +239,7 @@
                  "visible":true,
                  "width":0,
                  "x":1600,
-                 "y":736
+                 "y":704
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -460,11 +460,11 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":8,
+ "nextobjectid":10,
  "orientation":"orthogonal",
  "properties":[
         {
-         "name":"battleBackground",
+         "name":"battleFieldKey",
          "type":"string",
          "value":"battle_cave"
         }],

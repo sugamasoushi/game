@@ -1,6 +1,5 @@
 import { MessageWindow } from "../../util/MessageWindow";
 import { MessageObject } from "../../util/MessageObject";
-import { DataDefinition } from "../../Data/DataDefinition";
 
 export class LeftButton {
 
@@ -50,7 +49,7 @@ export class LeftButton {
         this.hitZone.disableInteractive();
 
         // 斜め方向のオフセット距離
-        const d = Math.round(buttonSize * 0.8);
+        const d = Math.round(buttonSize * 1);
 
         /**
          * 8方向ボタン定義

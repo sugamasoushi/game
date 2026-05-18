@@ -4,6 +4,7 @@ import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import { SearchSkill } from "../../Data/SearchSkill";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
 import { DataDefinition } from "../../Data/DataDefinition";
@@ -11,6 +12,7 @@ import { DataDefinition } from "../../Data/DataDefinition";
 export class CharStatusWindow extends Phaser.GameObjects.Container {
 
     private menuModel: MenuModel;
+    private searchCharacterData: SearchCharacterData;
     private charContainers: Phaser.GameObjects.Container[] = [];
     private currentIndex: number = 0;
     private isSrolling: boolean = false;
@@ -25,6 +27,7 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
         this.menuModel = menuModel;
+        this.searchCharacterData = new SearchCharacterData(this.scene.cache.json);
         this.scene.add.existing(this);
     }
 
@@ -142,7 +145,8 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
     }
 
     private createCharacterContent(container: Phaser.GameObjects.Container, sprite: Phaser.GameObjects.Sprite, messageObject: MessageObject): void {
-        const portraitKey = this.getPortraitKey(sprite.name);
+        const characterData = this.searchCharacterData.getCharacterData(sprite.name);
+        const portraitKey = characterData.normal;
 
         const charImage = this.scene.add.image(0, 0, portraitKey).setOrigin(0, 0).setScale(0.5);
         container.add(charImage);
@@ -228,13 +232,4 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
         });
     }
 
-    private getPortraitKey(name: string): string {
-        const mapping: { [key: string]: string } = {
-            'meina': '20250609',
-            'grandpa': '20240622_鶏',
-            'lamy': '20240908',
-            'player2': '20240908'
-        };
-        return mapping[name] || '20250609';
-    }
 }

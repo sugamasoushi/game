@@ -1,0 +1,42 @@
+{
+    "infomation": "アイテムデータ",
+    "none": {
+        "00": {
+            "name": "No Data",
+            "type": "none",
+            "description": "No Data",
+            "mpCost": 0,
+            "effect": "No Data",
+            "value": 0
+        }
+    },
+    "freeitem": {
+        "001": {
+            "name": "やくそう",
+            "type": "heal",
+            "description": "HPが少し回復する",
+            "subject": "HP",
+            "effectClassName": "",
+            "value": 10,
+            "selectComment": "苦い！"
+        },
+        "002": {
+            "name": "おにぎり",
+            "type": "heal",
+            "description": "HPが全回復する",
+            "subject": "HP",
+            "effectClassName": "",
+            "value": 99999,
+            "selectComment": "美味しい！"
+        },
+        "003": {
+            "name": "ばんそうこう",
+            "type": "heal",
+            "description": "MPが少し回復する",
+            "subject": "MP",
+            "effectClassName": "",
+            "value": 10,
+            "selectComment": ""
+        }
+    }
+}

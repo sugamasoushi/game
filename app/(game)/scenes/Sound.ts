@@ -23,6 +23,15 @@ export class Sound extends Scene {
     public SE_windCutter: Phaser.Sound.HTML5AudioSound;
     public SE_jajaann: Phaser.Sound.HTML5AudioSound;
     public SE_newsTitle: Phaser.Sound.HTML5AudioSound;
+    public SE_decideButton: Phaser.Sound.HTML5AudioSound;
+    public SE_cardTurnOver: Phaser.Sound.HTML5AudioSound;
+    public SE_cancelButton: Phaser.Sound.HTML5AudioSound;
+    public SE_idea: Phaser.Sound.HTML5AudioSound;
+    public SE_syakiin: Phaser.Sound.HTML5AudioSound;
+    public SE_cardOpen: Phaser.Sound.HTML5AudioSound;
+    public SE_bookClose: Phaser.Sound.HTML5AudioSound;
+    public SE_Beep5: Phaser.Sound.HTML5AudioSound;
+    public SE_decisionButton15: Phaser.Sound.HTML5AudioSound;
 
     constructor() { super('Sound'); }
     init() {
@@ -66,6 +75,24 @@ export class Sound extends Scene {
         this.SE_jajaann.volume = 0.7;
         this.SE_newsTitle = this.sound.add('SE_newsTitle', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_newsTitle.volume = 0.7;
+        this.SE_decideButton = this.sound.add('SE_decideButton', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_decideButton.volume = 0.7;
+        this.SE_cardTurnOver = this.sound.add('SE_cardTurnOver', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_cardTurnOver.volume = 0.7;
+        this.SE_cancelButton = this.sound.add('SE_cancelButton', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_cancelButton.volume = 0.7;
+        this.SE_idea = this.sound.add('SE_idea', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_idea.volume = 0.7;
+        this.SE_syakiin = this.sound.add('SE_syakiin', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_syakiin.volume = 0.7;
+        this.SE_cardOpen = this.sound.add('SE_cardOpen', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_cardOpen.volume = 0.7;
+        this.SE_bookClose = this.sound.add('SE_bookClose', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_bookClose.volume = 0.7;
+        this.SE_Beep5 = this.sound.add('SE_Beep5', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_Beep5.volume = 0.7;
+        this.SE_decisionButton15 = this.sound.add('SE_decisionButton15', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_decisionButton15.volume = 0.7;
 
         this.game.events.on('BGM_FIELD', (sceneKey: string, seKey: string) => {
             if (this.debugFlg) return;

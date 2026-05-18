@@ -2,10 +2,12 @@ import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 
 export class ConditionWindow extends Phaser.GameObjects.Container {
 
     private menuModel: MenuModel;
+    private searchCharacterData: SearchCharacterData;
     private mainWindowDepth: number = 500;
 
     private charConditionHPs: Phaser.GameObjects.Text[] = [];
@@ -14,6 +16,7 @@ export class ConditionWindow extends Phaser.GameObjects.Container {
     constructor(scene: Phaser.Scene, menuModel: MenuModel) {
         super(scene);
         this.menuModel = menuModel;
+        this.searchCharacterData = new SearchCharacterData(this.scene.cache.json);
         this.scene.add.existing(this);
 
         this.once('destroy', () => {
@@ -39,8 +42,9 @@ export class ConditionWindow extends Phaser.GameObjects.Container {
         for (const [index, sprite] of partyList.entries()) {
             const yBase = leftLabelY + index * personHeight;
 
-            // アイコン画像のマッピング
-            const portraitKey = this.getPortraitKey(sprite.name);
+            // キャラクターデータを取得
+            const characterData = this.searchCharacterData.getCharacterData(sprite.name);
+            const portraitKey = characterData.icon;
             const charImage = this.scene.add.image(150, yBase + 10, portraitKey).setOrigin(0, 0);
             this.add(charImage);
 
@@ -83,15 +87,6 @@ export class ConditionWindow extends Phaser.GameObjects.Container {
         this.scene.events.on('UPDATE_CONDITION', this.updateConditionHandler, this);
     }
 
-    private getPortraitKey(name: string): string {
-        const mapping: { [key: string]: string } = {
-            'meina': 'Icon_20250609',
-            'grandpa': 'Icon_20250609',
-            'lamy': 'Icon_20240908',
-            'player2': 'Icon_20240908'
-        };
-        return mapping[name] || 'Icon_20250609';
-    }
 
     private updateConditionHandler() {
         // 全パーティメンバーのステータスを再読み込みして更新

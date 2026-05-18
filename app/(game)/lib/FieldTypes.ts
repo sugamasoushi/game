@@ -22,6 +22,13 @@ export interface tilesets {
   tilewidth: number;
 }
 
+export enum MapLayerDepth {
+  Lowest = 100,   //最下層、水面などのシェーダー等
+  Low = 200,      //下層、地面など
+  High = 300,     //上層、キャラクターなど
+  Highest = 400   //最上層、天井や空
+}
+
 export enum ObjState {
   false = 0,
   true = 1,

@@ -5,7 +5,7 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { DataDefinition } from "../../Data/DataDefinition";
-import { SelectListWindow } from "./SelectListWindow";
+import { CharacterSelectWindow } from "../../util/CharacterSelectWindow";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
@@ -19,7 +19,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
 
     private selectList: Phaser.GameObjects.Text[] = [];
     private countList: Phaser.GameObjects.Text[] = [];
-    private selectListWindow: SelectListWindow;
+    private selectListWindow: CharacterSelectWindow;
 
     private nowSelectNo = 0;
     private maxColumns = 2;
@@ -122,7 +122,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                             partyname.push(charcterName);
                         }
 
-                        this.selectListWindow = new SelectListWindow(this.scene);
+                        this.selectListWindow = new CharacterSelectWindow(this.scene);
                         // ウィンドウの位置を中央付近に設定
 
                         this.selectListWindow.create(partyname);
@@ -133,8 +133,6 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
 
                         // 選択時の処理
                         this.selectListWindow.onSelect = (memberIndex: number) => {
-
-                            this.soundScene.SE_newsTitle.play();
 
                             // 使用後の個数を反映
                             this.battleModel.getPlayerPartyList()[0].data.values[listName] -= 1;

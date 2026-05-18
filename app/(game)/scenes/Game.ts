@@ -91,13 +91,9 @@ export class Game extends Scene implements GameScene {
             this.inputManager);
     }
 
-    preload() {
+    async preload() { }
 
-        //マップチップの読み込み
-        this.tileMap.loadTileSetFile(this.gameStateManager.currentFieldData);
-    }
-
-    create(data: { sceneKey: string }) {
+    async create(data: { sceneKey: string }) {
 
         // マップ設定
         this.fieldMapModel.setFieldData(this.gameStateManager.currentFieldData)
@@ -107,7 +103,20 @@ export class Game extends Scene implements GameScene {
         this.cursorsKeys = this.input.keyboard!.createCursorKeys();//キーボード設定
         this.keys = this.input.keyboard!.addKeys("P,H,A,S,E,R") as GameKeys;
 
-        this.fieldPresenter.create(data.sceneKey);
+
+        // フィールド（マップや動的タイルセット）の生成・ロード完了を待つ
+        // ※ fieldPresenter.create が内部で非同期処理（Promiseやload.start）を行っている前提です
+        try {
+            await this.fieldPresenter.create(data.sceneKey);
+
+            // 明示的にロード完了イベントを発火（必要に応じて）
+            this.game.events.emit('FIELD_LOADED_COMPLETE');
+        } catch (error) {
+            console.error("フィールドのロード中にエラーが発生しました:", error);
+            return;
+        }
+
+        // 全てのアセットロードが保証されたので、キャラクターたちを描画（実体化）する
         this.playerPresenter.execute();
         this.npcPresenter.execute();
 
@@ -132,6 +141,23 @@ export class Game extends Scene implements GameScene {
     //画面更新を再開。このメソッドは別シーンから参照される。
     public resumeScene() {
         this.mainCamera.postFX.clear();
+
+        if (this.mainCamera.postFX) {
+            // カラーマトリックスエフェクトをカメラに追加
+            const cameraFilter = this.mainCamera.postFX.addColorMatrix();
+
+            // 【調整例A】コントラストを高めて、陰影をクッキリさせる
+            cameraFilter.contrast(0.5);      // 1.0が基準。1.4でかなりクッキリします
+
+            // 【調整例B】全体を少し暗くして、ライトの光（懐中電灯など）を引き立たせる
+            cameraFilter.brightness(-0.2);   // 0.0が基準。-0.1でほんのりダークに
+
+            // 【調整例C】彩度を少し下げて、ドット絵のギラギラ感を抑えトーンを馴染ませる
+            cameraFilter.saturate(0.5);     // 1.0が基準。0.85で少し渋い色合いに
+
+            //cameraFilter.hue(180);
+        }
+
         this.scene.resume(); // これにより上の 'resume' イベントが発火する
     }
 

@@ -1,0 +1,12 @@
+{
+    "infomation": "タイルマップファイルの物理名データ",
+    "normalmap": [
+        "walls",
+        "Chests",
+        "house_inside",
+        "2ffdb342da8b7d2c",
+        "WaterAndFire",
+        "city_inside",
+        "tree_glass"
+    ]
+}

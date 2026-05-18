@@ -1,7 +1,3 @@
-/**
- * キーの押しっぱなしは実装しない
- */
-
 import { Subject, BehaviorSubject, Observable, Subscription } from "rxjs";
 import { InputAction, KEY_MAP } from "./InputConfig";
 

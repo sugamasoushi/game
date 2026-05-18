@@ -1,0 +1,13 @@
+{
+    "infomation": "バトルフィールドのデータ",
+    "battlefield": {
+        "battle_hill": {
+            "light": false,
+            "gimic": "まだ未使用"
+        },
+        "battle_cave": {
+            "light": true,
+            "gimic": "まだ未使用"
+        }
+    }
+}

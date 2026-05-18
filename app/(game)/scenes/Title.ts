@@ -25,6 +25,9 @@ export class Title extends Scene {
     private maxSelectNo: number = 1;
     private hasContinueData: boolean = false;
     private selectTween: Phaser.Tweens.Tween | null = null;
+    private isTransitioning: boolean = false;
+
+    public SE_syakiin: Phaser.Sound.HTML5AudioSound;
 
     constructor() { super('Title'); }
 
@@ -41,6 +44,7 @@ export class Title extends Scene {
         this.load.tilemapTiledJSON({ key: '0002', url: 'assets/tiled/0002_testtile.json' });
         this.load.tilemapTiledJSON({ key: '0101', url: 'assets/tiled/0101_home.json' });
         this.load.tilemapTiledJSON({ key: '0102', url: 'assets/tiled/0102_HomeForest.json' });
+        this.load.tilemapTiledJSON({ key: '0201', url: 'assets/tiled/0201_Gensou.json' });
 
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
@@ -48,6 +52,9 @@ export class Title extends Scene {
     }
 
     async create() {
+
+        this.SE_syakiin = this.sound.add('SE_syakiin', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_syakiin.volume = 0.7;
 
         //状態管理クラス
         this.manager = GameStateManager.getInstance();
@@ -283,10 +290,15 @@ export class Title extends Scene {
         });
     }
 
-    private execNewGame() {
+    private async execNewGame() {
+        if (this.isTransitioning) return;
+        this.isTransitioning = true;
 
         this.newGameStart.disableInteractive();
         if (this.ContinueStart) this.ContinueStart.disableInteractive();
+
+        // 決定演出
+        await this.playDecideEffect(this.newGameStart);
 
         //状態をスタートに更新
         this.manager.updateState({
@@ -333,9 +345,14 @@ export class Title extends Scene {
     }
 
     private async execContinue() {
+        if (this.isTransitioning) return;
+        this.isTransitioning = true;
 
         this.ContinueStart.disableInteractive();
         if (this.newGameStart) this.newGameStart.disableInteractive();
+
+        // 決定演出
+        await this.playDecideEffect(this.ContinueStart);
 
         //ローカルストレージ等のデータを読み込み
         await this.saveDataManager.loadSaveData(this);
@@ -361,6 +378,57 @@ export class Title extends Scene {
         this.events.emit('OPENING_MUSIC_END');
 
         this.scene.stop();
+    }
+
+    private async playDecideEffect(target: GameObjects.Text): Promise<void> {
+        this.SE_syakiin.play();
+        if (this.selectTween) {
+            this.selectTween.stop();
+        }
+
+        // 他のテキストをフェードアウト
+        const other = (target === this.newGameStart) ? this.ContinueStart : this.newGameStart;
+        if (other) {
+            this.tweens.add({
+                targets: other,
+                alpha: 0,
+                duration: 200
+            });
+        }
+
+        return new Promise(resolve => {
+            // スケールと点滅の演出
+            this.tweens.add({
+                targets: target,
+                scale: 1.3,
+                duration: 100,
+                yoyo: true,
+                repeat: 3,
+                onComplete: () => {
+                    resolve();
+                }
+            });
+
+            this.tweens.addCounter({
+                from: 0,
+                to: 100,
+                duration: 100,
+                repeat: 3,
+                yoyo: true,
+                onUpdate: (tween) => {
+                    const value = tween.getValue();
+                    const color = Phaser.Display.Color.Interpolate.ColorWithColor(
+                        Phaser.Display.Color.HexStringToColor('#ffffff'), // 白
+                        Phaser.Display.Color.HexStringToColor('#00a6ed'), // 元の色
+                        100,
+                        value!
+                    );
+                    target.setColor('#ffffff');
+                    target.setShadow(4, 4, '#00a6ed', 8, false, true);
+                    target.setTint(Phaser.Display.Color.GetColor(color.r, color.g, color.b));
+                }
+            });
+        });
     }
 
     private setupInput() {

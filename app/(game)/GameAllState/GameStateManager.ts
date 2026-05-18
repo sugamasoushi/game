@@ -14,7 +14,7 @@ const INITIAL_STATE: GameState = {
     isGameOver: false,
     fieldData: { gameMode: 'string', mapKey: 'string', x: 0, y: 0, x2: 0, y2: 0, initStandKey: 'string' },
     battleData: { usePatern: 'string', fieldHitEnemy: undefined, canNotRunaway: false },
-    battleBackGroundKey: 'string',
+    battleFieldKey: 'string',
     eventObj: undefined
 }
 
@@ -174,11 +174,11 @@ export class GameStateManager {
         });
     }
 
-    public setBattleDataBackGroundKey(key: string): void {
+    public setBattleFieldKey(key: string): void {
         const currentState = this.gameState$.value;
         this.gameState$.next({
             ...currentState,
-            battleBackGroundKey: key
+            battleFieldKey: key
         });
     }
 
@@ -200,7 +200,7 @@ export class GameStateManager {
     public get currentEventObj(): Phaser.Physics.Arcade.Sprite { return this.gameState$.value.eventObj! }
     public get currentPlayerPartyList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.playerPartyList; }
     public get currentPlayerActorList(): ActorState[] { return this.gameState$.value.playerActorList; }
-    public get currentBattleBackGroundKey(): string { return this.gameState$.value.battleBackGroundKey; }
+    public get currentBattleFieldKey(): string { return this.gameState$.value.battleFieldKey; }
 }
 
 // 唯一のインスタンスを公開（シングルトン）

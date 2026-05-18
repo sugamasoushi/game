@@ -5,8 +5,12 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
 import { DataDefinition } from "../../Data/DataDefinition";
+import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { SearchBattleField } from "./battoleField/SearchBattleField";
+import { SearchBattleFieldData } from "../../Data/SearchBattleFieldData";
 
 export class EnemySelectWindow extends Phaser.GameObjects.Container {
+    private debugFlg: boolean | undefined;
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
 
     private messageText: string = '獲物はあいつだ！！';
@@ -22,15 +26,22 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
     private subs = new Subscription();
     private canDecide: boolean = false;
 
+    private light: Phaser.GameObjects.Light[] = [];
+    private cursorLight: Phaser.GameObjects.Light;
+    private lightFlg: boolean = false;
+
     constructor(battleScene: BattleScene) {
         super(battleScene);
         this.name = EnemySelectWindow.name;
         this.scene.add.existing(this);
         this.addToDisplayList();
-        this.addToUpdateList();
+        this.scene.events.on(Phaser.Scenes.Events.UPDATE, this.update, this);
+        this.debugFlg = battleScene.game.config.physics.arcade?.debug;
     }
 
     public init(enemyPartyList: Phaser.GameObjects.Image[]) {
+        this.createBattleField();
+
         this.enemyPartyList = enemyPartyList;
         this.x = 0;
         this.y = 0;
@@ -42,13 +53,51 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         this.setupInput();
     }
 
-    preUpdate() {
-        this.updateView();
+    update() {
+        //this.updateView();
+
+        if (this.lightFlg) {
+            for (const [index, enemy] of this.enemyPartyList.entries()) {
+                const light = this.light[index];
+                light.x = this.x + enemy.x + (enemy.width * enemy.scaleX) / 2;
+                light.y = this.y + enemy.y + (enemy.height * enemy.scaleY) / 2;
+            }
+        }
+    }
+
+    private createBattleField() {
+
+        //背景画像
+        //黒塗を作成（画面揺れによる背景非表示対策）
+        const maskRect = this.scene.add.graphics();
+        maskRect.fillStyle(0x000000, 1);
+        maskRect.fillRect(-100, -100, Number(this.scene.game.config.width) + 200, Number(this.scene.game.config.height) + 200);
+
+        //状態管理クラスから現在のバトル用データを取得
+        const manager = GameStateManager.getInstance();
+        const battleFieldKey = manager.currentBattleFieldKey;
+        const serchInstance = new SearchBattleField();
+        const battleField = serchInstance.searchEventClass(this.scene as BattleScene, battleFieldKey);
+        battleField!.execute();
+
+        if (this.debugFlg) {
+            this.cursorLight = this.scene.lights.addLight(0, 0, 200)
+            this.scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+                this.cursorLight.x = pointer.x;
+                this.cursorLight.y = pointer.y;
+            });
+        }
     }
 
     //敵の画像を作成
     private createEnemy() {
         let maxWidth = 0;
+
+        const manager = GameStateManager.getInstance();
+        const battleFieldKey = manager.currentBattleFieldKey;
+        const serchInstance = new SearchBattleFieldData(this.scene.cache.json);
+        const battleField = serchInstance.getBattleFieldData(battleFieldKey);
+        const lightFlag = battleField?.light;
 
         const standardPosition = Number(this.scene.game.config.height) * 0.7;
 
@@ -72,6 +121,26 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
             //参照を画像データに格納しておく
             enemy.setData('backGaugeHP', backGaugeHP);
             enemy.setData('gaugeHP', gaugeHP);
+
+            //バトルフィールドでライト有効の場合
+            if (lightFlag) {
+                enemy.setPipeline('Light2D');
+
+                // 半径（radius）を元の想定の「2倍〜3倍」に大きく広げる
+                // これにより、中心から外側に向かって非常に緩やかに光が消えていくようになります
+                const radius = 300;
+                const light = this.scene.lights.addLight(0, 0, radius)
+
+                // カラーコードに「薄い青（例: 0xddecff）」を指定
+                light.setColor(0xddecff);
+
+                // 光の強さ（Intensity）を 1.0 未満（0.3 〜 0.6 程度）に下げる
+                // これにより、中心部分だけがピカッと白飛びするのを完全に抑えられます
+                light.setIntensity(0.6);
+
+                this.lightFlg = true;
+                this.light.push(light);
+            }
 
             //次の敵配置用に数値を保存
             maxWidth = maxWidth + enemy.width * enemy.scaleX;
@@ -240,11 +309,11 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
 
         if (this.nowSelectNo === -1) {
             // 全員点滅
-            this.enemyPartyList.forEach((enemy, index) => {
+            for (const [index, enemy] of this.enemyPartyList.entries()) {
                 if (enemy.getData('HP') > 0) {
                     this.addFlashTween(enemy, index % 2 === 0);
                 }
-            });
+            }
         } else {
             // 選択中のみ点滅
             const selectedEnemy = this.enemyPartyList[this.nowSelectNo];
@@ -264,7 +333,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
             repeat: -1,
             onUpdate: (t) => {
                 const val = Math.floor(t.getValue()!);
-                enemy.setTint(Phaser.Display.Color.GetColor(val, val, val));
+                //enemy.setTint(Phaser.Display.Color.GetColor(val, val, val));
             }
         });
         this.tweens.push(tween);
@@ -319,7 +388,9 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
     }
 
     private deleteLight() {
-        this.tweens.forEach(t => t.destroy());
+        for (const t of this.tweens) {
+            t.destroy();
+        }
         this.tweens = [];
 
         for (const enemy of this.enemyPartyList) {
@@ -331,5 +402,8 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         this.subs.unsubscribe();
         this.deleteLight();
         super.destroy(fromScene);
+
+        this.light = [];
+        this.lightFlg = false;
     }
 }

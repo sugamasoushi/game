@@ -122,16 +122,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
 
-        //背景画像
-        //黒塗を作成（画面揺れによる背景非表示対策）
-        const maskRect = this.add.graphics();
-        maskRect.fillStyle(0x000000, 1);
-        maskRect.fillRect(-100, -100, Number(this.game.config.width) + 200, Number(this.game.config.height) + 200);
-
-        //状態管理クラスから現在のバトル用データを取得
-        const manager = GameStateManager.getInstance();
-        this.add.image(Number(this.game.config.width) / 2, Number(this.game.config.height) / 2, manager.currentBattleBackGroundKey);
-
         this.battlePresenter.create(
             this.events,
             {

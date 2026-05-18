@@ -1,7 +1,7 @@
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
 import { GameScene } from "@/app/(game)/lib/SceneTypes";
 import { State } from "@/app/(game)/lib/StateTypes";
-import { CharacterState } from "@/app/(game)/lib/FieldTypes";
+import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { GameStateManager, gameStateManager } from '../../../GameAllState/GameStateManager';
 import { InputManager } from "@/app/(game)/core/input/InputManager";
 
@@ -87,9 +87,9 @@ export class Player extends BaseSprite {
         //depthの設定
         this.depthValue = this.y + (32 / 2) * this.scale
         if (this.name === 'meina') {
-            this.setDepth(this.depthValue);
+            this.setDepth(MapLayerDepth.High + this.depthValue);
         } else {
-            this.setDepth(this.depthValue - 1);
+            this.setDepth(MapLayerDepth.High + this.depthValue - 1);
         }
 
         //キャラクターの下側を非表示にするマスク
