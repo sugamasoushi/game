@@ -32,6 +32,7 @@ export class Sound extends Scene {
     public SE_bookClose: Phaser.Sound.HTML5AudioSound;
     public SE_Beep5: Phaser.Sound.HTML5AudioSound;
     public SE_decisionButton15: Phaser.Sound.HTML5AudioSound;
+    public SE_boosterJump1: Phaser.Sound.HTML5AudioSound;
 
     constructor() { super('Sound'); }
     init() {
@@ -93,6 +94,8 @@ export class Sound extends Scene {
         this.SE_Beep5.volume = 0.7;
         this.SE_decisionButton15 = this.sound.add('SE_decisionButton15', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_decisionButton15.volume = 0.7;
+        this.SE_boosterJump1 = this.sound.add('SE_boosterJump1', { loop: false }) as Phaser.Sound.HTML5AudioSound;
+        this.SE_boosterJump1.volume = 0.7;
 
         this.game.events.on('BGM_FIELD', (sceneKey: string, seKey: string) => {
             if (this.debugFlg) return;

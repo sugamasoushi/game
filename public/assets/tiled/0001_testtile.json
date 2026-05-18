@@ -1190,7 +1190,7 @@
         {
          "name":"battleFieldKey",
          "type":"string",
-         "value":"lamyOpImageHome"
+         "value":"battle_oldCastle"
         }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

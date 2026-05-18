@@ -8,6 +8,10 @@
         "battle_cave": {
             "light": true,
             "gimic": "まだ未使用"
+        },
+        "battle_oldCastle": {
+            "light": false,
+            "gimic": "まだ未使用"
         }
     }
 }
