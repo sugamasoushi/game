@@ -34,6 +34,7 @@ export class Title extends Scene {
     init() {
         console.log("Title scene")
         this.debugFlg = this.game.config.physics.arcade?.debug;
+        this.isTransitioning = false;
     }
 
     preload() {
@@ -198,8 +199,6 @@ export class Title extends Scene {
 
         const gameWidth = Number(this.game.config.width)
         const gameHeight = Number(this.game.config.height)
-
-        //this.add.image(gameWidth / 2, gameHeight / 2, 'LondonBridge');
 
         //タイトルテキスト
         this.titleText = this.add.text(
