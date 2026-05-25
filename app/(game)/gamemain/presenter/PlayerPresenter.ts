@@ -13,6 +13,9 @@ export class PlayerPresenter {
     private fieldAttack: FieldAttack;
     private subs = new Subscription();
 
+    //移動時のタップ連打防止
+    private lastTapTime: number = 0;
+
     constructor(
         private gameScene: GameScene,
         private fieldMapModel: FieldMapModel,
@@ -68,6 +71,17 @@ export class PlayerPresenter {
 
             //左クリック押下時
             if (pointer.leftButtonReleased()) {
+
+                // Phaserの現在のゲーム内時間(ミリ秒)
+                const currentTime = this.gameScene.time.now;
+
+                // 前回のタップから300ミリ秒以内の連打なら、処理を完全に無視する
+                if (currentTime - this.lastTapTime < 300) {
+                    return;
+                }
+
+                // タップ成功時間を更新
+                this.lastTapTime = currentTime;
 
                 //移動先座標を設定する
                 this.player.setMoveToPosition(

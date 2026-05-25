@@ -3374,7 +3374,7 @@
          "name":"collision",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":40,
          "x":0,
          "y":0
@@ -3861,7 +3861,7 @@
          "y":0
         }],
  "nextlayerid":59,
- "nextobjectid":92,
+ "nextobjectid":94,
  "orientation":"orthogonal",
  "properties":[
         {

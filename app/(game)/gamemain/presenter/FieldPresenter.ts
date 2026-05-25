@@ -2,6 +2,7 @@ import { GameScene, State } from "../../lib/types";
 import { FieldMapModel } from "../model/FieldMapModel";
 import { TileMap } from "../view/TileMap";
 import { MapObject } from "../view/MapObject";
+import { MapEffect } from "../view/MapEffect";
 import { MenuButton } from "../view/MenuButton";
 import { SaveButton } from "../view/SaveButton";
 import { FireButton } from "../view/FireButton";
@@ -24,6 +25,7 @@ export class FieldPresenter {
         private fieldMapModel: FieldMapModel,
         private tileMap: TileMap,
         private mapObject: MapObject,
+        private mapEffect: MapEffect,
         private menuButton: MenuButton,
         private saveButton: SaveButton,
         private fireButton: FireButton,
@@ -35,6 +37,7 @@ export class FieldPresenter {
         this.fieldMapModel = fieldMapModel;
         this.tileMap = tileMap;
         this.mapObject = mapObject;
+        this.mapEffect = mapEffect;
         this.menuButton = menuButton;
         this.saveButton = saveButton;
         this.fireButton = fireButton;
@@ -94,12 +97,13 @@ export class FieldPresenter {
         //console.log("ロード完了。マップの描画を実行します。");
         await this.tileMap.execute(this.fieldMapModel.getFieldData());
         await this.mapObject.execute(this.gameScene.events, this.tileMap, this.fieldMapModel.getFieldData(), sceneKey, this.inputManager);
+        await this.mapEffect.execute(this.tileMap, this.mapObject);
         //this.menuButton.execute();
         //this.saveButton.execute();
         //this.fireButton.execute();
         this.fieldMessageWindow.init();
 
-        //オブジェクト作成、各種設定
+        //各種設定
         this.cameraManager.execute(this.tileMap.getMakeTilemap(), this.mapObject.getPlayer());
         this.fieldMapModel.execute(this.mapObject);
 

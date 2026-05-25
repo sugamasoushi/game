@@ -1,9 +1,8 @@
-import { GameScene, State } from "../../lib/types";
+import { GameScene } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
 import { FieldPresenter } from "./FieldPresenter";
 
 import { FieldMapModel } from "../model/FieldMapModel";
-import { DataDefinition } from '../../Data/DataDefinition';
 
 export class NpcPresenter {
 

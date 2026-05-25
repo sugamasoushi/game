@@ -10,6 +10,7 @@ import { NpcPresenter } from '../gamemain/presenter/NpcPresenter';
 import { FieldMapModel } from '../gamemain/model/FieldMapModel';
 import { TileMap } from '../gamemain/view/TileMap';
 import { MapObject } from '../gamemain/view/MapObject';
+import { MapEffect } from '../gamemain/view/MapEffect';
 import { MenuButton } from '../gamemain/view/MenuButton';
 import { SaveButton } from '../gamemain/view/SaveButton';
 import { FireButton } from '../gamemain/view/FireButton';
@@ -29,6 +30,7 @@ export class Game extends Scene implements GameScene {
 
     private tileMap: TileMap;
     private mapObject: MapObject;
+    private mapEffect: MapEffect;
     private inputManager: InputManager;
     private cameraManager: CameraManager;
 
@@ -57,6 +59,7 @@ export class Game extends Scene implements GameScene {
         this.fieldMapModel = new FieldMapModel(this);
         this.tileMap = new TileMap(this, this.gameStateManager.currentFieldData);
         this.mapObject = new MapObject(this);
+        this.mapEffect = new MapEffect(this);
         this.menuButton = new MenuButton(this);
         this.testButton = new SaveButton(this, this.mapObject);
         this.fireButton = new FireButton(this, this.mapObject);
@@ -70,6 +73,7 @@ export class Game extends Scene implements GameScene {
             this.fieldMapModel,
             this.tileMap,
             this.mapObject,
+            this.mapEffect,
             this.menuButton,
             this.testButton,
             this.fireButton,

@@ -36,10 +36,15 @@ export class TileMap extends Phaser.GameObjects.Container {
     private fieldData: FieldData;
 
     private gameScene: GameScene;
-    private tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
-    private animationTileMapLayer: Array<AnimationTileMapLayer> = [];
     private makeTilemap: Phaser.Tilemaps.Tilemap;
+
     private collisionLayer: Phaser.Tilemaps.TilemapLayer;
+
+    private tilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
+    private waterSrufaceSubjectTilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
+    private moonLightSubjectTilemapLayerList: Phaser.Tilemaps.TilemapLayer[] = [];
+    private animationTileMapLayer: Array<AnimationTileMapLayer> = [];
+
     private mapLowestLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapLowLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
@@ -168,7 +173,9 @@ export class TileMap extends Phaser.GameObjects.Container {
         //this.settilmapDepth();
     }
 
-    preUpdate(time: number) { this.tileAnimation(time) }
+    preUpdate(time: number) {
+        this.tileAnimation(time);
+    }
 
     /**
      * タイルマップ作成
@@ -216,9 +223,11 @@ export class TileMap extends Phaser.GameObjects.Container {
 
             //初期化
             this.tilemapLayerList.splice(0);
+            this.waterSrufaceSubjectTilemapLayerList.splice(0);
+            this.moonLightSubjectTilemapLayerList.splice(0);
             this.animationTileMapLayer.splice(0);
 
-            //タイルレイヤーを作成する。
+            // タイルレイヤーを作成する。
             for (let i = 0; i < tilemap.layers.length; i++) {
 
                 //タイルマップレイヤーの配列に格納されているgidを全て抽出し、最大値と最小値の範囲を求める。
@@ -288,9 +297,32 @@ export class TileMap extends Phaser.GameObjects.Container {
                     //初期値はプレイヤーの下とする
                     //tilemap.layers[i].tilemapLayer.setDepth(i);
                     tilemapLayer.setDepth(MapLayerDepth.Low + i);
+                    tilemapLayer.setVisible(tilemapLayer.layer.visible);
 
                     //レンダーテクスチャ用リストに追加
                     this.tilemapLayerList.push(tilemapLayer);
+
+                    //レイヤーの仕分け
+                    if (tilemapLayer.layer.properties) {
+                        for (const obj of tilemapLayer.layer.properties) {
+
+                            type obj = {
+                                name: string;
+                                value: boolean;
+                                type: string;
+                            }
+
+                            //水面反射の対象レイヤーリスト
+                            if ((obj as obj).name === 'WaterSurface' && (obj as obj).value === true) {
+                                this.waterSrufaceSubjectTilemapLayerList.push(tilemapLayer);
+                            }
+
+                            // //月光の対象レイヤーリスト
+                            // if ((obj as obj).name === 'frontFog' && (obj as obj).value === true) {
+                            //     this.moonLightSubjectTilemapLayerList.push(tilemapLayer);
+                            // }
+                        }
+                    }
                 }
 
                 //高さを設定（PO=Player Over）
@@ -421,7 +453,6 @@ export class TileMap extends Phaser.GameObjects.Container {
      * TileMapLayerに紐づくアニメーションタイルプロパティはtileDataに格納されている。
      * このtileDataはタイルマップ画像毎に作成され、使用するTileMapLayer間で共通となるため、使用しないアニメーションタイルまで紐づいてしまう。
      * TileMapLayer毎にアニメーションさせる場合、使用可否が分からないため事前チェックが必要となる。tileMapCriateでチェックを実施し、使用するタイルを別の配列に格納している。
-     * ブラウザの処理性能の問題で少し処理落ちしてしまう。
      * 
      * @method tileAnimation
      * @param {*} time - アニメーション間隔
@@ -555,28 +586,28 @@ export class TileMap extends Phaser.GameObjects.Container {
         }
     }
 
-    private settilmapDepth() {
-        if (this.mapLowestLayerList) {
-            for (const tilemapLayer of this.mapLowestLayerList) {
-                tilemapLayer.setDepth(MapLayerDepth.Lowest + tilemapLayer.depth);
-            }
-        }
-        if (this.mapLowLayerList) {
-            for (const tilemapLayer of this.mapLowLayerList) {
-                tilemapLayer.setDepth(MapLayerDepth.Low + tilemapLayer.depth);
-            }
-        }
-        if (this.mapHighLayerList) {
-            for (const tilemapLayer of this.mapHighLayerList) {
-                tilemapLayer.setDepth(MapLayerDepth.High + tilemapLayer.depth);
-            }
-        }
-        if (this.mapHighestLayerList) {
-            for (const tilemapLayer of this.mapHighestLayerList) {
-                tilemapLayer.setDepth(MapLayerDepth.Highest + tilemapLayer.depth);
-            }
-        }
-    }
+    // private settilmapDepth() {
+    //     if (this.mapLowestLayerList) {
+    //         for (const tilemapLayer of this.mapLowestLayerList) {
+    //             tilemapLayer.setDepth(MapLayerDepth.Lowest + tilemapLayer.depth);
+    //         }
+    //     }
+    //     if (this.mapLowLayerList) {
+    //         for (const tilemapLayer of this.mapLowLayerList) {
+    //             tilemapLayer.setDepth(MapLayerDepth.Low + tilemapLayer.depth);
+    //         }
+    //     }
+    //     if (this.mapHighLayerList) {
+    //         for (const tilemapLayer of this.mapHighLayerList) {
+    //             tilemapLayer.setDepth(MapLayerDepth.High + tilemapLayer.depth);
+    //         }
+    //     }
+    //     if (this.mapHighestLayerList) {
+    //         for (const tilemapLayer of this.mapHighestLayerList) {
+    //             tilemapLayer.setDepth(MapLayerDepth.Highest + tilemapLayer.depth);
+    //         }
+    //     }
+    // }
 
     public getMapLowestLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.mapLowestLayerList; }
     public getMapLowLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.mapLowLayerList; }
@@ -585,13 +616,9 @@ export class TileMap extends Phaser.GameObjects.Container {
     public getMakeTilemap(): Phaser.Tilemaps.Tilemap { return this.makeTilemap; }
     public getCollisionLayer(): Phaser.Tilemaps.TilemapLayer { return this.collisionLayer };
 
-    public getTilemapInPixels(): { widthInPixels: number, heightInPixels: number } {
-        const widthInPixels: number = this.makeTilemap.widthInPixels;
-        const heightInPixels: number = this.makeTilemap.heightInPixels;
-
-        return { widthInPixels, heightInPixels };
-    }
-
     public getTilemapLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.tilemapLayerList; }
+    public getWaterSrufaceSubjectTilemapLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.waterSrufaceSubjectTilemapLayerList; }
+    public getMoonLightSubjectTilemapLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.moonLightSubjectTilemapLayerList; }
+
 
 }

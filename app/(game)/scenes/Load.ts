@@ -78,8 +78,11 @@ export class Load extends Scene {
         this.load.glsl('blueSky', 'assets/img/effect/shader/bulesky.frag');
         this.load.glsl('nightsky', 'assets/img/effect/shader/nightsky.frag');
         this.load.glsl('circleMask', 'assets/img/effect/shader/circlemask.frag');
+        this.load.glsl('fog', 'assets/img/effect/shader/fog.frag');
 
         this.load.glsl('watershader', 'assets/img/effect/shader/water.frag');
+
+
 
         this.load.image('noise', 'assets/img/effect/noise/Super Noise/Super Noise 14 - 512x512.png');
         this.load.image('noise2', 'assets/img/effect/noise/Super Perlin/Super Perlin 12 - 512x512.png');

@@ -1,0 +1,354 @@
+﻿diff --git a/app/(game)/gamemain/view/MapObject.ts b/app/(game)/gamemain/view/MapObject.ts
+index 1274d0a..5038b19 100644
+--- a/app/(game)/gamemain/view/MapObject.ts
++++ b/app/(game)/gamemain/view/MapObject.ts
+@@ -17,6 +17,7 @@ import { CacheDataUpdate } from '@/app/(game)/core/CacheDataUpdate';
+ import { InputManager } from '../../core/input/InputManager';
+ import { State } from "../../lib/types";
+ import { Subscription } from "rxjs";
++import { ExecutionEnvironment } from '../../core/ExecutionEnvironment';
+ 
+ export class MapObject extends Phaser.GameObjects.Container {
+     private debugFlg: boolean | undefined;
+@@ -89,7 +90,15 @@ export class MapObject extends Phaser.GameObjects.Container {
+         this.createShader()
+         await this.createBgRenderTexture();
+         await this.createRendertexture();
+-        await this.createWaterSurface();
++
++        // PC迚茨ｼ・lectron・峨°縺ｩ縺・°縺ｮ蛻､螳・+        const execEnv = new ExecutionEnvironment();
++        if (execEnv.isElectron() || this.debugFlg) {
++            await this.createWaterSurface();
++
++        } else {
++            await this.createWaterSurfaceSmartPhone();
++        }
+ 
+         //繧ｨ繝輔ぉ繧ｯ繝医・菴懈・
+         this.createEffect();
+@@ -881,88 +890,7 @@ export class MapObject extends Phaser.GameObjects.Container {
+         // 蠢・ｦ√↑繧牙ｰ代＠諡｡螟ｧ縺励※繝弱う繧ｺ縺ｮ逶ｮ繧堤ｲ励￥・磯悸縺｣縺ｽ縺擾ｼ峨☆繧・         fog2.setScale(1.5);
+ 
+-        // 3. 豈弱ヵ繝ｬ繝ｼ繝縲√ユ繧ｯ繧ｹ繝√Ε縺ｮ陦ｨ遉ｺ菴咲ｽｮ繧偵★繧峨☆・医せ繧ｯ繝ｭ繝ｼ繝ｫ・・-        this.gameScene.events.on('update', () => {
+-            // X譁ｹ蜷代→Y譁ｹ蜷代↓蟆代＠縺壹▽縺壹ｉ縺吶％縺ｨ縺ｧ縲∵万繧√↓豬√ｌ繧矩悸繧定｡ｨ迴ｾ
+-            fog.tilePositionX += 0.3;
+-            fog.tilePositionY += 0.2;
+-            fog2.tilePositionX += 0.9;
+-            fog2.tilePositionY += 0.4;
+-        });
+-
+-        //繝槭ャ繝怜､悶ｒ髱櫁｡ｨ遉ｺ縺ｫ縺吶ｋ縺溘ａ縺ｮ繝槭せ繧ｯ繧剃ｽ懈・
+-        //莉･荳九・bgRenderTexture縺ｨBitmapMask縺ｮ蠎ｧ讓吩ｽ咲ｽｮ繧定｣懈ｭ｣縺吶ｋ縺溘ａ縺ｮ螟画鋤蜃ｦ逅・-        // 繧ｭ繝｣繝励メ繝｣縺励◆繝・け繧ｹ繝√Ε蜷阪ｒ菴ｿ縺｣縺ｦ縲∽ｽ咲ｽｮ隱ｿ謨ｴ逕ｨ縺ｮ繝繝溘・繧ｹ繝励Λ繧､繝医ｒ菴懈・縺吶ｋ
+-        // 窶ｻ蠎ｧ讓吶ｒ縲檎判髱｢縺ｮ荳ｭ蠢・阪↓縺励＾rigin繧偵・0.5, 0.5)縲阪↓縺吶ｋ縺薙→縺ｧ縲￣haser縺ｮ繝槭せ繧ｯ險育ｮ励→螳悟・荳閾ｴ縺輔○縺ｾ縺吶・-        const maskDummySprite = this.gameScene.add.sprite(width / 2, height / 2, 'bg_captured_image');
+-        maskDummySprite.setOrigin(0.5, 0.5);
+-        maskDummySprite.setVisible(false); // 逕ｻ髱｢縺ｫ縺ｯ陦ｨ遉ｺ縺励↑縺・-
+-        // 3. 縺薙・繝繝溘・繧ｹ繝励Λ繧､繝医ｒ繧ｽ繝ｼ繧ｹ縺ｫ縺励※ BitmapMask 繧剃ｽ懈・・亥梛繧ｨ繝ｩ繝ｼ縺ｯ荳蛻・ｵｷ縺阪∪縺帙ｓ・・-        const mapMask = new Phaser.Display.Masks.BitmapMask(this.gameScene, maskDummySprite);
+-
+-        // 4. 髴ｧ縺ｫ繝槭せ繧ｯ繧帝←逕ｨ
+-        fog.setMask(mapMask);
+-        fog2.setMask(mapMask);
+-    }
+-
+-    private createShader() {
+-        const width = this.TileMap.getMakeTilemap().widthInPixels;
+-        const height = this.TileMap.getMakeTilemap().heightInPixels;
+-
+-        //this.gameScene.add.shader('fireball', 400, 300, 800, 600);
+-
+-        //this.gameScene.add.shader('cloud', width / 2, height / 2, width, height);
+-        //this.gameScene.add.shader('blueSky', width / 2, height / 2, width, height);
+-        //this.gameScene.add.shader('nightsky', width / 2, height / 2, width, height);
+-    }
+-
+-    private createRendertexture(): Promise<void> {
+-
+-        /**
+-         * 豌ｴ髱｢縺ｫ譏縺吶ユ繧ｯ繧ｹ繝√Ε縺ｮ逕滓・
+-         * 縺ｾ縺壹ヵ繧｣繝ｼ繝ｫ繝峨・繝・・縺ｯcreateBgRenderTexture()縺ｧ菴懈・貂医∩縺九▽蜑企勁蟇ｾ雎｡縺ｨ縺励↑縺・・-         * 蜍輔″蝗槭ｋ繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｪ縺ｩ繧貞・謠冗判蟇ｾ雎｡縺ｨ縺吶ｋ縲・-         * 
+-         */
+-
+-        return new Promise<void>(resolve => {
+-
+-            const width = this.TileMap.getMakeTilemap().widthInPixels;
+-            const height = this.TileMap.getMakeTilemap().heightInPixels;
+-
+-            // 1. 縲占ｶ・㍾隕√代☆縺ｧ縺ｫ蜿､縺・RenderTexture 繧・ユ繧ｯ繧ｹ繝√Ε繧ｭ繝ｼ縺悟ｭ伜惠縺励※縺・ｋ蝣ｴ蜷医・縲∝ｮ悟・縺ｫ遐ｴ譽・・豸亥悉縺吶ｋ
+-            if (this.renderTexture) {
+-                this.renderTexture.destroy(); // 譌｢蟄倥・繧ｪ繝悶ず繧ｧ繧ｯ繝医ｒ遐ｴ譽・-                this.renderTexture = null;
+-            }
+-
+-            // Phaser縺ｮ繝・け繧ｹ繝√Ε繝槭ロ繝ｼ繧ｸ繝｣繝ｼ蜀・°繧牙商縺・く繝ｼ蜷崎・菴薙ｒ豸亥悉縺吶ｋ
+-            if (this.gameScene.textures.exists('char_captured_image')) { this.gameScene.textures.removeKey('char_captured_image'); }
+-
+-            // 2. 豈弱ヵ繝ｬ繝ｼ繝譖ｴ譁ｰ繝ｻ繧ｷ繧ｧ繝ｼ繝繝ｼ貂｡縺礼畑縺ｮ繝｡繧､繝ｳRenderTexture
+-            this.renderTexture = this.gameScene.add.renderTexture(0, 0, width, height);
+-
+-            // 蛻晏屓縺ｮ謠冗判 (閭梧勹縺ｯ謠冗判縺帙★縲√く繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｮ縺ｿ繧剃ｸ贋ｸ句渚霆｢縺輔○縺ｦ謠冗判)
+-            const originalScaleY = this.player.scaleY;
+-            this.player.scaleY *= -1; // 荳贋ｸ句渚霆｢
+-
+-            // 雜ｳ蜈・〒蜿榊ｰ・′郢九′繧九ｈ縺・↓縲〆蠎ｧ讓吶ｒ繧ｭ繝｣繝ｩ縺ｮ鬮倥＆蛻・ｸ九↓繧ｺ繝ｩ縺励※謠冗判
+-            this.renderTexture.draw(this.player, this.player.x, this.player.y + this.player.displayHeight);
+-
+-            this.player.scaleY = originalScaleY; // 蜈・↓謌ｻ縺・-
+-            // 縺薙・逕ｻ蜒上く繝ｼ縺ｧ繧ｷ繧ｧ繝ｼ繝繝ｼ縺後く繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｮ繝・け繧ｹ繝√Ε繧貞盾辣ｧ縺励∪縺・-            this.renderTexture.saveTexture('char_captured_image');
+-            this.renderTexture.setVisible(false);
+-
+-            this.renderTextureUpdateFlg = true;
+-
+-            resolve();
+-        });
+-    }
+-
+-    private async createWaterSurface() {
++        // 3. 豈弱ヵ繝ｬ繝ｼ繝縲    private async createWaterSurface(waterY?: number, offsetYBg?: number) {
+         const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
+ 
+         //繧ｿ繧､繝ｫ繝槭ャ繝励・繝励Ο繝代ユ繧｣縺九ｉeffect諠・ｱ繧定ｨｭ螳・@@ -974,6 +902,32 @@ export class MapObject extends Phaser.GameObjects.Container {
+                     const width = this.TileMap.getMakeTilemap().widthInPixels;
+                     const height = this.TileMap.getMakeTilemap().heightInPixels;
+ 
++                    // 繧ｿ繧､繝ｫ繝槭ャ繝励・繝ｭ繝代ユ繧｣縺ｮ蛟､縺梧焚蛟､縺ｪ繧峨◎繧後ｒ繝・ヵ繧ｩ繝ｫ繝医↓縺吶ｋ
++                    let mapWaterY = 500;
++                    if (prop.value !== undefined && prop.value !== null && prop.value !== '') {
++                        const parsed = Number(prop.value);
++                        if (!isNaN(parsed)) {
++                            mapWaterY = parsed;
++                        }
++                    }
++
++                    // 蠑墓焚縺梧ｸ｡縺輔ｌ縺ｦ縺・ｌ縺ｰ縺昴ｌ繧剃ｽｿ逕ｨ縺励√↑縺代ｌ縺ｰ繧ｿ繧､繝ｫ繝槭ャ繝励・繝ｭ繝代ユ繧｣・医∪縺溘・繝・ヵ繧ｩ繝ｫ繝・00・峨ｒ菴ｿ逕ｨ
++                    const targetWaterY = waterY !== undefined ? waterY : mapWaterY;
++
++                    // 蜿榊ｰ・が繝輔そ繝・ヨ蛟､・・ffsetY_bg・峨・豎ｺ螳夲ｼ医ち繧､繝ｫ繝槭ャ繝励・繝励Ο繝代ユ繧｣ 'WaterOffsetY' 繧ゅ＠縺上・繝・ヵ繧ｩ繝ｫ繝・0.009・・+                    let mapOffsetYBg = 0.009;
++                    for (const innerProp of makeTileMap.properties) {
++                        if (innerProp.name === 'WaterOffsetY') {
++                            if (innerProp.value !== undefined && innerProp.value !== null && innerProp.value !== '') {
++                                const parsedOffset = Number(innerProp.value);
++                                if (!isNaN(parsedOffset)) {
++                                    mapOffsetYBg = parsedOffset;
++                                }
++                            }
++                        }
++                    }
++                    const targetOffsetYBg = offsetYBg !== undefined ? offsetYBg : mapOffsetYBg;
++
+                     const frag = `
+                         #ifdef GL_ES
+                         precision mediump float;
+@@ -983,6 +937,7 @@ export class MapObject extends Phaser.GameObjects.Container {
+                         uniform vec2 resolution;
+                         uniform sampler2D iChannel0; // bg_captured_image (閭梧勹)
+                         uniform sampler2D iChannel1; // char_captured_image (繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ)
++                        uniform float offsetY_bg; // 螟夜Κ縺九ｉ貂｡縺輔ｌ繧句渚蟆・ｽ咲ｽｮ繧ｪ繝輔そ繝・ヨ
+ 
+                         // Phaser 3縺九ｉ閾ｪ蜍慕噪縺ｫ貂｡縺輔ｌ繧九√％縺ｮ繧ｪ繝悶ず繧ｧ繧ｯ繝亥崋譛峨・豁｣遒ｺ縺ｪUV蠎ｧ讓・                         varying vec2 outTexCoord; 
+@@ -1045,9 +1000,94 @@ export class MapObject extends Phaser.GameObjects.Container {
+                             
+                             vec3 normal = normalize(vec3((hL - hR), (hD - hU), 0.12));
+ 
++                            // 縲占ｿｽ蜉縲代せ繝槭・迚医・邁｡譏鍋噪縺ｪ繧ｵ繧､繝ｳ繝ｻ繧ｳ繧ｵ繧､繝ｳ豕｢縺ｫ繧医ｋ螟ｧ縺阪＞縺・・繧翫・豁ｪ縺ｿ繧偵ヶ繝ｬ繝ｳ繝・+                            // 縺薙ｌ縺ｫ繧医ｊ縲√ヮ繧､繧ｺ縺ｫ繧医ｋ邏ｰ縺九↑雉ｪ諢溘→縺・・繧九ｈ縺・↑螟ｧ縺阪↑豕｢縺ｮ蜍輔″縺檎ｾ弱＠縺剰檮蜷医＠縺ｾ縺・+                            vec2 waveUV_smart = vec2(uv.x * 12.0 * scale.x, (1.0 - uv.y) * 15.0 * scale.y * perspective);
++                            float waveX = sin(waveUV_smart.x + time * 1.5) * cos(waveUV_smart.y + time * 1.0);
++                            float waveY = cos(waveUV_smart.x * 0.8 - time * 1.2) * sin(waveUV_smart.y * 1.2 + time * 1.6);
++                            vec2 smartDistortion = vec2(waveX, waveY) * 0.006 * fade;
++
++                            // 閭梧勹逕ｻ蜒擾ｼ医・繝・・・峨・蜿榊ｰ・ｽ咲ｽｮ繧ｪ繝輔そ繝・ヨ縺ｨ螻域釜
++                            vec2 distortion_bg = normal.xy * (0.01 / scale) * (uv.y + 0.1) + smartDistortion;
++                            vec2 distortedUV_bg = clamp(uv + distortion_bg + vec2(0.0, offsetY_bg), 0.0, 1.0);
++                            vec4 bgTexColor = texture2D(iChannel0, distortedUV_bg);
++                            
++                            // 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ逕ｻ蜒上・蜿榊ｰ・ｽ咲ｽｮ繧ｪ繝輔そ繝・ヨ縺ｨ螻域釜
++                            // ・医ユ繧ｯ繧ｹ繝√Ε縺ｫ謠冗判縺吶ｋ譎らせ縺ｧ縺吶〒縺ｫ蜿崎ｻ｢・・ｶｳ蜈・∈繧ｺ繝ｩ縺励※縺・ｋ縺溘ａ縲√％縺薙〒縺ｮ繧ｪ繝輔そ繝・ヨ縺ｯ縺ｻ縺ｼ0縺ｧOK縺ｧ縺呻ｼ・+                            float offsetY_char = 0.0;
++                            
++                            // 笘・㍾隕≫・
++                            // Phaser of Shader蜈ｨ菴薙′荳贋ｸ句渚霆｢縺励※縺・ｋ縺溘ａ縲√く繝｣繝ｩ縺縺大・縺ｮ菴咲ｽｮ・郁ｶｳ蜈・ｼ峨↓謌ｻ縺吶◆繧√↓UV縺ｮY繧貞渚霆｢縺輔○縺ｾ縺・+                            vec2 charUV = vec2(uv.x, 1.0 - uv.y);
++                            
++                            vec2 distortion_char = normal.xy * (0.03 / scale) * (uv.y + 0.1) + smartDistortion * 1.5;
++                            vec2 distortedUV_char = clamp(charUV + distortion_char + vec2(0.0, offsetY_char), 0.0, 1.0);
++                            vec4 charTexColor = texture2D(iChannel1, distortedUV_char);
++                            
++                            // 閭梧勹縺ｮ荳翫↓繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ・医い繝ｫ繝輔ぃ繝悶Ξ繝ｳ繝会ｼ峨ｒ驥阪・繧・+                            vec4 texColor = mix(bgTexColor, charTexColor, charTexColor.a);
++                            
++                            // 豌ｴ髱｢繧峨＠縺・搨繝ｻ繧ｰ繝ｪ繝ｼ繝ｳ縺ｮ繧ｰ繝ｩ繝・・繧ｷ繝ｧ繝ｳ濶ｲ繧定ｨｭ螳・+                            vec3 waterBaseColor = mix(vec3(0.02, 0.12, 0.32), vec3(0.05, 0.42, 0.58), uv.y);
++                            
++                            // 豌ｴ閾ｪ菴薙・濶ｲ縺ｨ閭梧勹濶ｲ縺ｮ繝悶Ξ繝ｳ繝会ｼ井ｸ雁・縺ｻ縺ｩ閭梧勹繝・け繧ｹ繝√Ε繧偵◎縺ｮ縺ｾ縺ｾ陦ｨ遉ｺ縺励∵ｰｴ縺ｮ繧ｨ繝輔ぉ繧ｯ繝医ｒ豸医☆・・+                            vec3 finalColor = mix(texColor.rgb, waterBaseColor, 0.40 * fade);
++                            
++                            // 繧ｹ繝壹く繝･繝ｩ繝ｼ繝上う繝ｩ繧､繝医ｂ荳雁・縺ｧ繝輔ぉ繝ｼ繝峨い繧ｦ繝医＆縺帙∪縺・+                            vec3 lightDir = normalize(vec3(0.0, 1.0, 0.7)); 
++                            vec3 viewDir = vec3(0.0, 0.0, 1.0);
++                            vec3 halfDir = normalize(lightDir + viewDir);
++                            
++                            float spec = pow(max(dot(normal, halfDir), 0.0), 32.0);
++                            
++                            float waveCrest = max(0.0, normal.y * 2.0);
++                            vec3 specularColor = vec3(1.0, 1.0, 1.0) * spec * 2.5 * waveCrest * fade;
++                            
++                            gl_FragColor = vec4(finalColor + specularColor, 1.0);
++                        }
++                    `;
++
++                    const base = new Phaser.Display.BaseShader('simpleTexture', frag);
++
++                    // 閭梧勹縺ｨ繧ｭ繝｣繝ｩ縺ｮ2縺､縺ｮ繝・け繧ｹ繝√Ε繧帝・蛻励〒貂｡縺呻ｼ医◎繧後◇繧・iChannel0, iChannel1 縺ｫ繝舌う繝ｳ繝峨＆繧後ｋ・・+                    const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height, ['bg_captured_image', 'char_captured_image']);
++                    shader.setUniform('offsetY_bg.value', targetOffsetYBg);
++
++                    const cropRectMask = this.gameScene.add.graphics();
++                    cropRectMask.x = 0;//蠎ｧ讓吝・譛溷､繧定ｨｭ螳・+                    cropRectMask.y = 0;
++                    cropRectMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
++                    cropRectMask.fillRect(0, 0, width, targetWaterY);
++                    cropRectMask.setVisible(false);//髱櫁｡ｨ遉ｺ縺ｫ縺吶ｋ
++
++                    shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
++                    shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
++
++                }
++            }
++        }
++    }ｂ豕｢縺悟ｼ輔″蟒ｶ縺ｰ縺輔ｌ縺壹↓荳螳壹・螟ｧ縺阪＆繧剃ｿ昴■縺ｾ縺・+                            vec2 waveUV = vec2(uv.x * 4.0 * scale.x, (1.0 - uv.y) * 10.0 * scale.y * perspective);
++                            
++                            // 蜍慕噪豕慕ｷ壹・繧ｯ繝医Ν・・ormal・峨・險育ｮ・+                            vec2 eps = vec2(0.015, 0.0);
++                            float hL = getWaveHeight(waveUV - eps.xy);
++                            float hR = getWaveHeight(waveUV + eps.xy);
++                            float hD = getWaveHeight(waveUV - eps.yx);
++                            float hU = getWaveHeight(waveUV + eps.yx);
++                            
++                            vec3 normal = normalize(vec3((hL - hR), (hD - hU), 0.12));
++
++                            // 縲占ｿｽ蜉縲代せ繝槭・迚医・邁｡譏鍋噪縺ｪ繧ｵ繧､繝ｳ繝ｻ繧ｳ繧ｵ繧､繝ｳ豕｢縺ｫ繧医ｋ螟ｧ縺阪＞縺・・繧翫・豁ｪ縺ｿ繧偵ヶ繝ｬ繝ｳ繝・+                            // 縺薙ｌ縺ｫ繧医ｊ縲√ヮ繧､繧ｺ縺ｫ繧医ｋ邏ｰ縺九↑雉ｪ諢溘→縺・・繧九ｈ縺・↑螟ｧ縺阪↑豕｢縺ｮ蜍輔″縺檎ｾ弱＠縺剰檮蜷医＠縺ｾ縺・+                            vec2 waveUV_smart = vec2(uv.x * 12.0 * scale.x, (1.0 - uv.y) * 15.0 * scale.y * perspective);
++                            float waveX = sin(waveUV_smart.x + time * 1.5) * cos(waveUV_smart.y + time * 1.0);
++                            float waveY = cos(waveUV_smart.x * 0.8 - time * 1.2) * sin(waveUV_smart.y * 1.2 + time * 1.6);
++                            vec2 smartDistortion = vec2(waveX, waveY) * 0.006 * fade;
++
+                             // 閭梧勹逕ｻ蜒擾ｼ医・繝・・・峨・蜿榊ｰ・ｽ咲ｽｮ繧ｪ繝輔そ繝・ヨ縺ｨ螻域釜
+                             float offsetY_bg = 0.009;
+-                            vec2 distortion_bg = normal.xy * (0.01 / scale) * (uv.y + 0.1);
++                            vec2 distortion_bg = normal.xy * (0.01 / scale) * (uv.y + 0.1) + smartDistortion;
+                             vec2 distortedUV_bg = clamp(uv + distortion_bg + vec2(0.0, offsetY_bg), 0.0, 1.0);
+                             vec4 bgTexColor = texture2D(iChannel0, distortedUV_bg);
+                             
+@@ -1056,10 +1096,10 @@ export class MapObject extends Phaser.GameObjects.Container {
+                             float offsetY_char = 0.0;
+                             
+                             // 笘・㍾隕≫・
+-                            // Phaser縺ｮ繧ｷ繧ｧ繝ｼ繝繝ｼ蜈ｨ菴薙′荳贋ｸ句渚霆｢縺励※縺・ｋ縺溘ａ縲√く繝｣繝ｩ縺縺大・縺ｮ菴咲ｽｮ・郁ｶｳ蜈・ｼ峨↓謌ｻ縺吶◆繧√↓UV縺ｮY繧貞渚霆｢縺輔○縺ｾ縺・+                            // Phaser of Shader蜈ｨ菴薙′荳贋ｸ句渚霆｢縺励※縺・ｋ縺溘ａ縲√く繝｣繝ｩ縺縺大・縺ｮ菴咲ｽｮ・郁ｶｳ蜈・ｼ峨↓謌ｻ縺吶◆繧√↓UV縺ｮY繧貞渚霆｢縺輔○縺ｾ縺・                             vec2 charUV = vec2(uv.x, 1.0 - uv.y);
+                             
+-                            vec2 distortion_char = normal.xy * (0.03 / scale) * (uv.y + 0.1);
++                            vec2 distortion_char = normal.xy * (0.03 / scale) * (uv.y + 0.1) + smartDistortion * 1.5;
+                             vec2 distortedUV_char = clamp(charUV + distortion_char + vec2(0.0, offsetY_char), 0.0, 1.0);
+                             vec4 charTexColor = texture2D(iChannel1, distortedUV_char);
+                             
+@@ -1095,7 +1135,132 @@ export class MapObject extends Phaser.GameObjects.Container {
+                     cropRectMask.x = 0;//蠎ｧ讓吝・譛溷､繧定ｨｭ螳・                     cropRectMask.y = 0;
+                     cropRectMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
+-                    cropRectMask.fillRect(0, 0, width, 500);
++                    cropRectMask.fillRect(0, 0, width, targetWaterY);
++                    cropRectMask.setVisible(false);//髱櫁｡ｨ遉ｺ縺ｫ縺吶ｋ
++
++                    shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
++                    shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
++
++                }
++            }
++        }
++    }
++
++    private async createWaterSurfaceSmartPhone(waterY?: number, offsetYBg?: number) {
++        const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
++
++        //繧ｿ繧､繝ｫ繝槭ャ繝励・繝励Ο繝代ユ繧｣縺九ｉeffect諠・ｱ繧定ｨｭ螳・+        if (Array.isArray(makeTileMap.properties)) {
++            for (const prop of makeTileMap.properties) {
++                if (prop.name === 'WaterSurface') {
++
++                    // 繧ｿ繧､繝ｫ繝槭ャ繝励°繧芽ｧ｣蜒丞ｺｦ繧貞叙蠕・+                    const width = this.TileMap.getMakeTilemap().widthInPixels;
++                    const height = this.TileMap.getMakeTilemap().heightInPixels;
++
++                    // 繧ｿ繧､繝ｫ繝槭ャ繝励・繝ｭ繝代ユ繧｣縺ｮ蛟､縺梧焚蛟､縺ｪ繧峨◎繧後ｒ繝・ヵ繧ｩ繝ｫ繝医↓縺吶ｋ
++                    let mapWaterY = 500;
++                    if (prop.value !== undefined && prop.value !== null && prop.value !== '') {
++                        const parsed = Number(prop.value);
++                        if (!isNaN(parsed)) {
++                            mapWaterY = parsed;
++                        }
++                    }
++
++                    // 蠑墓焚縺梧ｸ｡縺輔ｌ縺ｦ縺・ｌ縺ｰ縺昴ｌ繧剃ｽｿ逕ｨ縺励√↑縺代ｌ縺ｰ繧ｿ繧､繝ｫ繝槭ャ繝励・繝ｭ繝代ユ繧｣・医∪縺溘・繝・ヵ繧ｩ繝ｫ繝・00・峨ｒ菴ｿ逕ｨ
++                    const targetWaterY = waterY !== undefined ? waterY : mapWaterY;
++
++                    // 蜿榊ｰ・が繝輔そ繝・ヨ蛟､・・ffsetY_bg・峨・豎ｺ螳夲ｼ医ち繧､繝ｫ繝槭ャ繝励・繝励Ο繝代ユ繧｣ 'WaterOffsetY' 繧ゅ＠縺上・繝・ヵ繧ｩ繝ｫ繝・0.009・・+                    let mapOffsetYBg = 0.009;
++                    for (const innerProp of makeTileMap.properties) {
++                        if (innerProp.name === 'WaterOffsetY') {
++                            if (innerProp.value !== undefined && innerProp.value !== null && innerProp.value !== '') {
++                                const parsedOffset = Number(innerProp.value);
++                                if (!isNaN(parsedOffset)) {
++                                    mapOffsetYBg = parsedOffset;
++                                }
++                            }
++                        }
++                    }
++                    const targetOffsetYBg = offsetYBg !== undefined ? offsetYBg : mapOffsetYBg;
++
++                    const frag = `
++                        #ifdef GL_ES
++                        precision mediump float;
++                        #endif
++
++                        uniform float time;
++                        uniform vec2 resolution;
++                        uniform sampler2D iChannel0; // bg_captured_image (閭梧勹)
++                        uniform sampler2D iChannel1; // char_captured_image (繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ)
++                        uniform float offsetY_bg; // 螟夜Κ縺九ｉ貂｡縺輔ｌ繧句渚蟆・ｽ咲ｽｮ繧ｪ繝輔そ繝・ヨ
++
++                        // Phaser 3縺九ｉ閾ｪ蜍慕噪縺ｫ貂｡縺輔ｌ繧九√％縺ｮ繧ｪ繝悶ず繧ｧ繧ｯ繝亥崋譛峨・豁｣遒ｺ縺ｪUV蠎ｧ讓・+                        varying vec2 outTexCoord; 
++
++                        void main(void) {
++                            vec2 uv = outTexCoord;
++                            
++                            // 縲舌ヵ繧ｧ繝ｼ繝牙・逅・台ｸ雁・・・v.y縺悟ｰ上＆縺・伜沺・峨⊇縺ｩ豌ｴ髱｢繧ｨ繝輔ぉ繧ｯ繝医ｒ髱櫁｡ｨ遉ｺ縺ｫ縺励∪縺吶・+                            const float fadeStart = 0.0;
++                            const float fadeEnd = 0.30;
++                            float fade = smoothstep(fadeStart, fadeEnd, uv.y);
++                            
++                            // 縲先ｳ｢縺ｮ螟ｧ縺阪＆繧剃ｸ螳壹↓菫昴▽縺溘ａ縺ｮ繧ｹ繧ｱ繝ｼ繝ｫ陬懈ｭ｣縲・+                            vec2 baseScale = vec2(1000.0, 1000.0);
++                            vec2 scale = resolution / baseScale;
++
++                            // 驕霑第─・医ヱ繝ｼ繧ｹ・峨・險育ｮ・+                            float perspective = 1.0 / (uv.y * 2.0 + 0.1);
++                            
++                            // 邁｡譏鍋噪縺ｪ繧ｵ繧､繝ｳ繝ｻ繧ｳ繧ｵ繧､繝ｳ豕｢縺ｫ繧医ｋUV縺ｮ豁ｪ縺ｿ險育ｮ暦ｼ磯㍾縺・ヮ繧､繧ｺ繧・ｳ慕ｷ夊ｨ育ｮ励・荳蛻・｡後＞縺ｾ縺帙ｓ・・+                            // 邵ｦ譁ｹ蜷代→讓ｪ譁ｹ蜷代〒逡ｰ縺ｪ繧句捉豕｢謨ｰ縺ｨ騾溷ｺｦ縺ｮ豕｢繧帝㍾縺ｭ蜷医ｏ縺帙∬・辟ｶ縺ｪ豌ｴ髱｢縺ｮ謠ｺ繧峨℃繧剃ｽ懊ｊ縺ｾ縺・+                            vec2 waveUV = vec2(uv.x * 12.0 * scale.x, (1.0 - uv.y) * 15.0 * scale.y * perspective);
++                            
++                            float waveX = sin(waveUV.x + time * 1.5) * cos(waveUV.y + time * 1.0);
++                            float waveY = cos(waveUV.x * 0.8 - time * 1.2) * sin(waveUV.y * 1.2 + time * 1.6);
++                            
++                            // 豁ｪ縺ｿ驥擾ｼ亥ｼｷ蠎ｦ・峨ｒ豎ｺ螳壹ゆｸ雁・縺ｧ繝輔ぉ繝ｼ繝峨＆縺帙∪縺吶・+                            vec2 distortion = vec2(waveX, waveY) * 0.008 * fade;
++
++                            // 閭梧勹逕ｻ蜒擾ｼ医・繝・・・峨・蜿榊ｰ・ｽ咲ｽｮ繧ｪ繝輔そ繝・ヨ縺ｨ螻域釜
++                            vec2 distortedUV_bg = clamp(uv + distortion + vec2(0.0, offsetY_bg), 0.0, 1.0);
++                            vec4 bgTexColor = texture2D(iChannel0, distortedUV_bg);
++                            
++                            // 繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ逕ｻ蜒上・蜿榊ｰ・ｽ咲ｽｮ繧ｪ繝輔そ繝・ヨ縺ｨ螻域釜
++                            vec2 charUV = vec2(uv.x, 1.0 - uv.y);
++                            vec2 distortedUV_char = clamp(charUV + distortion * 1.5, 0.0, 1.0);
++                            vec4 charTexColor = texture2D(iChannel1, distortedUV_char);
++                            
++                            // 閭梧勹縺ｮ荳翫↓繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ・医い繝ｫ繝輔ぃ繝悶Ξ繝ｳ繝会ｼ峨ｒ驥阪・繧・+                            vec4 texColor = mix(bgTexColor, charTexColor, charTexColor.a);
++                            
++                            // 豌ｴ髱｢繧峨＠縺・搨繝ｻ繧ｰ繝ｪ繝ｼ繝ｳ縺ｮ繧ｰ繝ｩ繝・・繧ｷ繝ｧ繝ｳ濶ｲ繧定ｨｭ螳・+                            vec3 waterBaseColor = mix(vec3(0.02, 0.12, 0.32), vec3(0.05, 0.42, 0.58), uv.y);
++                            
++                            // 豌ｴ閾ｪ菴薙・濶ｲ縺ｨ閭梧勹濶ｲ縺ｮ繝悶Ξ繝ｳ繝会ｼ井ｸ雁・縺ｻ縺ｩ閭梧勹繝・け繧ｹ繝√Ε繧偵◎縺ｮ縺ｾ縺ｾ陦ｨ遉ｺ縺励∵ｰｴ縺ｮ繧ｨ繝輔ぉ繧ｯ繝医ｒ豸医☆・・+                            vec3 finalColor = mix(texColor.rgb, waterBaseColor, 0.40 * fade);
++                            
++                            // 縲千ｰ｡譏薙せ繝壹く繝･繝ｩ繝ｼ繝上う繝ｩ繧､繝医・+                            // 驥阪＞豕慕ｷ壼渚蟆・・繧ｯ繝医Ν・・ormalize繧・ot・峨ｒ險育ｮ励☆繧倶ｻ｣繧上ｊ縺ｫ縲√し繧､繝ｳ豕｢縺ｮ繝斐・繧ｯ驛ｨ蛻・°繧臥峩謗･縺阪ｉ繧√″繧堤函謌舌＠縺ｾ縺・+                            float highlight = smoothstep(0.85, 1.0, waveX * waveY * 0.5 + 0.5) * 0.25 * fade;
++                            vec3 specularColor = vec3(1.0, 1.0, 1.0) * highlight;
++                            
++                            gl_FragColor = vec4(finalColor + specularColor, 1.0);
++                        }
++                    `;
++
++                    const base = new Phaser.Display.BaseShader('simpleTexture', frag);
++
++                    // 閭梧勹縺ｨ繧ｭ繝｣繝ｩ縺ｮ2縺､縺ｮ繝・け繧ｹ繝√Ε繧帝・蛻励〒貂｡縺呻ｼ医◎繧後◇繧・iChannel0, iChannel1 縺ｫ繝舌う繝ｳ繝峨＆繧後ｋ・・+                    const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height, ['bg_captured_image', 'char_captured_image']);
++                    shader.setUniform('offsetY_bg.value', targetOffsetYBg);
++
++                    const cropRectMask = this.gameScene.add.graphics();
++                    cropRectMask.x = 0;//蠎ｧ讓吝・譛溷､繧定ｨｭ螳・+                    cropRectMask.y = 0;
++                    cropRectMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
++                    cropRectMask.fillRect(0, 0, width, targetWaterY);
+                     cropRectMask.setVisible(false);//髱櫁｡ｨ遉ｺ縺ｫ縺吶ｋ
+ 
+                     shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());

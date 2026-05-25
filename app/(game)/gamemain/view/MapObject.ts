@@ -19,7 +19,6 @@ import { State } from "../../lib/types";
 import { Subscription } from "rxjs";
 
 export class MapObject extends Phaser.GameObjects.Container {
-    private debugFlg: boolean | undefined;
     private fieldData: FieldData;
 
     private phaserEvents: Phaser.Events.EventEmitter;
@@ -43,17 +42,10 @@ export class MapObject extends Phaser.GameObjects.Container {
 
     private soundScene: Sound;
 
-    private playerLight: Phaser.GameObjects.Light;
-    private playerLightFlg: boolean = false;
-    private light: Phaser.GameObjects.Light[] = [];
-    private lightObjectLayer: Phaser.Tilemaps.ObjectLayer;
-    private lightFlg: boolean = false;
-    private ellipse: Phaser.Geom.Ellipse[] = [];
-    private timerEventObj: Phaser.Time.TimerEvent | null = null;
-
-    private renderTexture: Phaser.GameObjects.RenderTexture | null = null;
-    private bgRenderTexture: Phaser.GameObjects.RenderTexture | null = null;
-    private renderTextureUpdateFlg: boolean = false;
+    private plane!: Phaser.GameObjects.Plane;
+    // クラスのメンバ変数として、前フレームのカメラ位置を記憶
+    private lastCameraX: number = 0;
+    private lastCameraY: number = 0;
 
     constructor(scene: GameScene) {
         super(scene);
@@ -61,7 +53,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.addToUpdateList();
         this.dataDefinition = new DataDefinition();
         this.soundScene = this.gameScene.scene.get('Sound') as Sound;
-        this.debugFlg = scene.game.config.physics.arcade?.debug;
     }
 
     public async execute(phaserEvents: Phaser.Events.EventEmitter, tileMap: TileMap, fieldData: FieldData, sceneKey: string, inputManager: InputManager) {
@@ -74,9 +65,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.playerPartyList = [];
         this.npcNormalList = [];
         this.npcEnemyList = [];
-        this.light = [];
-        this.ellipse = [];
-        this.timerEventObj = null;
 
         await Promise.all([
             this.createPlayer(sceneKey),
@@ -85,22 +73,13 @@ export class MapObject extends Phaser.GameObjects.Container {
             this.setupInput()
         ]);
 
-        //this.createFog()
-        this.createShader()
-        await this.createBgRenderTexture();
-        await this.createRendertexture();
-        await this.createWaterSurface();
-
-        //エフェクトの作成
-        this.createEffect();
-
-        //lightの設定　※レンダーテクスチャ生成の後に作成しないとテクスチャが生成されない
-        this.setLight2DPipeline()
-        this.createLight();
-
         this.gameScene.events.once('shutdown', () => {
             this.subs.unsubscribe();
         });
+
+
+        //テスト用平面表示
+        //this.createPlane();
     }
 
     private setupInput() {
@@ -126,11 +105,7 @@ export class MapObject extends Phaser.GameObjects.Container {
     }
 
     preUpdate(time: number, delta: number) {
-        this.updateRenderTexture();
-
-        if (!this.playerLightFlg) return;
-        this.playerLight.x = this.player.x;
-        this.playerLight.y = this.player.y;
+        //this.updatePlaneRotation();
     }
 
     private createPlayer(sceneKey: string) {
@@ -316,11 +291,11 @@ export class MapObject extends Phaser.GameObjects.Container {
             if (makeTileMap.getObjectLayer('MAPMOVE')) {
                 mapMoveObjects = makeTileMap.createFromObjects('MAPMOVE', {}, false);
             }
-            if (makeTileMap.getObjectLayer('LIGHT')) {
-                this.lightFlg = true;
-                this.lightObjectLayer = (makeTileMap.getObjectLayer('LIGHT')!);
+            // if (makeTileMap.getObjectLayer('LIGHT')) {
+            //     this.lightFlg = true;
+            //     this.lightObjectLayer = (makeTileMap.getObjectLayer('LIGHT')!);
 
-            }
+            // }
 
             if (makeTileMap.getObjectLayer('SPRITE')) {
 
@@ -386,7 +361,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
     }
 
-    //イベントオブジェクト作成
     private settingEventObject(obj: Phaser.Physics.Arcade.Sprite) {
         return new Promise<void>(async (resolve) => {
 
@@ -745,392 +719,95 @@ export class MapObject extends Phaser.GameObjects.Container {
 
     }
 
-    private createLight() {
-        if (!this.lightFlg) return;
-        return new Promise<void>(async (resolve) => {
 
-            for (const obj of this.lightObjectLayer.objects) {
 
-                //初期値
-                let radius = 200;//光の半径
-                let color = 0xffffff;//光の色
-                let intensity = 1.0;//光の強さ
 
-                for (const property of obj.properties) {
-                    if (property.name === 'radius' && property.value !== '') { radius = property.value; }
-                    if (property.name === 'color' && property.value !== '') { color = property.value; }
-                    if (property.name === 'intensity' && property.value !== '') { intensity = property.value; }
-                }
+    private updatePlaneRotation() {
+        if (!this.plane) return;
 
-                const light = this.gameScene.lights.addLight(obj.x, obj.y, radius);
-                light.setColor(color);
-                light.setIntensity(intensity);
+        // クラスのプロパティとして基準値を保持しておきます
+        const viewHeight = this.TileMap.getMakeTilemap().heightInPixels;
 
-                const ellipse = new Phaser.Geom.Ellipse(obj.x, obj.y, 10, 10);
+        try {
+            const player = this.gameScene.getPlayer();
+            if (player) {
+                const player = this.gameScene.getPlayer();
+                const camera = this.gameScene.cameras.main;
+                if (!player || !camera) return;
 
-                this.timerEventObj = this.gameScene.time.addEvent({
-                    delay: 100,
-                    callback: function () {
-                        Phaser.Geom.Ellipse.Random(ellipse, light);
-                    },
-                    callbackScope: this,
-                    repeat: -1
-                });
+                // --- A. マップのスクロール（uvScroll）の同期 ---
+                // 2Dカメラの「前フレームからの移動量（実際のスクロール量）」を計算
+                const cameraDeltaX = camera.scrollX - this.lastCameraX;
+                const cameraDeltaY = camera.scrollY - this.lastCameraY;
 
-                this.light.push(light);
-                this.ellipse.push(ellipse);
+                // カメラが動いた分だけ、Planeのテクスチャをスクロールさせる（画面端では動かなくなる）
+                // ※ 適切なスクロールスピード（比率）になるよう、テクスチャサイズ等に応じて係数を掛けてください
+                const scrollFactorX = 1 / this.TileMap.getMakeTilemap().widthInPixels;
+                const scrollFactorY = 1 / this.TileMap.getMakeTilemap().heightInPixels;
+
+                this.plane.uvScroll(cameraDeltaX * scrollFactorX, cameraDeltaY * scrollFactorY);
+
+                // 今回のカメラ位置を保存
+                this.lastCameraX = camera.scrollX;
+                this.lastCameraY = camera.scrollY;
+
+
             }
-
-            if (this.debugFlg) {
-                this.playerLight = this.gameScene.lights.addLight(this.player.x, this.player.y, 200);
-                this.playerLight.setIntensity(0.5);
-                this.playerLightFlg = true;
-            }
-
-            this.gameScene.lights.enable()
-            this.gameScene.lights.setAmbientColor(0xffffff);
-
-            //タイルマップのプロパティからeffect情報を設定
-            const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
-            if (Array.isArray(makeTileMap.properties)) {
-                for (const prop of makeTileMap.properties) {
-                    if (prop.name === 'ambientColor') {
-                        //環境光の色を設定
-                        this.gameScene.lights.setAmbientColor(prop.value);
-                        //0xffffff
-                        //0x222244
-                    }
-                }
-            }
-            resolve();
-        });
-    }
-
-    private createBgRenderTexture() {
-        return new Promise<void>(resolve => {
-
-            // 背景専用のRenderTexture（絶対にクリアしない、マップ情報保持用）
-            if (this.gameScene.textures.exists('bg_captured_image')) { this.gameScene.textures.removeKey('bg_captured_image'); }
-
-            const width = this.TileMap.getMakeTilemap().widthInPixels;
-            const height = this.TileMap.getMakeTilemap().heightInPixels;
-
-            this.bgRenderTexture = this.gameScene.add.renderTexture(0, 0, width, height);
-            for (const tilemapLayer of this.TileMap.getTilemapLayerList()) {
-                this.bgRenderTexture.draw(tilemapLayer);
-            }
-            this.bgRenderTexture.saveTexture('bg_captured_image');
-            this.bgRenderTexture.setVisible(false);
-
-            resolve();
-        });
-    }
-
-    private createEffect() {
-        const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
-
-        //タイルマップのプロパティからeffect情報を設定
-        if (Array.isArray(makeTileMap.properties)) {
-            for (const prop of makeTileMap.properties) {
-                if (prop.name === 'fog') {
-                    //エフェクトオブジェクトを作成
-                    this.createFog(prop.value);
-                }
-            }
+        } catch (e) {
+            // 安全対策
         }
     }
 
-    //霧を作成
-    private createFog(fogData: string) {
+    private createPlane() {
+        const tilemap = this.TileMap.getMakeTilemap();
+        const width = tilemap.widthInPixels;
+        const height = tilemap.heightInPixels;
 
-        // create 内
-        const width = this.TileMap.getMakeTilemap().widthInPixels;
-        const height = this.TileMap.getMakeTilemap().heightInPixels;
+        const screenCenterX = this.gameScene.scale.width / 2;
+        const screenCenterY = this.gameScene.scale.height / 2;
 
-        // 1. 通常の画像ではなく「TileSprite（並べて敷き詰められるスプライト）」として配置
-        // 画面サイズより少し大きめにしておくと端が綺麗になります
-        const fog = this.gameScene.add.tileSprite(width / 2, height / 2, width, height, 'noise');
+        // 1. RenderTexture でマップをキャプチャ
+        const layersToDraw = this.TileMap.getTilemapLayerList();
+        if (layersToDraw.length === 0) { return; }
 
-        // 2. 霧っぽく見せるための設定
-        fog.setBlendMode(Phaser.BlendModes.SCREEN); // 黒背景を透過させて白だけ残す
-        fog.setAlpha(0.1);                         // 透明度を下げて「うっすら」にする
+        const bgRenderTexture = this.gameScene.add.renderTexture(0, 0, width, height);
+        for (const tilemapLayer of layersToDraw) {
+            // 確実に左上 (0, 0) から描画されるように座標を指定
+            bgRenderTexture.draw(tilemapLayer, 0, 0);
+        }
+        bgRenderTexture.saveTexture('testPlane_image');
+        bgRenderTexture.setVisible(false);
 
-        if (fogData === 'Lowest') {
-            fog.setDepth(MapLayerDepth.Lowest + 10);
-        } else {
-            fog.setDepth(MapLayerDepth.Highest);
+        // --- 💡 改善ポイント1: テクスチャのラッピング設定 ---
+        const texture = this.gameScene.textures.get('testPlane_image');
+        if (texture && texture.source && texture.source[0]) {
+            texture.source[0].setFilter(Phaser.Textures.FilterMode.LINEAR);
         }
 
-        // 必要なら少し拡大してノイズの目を粗く（霧っぽく）する
-        fog.setScale(1.5);
+        // --- 💡 改善ポイント2: Planeの初期配置とサイズの調整 ---
+        // マップの中心座標 (width / 2, height / 2) に配置し、カメラのスクロールに追従させます。
+        this.plane = this.gameScene.add.plane(screenCenterX, screenCenterY, 'testPlane_image');
 
-        // 1. 通常の画像ではなく「TileSprite（並べて敷き詰められるスプライト）」として配置
-        // 画面サイズより少し大きめにしておくと端が綺麗になります
-        const fog2 = this.gameScene.add.tileSprite(width / 2, height / 2, width, height, 'noise2');
+        // --- 💡 改善ポイント3: 最初から「床」っぽく傾けておく（オプション） ---
+        this.plane.modelRotation.x = Phaser.Math.DegToRad(-50);
 
-        // 2. 霧っぽく見せるための設定
-        fog2.setBlendMode(Phaser.BlendModes.SCREEN); // 黒背景を透過させて白だけ残す
-        fog2.setAlpha(0.3);                         // 透明度を下げて「うっすら」にする
 
-        if (fogData === 'Lowest') {
-            fog2.setDepth(MapLayerDepth.Lowest + 10);
-        } else {
-            fog2.setDepth(MapLayerDepth.Highest);
+        // this.plane.modelPosition.y = 0.04;
+        // this.plane.modelPosition.z = 0.09;
+        // console.log(this.plane.modelPosition);
+
+        //this.plane.panZ(1 / this.TileMap.getMakeTilemap().heightInPixels);
+        // console.log(1 / this.TileMap.getMakeTilemap().heightInPixels);
+
+
+        this.gameScene.cameras.main.startFollow(this.plane, true);
+        this.plane.setScrollFactor(0, 0);
+
+        // お試し表示のため、一時的に元のマップレイヤーを非表示にする
+        // これにより Plane だけが描画されていることを明確に確認できます
+        for (const layer of this.TileMap.getTilemapLayerList()) {
+            layer.setVisible(false);
+            //layer.setAlpha(0.5);
         }
-
-        // 必要なら少し拡大してノイズの目を粗く（霧っぽく）する
-        fog2.setScale(1.5);
-
-        // 3. 毎フレーム、テクスチャの表示位置をずらす（スクロール）
-        this.gameScene.events.on('update', () => {
-            // X方向とY方向に少しずつずらすことで、斜めに流れる霧を表現
-            fog.tilePositionX += 0.3;
-            fog.tilePositionY += 0.2;
-            fog2.tilePositionX += 0.9;
-            fog2.tilePositionY += 0.4;
-        });
-
-        //マップ外を非表示にするためのマスクを作成
-        //以下はbgRenderTextureとBitmapMaskの座標位置を補正するための変換処理
-        // キャプチャしたテクスチャ名を使って、位置調整用のダミースプライトを作成する
-        // ※座標を「画面の中心」にし、Originを「(0.5, 0.5)」にすることで、Phaserのマスク計算と完全一致させます。
-        const maskDummySprite = this.gameScene.add.sprite(width / 2, height / 2, 'bg_captured_image');
-        maskDummySprite.setOrigin(0.5, 0.5);
-        maskDummySprite.setVisible(false); // 画面には表示しない
-
-        // 3. このダミースプライトをソースにして BitmapMask を作成（型エラーは一切起きません）
-        const mapMask = new Phaser.Display.Masks.BitmapMask(this.gameScene, maskDummySprite);
-
-        // 4. 霧にマスクを適用
-        fog.setMask(mapMask);
-        fog2.setMask(mapMask);
-    }
-
-    private createShader() {
-        const width = this.TileMap.getMakeTilemap().widthInPixels;
-        const height = this.TileMap.getMakeTilemap().heightInPixels;
-
-        //this.gameScene.add.shader('fireball', 400, 300, 800, 600);
-
-        //this.gameScene.add.shader('cloud', width / 2, height / 2, width, height);
-        //this.gameScene.add.shader('blueSky', width / 2, height / 2, width, height);
-        //this.gameScene.add.shader('nightsky', width / 2, height / 2, width, height);
-    }
-
-    private createRendertexture(): Promise<void> {
-
-        /**
-         * 水面に映すテクスチャの生成
-         * まずフィールドマップはcreateBgRenderTexture()で作成済みかつ削除対象としない。
-         * 動き回るキャラクターなどを再描画対象とする。
-         * 
-         */
-
-        return new Promise<void>(resolve => {
-
-            const width = this.TileMap.getMakeTilemap().widthInPixels;
-            const height = this.TileMap.getMakeTilemap().heightInPixels;
-
-            // 1. 【超重要】すでに古い RenderTexture やテクスチャキーが存在している場合は、完全に破棄・消去する
-            if (this.renderTexture) {
-                this.renderTexture.destroy(); // 既存のオブジェクトを破棄
-                this.renderTexture = null;
-            }
-
-            // Phaserのテクスチャマネージャー内から古いキー名自体を消去する
-            if (this.gameScene.textures.exists('char_captured_image')) { this.gameScene.textures.removeKey('char_captured_image'); }
-
-            // 2. 毎フレーム更新・シェーダー渡し用のメインRenderTexture
-            this.renderTexture = this.gameScene.add.renderTexture(0, 0, width, height);
-
-            // 初回の描画 (背景は描画せず、キャラクターのみを上下反転させて描画)
-            const originalScaleY = this.player.scaleY;
-            this.player.scaleY *= -1; // 上下反転
-
-            // 足元で反射が繋がるように、Y座標をキャラの高さ分下にズラして描画
-            this.renderTexture.draw(this.player, this.player.x, this.player.y + this.player.displayHeight);
-
-            this.player.scaleY = originalScaleY; // 元に戻す
-
-            // この画像キーでシェーダーがキャラクターのテクスチャを参照します
-            this.renderTexture.saveTexture('char_captured_image');
-            this.renderTexture.setVisible(false);
-
-            this.renderTextureUpdateFlg = true;
-
-            resolve();
-        });
-    }
-
-    private async createWaterSurface() {
-        const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
-
-        //タイルマップのプロパティからeffect情報を設定
-        if (Array.isArray(makeTileMap.properties)) {
-            for (const prop of makeTileMap.properties) {
-                if (prop.name === 'WaterSurface') {
-
-                    // タイルマップから解像度を取得
-                    const width = this.TileMap.getMakeTilemap().widthInPixels;
-                    const height = this.TileMap.getMakeTilemap().heightInPixels;
-
-                    const frag = `
-                        #ifdef GL_ES
-                        precision mediump float;
-                        #endif
-
-                        uniform float time;
-                        uniform vec2 resolution;
-                        uniform sampler2D iChannel0; // bg_captured_image (背景)
-                        uniform sampler2D iChannel1; // char_captured_image (キャラクター)
-
-                        // Phaser 3から自動的に渡される、このオブジェクト固有の正確なUV座標
-                        varying vec2 outTexCoord; 
-
-                        // sinを使わない高精度2Dハッシュ
-                        float hash(vec2 p) {
-                            vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
-                            p3 += dot(p3, p3.yzx + 33.33);
-                            return fract((p3.x + p3.y) * p3.z);
-                        }
-
-                        // 2Dバリューノイズ
-                        float noise(vec2 p) {
-                            vec2 i = floor(p);
-                            vec2 f = fract(p);
-                            vec2 u = f * f * (3.0 - 2.0 * f);
-                            return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
-                                    mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
-                        }
-
-                        // 波の高さを計算するマルチオクターブFBM
-                        float getWaveHeight(vec2 uv) {
-                            vec2 uv1 = uv * 2.0 + vec2(time * 0.08, time * 0.12);
-                            vec2 uv2 = uv * 4.0 - vec2(time * 0.15, time * 0.05);
-                            vec2 uv3 = uv * 8.0 + vec2(time * 0.20, -time * 0.10);
-                            
-                            float h = noise(uv1) * 0.5 + noise(uv2) * 0.3 + noise(uv3) * 0.2;
-                            return h;
-                        }
-
-                        void main(void) {
-                            // 【修正】画面ピクセル座標ではなく、オブジェクト固有の正確なUVを使用
-                            vec2 uv = outTexCoord;
-                            
-                            // 【フェード処理】上側（uv.yが小さい領域）ほど水面エフェクトを非表示にします。
-                            const float fadeStart = 0.0;
-                            const float fadeEnd = 0.30;
-                            float fade = smoothstep(fadeStart, fadeEnd, uv.y);
-                            
-                            // 【波の大きさを一定に保つためのスケール補正】
-                            // ★ここで波の大きさを自由に調整できます★
-                            // baseScale (1000.0) を基準サイズとしています。
-                            // ・数値を小さくする（例: 500.0） → 波が大きく（粗く）なります。
-                            // ・数値を大きくする（例: 2000.0） → 波が小さく（細かく）なります。
-                            vec2 baseScale = vec2(1000.0, 1000.0);
-                            vec2 scale = resolution / baseScale;
-
-                            // 遠近感（パース）の計算
-                            float perspective = 1.0 / (uv.y * 2.0 + 0.1);
-                            
-                            // scale を掛けることで、マップが広くなっても波が引き延ばされずに一定の大きさを保ちます
-                            vec2 waveUV = vec2(uv.x * 4.0 * scale.x, (1.0 - uv.y) * 10.0 * scale.y * perspective);
-                            
-                            // 動的法線ベクトル（Normal）の計算
-                            vec2 eps = vec2(0.015, 0.0);
-                            float hL = getWaveHeight(waveUV - eps.xy);
-                            float hR = getWaveHeight(waveUV + eps.xy);
-                            float hD = getWaveHeight(waveUV - eps.yx);
-                            float hU = getWaveHeight(waveUV + eps.yx);
-                            
-                            vec3 normal = normalize(vec3((hL - hR), (hD - hU), 0.12));
-
-                            // 背景画像（マップ）の反射位置オフセットと屈折
-                            float offsetY_bg = 0.009;
-                            vec2 distortion_bg = normal.xy * (0.01 / scale) * (uv.y + 0.1);
-                            vec2 distortedUV_bg = clamp(uv + distortion_bg + vec2(0.0, offsetY_bg), 0.0, 1.0);
-                            vec4 bgTexColor = texture2D(iChannel0, distortedUV_bg);
-                            
-                            // キャラクター画像の反射位置オフセットと屈折
-                            // （テクスチャに描画する時点ですでに反転＆足元へズラしているため、ここでのオフセットはほぼ0でOKです）
-                            float offsetY_char = 0.0;
-                            
-                            // ★重要★
-                            // Phaserのシェーダー全体が上下反転しているため、キャラだけ元の位置（足元）に戻すためにUVのYを反転させます
-                            vec2 charUV = vec2(uv.x, 1.0 - uv.y);
-                            
-                            vec2 distortion_char = normal.xy * (0.03 / scale) * (uv.y + 0.1);
-                            vec2 distortedUV_char = clamp(charUV + distortion_char + vec2(0.0, offsetY_char), 0.0, 1.0);
-                            vec4 charTexColor = texture2D(iChannel1, distortedUV_char);
-                            
-                            // 背景の上にキャラクター（アルファブレンド）を重ねる
-                            vec4 texColor = mix(bgTexColor, charTexColor, charTexColor.a);
-                            
-                            // 水面らしい青・グリーンのグラデーション色を設定
-                            vec3 waterBaseColor = mix(vec3(0.02, 0.12, 0.32), vec3(0.05, 0.42, 0.58), uv.y);
-                            
-                            // 水自体の色と背景色のブレンド（上側ほど背景テクスチャをそのまま表示し、水のエフェクトを消す）
-                            vec3 finalColor = mix(texColor.rgb, waterBaseColor, 0.40 * fade);
-                            
-                            // スペキュラーハイライトも上側でフェードアウトさせます
-                            vec3 lightDir = normalize(vec3(0.0, 1.0, 0.7)); 
-                            vec3 viewDir = vec3(0.0, 0.0, 1.0);
-                            vec3 halfDir = normalize(lightDir + viewDir);
-                            
-                            float spec = pow(max(dot(normal, halfDir), 0.0), 32.0);
-                            
-                            float waveCrest = max(0.0, normal.y * 2.0);
-                            vec3 specularColor = vec3(1.0, 1.0, 1.0) * spec * 2.5 * waveCrest * fade;
-                            
-                            gl_FragColor = vec4(finalColor + specularColor, 1.0);
-                        }
-                    `;
-
-                    const base = new Phaser.Display.BaseShader('simpleTexture', frag);
-
-                    // 背景とキャラの2つのテクスチャを配列で渡す（それぞれ iChannel0, iChannel1 にバインドされる）
-                    const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height, ['bg_captured_image', 'char_captured_image']);
-
-                    const cropRectMask = this.gameScene.add.graphics();
-                    cropRectMask.x = 0;//座標初期値を設定
-                    cropRectMask.y = 0;
-                    cropRectMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
-                    cropRectMask.fillRect(0, 0, width, 500);
-                    cropRectMask.setVisible(false);//非表示にする
-
-                    shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
-                    shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
-
-                }
-            }
-        }
-    }
-
-    private setLight2DPipeline() {
-        if (!this.lightFlg) return
-        for (const tp of this.TileMap.getTilemapLayerList()) {
-            tp.setPipeline('Light2D');
-        }
-        for (const chestSpriteObject of this.chestSpriteObjects) {
-            chestSpriteObject.setPipeline('Light2D');
-        }
-    }
-
-    private updateRenderTexture() {
-        if (!this.renderTextureUpdateFlg || !this.renderTexture || !this.bgRenderTexture) return;
-
-        // 1. メインのRenderTextureをクリア（前回のプレイヤーの軌跡を完全に消す）
-        this.renderTexture.clear();
-
-        // 2. 静的な背景は別のテクスチャとして渡すため、ここでは描画しない
-
-        // 3. 最新の座標でプレイヤーを上下反転させて描画
-        const originalScaleY = this.player.scaleY;
-        this.player.scaleY *= -1; // 上下反転
-
-        // 足元で反射が繋がるように、Y座標をキャラの高さ分下にズラして描画
-        this.renderTexture.draw(this.player, this.player.x, this.player.y + this.player.displayHeight);
-
-        this.player.scaleY = originalScaleY; // 元に戻す
     }
 }
