@@ -62,7 +62,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
         this.timerEventObj = null;
 
         this.setEffectInfomation();
-        this.createShader()
+        this.testShader()
 
         await this.createBgRenderTexture();
         await this.createCharacterRendertexture();
@@ -269,7 +269,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
         // fog2.setMask(mapMask);
     }
 
-    private createShader() {
+    private testShader() {
         const width = this.TileMap.getMakeTilemap().widthInPixels;
         const height = this.TileMap.getMakeTilemap().heightInPixels;
 

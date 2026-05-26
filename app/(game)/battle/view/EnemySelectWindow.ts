@@ -333,7 +333,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
             repeat: -1,
             onUpdate: (t) => {
                 const val = Math.floor(t.getValue()!);
-                //enemy.setTint(Phaser.Display.Color.GetColor(val, val, val));
+                enemy.setTint(Phaser.Display.Color.GetColor(val, val, val));
             }
         });
         this.tweens.push(tween);
