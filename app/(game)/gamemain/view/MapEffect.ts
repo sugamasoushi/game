@@ -67,8 +67,6 @@ export class MapEffect extends Phaser.GameObjects.Container {
         await this.createBgRenderTexture();
         await this.createCharacterRendertexture();
 
-
-
         this.createWaterReflectionShader();
 
         //エフェクトの作成
@@ -702,11 +700,16 @@ export class MapEffect extends Phaser.GameObjects.Container {
 
     private async createFog_Ground(fogData: string) {
 
-        // タイルマップから解像度を取得
-        const width = this.TileMap.getMakeTilemap().widthInPixels;
-        const height = this.TileMap.getMakeTilemap().heightInPixels;
+        // PC版（Electron）の場合に作成
+        const execEnv = new ExecutionEnvironment();
+        if (execEnv.isElectron() || this.debugFlg) {
 
-        const frag = `
+
+            // タイルマップから解像度を取得
+            const width = this.TileMap.getMakeTilemap().widthInPixels;
+            const height = this.TileMap.getMakeTilemap().heightInPixels;
+
+            const frag = `
 			#ifdef GL_ES
 			precision highp float;
 			#endif
@@ -856,23 +859,25 @@ export class MapEffect extends Phaser.GameObjects.Container {
 			}
         `;
 
-        const base = new Phaser.Display.BaseShader('simpleTexture', frag, undefined, {
-            time: { type: '1f', value: 0.5 },//生成速度（あまり分からない）
-            time2: { type: '1f', value: 0.0 },//生成速度（あまり分からない）
-            speed: { type: '1f', value: -0.3 },//　+：左方向、　-：右方向
-            //resolution: { type: '2f', value: [width, height] },//scaleを使うので不要
-            fogStart: { type: '1f', value: 600 },// 上側～指定位置の間が透明になる
-            fogEnd: { type: '1f', value: 0 },// 下側～指定位置の間が不透明になる
-            scale: { type: '1f', value: 4.0 }//大きさ
-        });
+            const base = new Phaser.Display.BaseShader('simpleTexture', frag, undefined, {
+                time: { type: '1f', value: 0.5 },//生成速度（あまり分からない）
+                time2: { type: '1f', value: 0.0 },//生成速度（あまり分からない）
+                speed: { type: '1f', value: -0.3 },//　+：左方向、　-：右方向
+                //resolution: { type: '2f', value: [width, height] },//scaleを使うので不要
+                fogStart: { type: '1f', value: 600 },// 上側～指定位置の間が透明になる
+                fogEnd: { type: '1f', value: 0 },// 下側～指定位置の間が不透明になる
+                scale: { type: '1f', value: 4.0 }//大きさ
+            });
 
-        const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height);
-        shader.setDepth(9999)
+            const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height);
+            shader.setDepth(9999)
 
-        if (fogData === 'Lowest') {
-            shader.setDepth(MapLayerDepth.Lowest + 10);
-        } else {
-            shader.setDepth(MapLayerDepth.Highest);
+            if (fogData === 'Lowest') {
+                shader.setDepth(MapLayerDepth.Lowest + 10);
+            } else {
+                shader.setDepth(MapLayerDepth.Highest);
+            }
+
         }
     }
 
