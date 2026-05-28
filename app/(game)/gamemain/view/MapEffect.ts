@@ -5,7 +5,6 @@ import { MapObject } from "./MapObject";
 import { Npc } from "./character/Npc";
 import { Player } from './character/Player';
 import { Sound } from "../../scenes/Sound";
-import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
 import { ExecutionEnvironment } from '../../core/ExecutionEnvironment';
 
 export class MapEffect extends Phaser.GameObjects.Container {

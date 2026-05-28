@@ -89,6 +89,7 @@ export class SceneController extends Scene {
                 break;
             case State.TITLE:
                 console.log('Title')
+                console.log(this.scene.manager.scenes.map(s => `${s.scene.key}: ${s.scene.settings.status}`));
                 this.scene.launch('Title', { sceneKey });
                 break;
             case State.LOAD:
@@ -137,13 +138,17 @@ export class SceneController extends Scene {
             case State.GAMEOVER:
                 console.log('GameOver transition')
                 this.scene.launch('GameOver');
-                break;
-            case State.GAME_RESTART:
-                console.log('Game restart', sceneKey)
                 this.scene.stop('Game');
                 this.scene.stop('Menu');
                 this.scene.stop('Event');
                 this.scene.stop('Battle');
+                break;
+            case State.GAME_RESTART:
+                console.log('Game restart', sceneKey)
+                // this.scene.stop('Game');
+                // this.scene.stop('Menu');
+                // this.scene.stop('Event');
+                // this.scene.stop('Battle');
                 this.scene.stop('SceneController');
 
                 this.scene.start('Boot');

@@ -171,6 +171,22 @@ export class TileMap extends Phaser.GameObjects.Container {
         await this.createTileMap();
 
         //this.settilmapDepth();
+
+        this.gameScene.events.once('shutdown', () => {
+            this.collisionLayer.destroy();
+            for (const tilemapLayer of this.tilemapLayerList) {
+                tilemapLayer.destroy();
+            }
+
+            this.tilemapLayerList = [];
+            this.waterSrufaceSubjectTilemapLayerList = [];
+            this.moonLightSubjectTilemapLayerList = [];
+            this.animationTileMapLayer = [];
+            this.mapLowestLayerList = [];
+            this.mapLowLayerList = [];
+            this.mapHighLayerList = [];
+            this.mapHighestLayerList = [];
+        });
     }
 
     preUpdate(time: number) {

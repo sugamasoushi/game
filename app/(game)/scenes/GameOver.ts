@@ -54,6 +54,7 @@ export class GameOver extends Scene {
                 manager.updateState({ state: State.GAME_RESTART }, 'GameOver');
 
                 this.game.events.emit('BGM_ALL_STOP');
+                this.scene.stop('GameOver');
             }
         });
     }

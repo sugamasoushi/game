@@ -569,7 +569,7 @@ export class BattlePresenter {
                 this.battleModel.getFieldHitEnemy().deleteCharacter();
             }
 
-            await this.battleMessageWindow.messageOutput('ゲームオーバー', 1000);
+            //await this.battleMessageWindow.messageOutput('ゲームオーバー', 1000);
             gameStateManager.triggerGameOver();
             this.endEvents.emit('BattleEnd');
         }

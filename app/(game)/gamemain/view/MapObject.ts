@@ -588,7 +588,7 @@ export class MapObject extends Phaser.GameObjects.Container {
 
             obj.setOrigin(0.5, 1);
 
-            obj.setPosition(obj.x, obj.y + 96 / 2).setPipeline('Light2D');
+            obj.setPosition(obj.x, obj.y + 96 / 2);
 
             // 風で揺れるTweenアニメーションを作成
             this.gameScene.tweens.add({
@@ -645,7 +645,12 @@ export class MapObject extends Phaser.GameObjects.Container {
 
     private execOpenChest(obj: Phaser.Physics.Arcade.Sprite) {
 
+        //アイテムが0の場合は処理しない
         if (obj.getData('num') <= 0) return;
+
+        //配置時のフラグが0だった場合は処理しない
+        const boxId = obj.getData('id');
+        if (boxId != null && this.gameScene.cache.json.get('savedata').itemboxFlg[boxId] === 0) { return; }
 
         //プレイヤーとの距離が近い場合
         if (Phaser.Math.Difference(obj.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(obj.y, this.gameScene.getPlayer().y) < 40) {
