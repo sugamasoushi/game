@@ -1,4 +1,4 @@
-import { GameScene, EventScene } from '../lib/types';
+import { FieldScene, EventScene } from '../lib/types';
 import { Sound } from '../scenes/Sound';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from "rxjs";
@@ -6,7 +6,7 @@ import { take } from "rxjs/operators";
 import { filter } from "rxjs/operators";
 
 export class MessageOperation {
-    private eventScene: GameScene | EventScene;
+    private eventScene: FieldScene | EventScene;
     private usePatern: string;
     private messageWidth: number;//メッセージの範囲
     private textLine: number;
@@ -94,11 +94,11 @@ export class MessageOperation {
                     if (isSkipped) return;
                     textObject.text += text[i];
                     this.soundScene.SE_message.play({ loop: false });
-                    
-                    if (text[i] === '\n') { 
+
+                    if (text[i] === '\n') {
                         if (sub) sub.unsubscribe();
                         if (clickZone) clickZone.off('pointerdown', skipTypeWriter);
-                        resolve(); 
+                        resolve();
                         return;
                     }
                     i++;
@@ -220,8 +220,8 @@ export class MessageOperation {
             scene.tweens.add({
                 targets: deleteMessageObject,//テキスト及び吹き出しオブジェクトを画面から削除
                 scale: 0,
-                x: (scene as GameScene).getPlayer().x,
-                y: (scene as GameScene).getPlayer().y,
+                x: (scene as FieldScene).getPlayer().x,
+                y: (scene as FieldScene).getPlayer().y,
                 ease: 'sine.inout',
                 duration: 200,
                 onComplete: () => {

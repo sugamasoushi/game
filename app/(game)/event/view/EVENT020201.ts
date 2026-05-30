@@ -1,9 +1,9 @@
 import { Event } from "../../scenes/Event";
 import { State } from "../../lib/StateTypes";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState, CharacterState } from "../../lib/types";
+import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
-import { Player } from "../../gamemain/view/character/Player";
+import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
@@ -12,7 +12,7 @@ import { GameStateManager } from "../../GameAllState/GameStateManager";
 import { InputManager } from "../../core/input/InputManager";
 
 export class EVENT020201 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -24,7 +24,7 @@ export class EVENT020201 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = this.eventScene.scene.get('Game') as GameScene;
+        this.fieldScene = this.eventScene.scene.get('Field') as FieldScene;
         this.soundScene = this.eventScene.scene.get('Sound') as Sound;
     }
 
@@ -71,7 +71,7 @@ export class EVENT020201 extends BaseEvent {
         });
         await this.execFadeIn();
 
-        this.gameScene.cameras.main.pan(this.meina.x - 50, this.meina.y, 500, 'Linear', false)
+        this.fieldScene.cameras.main.pan(this.meina.x - 50, this.meina.y, 500, 'Linear', false)
 
         /*会話---------------------------------------------------------------------------------*/
 
@@ -294,7 +294,7 @@ export class EVENT020201 extends BaseEvent {
         return new Promise<void>(resolve => {
 
             //設定を戻す
-            this.gameScene.events.emit('EVENT_END')
+            this.fieldScene.events.emit('EVENT_END')
 
             resolve();
         })

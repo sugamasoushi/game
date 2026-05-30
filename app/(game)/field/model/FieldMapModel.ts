@@ -1,4 +1,4 @@
-import { GameScene, FieldData } from "../../lib/types";
+import { FieldScene, FieldData } from "../../lib/types";
 import { MapObject } from "../view/MapObject";
 import { gameStateManager } from "../../GameAllState/GameStateManager";
 import { Player } from "../view/character/Player";
@@ -12,7 +12,7 @@ export class FieldMapModel {
     private npcNormalList: Npc[] = [];
     private npcEnemyList: Npc[] = [];
 
-    constructor(private gameScene: GameScene) { }
+    constructor(private fieldScene: FieldScene) { }
 
     public getFieldData(): FieldData {
         return this.fieldData;

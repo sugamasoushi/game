@@ -1,12 +1,12 @@
-import { GameScene } from "@/app/(game)/lib/types";
+import { FieldScene } from "@/app/(game)/lib/types";
 import { BaseParts } from "@/app/(game)/core/BaseParts";
 import { CharacterState } from "@/app/(game)/lib/FieldTypes";
 
 export class bubble extends BaseParts {
     private frameRate: number = 5;
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite, gameScene: GameScene, x: number, y: number, texture: string, direction: string) {
-        super(sprite, gameScene, x, y, texture, direction);
+    constructor(sprite: Phaser.Physics.Arcade.Sprite, fieldScene: FieldScene, x: number, y: number, texture: string, direction: string) {
+        super(sprite, fieldScene, x, y, texture, direction);
         this.animationSetting(texture);
     }
 
@@ -70,7 +70,7 @@ export class bubble extends BaseParts {
     private display() {
         if (this.sprite.state !== CharacterState.normal) return;
 
-        const player: Phaser.Physics.Arcade.Sprite = (this.scene as GameScene).getPlayer();
+        const player: Phaser.Physics.Arcade.Sprite = (this.scene as FieldScene).getPlayer();
         //プレイヤーが近ければ表示する
         if (Phaser.Math.Difference(this.sprite.x, player.x) < 100 && Phaser.Math.Difference(this.sprite.y, player.y) < 100) {
             this.setVisible(true);

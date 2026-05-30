@@ -1,4 +1,4 @@
-import { GameScene } from '../lib/SceneTypes';
+import { FieldScene } from '../lib/SceneTypes';
 import { MenuModel } from "../menu/model/MenuModel";
 import { MenuView } from "../menu/view/MenuView";
 import { MenuPresenter } from "../menu/presenter/MenuPresenter";
@@ -6,7 +6,7 @@ import { gameStateManager } from "../GameAllState/GameStateManager";
 
 export class Menu extends Phaser.Scene {
 
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
 
     // MVP
     private menuModel: MenuModel;
@@ -19,12 +19,12 @@ export class Menu extends Phaser.Scene {
     constructor() { super('Menu'); }
 
     init() {
-        this.gameScene = (this.scene.get('Game') as GameScene);
+        this.fieldScene = (this.scene.get('Field') as FieldScene);
 
         // 各クラスのインスタンス化
-        this.menuModel = new MenuModel(this, this.gameScene);
-        this.menuView = new MenuView(this, this.gameScene, this.menuModel);
-        this.menuPresenter = new MenuPresenter(this, this.gameScene, this.menuModel, this.menuView);
+        this.menuModel = new MenuModel(this, this.fieldScene);
+        this.menuView = new MenuView(this, this.fieldScene, this.menuModel);
+        this.menuPresenter = new MenuPresenter(this, this.fieldScene, this.menuModel, this.menuView);
 
         // Presenter経由での初期設定呼び出し
         this.menuPresenter.init();

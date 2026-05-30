@@ -1,17 +1,17 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState, CharacterState } from "../../lib/types";
+import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
-import { Player } from "../../gamemain/view/character/Player";
+import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
-import { Npc } from "../../gamemain/view/character/Npc";
+import { Npc } from "../../field/view/character/Npc";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
 
 export class EVENT010401 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -24,7 +24,7 @@ export class EVENT010401 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = this.eventScene.scene.get('Game') as GameScene;
+        this.fieldScene = this.eventScene.scene.get('Field') as FieldScene;
         this.soundScene = this.eventScene.scene.get('Sound') as Sound;
     }
 
@@ -45,12 +45,12 @@ export class EVENT010401 extends BaseEvent {
         this.switchingEventObjFlg('EVENT020101', true);
 
         //プレイヤー設定
-        this.player = this.gameScene.getPlayer();
+        this.player = this.fieldScene.getPlayer();
         this.player.stopAnimation();
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
-        this.grandpa = (this.characterGameObject.getSprite(this.gameScene, 'grandpa') as Npc);
+        this.grandpa = (this.characterGameObject.getSprite(this.fieldScene, 'grandpa') as Npc);
         this.grandpa.state = CharacterState.event;
         this.grandpa.initMoveToPosition();
     }
@@ -59,10 +59,10 @@ export class EVENT010401 extends BaseEvent {
     async execEvent() {
 
         //キャラクタースプライトを作成
-        this.lamyNpc = this.gameScene.getMapObject().createSprite(
+        this.lamyNpc = this.fieldScene.getMapObject().createSprite(
             'normal', //npcのタイプ
             '0304', //spriteのタイプ
-            this.gameScene,
+            this.fieldScene,
             816,
             496,
             'tex_lamy', //タイル画像のキー
@@ -82,12 +82,12 @@ export class EVENT010401 extends BaseEvent {
             //カメラ効果
             new Promise<void>(resolve => {
                 this.soundScene.SE_karuipunch.play({ loop: false });
-                this.gameScene.cameras.main.shake(100, 0.02);
+                this.fieldScene.cameras.main.shake(100, 0.02);
                 resolve();
             }),
             //カメラを移動
             new Promise<void>(resolve => {
-                const cam = this.gameScene.getMainCamera();
+                const cam = this.fieldScene.getMainCamera();
                 cam.once(Phaser.Cameras.Scene2D.Events.PAN_COMPLETE, () => { resolve(); }); // PAN_COMPLETE を1回だけ待つ
                 cam.pan(816, 448, 500, 'Linear', false);
             }),
@@ -141,7 +141,7 @@ export class EVENT010401 extends BaseEvent {
         })
         await this.execFadeIn();
 
-        this.gameScene.cameras.main.pan(this.player.x + 100, this.player.y, 500, 'Linear', false);
+        this.fieldScene.cameras.main.pan(this.player.x + 100, this.player.y, 500, 'Linear', false);
 
         await this.eventTalk.execTalk([
             { lamyNPC: ['もぐもぐ、もぐもぐ・・・\n', 'ん～美味しい！\n'] },
@@ -276,8 +276,8 @@ export class EVENT010401 extends BaseEvent {
         //メッセージ表示
         await new Promise<void>(resolve => {
             const time = 1500
-            this.gameScene.time.delayedCall(time, () => { resolve(); }, [], this.eventScene);
-            this.gameScene.events.emit('FREE_MESSAGE_WINDOW', 'ラミィが仲間になった！！', time);
+            this.fieldScene.time.delayedCall(time, () => { resolve(); }, [], this.eventScene);
+            this.fieldScene.events.emit('FREE_MESSAGE_WINDOW', 'ラミィが仲間になった！！', time);
         });
 
         await Promise.all([
@@ -290,7 +290,7 @@ export class EVENT010401 extends BaseEvent {
         ], this.characterGameObject);
 
         //セーブデータ更新。２番目の仲間フラグを立てる。
-        this.gameScene.cache.json.get('savedata').playerData2.PartyMemberFlg = true;
+        this.fieldScene.cache.json.get('savedata').playerData2.PartyMemberFlg = true;
 
         //イベント終了時の処理
         await this.eventEnd();
@@ -320,13 +320,13 @@ export class EVENT010401 extends BaseEvent {
                 this.characterGameObject.imageObjectsDestroy();
 
                 //設定を戻す
-                this.gameScene.events.emit('EVENT_END');
+                this.fieldScene.events.emit('EVENT_END');
 
                 //状態管理クラス
                 const gameStateManager = GameStateManager.getInstance();
 
                 //フラグ更新のためマップリスタート
-                this.gameScene.events.emit('FIELD_RESTART', {
+                this.fieldScene.events.emit('FIELD_RESTART', {
                     gameMode: 'updateFlg',
                     x: this.player.x,
                     y: this.player.y,

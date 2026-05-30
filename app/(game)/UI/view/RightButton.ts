@@ -13,7 +13,7 @@ export class RightButton {
 
     constructor(uiScene: Phaser.Scene) {
         this.uiScene = uiScene;
-        this.gameScene = uiScene.scene.get('Game') as Phaser.Scene;
+        this.gameScene = uiScene.scene.get('Field') as Phaser.Scene;
     }
 
     public async execute() {

@@ -1,4 +1,4 @@
-import { GameScene } from "../../lib/types";
+import { FieldScene } from "../../lib/types";
 import { FieldData } from "../../lib/types";
 import { tilesets, MapLayerDepth } from "../../lib/FieldTypes";
 import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
@@ -35,7 +35,7 @@ interface AnimationTileMapLayer extends Phaser.Tilemaps.TilemapLayer {
 export class TileMap extends Phaser.GameObjects.Container {
     private fieldData: FieldData;
 
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private makeTilemap: Phaser.Tilemaps.Tilemap;
 
     private collisionLayer: Phaser.Tilemaps.TilemapLayer;
@@ -50,12 +50,12 @@ export class TileMap extends Phaser.GameObjects.Container {
     private mapHighLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighestLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
 
-    constructor(scene: GameScene, fieldData: FieldData) {
+    constructor(scene: FieldScene, fieldData: FieldData) {
         super(scene);
-        this.gameScene = scene;
+        this.fieldScene = scene;
         this.addToUpdateList();
 
-        this.makeTilemap = this.gameScene.make.tilemap({ key: fieldData.mapKey });
+        this.makeTilemap = this.fieldScene.make.tilemap({ key: fieldData.mapKey });
     }
 
 
@@ -71,7 +71,7 @@ export class TileMap extends Phaser.GameObjects.Container {
 
     //                 for (const property of npcObj.properties) {
     //                     if (property.name === 'filepath') {
-    //                         this.gameScene.load.spritesheet(entity.name, entity.filepath,
+    //                         this.fieldScene.load.spritesheet(entity.name, entity.filepath,
     //                             { frameWidth: Number(npcObj.width), frameHeight: Number(npcObj.height) }
     //                         );
     //                     }
@@ -84,10 +84,10 @@ export class TileMap extends Phaser.GameObjects.Container {
     public async loadTileSetFile(fieldData: FieldData): Promise<void> {
         // タイル画像のロード
         // データ内のタイルセット画像のURLの一部を書き換える。配置を変更する場合は注意。
-        const tilesets: tilesets[] = this.gameScene.cache.tilemap.get(fieldData.mapKey).data.tilesets;
+        const tilesets: tilesets[] = this.fieldScene.cache.tilemap.get(fieldData.mapKey).data.tilesets;
 
         // SearchTileNamedataのインスタンス化
-        const searchTileNamedata = new SearchTileNamedata(this.gameScene.cache.json);
+        const searchTileNamedata = new SearchTileNamedata(this.fieldScene.cache.json);
 
         for (const tileset of tilesets) {
             const dataDirectry = tileset.image.split('/');
@@ -109,7 +109,7 @@ export class TileMap extends Phaser.GameObjects.Container {
 
                 if (hasNormalMap) {
                     // スプライトシート形式で法線マップを読み込む
-                    this.gameScene.load.spritesheet({
+                    this.fieldScene.load.spritesheet({
                         key: textureKey,
                         url: tileUrl,
                         normalMap: normalUrl,
@@ -119,7 +119,7 @@ export class TileMap extends Phaser.GameObjects.Container {
                         },
                     });
                 } else {
-                    this.gameScene.load.spritesheet(textureKey, tileUrl, {
+                    this.fieldScene.load.spritesheet(textureKey, tileUrl, {
                         frameWidth: tileset.tilewidth,
                         frameHeight: tileset.tileheight
                     });
@@ -131,11 +131,11 @@ export class TileMap extends Phaser.GameObjects.Container {
 
                     //console.log(`[Image] 法線マップを発見: ${normalUrl}`);
                     // 画像と法線マップをセットでロード
-                    this.gameScene.load.image(tileKey, [tileUrl, normalUrl]);
+                    this.fieldScene.load.image(tileKey, [tileUrl, normalUrl]);
                 } else {
                     //console.log(`[Image] 法線マップなし（通常ロード）: ${tileUrl}`);
                     // 通常の画像のみロード
-                    this.gameScene.load.image({ key: tileKey, url: tileUrl });
+                    this.fieldScene.load.image({ key: tileKey, url: tileUrl });
                 }
             }
         }
@@ -143,21 +143,21 @@ export class TileMap extends Phaser.GameObjects.Container {
         // 登録したアセットのダウンロードを明示的に開始し、完了を待つ
         return new Promise<void>((resolve) => {
             // すでにローダーが動いている、またはキューが空の場合は即時解決
-            if (!this.gameScene.load.isLoading() && this.gameScene.load.list.size === 0) {
+            if (!this.fieldScene.load.isLoading() && this.fieldScene.load.list.size === 0) {
                 resolve();
                 return;
             }
 
             // 確実にロード完了をキャッチするイベントリスナー
-            this.gameScene.load.once('complete', () => {
+            this.fieldScene.load.once('complete', () => {
                 //console.log("【確認】PhaserがすべてのファイルをVRAMに展開しました");
                 resolve();
             });
 
             // もしすでにロード中の場合は start() を重ねて呼ばない
-            if (!this.gameScene.load.isLoading()) {
+            if (!this.fieldScene.load.isLoading()) {
                 //console.log("Phaserの内部ダウンロードを開始します...");
-                this.gameScene.load.start();
+                this.fieldScene.load.start();
             } else {
                 //console.log("ローダーは既に稼働中です。完了を待ちます。");
             }
@@ -172,7 +172,7 @@ export class TileMap extends Phaser.GameObjects.Container {
 
         //this.settilmapDepth();
 
-        this.gameScene.events.once('shutdown', () => {
+        this.fieldScene.events.once('shutdown', () => {
             this.collisionLayer.destroy();
             for (const tilemapLayer of this.tilemapLayerList) {
                 tilemapLayer.destroy();
@@ -208,7 +208,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             const mapkey = this.fieldData.mapKey;
 
             //mapkeyからTiledデータを呼び出す
-            const tilemap: Phaser.Tilemaps.Tilemap = this.gameScene.make.tilemap({ key: mapkey });
+            const tilemap: Phaser.Tilemaps.Tilemap = this.fieldScene.make.tilemap({ key: mapkey });
             this.makeTilemap = tilemap;
 
             //タイルマップのプロパティからバトル情報を設定
@@ -230,7 +230,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             tilemap.tilesets.forEach(tilesetArray => {
                 const textureKey = "tex_" + tilesetArray.name;
                 // "tex_" プリフィックス付きのテクスチャがキャッシュにある場合は、そのキーを指定してタイルセットを登録する
-                if (this.gameScene.textures.exists(textureKey)) {
+                if (this.fieldScene.textures.exists(textureKey)) {
                     tilemap.addTilesetImage(tilesetArray.name, textureKey);
                 } else {
                     tilemap.addTilesetImage(tilesetArray.name);

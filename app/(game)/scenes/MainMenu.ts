@@ -10,7 +10,7 @@ export class MainMenu extends Scene {
 
     constructor() {
         super('MainMenu');
-        
+
     }
 
     create() {
@@ -35,7 +35,7 @@ export class MainMenu extends Scene {
             this.logoTween = null;
         }
 
-        this.scene.start('Game');
+        this.scene.start('Field');
     }
 
     moveLogo(reactCallback: ({ x, y }: { x: number, y: number }) => void) {

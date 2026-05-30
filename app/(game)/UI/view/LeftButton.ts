@@ -12,7 +12,7 @@ export class LeftButton {
 
     constructor(uiScene: Phaser.Scene) {
         this.uiScene = uiScene;
-        this.gameScene = uiScene.scene.get('Game') as Phaser.Scene;
+        this.gameScene = uiScene.scene.get('Field') as Phaser.Scene;
     }
 
     public async execute() {
@@ -56,14 +56,14 @@ export class LeftButton {
          * x/y は各ゾーン・テキストの「中央座標」（centerX/centerY を基準に指定）
          */
         const padInfo = [
-            { char: '⇑', x: centerX,         y: centerY - buttonSize, dir: 'up'         },
-            { char: '⇓', x: centerX,         y: centerY + buttonSize, dir: 'down'       },
-            { char: '⇐', x: centerX - buttonSize, y: centerY,         dir: 'left'       },
-            { char: '⇒', x: centerX + buttonSize, y: centerY,         dir: 'right'      },
-            { char: '⇖', x: centerX - d,     y: centerY - d,          dir: 'up-left'    },
-            { char: '⇗', x: centerX + d,     y: centerY - d,          dir: 'up-right'   },
-            { char: '⇙', x: centerX - d,     y: centerY + d,          dir: 'down-left'  },
-            { char: '⇘', x: centerX + d,     y: centerY + d,          dir: 'down-right' },
+            { char: '⇑', x: centerX, y: centerY - buttonSize, dir: 'up' },
+            { char: '⇓', x: centerX, y: centerY + buttonSize, dir: 'down' },
+            { char: '⇐', x: centerX - buttonSize, y: centerY, dir: 'left' },
+            { char: '⇒', x: centerX + buttonSize, y: centerY, dir: 'right' },
+            { char: '⇖', x: centerX - d, y: centerY - d, dir: 'up-left' },
+            { char: '⇗', x: centerX + d, y: centerY - d, dir: 'up-right' },
+            { char: '⇙', x: centerX - d, y: centerY + d, dir: 'down-left' },
+            { char: '⇘', x: centerX + d, y: centerY + d, dir: 'down-right' },
         ];
 
         for (const info of padInfo) {

@@ -1,10 +1,10 @@
-import { Player } from "../gamemain/view/character/Player";
-import { TileMap } from "../gamemain/view/TileMap";
-import { MapObject } from "../gamemain/view/MapObject";
+import { Player } from "../field/view/character/Player";
+import { TileMap } from "../field/view/TileMap";
+import { MapObject } from "../field/view/MapObject";
 import { FieldData } from './FieldTypes';
 import { GameKeys } from "./CommonTypes";
 
-export interface GameScene extends Phaser.Scene {
+export interface FieldScene extends Phaser.Scene {
   getFieldData(): FieldData;
   setPlayer(playerSprite: Player): void;
   getPlayer(): Player;

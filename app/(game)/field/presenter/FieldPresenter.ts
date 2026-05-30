@@ -1,11 +1,11 @@
-import { GameScene, State } from "../../lib/types";
+import { FieldScene, State } from "../../lib/types";
 import { FieldMapModel } from "../model/FieldMapModel";
 import { TileMap } from "../view/TileMap";
 import { MapObject } from "../view/MapObject";
 import { MapEffect } from "../view/MapEffect";
-import { MenuButton } from "../view/MenuButton";
-import { SaveButton } from "../view/SaveButton";
-import { FireButton } from "../view/FireButton";
+// import { MenuButton } from "../view/MenuButton";
+// import { SaveButton } from "../view/SaveButton";
+// import { FireButton } from "../view/FireButton";
 import { FieldData } from "../../lib/types";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
 import { Npc } from "../view/character/Npc";
@@ -21,14 +21,14 @@ export class FieldPresenter {
     private uiScene: Phaser.Scene;
 
     constructor(
-        private gameScene: GameScene,
+        private gameScene: FieldScene,
         private fieldMapModel: FieldMapModel,
         private tileMap: TileMap,
         private mapObject: MapObject,
         private mapEffect: MapEffect,
-        private menuButton: MenuButton,
-        private saveButton: SaveButton,
-        private fireButton: FireButton,
+        // private menuButton: MenuButton,
+        // private saveButton: SaveButton,
+        // private fireButton: FireButton,
         private cameraManager: CameraManager,
         private inputManager: InputManager,
         private fieldMessageWindow: FieldMessageWindow
@@ -38,9 +38,9 @@ export class FieldPresenter {
         this.tileMap = tileMap;
         this.mapObject = mapObject;
         this.mapEffect = mapEffect;
-        this.menuButton = menuButton;
-        this.saveButton = saveButton;
-        this.fireButton = fireButton;
+        // this.menuButton = menuButton;
+        // this.saveButton = saveButton;
+        // this.fireButton = fireButton;
         this.cameraManager = cameraManager;
         this.inputManager = inputManager;
         this.fieldMessageWindow = fieldMessageWindow;
@@ -261,14 +261,4 @@ export class FieldPresenter {
     public getPlayer() {
         return this.mapObject.getPlayer();
     }
-
-    // public getPlayerPartyList() {
-    //     const gameStateManager = GameStateManager.getInstance();
-    //     return gameStateManager.currentPlayerPartyList;
-    // }
-
-    // public getTilemap(): TileMap {
-    //     return this.tileMap;
-    // }
-
 }

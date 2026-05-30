@@ -1,4 +1,4 @@
-import { GameScene } from "@/app/(game)/lib/types";
+import { FieldScene } from "@/app/(game)/lib/types";
 import { Npc } from "./Npc";
 import { Shadow } from "./part/Shadow";
 import { bubble } from "./part/bubble";
@@ -7,8 +7,8 @@ export class SpriteType_3x4 extends Npc {
     frameRate = 10;
     shadowFlag = true;
 
-    constructor(gameScene: GameScene, x: number, y: number, npcType: string, spriteSheetKey: string, characterName: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
-        super(gameScene, x, y, npcType, spriteSheetKey, characterName, initStandKey, imageKey, bubbleTalkKey);
+    constructor(fieldScene: FieldScene, x: number, y: number, npcType: string, spriteSheetKey: string, characterName: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
+        super(fieldScene, x, y, npcType, spriteSheetKey, characterName, initStandKey, imageKey, bubbleTalkKey);
         this._animationSetting(spriteSheetKey);
         this._setShadow(initStandKey);
         this.setBubble();
@@ -65,7 +65,7 @@ export class SpriteType_3x4 extends Npc {
 
     _setShadow(initStandKey: string) {
         if (this.shadowFlag) {
-            const shadowSprite = new Shadow(this, this.gameScene, this.x, this.y, 'chicken_shadow', initStandKey);
+            const shadowSprite = new Shadow(this, this.fieldScene, this.x, this.y, 'chicken_shadow', initStandKey);
             this.spriteObjList.push(shadowSprite);
         }
     }
@@ -73,7 +73,7 @@ export class SpriteType_3x4 extends Npc {
     public setBubble() {
         //吹き出しテキストがある場合に設定
         if (this.bubbleTalkKey) {
-            const bubbleSprite = new bubble(this, this.gameScene, this.x, this.y, 'bubble', 'stand_down');
+            const bubbleSprite = new bubble(this, this.fieldScene, this.x, this.y, 'bubble', 'stand_down');
             this.spriteObjList.push(bubbleSprite);
         }
     }

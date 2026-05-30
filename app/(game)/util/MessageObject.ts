@@ -24,7 +24,7 @@ export class MessageObject {
         this.scene = scene;
 
         if (
-            (scene.scene.key === 'Game' && usePatern !== 'BubbleTalk') ||
+            (scene.scene.key === 'Field' && usePatern !== 'BubbleTalk') ||
             scene.scene.key === 'Event' ||
             scene.scene.key === 'Battle'
             //scene.scene.key === 'Menu'

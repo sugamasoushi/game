@@ -1,14 +1,14 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState } from "../../lib/types";
+import { FieldScene, EventObjState } from "../../lib/types";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
-import { Npc } from "../../gamemain/view/character/Npc";
-import { Player } from "../../gamemain/view/character/Player";
+import { Npc } from "../../field/view/character/Npc";
+import { Player } from "../../field/view/character/Player";
 import { CharacterGameObject } from './CharacterGameObject';
 
 export class EVENT010302 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -18,7 +18,7 @@ export class EVENT010302 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = (this.eventScene.scene.get('Game') as GameScene);
+        this.fieldScene = (this.eventScene.scene.get('Field') as FieldScene);
     }
 
     override init() {
@@ -36,12 +36,12 @@ export class EVENT010302 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010401', true);
 
         //プレイヤー設定
-        this.player = this.gameScene.getPlayer();
+        this.player = this.fieldScene.getPlayer();
         this.player.stopAnimation();
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
-        this.lamyNPC = (this.characterGameObject.getSprite(this.gameScene, 'lamyNPC') as Npc);
+        this.lamyNPC = (this.characterGameObject.getSprite(this.fieldScene, 'lamyNPC') as Npc);
         this.lamyNPC.state = EventObjState.nowEvent;
         this.lamyNPC.initMoveToPosition();
     }
@@ -79,14 +79,14 @@ export class EVENT010302 extends BaseEvent {
             this.eventScene.cameras.main.once('camerafadeoutcomplete', () => {
 
                 //設定を戻す
-                this.gameScene.events.emit('EVENT_END', true)
+                this.fieldScene.events.emit('EVENT_END', true)
 
                 //キャラ画像を削除
                 this.characterGameObject.imageObjectsDestroy();
 
                 //マップ移動はシーンの再描画で実施する
                 //FieldPresenterに通知
-                this.gameScene.events.emit('FIELD_RESTART', {
+                this.fieldScene.events.emit('FIELD_RESTART', {
                     gameMode: 'FieldMove',
                     x: 816,
                     y: 490,

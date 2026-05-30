@@ -1,4 +1,4 @@
-import { GameScene } from '../../lib/SceneTypes';
+import { FieldScene } from '../../lib/SceneTypes';
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { ConditionWindow } from "./ConditionWindow";
@@ -12,7 +12,7 @@ import { MovieWindow } from "./MovieWindow";
 export class MenuView {
 
     private scene: Phaser.Scene;
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private menuModel: MenuModel;
 
     public mainColumnWindow: MainColumnWindow;
@@ -24,9 +24,9 @@ export class MenuView {
     public saveWindow: SaveWindow;
     public movieWindow: MovieWindow;
 
-    constructor(scene: Phaser.Scene, gameScene: GameScene, menuModel: MenuModel) {
+    constructor(scene: Phaser.Scene, fieldScene: FieldScene, menuModel: MenuModel) {
         this.scene = scene;
-        this.gameScene = gameScene;
+        this.fieldScene = fieldScene;
         this.menuModel = menuModel;
 
         this.mainColumnWindow = new MainColumnWindow(this.scene, this.menuModel);

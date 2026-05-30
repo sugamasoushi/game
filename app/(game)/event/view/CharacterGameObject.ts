@@ -1,5 +1,5 @@
-import { Npc } from "../../gamemain/view/character/Npc";
-import { GameScene } from "../../lib/types";
+import { Npc } from "../../field/view/character/Npc";
+import { FieldScene } from "../../lib/types";
 
 export class CharacterGameObject {
     private characterImageMap: Map<string, Phaser.GameObjects.Image> = new Map();
@@ -7,7 +7,7 @@ export class CharacterGameObject {
     constructor() { }
 
     //spriteを検索
-    public getSprite(gameScene: GameScene, characterName: string): Phaser.Physics.Arcade.Sprite {
+    public getSprite(gameScene: FieldScene, characterName: string): Phaser.Physics.Arcade.Sprite {
 
         let characterSprite: Phaser.Physics.Arcade.Sprite;
         const displayList = gameScene.children.getChildren();
@@ -27,8 +27,8 @@ export class CharacterGameObject {
     }
 
     //フィールドの敵リストを取得
-    public getFieldEnemyList(gameScene: GameScene): Npc[] {
-        return gameScene.getMapObject().getFieldEnemyList();
+    public getFieldEnemyList(fieldScene: FieldScene): Npc[] {
+        return fieldScene.getMapObject().getFieldEnemyList();
     }
 
     //キャラクターの立ち絵を取得しスクロール

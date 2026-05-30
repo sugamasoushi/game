@@ -1,18 +1,18 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, CharacterState } from "../../lib/types";
+import { FieldScene, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
-import { Npc } from "../../gamemain/view/character/Npc";
-import { Player } from "../../gamemain/view/character/Player";
+import { Npc } from "../../field/view/character/Npc";
+import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
-import { SpriteType_3x4 } from "../../gamemain/view/character/SpriteType_3x4";
+import { SpriteType_3x4 } from "../../field/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
 
 export class EVENT010301 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -24,7 +24,7 @@ export class EVENT010301 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = (this.eventScene.scene.get('Game') as GameScene);
+        this.fieldScene = (this.eventScene.scene.get('Field') as FieldScene);
         this.soundScene = this.eventScene.scene.get('Sound') as Sound;
     }
 
@@ -43,13 +43,13 @@ export class EVENT010301 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010302', true);
 
         //プレイヤー設定
-        this.player = this.gameScene.getPlayer();
+        this.player = this.fieldScene.getPlayer();
         this.player.state = CharacterState.event;
         this.player.stopAnimation();
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
-        this.lamyNPC = (this.characterGameObject.getSprite(this.gameScene, 'lamyNPC') as Npc);
+        this.lamyNPC = (this.characterGameObject.getSprite(this.fieldScene, 'lamyNPC') as Npc);
         this.lamyNPC.state = CharacterState.event;
         this.lamyNPC.initMoveToPosition();
     }
@@ -63,12 +63,12 @@ export class EVENT010301 extends BaseEvent {
             this.soundScene.SE_karuipunch.play({ loop: false }),
             //カメラ効果
             new Promise<void>(resolve => {
-                this.gameScene.getMainCamera().shake(100, 0.02);
+                this.fieldScene.getMainCamera().shake(100, 0.02);
                 resolve();
             }),
             //カメラを移動
             new Promise<void>(resolve => {
-                const cam = this.gameScene.getMainCamera();
+                const cam = this.fieldScene.getMainCamera();
                 cam.once(Phaser.Cameras.Scene2D.Events.PAN_COMPLETE, () => { resolve(); }); // PAN_COMPLETE を1回だけ待つ
                 cam.pan(this.player.x, this.player.y, 500, 'Linear', false);
             }),
@@ -116,7 +116,7 @@ export class EVENT010301 extends BaseEvent {
         ], this.characterGameObject);
 
         //キャラステータス設定（imageKeyに対応するenemydataを適用）
-        const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
+        const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
         const lamyEnemyData = searchEnemyData.getEnemyData(this.lamyNPC.getData('ImageKey'));
         if (lamyEnemyData) {
             this.lamyNPC.setData({
@@ -134,7 +134,7 @@ export class EVENT010301 extends BaseEvent {
         }
 
         //イベントバトル開始
-        this.gameScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.lamyNPC, canNotRunaway: true });
+        this.fieldScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.lamyNPC, canNotRunaway: true });
 
         //戦闘終了後、イベントを途中から開始
         const battleScene = this.eventScene.scene.get('Battle');
@@ -181,7 +181,7 @@ export class EVENT010301 extends BaseEvent {
                 //イベント後のキャラに吹き出し会話を設定
                 this.lamyNPC.setBubbleTalkKey('bubbleTalk0001.talk002');
                 this.lamyNPC.talkSetting();
-                this.lamyNPC.setInputManager(InputManager.getInstance(this.gameScene));
+                this.lamyNPC.setInputManager(InputManager.getInstance(this.fieldScene));
                 (this.lamyNPC as SpriteType_3x4).setBubble();
                 this.lamyNPC.setData('ImageKey', '20240908');
                 this.lamyNPC.state = CharacterState.normal;
@@ -190,7 +190,7 @@ export class EVENT010301 extends BaseEvent {
                 this.characterGameObject.imageObjectsDestroy();
 
                 //設定を戻す
-                this.gameScene.events.emit('EVENT_END')
+                this.fieldScene.events.emit('EVENT_END')
 
                 resolve();
             });

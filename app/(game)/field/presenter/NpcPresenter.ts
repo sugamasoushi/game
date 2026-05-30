@@ -1,4 +1,4 @@
-import { GameScene } from "../../lib/types";
+import { FieldScene } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
 import { FieldPresenter } from "./FieldPresenter";
 
@@ -7,7 +7,7 @@ import { FieldMapModel } from "../model/FieldMapModel";
 export class NpcPresenter {
 
     constructor(
-        private gameScene: GameScene,
+        private fieldScene: FieldScene,
         private fieldMapModel: FieldMapModel,
         private fieldPresenter: FieldPresenter,
         private inputManager: InputManager

@@ -1,5 +1,5 @@
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
-import { GameScene } from "@/app/(game)/lib/SceneTypes";
+import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { State } from "@/app/(game)/lib/StateTypes";
 import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { GameStateManager, gameStateManager } from '../../../GameAllState/GameStateManager';
@@ -27,15 +27,15 @@ export class Player extends BaseSprite {
     private leader: Player | null = null;
     public lastHistoryUpdateTime: number = 0;
 
-    constructor(scene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
+    constructor(scene: FieldScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
         super(scene, x, y, 'tex_' + spriteSheetKey, initStandKey);
-        this.gameScene = scene;
+        this.fieldScene = scene;
         this.name = spriteSheetKey;
 
         this.debugFlg = scene.game.config.physics.arcade?.debug;
 
         //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
-        this.gameScene.physics.add.existing(this);
+        this.fieldScene.physics.add.existing(this);
         //(this.body as Phaser.Physics.Arcade.Body)!.setImmovable(true);//衝突処理されなくなる。
 
         //ボディの当たり判定、座標関係を変更
@@ -96,8 +96,8 @@ export class Player extends BaseSprite {
         this.updateCharacterShapesMask();
 
         //クリック操作による移動でプレイヤーから一定距離以上離れたら強制的にプレイヤーの位置に更新する
-        if (this.name !== 'meina' && !this.leader && Phaser.Math.Distance.BetweenPoints(this, this.gameScene.getPlayer()) > 500 && this.state === CharacterState.normal) {
-            this.setMapPosition(this.gameScene.getPlayer().x, this.gameScene.getPlayer().y);
+        if (this.name !== 'meina' && !this.leader && Phaser.Math.Distance.BetweenPoints(this, this.fieldScene.getPlayer()) > 500 && this.state === CharacterState.normal) {
+            this.setMapPosition(this.fieldScene.getPlayer().x, this.fieldScene.getPlayer().y);
         }
     }
 
@@ -384,7 +384,7 @@ export class Player extends BaseSprite {
     //キャラの一部を非表示にするマスク
     private updateCharacterShapesMask() {
 
-        const makeTilemap: Phaser.Tilemaps.Tilemap = this.gameScene.getTilemap().getMakeTilemap();
+        const makeTilemap: Phaser.Tilemaps.Tilemap = this.fieldScene.getTilemap().getMakeTilemap();
 
         //以下のチェックはGraphicsの処理を減らすため、対象タイルマップの存在有無チェックを行っていたが、一つのGraphicsに複数描画する分には殆ど処理は重くならないため不要とする
         // if (!makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&

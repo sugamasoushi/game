@@ -1,32 +1,38 @@
 import { Scene } from 'phaser';
 import { EventBus } from '../EventBus';
-import { GameScene } from '../lib/SceneTypes';
+import { FieldScene } from '../lib/SceneTypes';
 import { FieldData } from '../lib/FieldTypes';
 import { GameKeys } from '../lib/CommonTypes';
 import { ReadyEvents } from '../lib/typesGamescene';
-import { FieldPresenter } from '../gamemain/presenter/FieldPresenter';
-import { PlayerPresenter } from '../gamemain/presenter/PlayerPresenter';
-import { NpcPresenter } from '../gamemain/presenter/NpcPresenter';
-import { FieldMapModel } from '../gamemain/model/FieldMapModel';
-import { TileMap } from '../gamemain/view/TileMap';
-import { MapObject } from '../gamemain/view/MapObject';
-import { MapEffect } from '../gamemain/view/MapEffect';
-import { MenuButton } from '../gamemain/view/MenuButton';
-import { SaveButton } from '../gamemain/view/SaveButton';
-import { FireButton } from '../gamemain/view/FireButton';
-import { Player } from '../gamemain/view/character/Player';
+import { FieldPresenter } from '../field/presenter/FieldPresenter';
+import { PlayerPresenter } from '../field/presenter/PlayerPresenter';
+import { NpcPresenter } from '../field/presenter/NpcPresenter';
+import { ChestPresenter } from '../field/presenter/ChestPresenter';
+
+import { FieldMapModel } from '../field/model/FieldMapModel';
+import { ChestModel } from '../field/model/ChestModel';
+
+import { TileMap } from '../field/view/TileMap';
+import { MapObject } from '../field/view/MapObject';
+import { MapEffect } from '../field/view/MapEffect';
+// import { MenuButton } from '../field/view/MenuButton';
+// import { SaveButton } from '../field/view/SaveButton';
+// import { FireButton } from '../field/view/FireButton';
+import { Player } from '../field/view/character/Player';
+import { ChestView } from '../field/view/ChestView';
 
 import { GameStateManager, gameStateManager } from '../GameAllState/GameStateManager';
 
 import { InputManager } from '../core/input/InputManager';
-import { CameraManager } from '../gamemain/view/CameraManager';
-import { FieldMessageWindow } from '../gamemain/view/FieldMessageWindow';
+import { CameraManager } from '../field/view/CameraManager';
+import { FieldMessageWindow } from '../field/view/FieldMessageWindow';
 
-export class Game extends Scene implements GameScene {
+export class Field extends Scene implements FieldScene {
 
     private gameStateManager: GameStateManager;
 
     private fieldMapModel: FieldMapModel;
+    private chestModel: ChestModel;
 
     private tileMap: TileMap;
     private mapObject: MapObject;
@@ -37,6 +43,7 @@ export class Game extends Scene implements GameScene {
     private fieldPresenter: FieldPresenter;
     private playerPresenter: PlayerPresenter;
     private npcPresenter: NpcPresenter;
+    private chestPresenter: ChestPresenter;
 
     private fieldData: FieldData;
     private cursorsKeys: Phaser.Types.Input.Keyboard.CursorKeys;//キーボード設定
@@ -44,12 +51,13 @@ export class Game extends Scene implements GameScene {
     private keys!: GameKeys;
     private player: Player;
 
-    private menuButton: MenuButton;
-    private testButton: SaveButton;
-    private fireButton: FireButton;
+    private chestView: ChestView;
+    // private menuButton: MenuButton;
+    // private testButton: SaveButton;
+    // private fireButton: FireButton;
     private fieldMessageWindow: FieldMessageWindow;
 
-    constructor() { super('Game'); }
+    constructor() { super('Field'); }
 
     init() {//initはscene開始時にpreloadやcreateより先に実行される。
 
@@ -57,12 +65,15 @@ export class Game extends Scene implements GameScene {
         this.gameStateManager = GameStateManager.getInstance();
 
         this.fieldMapModel = new FieldMapModel(this);
+        this.chestModel = new ChestModel(this);
+
         this.tileMap = new TileMap(this, this.gameStateManager.currentFieldData);
         this.mapObject = new MapObject(this);
         this.mapEffect = new MapEffect(this);
-        this.menuButton = new MenuButton(this);
-        this.testButton = new SaveButton(this, this.mapObject);
-        this.fireButton = new FireButton(this, this.mapObject);
+        this.chestView = new ChestView(this);
+        // this.menuButton = new MenuButton(this);
+        // this.testButton = new SaveButton(this, this.mapObject);
+        // this.fireButton = new FireButton(this, this.mapObject);
         this.inputManager = InputManager.getInstance(this);
         this.cameraManager = new CameraManager(this);
         this.fieldMessageWindow = new FieldMessageWindow(this);
@@ -74,9 +85,9 @@ export class Game extends Scene implements GameScene {
             this.tileMap,
             this.mapObject,
             this.mapEffect,
-            this.menuButton,
-            this.testButton,
-            this.fireButton,
+            // this.menuButton,
+            // this.testButton,
+            // this.fireButton,
             this.cameraManager,
             this.inputManager,
             this.fieldMessageWindow
@@ -91,6 +102,14 @@ export class Game extends Scene implements GameScene {
         this.npcPresenter = new NpcPresenter(
             this,
             this.fieldMapModel,
+            this.fieldPresenter,
+            this.inputManager);
+
+        this.chestPresenter = new ChestPresenter(
+            this,
+            this.chestModel,
+            this.chestView,
+            this.mapObject,
             this.fieldPresenter,
             this.inputManager);
     }

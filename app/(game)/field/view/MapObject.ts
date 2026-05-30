@@ -1,4 +1,4 @@
-import { GameScene } from "../../lib/SceneTypes";
+import { FieldScene } from "../../lib/SceneTypes";
 import { EventObjState, ObjState, CharacterState, FieldData, MapLayerDepth } from "../../lib/FieldTypes";
 import { TileMap } from "./TileMap";
 import { DataDefinition } from '../../Data/DataDefinition';
@@ -25,7 +25,7 @@ export class MapObject extends Phaser.GameObjects.Container {
     private inputManager: InputManager
     private subs = new Subscription();
 
-    private gameScene: GameScene;
+    private gameScene: FieldScene;
     private TileMap: TileMap;
     private dataDefinition: DataDefinition;
     private player: Player;
@@ -47,7 +47,7 @@ export class MapObject extends Phaser.GameObjects.Container {
     private lastCameraX: number = 0;
     private lastCameraY: number = 0;
 
-    constructor(scene: GameScene) {
+    constructor(scene: FieldScene) {
         super(scene);
         this.gameScene = scene;
         this.addToUpdateList();
@@ -264,7 +264,7 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
     }
 
-    public createSprite(npcType: string, spritetype: string, gameScene: GameScene, x: number, y: number, spriteSheetKey: string, name: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
+    public createSprite(npcType: string, spritetype: string, gameScene: FieldScene, x: number, y: number, spriteSheetKey: string, name: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
         if (spritetype === '0404') { return new SpriteType_4x4(gameScene, x, y, npcType, spriteSheetKey, name, initStandKey, imageKey, bubbleTalkKey); }
         if (spritetype === '0304') { return new SpriteType_3x4(gameScene, x, y, npcType, spriteSheetKey, name, initStandKey, imageKey, bubbleTalkKey); }
     }

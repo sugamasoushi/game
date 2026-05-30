@@ -1,4 +1,4 @@
-import { EventScene, GameScene } from "../lib/types";
+import { EventScene, FieldScene } from "../lib/types";
 import { MessageObject } from "./MessageObject";
 import { MessageWindow } from "./MessageWindow";
 import { DataDefinition } from "../Data/DataDefinition";
@@ -7,7 +7,7 @@ import { InputManager } from "../core/input/InputManager";
 import { Subscription } from "rxjs";
 
 export class ListWindow extends Phaser.GameObjects.Graphics {
-    protected fromScene: GameScene | EventScene | Menu;
+    protected fromScene: FieldScene | EventScene | Menu;
     private messageObject: MessageObject;
     private messageWindowInstance: MessageWindow;
     private cursorObj: Phaser.GameObjects.Graphics;
@@ -33,7 +33,7 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
 
     private choicetList = ['はい', 'いいえ']//デフォルト
 
-    constructor(scene: GameScene | EventScene | Menu, x: number, y: number, list: string[]) {
+    constructor(scene: FieldScene | EventScene | Menu, x: number, y: number, list: string[]) {
         super(scene);
         this.x = x;
         this.y = y;

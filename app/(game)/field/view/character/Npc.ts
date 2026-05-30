@@ -1,4 +1,4 @@
-import { GameScene } from "@/app/(game)/lib/SceneTypes";
+import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
 import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
@@ -28,7 +28,7 @@ export class Npc extends BaseSprite {
     public body: Phaser.Physics.Arcade.Body
 
     constructor(
-        gameScene: GameScene,
+        fieldScene: FieldScene,
         x: number,
         y: number,
         npcType: string,
@@ -38,8 +38,8 @@ export class Npc extends BaseSprite {
         imageKey: string,
         bubbleTalkKey: string
     ) {
-        super(gameScene, x, y, spriteSheetKey, initStandKey);
-        this.gameScene = gameScene;
+        super(fieldScene, x, y, spriteSheetKey, initStandKey);
+        this.fieldScene = fieldScene;
         this.npcType = npcType;
         this.state = CharacterState.normal;
         if (npcType === 'event') {
@@ -76,9 +76,9 @@ export class Npc extends BaseSprite {
 
         //初回作成時
         if (!this.energyGauge) {
-            this.energyGauge = this.gameScene.add.graphics();
+            this.energyGauge = this.fieldScene.add.graphics();
             this.energyGauge.name = 'energyGauge';
-            this.energyGaugeBack = this.gameScene.add.graphics();
+            this.energyGaugeBack = this.fieldScene.add.graphics();
             this.energyGaugeBack.name = 'energyGaugeBack'
             this.graphicsObjList.push(this.energyGauge);
             this.graphicsObjList.push(this.energyGaugeBack);
@@ -117,7 +117,7 @@ export class Npc extends BaseSprite {
 
     private statusSetting() {
         if (this.npcType === 'enemy') {
-            const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
+            const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
             const imageKey = this.getData('ImageKey');
             const enemyData = searchEnemyData.getEnemyData(imageKey);
 
@@ -146,7 +146,7 @@ export class Npc extends BaseSprite {
 
         //tiledでtalkデータを設定する事
         if (this.bubbleTalkKey) {
-            this.currentBubbleTalk = new BubbleTalk(this.gameScene, this, this.bubbleTalkKey);
+            this.currentBubbleTalk = new BubbleTalk(this.fieldScene, this, this.bubbleTalkKey);
             this.currentBubbleTalk.init();
 
             const manager = GameStateManager.getInstance();
@@ -166,21 +166,21 @@ export class Npc extends BaseSprite {
         manager.updateState({ state: State.BUBBLE_TALK }, 'npc');
 
         //キャラの向きをチェック
-        const fieldObjChk = new FieldObjectCheck(this.gameScene.getPlayer(), this);
+        const fieldObjChk = new FieldObjectCheck(this.fieldScene.getPlayer(), this);
         const playerDirection = fieldObjChk.getObjectDirection().object1Direction;
 
         //キャラの向きを設定
         if (playerDirection === 'left') {
-            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standLeft);
+            this.fieldScene.getPlayer().setStandFrame(this.fieldScene.getPlayer().getAnimationKey().standLeft);
             this.turnAround();
         } else if (playerDirection === 'right') {
-            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standRight);
+            this.fieldScene.getPlayer().setStandFrame(this.fieldScene.getPlayer().getAnimationKey().standRight);
             this.turnAround();
         } else if (playerDirection === 'up') {
-            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standUp);
+            this.fieldScene.getPlayer().setStandFrame(this.fieldScene.getPlayer().getAnimationKey().standUp);
             this.turnAround();
         } else if (playerDirection === 'down') {
-            this.gameScene.getPlayer().setStandFrame(this.gameScene.getPlayer().getAnimationKey().standDown);
+            this.fieldScene.getPlayer().setStandFrame(this.fieldScene.getPlayer().getAnimationKey().standDown);
             this.turnAround();
         }
 
@@ -207,7 +207,7 @@ export class Npc extends BaseSprite {
                     // 会話不可の状態
                 } else {
                     // player と target の矩形が重なっているか
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), this.gameScene.getPlayer().getBounds()) &&
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), this.fieldScene.getPlayer().getBounds()) &&
                         this.state === CharacterState.normal) {
 
                         this.execNpcTalk(manager, this.currentBubbleTalk!);
@@ -229,13 +229,13 @@ export class Npc extends BaseSprite {
         if (this.npcType === 'enemy') {
 
             //オブジェクトに衝突した場合、戦闘を発生させる
-            this.gameScene.physics.add.world.addCollider(this, this.gameScene.getPlayer(), () => {
+            this.fieldScene.physics.add.world.addCollider(this, this.fieldScene.getPlayer(), () => {
                 //Presenterに通知
-                this.gameScene.events.emit('BATTLE', { usePatern: 'normal', fieldHitEnemy: this, canNotRunaway: false });
-            }, undefined, this.gameScene);
+                this.fieldScene.events.emit('BATTLE', { usePatern: 'normal', fieldHitEnemy: this, canNotRunaway: false });
+            }, undefined, this.fieldScene);
 
         } else {
-            //this.gameScene.physics.add.collider(this, this.gameScene.getPlayer());
+            //this.fieldScene.physics.add.collider(this, this.fieldScene.getPlayer());
         }
     }
 
@@ -251,13 +251,13 @@ export class Npc extends BaseSprite {
         if (this.state === CharacterState.event) return;
 
         //プレイヤーとの距離が40未満の場合は処理しない
-        if (Phaser.Math.Difference(this.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(this.y, this.gameScene.getPlayer().y) < 40) return;
+        if (Phaser.Math.Difference(this.x, this.fieldScene.getPlayer().x) < 40 && Phaser.Math.Difference(this.y, this.fieldScene.getPlayer().y) < 40) return;
 
         //値が設定されている場合は移動中のため処理しない
         if (this.moveToPositionX && this.moveToPositionY) return;
 
-        const makeTileMap: Phaser.Tilemaps.Tilemap = this.gameScene.getTilemap().getMakeTilemap();
-        const collisionLayer: Phaser.Tilemaps.TilemapLayer = this.gameScene.getTilemap().getCollisionLayer();
+        const makeTileMap: Phaser.Tilemaps.Tilemap = this.fieldScene.getTilemap().getMakeTilemap();
+        const collisionLayer: Phaser.Tilemaps.TilemapLayer = this.fieldScene.getTilemap().getCollisionLayer();
         const move = new Phaser.Math.RandomDataGenerator().between(-20, 20);//指定範囲の間でランダムな整数を返す
         this.delay = new Phaser.Math.RandomDataGenerator().between(100, 200);//停止時間をランダムで設定
 
@@ -335,7 +335,7 @@ export class Npc extends BaseSprite {
             }
         }
         //プレイヤーとの距離が40未満の場合は停止
-        if (Phaser.Math.Difference(this.x, this.gameScene.getPlayer().x) < 40 && Phaser.Math.Difference(this.y, this.gameScene.getPlayer().y) < 40) {
+        if (Phaser.Math.Difference(this.x, this.fieldScene.getPlayer().x) < 40 && Phaser.Math.Difference(this.y, this.fieldScene.getPlayer().y) < 40) {
             this.body.setVelocity(0, 0);
             this.moveDirection = this.walkStop;
             this.delay--;
@@ -348,7 +348,7 @@ export class Npc extends BaseSprite {
 
     _setInput() {
         //プレイヤーとの距離が100未満 かつ 吹き出し会話中では無い かつ 吹き出し会話が設定されている場合はマウスクリックを設定
-        if (Phaser.Math.Difference(this.x, this.gameScene.getPlayer().x) < 100 && Phaser.Math.Difference(this.y, this.gameScene.getPlayer().y) < 100
+        if (Phaser.Math.Difference(this.x, this.fieldScene.getPlayer().x) < 100 && Phaser.Math.Difference(this.y, this.fieldScene.getPlayer().y) < 100
             && this.state === CharacterState.normal && this.bubbleTalkKey) {
             //this.setInteractive();
             this.setInteractive({ useHandCursor: true });
@@ -359,13 +359,13 @@ export class Npc extends BaseSprite {
 
     //キャラクターを逆向きに変更する
     public turnAround() {
-        if (this.gameScene.getPlayer().getAnimationKey().standframe === this.gameScene.getPlayer().getAnimationKey().standLeft) {
+        if (this.fieldScene.getPlayer().getAnimationKey().standframe === this.fieldScene.getPlayer().getAnimationKey().standLeft) {
             this.standframe = this.standRight;
-        } else if (this.gameScene.getPlayer().getAnimationKey().standframe === this.gameScene.getPlayer().getAnimationKey().standRight) {
+        } else if (this.fieldScene.getPlayer().getAnimationKey().standframe === this.fieldScene.getPlayer().getAnimationKey().standRight) {
             this.standframe = this.standLeft;
-        } else if (this.gameScene.getPlayer().getAnimationKey().standframe === this.gameScene.getPlayer().getAnimationKey().standUp) {
+        } else if (this.fieldScene.getPlayer().getAnimationKey().standframe === this.fieldScene.getPlayer().getAnimationKey().standUp) {
             this.standframe = this.standDown;
-        } else if (this.gameScene.getPlayer().getAnimationKey().standframe === this.gameScene.getPlayer().getAnimationKey().standDown) {
+        } else if (this.fieldScene.getPlayer().getAnimationKey().standframe === this.fieldScene.getPlayer().getAnimationKey().standDown) {
             this.standframe = this.standUp;
         }
     }
@@ -375,12 +375,12 @@ export class Npc extends BaseSprite {
             if (this.npcType === 'enemy') {
                 if (this.data.values.HP <= 0) {
                     this.data.values.HP = 0;
-                    this.gameScene.time.delayedCall(this.deleteDelay, () => {
+                    this.fieldScene.time.delayedCall(this.deleteDelay, () => {
                         this.graphicsObjList.forEach(obj => {
                             obj.destroy();
                         })
                         this.destroy();
-                    }, undefined, this.gameScene);
+                    }, undefined, this.fieldScene);
                 }
             }
         }
@@ -388,7 +388,7 @@ export class Npc extends BaseSprite {
 
     //このスプライトを削除
     public deleteCharacter() {
-        this.gameScene.time.delayedCall(this.deleteDelay, () => {
+        this.fieldScene.time.delayedCall(this.deleteDelay, () => {
 
             //スプライト部品を削除（影や吹き出し等）
             this.spriteObjList.forEach(obj => {
@@ -401,7 +401,7 @@ export class Npc extends BaseSprite {
             })
             //このスプライトを削除
             this.destroy();
-        }, undefined, this.gameScene);
+        }, undefined, this.fieldScene);
     }
 
 

@@ -1,11 +1,11 @@
-import { BattleScene, GameScene, CharacterStatus } from "../../lib/types";
-import { Npc } from "../../gamemain/view/character/Npc";
+import { BattleScene, FieldScene, CharacterStatus } from "../../lib/types";
+import { Npc } from "../../field/view/character/Npc";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
 import { gameStateManager } from "../../GameAllState/GameStateManager";
 
 export class BattleModel {
     private battleScene: BattleScene;
-    private gameScene: GameScene;
+    private gameScene: FieldScene;
     private usePatern: string;
     private canNotRunaway: boolean = false;
     private enemyList: string[] = [];//イベント戦闘の敵名称等
@@ -18,7 +18,7 @@ export class BattleModel {
         data: { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }
     ) {
         this.battleScene = battleScene;
-        this.gameScene = (this.battleScene.scene.get('Game') as GameScene);
+        this.gameScene = (this.battleScene.scene.get('Field') as FieldScene);
         this.usePatern = data.usePatern;
         this.canNotRunaway = data.canNotRunaway;
         this.fieldHitEnemy = data.fieldHitEnemy;
@@ -37,8 +37,8 @@ export class BattleModel {
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
 
         //敵数をランダムで作成
-        //const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
-        const enemyValue = 2;
+        const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
+        //const enemyValue = 2;
 
         for (let i = 0; i < enemyValue; i++) {
 

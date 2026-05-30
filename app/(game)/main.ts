@@ -1,9 +1,9 @@
 import { Boot } from './scenes/Boot';
-import { SceneController } from './core/SceneController';
+import { SceneController } from './scenes/SceneController';
 import { Title } from './scenes/Title';
 import { Load } from './scenes/Load';
 import { GameOver } from './scenes/GameOver';
-import { Game as MainGame } from './scenes/Game';
+import { Field as FieldGame } from './scenes/Field';
 import { UI } from './scenes/UI';
 import { MainMenu } from './scenes/MainMenu';
 import { AUTO, Game } from 'phaser';
@@ -55,7 +55,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Title,
         Load,
         MainMenu,
-        MainGame,
+        FieldGame,
         Menu,
         Event,
         Battle,

@@ -1,7 +1,7 @@
 import { Eventer, EventObjState } from "../lib/types";
 import { Event } from "../scenes/Event";
-import { Player } from "../gamemain/view/character/Player";
-import { Npc } from "../gamemain/view/character/Npc";
+import { Player } from "../field/view/character/Player";
+import { Npc } from "../field/view/character/Npc";
 import { gameStateManager } from "../GameAllState/GameStateManager";
 import { State } from "../lib/StateTypes";
 
@@ -33,7 +33,7 @@ export class BaseEvent implements Eventer {
 
     //イベントオブジェクト検索
     protected switchingEventObjFlg(name: string, state: boolean) {
-        const gameScene = this.eventScene.scene.get('Game');
+        const gameScene = this.eventScene.scene.get('Field');
 
         //イベントが完了してない場合は衝突判定をOFFにしておく
         gameScene.children.list.forEach(obj => {

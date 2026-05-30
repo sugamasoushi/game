@@ -1,5 +1,5 @@
 import { FieldData } from "./FieldTypes";
-import { Npc } from "../gamemain/view/character/Npc";
+import { Npc } from "../field/view/character/Npc";
 import { ViewsContainer } from "./BattleTypes";
 import { ActorState } from "../core/ActorState";
 // import * as Phaser from 'phaser';

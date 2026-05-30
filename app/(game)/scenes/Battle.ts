@@ -1,4 +1,4 @@
-import { BattleScene, GameScene } from "../lib/SceneTypes";
+import { BattleScene, FieldScene } from "../lib/SceneTypes";
 import { State } from "../lib/StateTypes";
 
 import { BattleModel } from "../battle/model/BattleModel";
@@ -16,14 +16,14 @@ import { ItemSelectWindow } from "../battle/view/ItemSelectWindow";
 
 import { BattlePresenter } from "../battle/presenter/BattlePresenter";
 
-import { Npc } from "../gamemain/view/character/Npc";
+import { Npc } from "../field/view/character/Npc";
 
 import { gameStateManager } from "../GameAllState/GameStateManager";
 import { GameStateManager } from "../GameAllState/GameStateManager";
 import { CacheDataUpdate } from "../core/CacheDataUpdate";
 
 export class Battle extends Phaser.Scene implements BattleScene {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
 
     //model
     private battleModel: BattleModel;
@@ -49,7 +49,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
     constructor() { super('Battle'); }
 
     init() {//dataはマップ上の敵キャラ接触で連携されるデータ
-        this.gameScene = (this.scene.get('Game') as GameScene);
+        this.fieldScene = (this.scene.get('Field') as FieldScene);
 
         //rxjsのフラグを更新
         gameStateManager.startBattle();

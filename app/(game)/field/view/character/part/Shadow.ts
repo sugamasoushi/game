@@ -1,11 +1,11 @@
-import { GameScene } from "@/app/(game)/lib/types";
+import { FieldScene } from "@/app/(game)/lib/types";
 import { BaseParts } from "@/app/(game)/core/BaseParts";
 
 export class Shadow extends BaseParts {
     frameRate = 10;
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite, gameScene: GameScene, x: number, y: number, texture: string, direction: string) {
-        super(sprite, gameScene, x, y, texture, direction);
+    constructor(sprite: Phaser.Physics.Arcade.Sprite, fieldScene: FieldScene, x: number, y: number, texture: string, direction: string) {
+        super(sprite, fieldScene, x, y, texture, direction);
         this._animationSetting(texture);
     }
 

@@ -41,7 +41,7 @@ export class Sound extends Scene {
     preload() { }
 
     create() {
-        this.gameScene = this.scene.get('Game');
+        this.gameScene = this.scene.get('Field');
 
         this.bgm1 = this.sound.add('bgm_otobokeDance', { loop: true }) as Phaser.Sound.HTML5AudioSound;
         this.bgm1.setVolume(0.9);

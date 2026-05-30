@@ -1,10 +1,10 @@
-import { GameScene } from '../../lib/SceneTypes';
+import { FieldScene } from '../../lib/SceneTypes';
 import { GameStateManager } from '../../GameAllState/GameStateManager';
 import { ItemUpdate } from '../../Data/ItemUpdate';
 
 export class MenuModel {
 
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private scene: Phaser.Scene;
 
     // Setting Data
@@ -20,9 +20,9 @@ export class MenuModel {
 
     private itemUpdate: ItemUpdate;
 
-    constructor(scene: Phaser.Scene, gameScene: GameScene) {
+    constructor(scene: Phaser.Scene, gameScene: FieldScene) {
         this.scene = scene;
-        this.gameScene = gameScene;
+        this.fieldScene = gameScene;
         this.initSettings();
     }
 
@@ -44,19 +44,19 @@ export class MenuModel {
     }
 
     public getPlayerData() {
-        return this.gameScene.getPlayer().data;
+        return this.fieldScene.getPlayer().data;
     }
 
     public getPlayerDataList() {
-        return this.gameScene.getPlayer().data.list;
+        return this.fieldScene.getPlayer().data.list;
     }
 
     public getItemData() {
-        return this.gameScene.getPlayer().data;
+        return this.fieldScene.getPlayer().data;
     }
 
     public getPlayerItemCount(itemName: string) {
-        return this.gameScene.getPlayer().getData(itemName);
+        return this.fieldScene.getPlayer().getData(itemName);
     }
 
     public getPlayerPartyList(): Phaser.GameObjects.Sprite[] {

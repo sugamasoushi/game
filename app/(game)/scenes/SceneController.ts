@@ -6,7 +6,7 @@ import { Scene } from 'phaser';
 import { State } from '../lib/StateTypes';
 import { Subscription } from 'rxjs';
 import { GameStateManager } from '../GameAllState/GameStateManager';
-import { ExecutionEnvironment } from './ExecutionEnvironment';
+import { ExecutionEnvironment } from '../core/ExecutionEnvironment';
 
 export class SceneController extends Scene {
     private debugFlg: boolean | undefined;
@@ -97,24 +97,24 @@ export class SceneController extends Scene {
                 this.scene.launch('Load', { sceneKey });
                 break;
             case State.FIELD:
-                console.log('Game')
-                this.scene.launch('Game', { sceneKey });
+                console.log('Field')
+                this.scene.launch('Field', { sceneKey });
                 break;
             case State.FIELD_RESTART:
                 console.log('Game restart', sceneKey)
-                this.scene.get('Game').scene.restart({ sceneKey });
-                this.scene.moveBelow('UI', 'Game')
+                this.scene.get('Field').scene.restart({ sceneKey });
+                this.scene.moveBelow('UI', 'Field')
                 break;
             case State.FIELD_RESUME:
                 console.log('Game resume', sceneKey)
-                this.scene.get('Game').scene.resume();
+                this.scene.get('Field').scene.resume();
                 if (this.scene.isActive('Event')) {
                     this.scene.get('Event').scene.resume();
                 }
                 break;
             case State.BATTLE:
                 console.log('Battle')
-                this.scene.pause('Game');
+                this.scene.pause('Field');
 
                 //イベント戦闘の場合、イベントシーンも停止する
                 if (this.scene.isActive('Event')) {
@@ -124,12 +124,12 @@ export class SceneController extends Scene {
                 break;
             case State.MENU:
                 console.log('Menu')
-                this.scene.pause('Game');
+                this.scene.pause('Field');
                 this.scene.launch('Menu', { sceneKey });
                 break;
             case State.EVENT:
                 console.log('Event')
-                // this.scene.pause('Game');
+                // this.scene.pause('Field');
                 this.scene.launch('Event', { sceneKey });
                 break;
             case State.BUBBLE_TALK:
@@ -138,17 +138,17 @@ export class SceneController extends Scene {
             case State.GAMEOVER:
                 console.log('GameOver transition')
                 this.scene.launch('GameOver');
-                this.scene.stop('Game');
+                this.scene.stop('Field');
                 this.scene.stop('Menu');
                 this.scene.stop('Event');
                 this.scene.stop('Battle');
                 break;
             case State.GAME_RESTART:
                 console.log('Game restart', sceneKey)
-                // this.scene.stop('Game');
-                // this.scene.stop('Menu');
-                // this.scene.stop('Event');
-                // this.scene.stop('Battle');
+                this.scene.stop('Field');
+                this.scene.stop('Menu');
+                this.scene.stop('Event');
+                this.scene.stop('Battle');
                 this.scene.stop('SceneController');
 
                 this.scene.start('Boot');

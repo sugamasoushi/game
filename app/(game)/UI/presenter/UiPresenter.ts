@@ -30,7 +30,7 @@ export class UiPresenter {
         this.leftButton = leftButton;
         this.rightButton = rightButton;
 
-        this.gameScene = this.uiScene.scene.get('Game') as Phaser.Scene;
+        this.gameScene = this.uiScene.scene.get('Field') as Phaser.Scene;
     }
 
     public execute() {

@@ -1,18 +1,18 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, CharacterState } from "../../lib/types";
+import { FieldScene, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
-import { Player } from "../../gamemain/view/character/Player";
+import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../GameAllState/GameStateManager";
-import { Npc } from "../../gamemain/view/character/Npc";
+import { Npc } from "../../field/view/character/Npc";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
 
 export class EVENT020101 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -25,7 +25,7 @@ export class EVENT020101 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = this.eventScene.scene.get('Game') as GameScene;
+        this.fieldScene = this.eventScene.scene.get('Field') as FieldScene;
         this.soundScene = this.eventScene.scene.get('Sound') as Sound;
     }
 
@@ -56,7 +56,7 @@ export class EVENT020101 extends BaseEvent {
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
-        this.bossNPC = (this.characterGameObject.getSprite(this.gameScene, 'boss') as Npc);
+        this.bossNPC = (this.characterGameObject.getSprite(this.fieldScene, 'boss') as Npc);
         this.bossNPC.state = CharacterState.event;
         this.bossNPC.initMoveToPosition();
     }
@@ -75,7 +75,7 @@ export class EVENT020101 extends BaseEvent {
         await this.execFadeIn();
 
         //カメラを移動
-        this.gameScene.getMainCamera().pan(this.meina.x, this.meina.y + 50, 300, 'Linear', false);
+        this.fieldScene.getMainCamera().pan(this.meina.x, this.meina.y + 50, 300, 'Linear', false);
 
         /*会話---------------------------------------------------------------------------------*/
 
@@ -95,7 +95,7 @@ export class EVENT020101 extends BaseEvent {
             { lamy: ['任せときなって！\n', 'まずあたしが軽くジャブ打ってぇ！\n', 'それからぁ！\n'] }
         ], this.characterGameObject);
 
-        const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
+        const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
         const bossEnemyData = searchEnemyData.getEnemyData(this.bossNPC.getData('ImageKey'));
         if (bossEnemyData) {
             this.bossNPC.setData({
@@ -113,7 +113,7 @@ export class EVENT020101 extends BaseEvent {
         }
 
         //イベントバトル開始
-        this.gameScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.bossNPC, canNotRunaway: true });
+        this.fieldScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.bossNPC, canNotRunaway: true });
 
         //戦闘終了後、イベントを途中から開始
         const battleScene = this.eventScene.scene.get('Battle');
@@ -213,10 +213,10 @@ export class EVENT020101 extends BaseEvent {
                 this.characterGameObject.imageObjectsDestroy();
 
                 //設定を戻す
-                this.gameScene.events.emit('EVENT_END')
+                this.fieldScene.events.emit('EVENT_END')
 
                 //フラグ更新のためマップリスタート
-                this.gameScene.events.emit('FIELD_RESTART', {
+                this.fieldScene.events.emit('FIELD_RESTART', {
                     gameMode: 'updateFlg',
                     x: 816,
                     y: 490,

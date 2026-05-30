@@ -1,5 +1,5 @@
 import { animationKey, CharacterState } from '../lib/FieldTypes';
-import { GameScene } from '../lib/SceneTypes';
+import { FieldScene } from '../lib/SceneTypes';
 
 /**
  * キャラクタースプライトの共通クラス
@@ -12,7 +12,7 @@ import { GameScene } from '../lib/SceneTypes';
  * @extends {Phaser.Physics.Arcade.Sprite}
  */
 export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
-    protected gameScene: GameScene;
+    protected fieldScene: FieldScene;
     protected spriteSheetKey: string;
     protected walkLeft: string = 'walk_left';
     protected walkRight: string = 'walk_right';
@@ -31,9 +31,9 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
     protected moveDefaultTime: number = 1000;//速度
     protected moveStopCount: number = 0;
 
-    constructor(gameScene: GameScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
-        super(gameScene, x, y, spriteSheetKey);
-        this.gameScene = gameScene;
+    constructor(fieldScene: FieldScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
+        super(fieldScene, x, y, spriteSheetKey);
+        this.fieldScene = fieldScene;
         this.animationKeySetting(spriteSheetKey, initStandKey);
         this.addToUpdateList();
         this.addToDisplayList();

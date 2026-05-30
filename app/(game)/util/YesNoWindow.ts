@@ -1,4 +1,4 @@
-import { EventScene, GameScene } from "../lib/types";
+import { EventScene, FieldScene } from "../lib/types";
 import { ListWindow } from "./ListWindow";
 import { InputManager } from "../core/input/InputManager";
 import { take } from "rxjs";
@@ -8,7 +8,7 @@ export default class YesNoWindow extends ListWindow {
     public result: boolean | undefined;
     private soundScene: Sound;
 
-    constructor(scene: GameScene | EventScene, x: number, y: number, list: string[]) {
+    constructor(scene: FieldScene | EventScene, x: number, y: number, list: string[]) {
         super(scene, x, y, list);
         this.soundScene = this.fromScene.scene.get('Sound') as Sound;
     }

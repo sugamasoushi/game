@@ -1,7 +1,7 @@
 //NewGame選択時のイベント
 import { Event } from "../../scenes/Event";
 import { MessageObject } from "../../util/MessageObject";
-import { GameScene, EventObjState, State } from "../../lib/types";
+import { FieldScene, EventObjState, State } from "../../lib/types";
 import { BaseEvent } from "../../core/BaseEvent";
 import { DataDefinition } from "../../Data/DataDefinition";
 
@@ -10,12 +10,12 @@ import { InputManager } from "../../core/input/InputManager";
 
 //Event.tsは未使用
 export class EVENT010101 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = (this.eventScene.scene.get('Game') as GameScene);
+        this.fieldScene = (this.eventScene.scene.get('Field') as FieldScene);
     }
 
     override init() {
@@ -25,7 +25,7 @@ export class EVENT010101 extends BaseEvent {
         this.settingData.updateEventFlg(this.eventScene, 'EVENT010101', false);
         this.switchingEventObjFlg('EVENT010101', false);
 
-        this.gameScene.getPlayer().stopAnimation();
+        this.fieldScene.getPlayer().stopAnimation();
     }
 
     //イベント実行
@@ -122,7 +122,7 @@ export class EVENT010101 extends BaseEvent {
         }, 'NoState');
 
         //設定を戻す
-        this.gameScene.events.emit('EVENT_END', true)
+        this.fieldScene.events.emit('EVENT_END', true)
 
         // 再表示する（起こす）
         const uiScene = this.eventScene.scene.get('UI') as Phaser.Scene;

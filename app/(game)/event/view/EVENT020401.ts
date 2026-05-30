@@ -4,16 +4,16 @@
 
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState, CharacterState } from "../../lib/types";
+import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
-import { Player } from "../../gamemain/view/character/Player";
+import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 
 export class EVENT010401 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -24,7 +24,7 @@ export class EVENT010401 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = this.eventScene.scene.get('Game') as GameScene;
+        this.fieldScene = this.eventScene.scene.get('Field') as FieldScene;
         this.soundScene = this.eventScene.scene.get('Sound') as Sound;
     }
 
@@ -44,7 +44,7 @@ export class EVENT010401 extends BaseEvent {
         this.settingData.updateEventFlg(this.eventScene, 'EVENT010401', false);
 
         //プレイヤー設定
-        this.player = this.gameScene.getPlayer();
+        this.player = this.fieldScene.getPlayer();
         this.player.stopAnimation();
 
         //NPC設定
@@ -55,10 +55,10 @@ export class EVENT010401 extends BaseEvent {
     async execEvent() {
 
         //キャラクタースプライトを作成
-        const lamy = this.gameScene.getMapObject().createSprite(
+        const lamy = this.fieldScene.getMapObject().createSprite(
             'normal', //npcのタイプ
             '0304', //spriteのタイプ
-            this.gameScene,
+            this.fieldScene,
             816,
             496,
             'tex_lamy', //タイル画像のキー
@@ -78,12 +78,12 @@ export class EVENT010401 extends BaseEvent {
             //カメラ効果
             new Promise<void>(resolve => {
                 this.soundScene.SE_karuipunch.play({ loop: false });
-                this.gameScene.cameras.main.shake(100, 0.02);
+                this.fieldScene.cameras.main.shake(100, 0.02);
                 resolve();
             }),
             //カメラを移動
             new Promise<void>(resolve => {
-                const cam = this.gameScene.getMainCamera();
+                const cam = this.fieldScene.getMainCamera();
                 cam.once(Phaser.Cameras.Scene2D.Events.PAN_COMPLETE, () => { resolve(); }); // PAN_COMPLETE を1回だけ待つ
                 cam.pan(816, 448, 500, 'Linear', false);
             }),
@@ -295,7 +295,7 @@ export class EVENT010401 extends BaseEvent {
 
                             this.eventScene.scene.start('Boot');
 
-                            this.eventScene.scene.stop('Game');
+                            this.eventScene.scene.stop('Field');
                             this.eventScene.scene.stop('Event');
 
                             this.eventScene.game.events.emit('BGM_ALL_STOP');
@@ -318,7 +318,7 @@ export class EVENT010401 extends BaseEvent {
         return new Promise<void>(resolve => {
 
             //設定を戻す
-            this.gameScene.events.emit('EVENT_END')
+            this.fieldScene.events.emit('EVENT_END')
 
             resolve();
         })

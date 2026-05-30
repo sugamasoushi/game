@@ -1,11 +1,11 @@
-import { GameScene, BattleScene } from "../../lib/types";
+import { FieldScene, BattleScene } from "../../lib/types";
 import { MessageObject } from "../../util/MessageObject";
 import { EnergyGauge } from "../../util/EnergyGauge";
 import { CharacterGameObject } from '../../event/view/CharacterGameObject';
 import { SearchCharacterData } from '../../Data/SearchCharacterData';
 
 export class PlayerPartyWindow extends Phaser.GameObjects.Container {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private characterGameObject: CharacterGameObject;
     private charIconList: Phaser.GameObjects.Image[] = [];
 
@@ -37,7 +37,7 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
 
     constructor(battleScene: BattleScene) {
         super(battleScene);
-        this.gameScene = (this.scene.scene.get('Game') as GameScene);
+        this.fieldScene = (this.scene.scene.get('Field') as FieldScene);
     }
 
     public init() {
@@ -60,7 +60,7 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
 
             //テキストを更新、ゲージは別
             for (const namelist of this.partyList) {
-                const spritedata = this.characterGameObject.getSprite(this.gameScene, namelist);
+                const spritedata = this.characterGameObject.getSprite(this.fieldScene, namelist);
                 this.characterObject.get(namelist)!.obj.nowHPText.setText(spritedata.data.get('HP'));
                 this.characterObject.get(namelist)!.obj.nowMPText.setText(spritedata.data.get('MP'));
             }
@@ -68,7 +68,7 @@ export class PlayerPartyWindow extends Phaser.GameObjects.Container {
     }
 
     public createBattleCharacterIcon(playerPartyList: Phaser.GameObjects.Sprite[], x: number, y: number) {
-        const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
+        const searchCharacterData = new SearchCharacterData(this.fieldScene.cache.json);
 
         this.x = x;
         this.y = y;

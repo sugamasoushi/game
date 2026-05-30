@@ -1,11 +1,11 @@
 import { MagicFrame } from "@/app/(game)/util/Effect/MagicFrame";
 import { Player } from "../Player";
-import { GameScene } from "@/app/(game)/lib/types";
+import { FieldScene } from "@/app/(game)/lib/types";
 import { Npc } from "../Npc";
 import { CharacterGameObject } from '../../../../event/view/CharacterGameObject';
 
 export class FieldAttack {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private characterGameObject: CharacterGameObject
     private effect: MagicFrame;
     private sprite: Player;
@@ -14,7 +14,7 @@ export class FieldAttack {
     private attackDuration = 300;
 
     constructor(sprite: Player, x: number, y: number) {
-        this.gameScene = sprite.scene as GameScene;
+        this.fieldScene = sprite.scene as FieldScene;
         this.sprite = sprite;
         this.x = x;
         this.y = y;
@@ -27,18 +27,18 @@ export class FieldAttack {
         this.y = y;
 
         const operator: { operatorX: number, operatorY: number } = this.sprite.getDirection();
-        this.effect = new MagicFrame(this.gameScene, this.x, this.y, this.attackDuration, this.sprite);
+        this.effect = new MagicFrame(this.fieldScene, this.x, this.y, this.attackDuration, this.sprite);
 
         this.attack();
         this.attackTween(operator.operatorX, operator.operatorY);
     }
 
     private attack() {
-        const fieldEnemyList = this.characterGameObject.getFieldEnemyList(this.gameScene);
+        const fieldEnemyList = this.characterGameObject.getFieldEnemyList(this.fieldScene);
 
         if (fieldEnemyList) {
             fieldEnemyList.forEach(enemy => {
-                const hitEvent = this.gameScene.physics.add.overlap(this.effect, enemy,
+                const hitEvent = this.fieldScene.physics.add.overlap(this.effect, enemy,
                     () => {
                         //console.log('overlapCallback');
                         enemy.data.values.HP -= 10;
@@ -56,7 +56,7 @@ export class FieldAttack {
 
     private attackTween(operatorX: number, operatorY: number) {
         //スクロール
-        this.gameScene.tweens.add({
+        this.fieldScene.tweens.add({
             targets: this.effect,
             x: this.x + 100 * operatorX,
             y: this.y + 100 * operatorY,
@@ -70,7 +70,7 @@ export class FieldAttack {
 
     private hitAction(enemy: Npc) {
         let flag = true;
-        this.gameScene.time.addEvent(
+        this.fieldScene.time.addEvent(
             {
                 delay: 50,
                 callback: () => {
@@ -82,7 +82,7 @@ export class FieldAttack {
                         enemy.setAlpha(1);
                     }
                 },
-                callbackScope: this.gameScene,
+                callbackScope: this.fieldScene,
                 repeat: 3,
             });
     }

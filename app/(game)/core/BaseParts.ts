@@ -1,11 +1,11 @@
-import { GameScene } from "../lib/types";
+import { FieldScene } from "../lib/types";
 import { BaseSprite } from "./BaseSprite";
 
 export class BaseParts extends BaseSprite {
     protected sprite: Phaser.Physics.Arcade.Sprite;//親スプライトへの参照
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite, gameScene: GameScene, x: number, y: number, texture: string, direction: string) {
-        super(gameScene, x, y, texture, direction);
+    constructor(sprite: Phaser.Physics.Arcade.Sprite, fieldScene: FieldScene, x: number, y: number, texture: string, direction: string) {
+        super(fieldScene, x, y, texture, direction);
         this.sprite = sprite;
         this.name = this.sprite.name + "-" + texture;
         this.scene.physics.add.existing(this);//物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。

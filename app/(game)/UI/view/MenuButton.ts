@@ -10,7 +10,7 @@ export class MenuButton {
     private menuWindow: MessageWindow;
 
     constructor(private uiScene: Phaser.Scene) {
-        this.gameScene = this.uiScene.scene.get('Game') as Phaser.Scene;
+        this.gameScene = this.uiScene.scene.get('Field') as Phaser.Scene;
     }
 
     public async execute() {
@@ -48,7 +48,7 @@ export class MenuButton {
             localY: number,
             event: Phaser.Types.Input.EventData
         ) => {
-            
+
             //状態管理クラス
             const gameStateManager = GameStateManager.getInstance();
 

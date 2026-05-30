@@ -1,12 +1,12 @@
-import { GameScene } from "../../lib/types";
+import { FieldScene } from "../../lib/types";
 import { Player } from "./character/Player";
 
 export class CameraManager {
     private mainCamera: Phaser.Cameras.Scene2D.Camera;
     private player: Player;
 
-    constructor(private gameScene: GameScene) {
-        this.mainCamera = gameScene.cameras.main;
+    constructor(private fieldScene: FieldScene) {
+        this.mainCamera = fieldScene.cameras.main;
     }
 
     public execute(makeTilemap: Phaser.Tilemaps.Tilemap, player: Player,) {
@@ -16,12 +16,12 @@ export class CameraManager {
     }
 
     public execFadeInStart() {
-        this.gameScene.events.emit('FADE_IN_START');
+        this.fieldScene.events.emit('FADE_IN_START');
     }
 
     public execFadeIn() {
         this.mainCamera.once('camerafadeincomplete', () => {
-            this.gameScene.events.emit('FADE_IN_COMPLETE');
+            this.fieldScene.events.emit('FADE_IN_COMPLETE');
         });
 
         this.mainCamera.fadeIn(200);
@@ -34,7 +34,7 @@ export class CameraManager {
             });
 
             this.mainCamera.fadeOut(200);
-            this.gameScene.events.emit('FADE_OUT_START');
+            this.fieldScene.events.emit('FADE_OUT_START');
         });
     }
 

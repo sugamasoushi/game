@@ -1,14 +1,14 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState, CharacterState } from "../../lib/types";
+import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
-import { Player } from "../../gamemain/view/character/Player";
+import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
 
 export class EVENT010202 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -18,7 +18,7 @@ export class EVENT010202 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = (this.eventScene.scene.get('Game') as GameScene);
+        this.fieldScene = (this.eventScene.scene.get('Field') as FieldScene);
     }
 
     override init() {
@@ -36,7 +36,7 @@ export class EVENT010202 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010201', false);
 
         //プレイヤー設定
-        this.player = this.gameScene.getPlayer();
+        this.player = this.fieldScene.getPlayer();
         this.player.state = CharacterState.event;
         this.player.stopAnimation();
 
@@ -86,10 +86,10 @@ export class EVENT010202 extends BaseEvent {
                 this.characterGameObject.imageObjectsDestroy();
 
                 //設定を戻す
-                this.gameScene.events.emit('EVENT_END');
+                this.fieldScene.events.emit('EVENT_END');
 
                 //フラグ更新のためマップリスタート
-                this.gameScene.events.emit('FIELD_RESTART', {
+                this.fieldScene.events.emit('FIELD_RESTART', {
                     gameMode: 'updateFlg',
                     x: this.player.x,
                     y: this.player.y,

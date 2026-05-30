@@ -1,4 +1,4 @@
-import { GameScene } from '../../lib/SceneTypes';
+import { FieldScene } from '../../lib/SceneTypes';
 import { MenuModel } from "../model/MenuModel";
 import { MenuView } from "../view/MenuView";
 import { CacheDataUpdate } from "../../core/CacheDataUpdate";
@@ -9,7 +9,7 @@ import { Sound } from '../../scenes/Sound';
 export class MenuPresenter {
 
     private scene: Phaser.Scene;
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private soundScene: Sound;
 
     private menuModel: MenuModel;
@@ -17,12 +17,12 @@ export class MenuPresenter {
 
     constructor(
         scene: Phaser.Scene,
-        gameScene: GameScene,
+        fieldScene: FieldScene,
         menuModel: MenuModel,
         menuView: MenuView
     ) {
         this.scene = scene;
-        this.gameScene = gameScene;
+        this.fieldScene = fieldScene;
         this.menuModel = menuModel;
         this.menuView = menuView;
         this.soundScene = this.scene.scene.get('Sound') as Sound;
@@ -73,10 +73,10 @@ export class MenuPresenter {
             this.scene.scene.stop();
 
             //キャッシュを更新
-            const cacheDataUpdate = new CacheDataUpdate(this.gameScene);
+            const cacheDataUpdate = new CacheDataUpdate(this.fieldScene);
             cacheDataUpdate.phaserCacheDataUpdate();
 
-            this.gameScene.resumeScene();
+            this.fieldScene.resumeScene();
 
             //状態管理クラス
             const gameStateManager = GameStateManager.getInstance();

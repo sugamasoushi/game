@@ -1,9 +1,9 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { GameScene, EventObjState, CharacterState } from "../../lib/types";
+import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
-import { Npc } from "../../gamemain/view/character/Npc";
-import { Player } from "../../gamemain/view/character/Player";
+import { Npc } from "../../field/view/character/Npc";
+import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 
@@ -13,7 +13,7 @@ type TalkGroup = Record<string, TalkLine[]>;
 type TalkData = Record<string, TalkGroup>;
 
 export class EVENT010201 extends BaseEvent {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
@@ -42,7 +42,7 @@ export class EVENT010201 extends BaseEvent {
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
-        this.gameScene = (this.eventScene.scene.get('Game') as GameScene);
+        this.fieldScene = (this.eventScene.scene.get('Field') as FieldScene);
     }
 
     override init() {
@@ -60,13 +60,13 @@ export class EVENT010201 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010202', false);
 
         //プレイヤー設定
-        this.player = this.gameScene.getPlayer();
+        this.player = this.fieldScene.getPlayer();
         this.player.state = CharacterState.event;
         this.player.stopAnimation();
 
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
-        this.grandpa = (this.characterGameObject.getSprite(this.gameScene, 'grandpa') as Npc);
+        this.grandpa = (this.characterGameObject.getSprite(this.fieldScene, 'grandpa') as Npc);
         this.grandpa.state = CharacterState.event;
         this.grandpa.initMoveToPosition();
         this.grandpa.setMapPosition(this.player.x, 1344);
@@ -79,7 +79,7 @@ export class EVENT010201 extends BaseEvent {
         await Promise.all([
             //カメラをプレイヤーの位置まで移動
             new Promise<void>(resolve => {
-                const cam = this.gameScene.getMainCamera();
+                const cam = this.fieldScene.getMainCamera();
                 cam.once(Phaser.Cameras.Scene2D.Events.PAN_COMPLETE, () => { resolve(); }); // PAN_COMPLETE を1回だけ待つ
                 cam.pan(this.player.x, this.player.y, 500, 'Linear', false);
 
@@ -154,10 +154,10 @@ export class EVENT010201 extends BaseEvent {
                 this.characterGameObject.imageObjectsDestroy();
 
                 //設定を戻す
-                this.gameScene.events.emit('EVENT_END');
+                this.fieldScene.events.emit('EVENT_END');
 
                 //フラグ更新のためマップリスタート
-                this.gameScene.events.emit('FIELD_RESTART', {
+                this.fieldScene.events.emit('FIELD_RESTART', {
                     gameMode: 'updateFlg',
                     x: this.player.x,
                     y: this.player.y,

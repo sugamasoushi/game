@@ -1,4 +1,4 @@
-import { GameScene } from "../../lib/SceneTypes";
+import { FieldScene } from "../../lib/SceneTypes";
 import { FieldData, MapLayerDepth } from "../../lib/FieldTypes";
 import { TileMap } from "./TileMap";
 import { MapObject } from "./MapObject";
@@ -11,7 +11,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
     private debugFlg: boolean | undefined;
     private fieldData: FieldData;
 
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private TileMap: TileMap;
     private mapObject: MapObject;
     private player: Player;
@@ -40,11 +40,11 @@ export class MapEffect extends Phaser.GameObjects.Container {
     private bgRenderTexture: Phaser.GameObjects.RenderTexture | null = null;
     private renderTextureUpdateFlg: boolean = false;
 
-    constructor(scene: GameScene) {
+    constructor(scene: FieldScene) {
         super(scene);
-        this.gameScene = scene;
+        this.fieldScene = scene;
         this.addToUpdateList();
-        this.soundScene = this.gameScene.scene.get('Sound') as Sound;
+        this.soundScene = this.fieldScene.scene.get('Sound') as Sound;
         this.debugFlg = scene.game.config.physics.arcade?.debug;
     }
 
@@ -112,13 +112,13 @@ export class MapEffect extends Phaser.GameObjects.Container {
                     if (property.name === 'intensity' && property.value !== '') { intensity = property.value; }
                 }
 
-                const light = this.gameScene.lights.addLight(obj.x, obj.y, radius);
+                const light = this.fieldScene.lights.addLight(obj.x, obj.y, radius);
                 light.setColor(color);
                 light.setIntensity(intensity);
 
                 const ellipse = new Phaser.Geom.Ellipse(obj.x, obj.y, 10, 10);
 
-                this.timerEventObj = this.gameScene.time.addEvent({
+                this.timerEventObj = this.fieldScene.time.addEvent({
                     delay: 100,
                     callback: function () {
                         Phaser.Geom.Ellipse.Random(ellipse, light);
@@ -132,13 +132,13 @@ export class MapEffect extends Phaser.GameObjects.Container {
             }
 
             if (this.debugFlg) {
-                this.playerLight = this.gameScene.lights.addLight(this.player.x, this.player.y, 200);
+                this.playerLight = this.fieldScene.lights.addLight(this.player.x, this.player.y, 200);
                 this.playerLight.setIntensity(0.5);
                 this.playerLightFlg = true;
             }
 
-            this.gameScene.lights.enable()
-            this.gameScene.lights.setAmbientColor(0xffffff);
+            this.fieldScene.lights.enable()
+            this.fieldScene.lights.setAmbientColor(0xffffff);
 
             //タイルマップのプロパティからeffect情報を設定
             const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
@@ -146,7 +146,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
                 for (const prop of makeTileMap.properties) {
                     if (prop.name === 'ambientColor') {
                         //環境光の色を設定
-                        this.gameScene.lights.setAmbientColor(prop.value);
+                        this.fieldScene.lights.setAmbientColor(prop.value);
                         //0xffffff
                         //0x222244
                     }
@@ -195,7 +195,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
 
         // 1. 通常の画像ではなく「TileSprite（並べて敷き詰められるスプライト）」として配置
         // 画面サイズより少し大きめにしておくと端が綺麗になります
-        const fog = this.gameScene.add.tileSprite(width / 2, height / 2, width, height, 'noise');
+        const fog = this.fieldScene.add.tileSprite(width / 2, height / 2, width, height, 'noise');
 
         // 2. 霧っぽく見せるための設定
         fog.setBlendMode(Phaser.BlendModes.SCREEN); // 黒背景を透過させて白だけ残す
@@ -212,7 +212,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
 
         // 1. 通常の画像ではなく「TileSprite（並べて敷き詰められるスプライト）」として配置
         // 画面サイズより少し大きめにしておくと端が綺麗になります
-        const fog2 = this.gameScene.add.tileSprite(width / 2, height / 2, width, height, 'noise2');
+        const fog2 = this.fieldScene.add.tileSprite(width / 2, height / 2, width, height, 'noise2');
 
         // 2. 霧っぽく見せるための設定
         fog2.setBlendMode(Phaser.BlendModes.SCREEN); // 黒背景を透過させて白だけ残す
@@ -228,7 +228,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
         fog2.setScale(1.5);
 
         // 3. 毎フレーム、テクスチャの表示位置をずらす（スクロール）
-        this.gameScene.events.on('update', () => {
+        this.fieldScene.events.on('update', () => {
             // X方向とY方向に少しずつずらすことで、斜めに流れる霧を表現
             fog.tilePositionX += 0.3;
             fog.tilePositionY += 0.2;
@@ -241,7 +241,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
 
         //マップ外を非表示にするためのマスクを作成
         //メッセージ表示範囲のマスク作成
-        const fogMask = this.gameScene.add.graphics();
+        const fogMask = this.fieldScene.add.graphics();
         fogMask.x = 0;//座標初期値を設定
         fogMask.y = 0;
         fogMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
@@ -256,12 +256,12 @@ export class MapEffect extends Phaser.GameObjects.Container {
         //以下はbgRenderTextureとBitmapMaskの座標位置を補正するための変換処理
         // キャプチャしたテクスチャ名を使って、位置調整用のダミースプライトを作成する
         // ※座標を「画面の中心」にし、Originを「(0.5, 0.5)」にすることで、Phaserのマスク計算と完全一致させます。
-        // const maskDummySprite = this.gameScene.add.sprite(width / 2, height / 2, 'bg_captured_image');
+        // const maskDummySprite = this.fieldScene.add.sprite(width / 2, height / 2, 'bg_captured_image');
         // maskDummySprite.setOrigin(0.5, 0.5);
         // maskDummySprite.setVisible(false); // 画面には表示しない
 
         // // 3. このダミースプライトをソースにして BitmapMask を作成（型エラーは一切起きません）
-        // const mapMask = new Phaser.Display.Masks.BitmapMask(this.gameScene, maskDummySprite);
+        // const mapMask = new Phaser.Display.Masks.BitmapMask(this.fieldScene, maskDummySprite);
 
         // 4. 霧にマスクを適用
         // fog.setMask(mapMask);
@@ -272,10 +272,10 @@ export class MapEffect extends Phaser.GameObjects.Container {
         const width = this.TileMap.getMakeTilemap().widthInPixels;
         const height = this.TileMap.getMakeTilemap().heightInPixels;
 
-        // const testShader = this.gameScene.add.shader('fireball', 400, 300, 800, 600);
+        // const testShader = this.fieldScene.add.shader('fireball', 400, 300, 800, 600);
 
-        //this.gameScene.add.shader('blueSky', width / 2, height / 2, width, height);
-        //this.gameScene.add.shader('nightsky', width / 2, height / 2, width, height);
+        //this.fieldScene.add.shader('blueSky', width / 2, height / 2, width, height);
+        //this.fieldScene.add.shader('nightsky', width / 2, height / 2, width, height);
 
 
     }
@@ -289,12 +289,12 @@ export class MapEffect extends Phaser.GameObjects.Container {
         return new Promise<void>(resolve => {
 
             // 背景専用のRenderTexture（絶対にクリアしない、マップ情報保持用）
-            if (this.gameScene.textures.exists('bg_captured_image')) { this.gameScene.textures.removeKey('bg_captured_image'); }
+            if (this.fieldScene.textures.exists('bg_captured_image')) { this.fieldScene.textures.removeKey('bg_captured_image'); }
 
             const width = this.TileMap.getMakeTilemap().widthInPixels;
             const height = this.TileMap.getMakeTilemap().heightInPixels;
 
-            this.bgRenderTexture = this.gameScene.add.renderTexture(0, 0, width, height);
+            this.bgRenderTexture = this.fieldScene.add.renderTexture(0, 0, width, height);
             for (const tilemapLayer of this.TileMap.getWaterSrufaceSubjectTilemapLayerList()) {
                 this.bgRenderTexture.draw(tilemapLayer);
             }
@@ -323,10 +323,10 @@ export class MapEffect extends Phaser.GameObjects.Container {
             }
 
             // Phaserのテクスチャマネージャー内から古いキー名自体を消去する
-            if (this.gameScene.textures.exists('char_captured_image')) { this.gameScene.textures.removeKey('char_captured_image'); }
+            if (this.fieldScene.textures.exists('char_captured_image')) { this.fieldScene.textures.removeKey('char_captured_image'); }
 
             // 2. 毎フレーム更新・シェーダー渡し用のメインRenderTexture
-            this.renderTexture = this.gameScene.add.renderTexture(0, 0, width, height);
+            this.renderTexture = this.fieldScene.add.renderTexture(0, 0, width, height);
 
             // 初回の描画 (背景は描画せず、キャラクターのみを上下反転させて描画)
             // const originalScaleY = this.player.scaleY;
@@ -530,12 +530,12 @@ export class MapEffect extends Phaser.GameObjects.Container {
         });
 
         // 背景とキャラの2つのテクスチャを配列で渡す（それぞれ iChannel0, iChannel1 にバインドされる）
-        const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height,
+        const shader = this.fieldScene.add.shader(base, width / 2, height / 2, width, height,
             ['bg_captured_image', 'char_captured_image']
         );
         //shader.setUniform('offsetY_bg', targetOffsetYBg);//setUniformだと反映されない
 
-        const cropRectMask = this.gameScene.add.graphics();
+        const cropRectMask = this.fieldScene.add.graphics();
         cropRectMask.x = 0;//座標初期値を設定
         cropRectMask.y = 0;
         cropRectMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
@@ -632,7 +632,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
         });
 
         // 背景とキャラの2つのテクスチャを配列で渡す（それぞれ iChannel0, iChannel1 にバインドされる）
-        const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height,
+        const shader = this.fieldScene.add.shader(base, width / 2, height / 2, width, height,
             ['bg_captured_image', 'char_captured_image'],
             {
                 // 💡 ここで渡すと、PhaserがシェーダーをGPUにバインドした瞬間に確実に値が適用されます
@@ -641,7 +641,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
         );
 
 
-        const cropRectMask = this.gameScene.add.graphics();
+        const cropRectMask = this.fieldScene.add.graphics();
         cropRectMask.x = 0;//座標初期値を設定
         cropRectMask.y = 0;
         cropRectMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
@@ -868,7 +868,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
                 scale: { type: '1f', value: 4.0 }//大きさ
             });
 
-            const shader = this.gameScene.add.shader(base, width / 2, height / 2, width, height);
+            const shader = this.fieldScene.add.shader(base, width / 2, height / 2, width, height);
             shader.setDepth(9999)
 
             if (fogData === 'Lowest') {

@@ -1,5 +1,5 @@
 import { BubbleTalkData } from "@/app/(game)/Data/BubbleTalkData";
-import { GameScene, State } from '@/app/(game)/lib/types';
+import { FieldScene, State } from '@/app/(game)/lib/types';
 import { Npc } from '../Npc';
 import { MessageOperation } from "@/app/(game)/util/MessageOperation";
 import { MessageWindow } from '../../../../util/MessageWindow';
@@ -10,7 +10,7 @@ import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
 import { SearchCharacterData } from '@/app/(game)/Data/SearchCharacterData';
 
 export class BubbleTalk {
-    private gameScene: GameScene;
+    private fieldScene: FieldScene;
     private npc: Npc | undefined;
     private usePatern: string;
     private fieldObjectCheck: FieldObjectCheck;
@@ -37,22 +37,22 @@ export class BubbleTalk {
 
     private maxDepthValue: number;
 
-    constructor(gameScene: GameScene, npc: Npc | undefined, bubbleTalkKey: string) {
-        this.gameScene = gameScene;
+    constructor(fieldScene: FieldScene, npc: Npc | undefined, bubbleTalkKey: string) {
+        this.fieldScene = fieldScene;
         this.npc = npc;
         this.bubbleTalkKey = bubbleTalkKey;
         this.usePatern = 'BubbleTalk';
-        this.maxDepthValue = this.gameScene.getTilemap().getMakeTilemap().heightInPixels > this.gameScene.getTilemap().getMakeTilemap().widthInPixels ? this.gameScene.getTilemap().getMakeTilemap().heightInPixels : this.gameScene.getTilemap().getMakeTilemap().widthInPixels;
+        this.maxDepthValue = this.fieldScene.getTilemap().getMakeTilemap().heightInPixels > this.fieldScene.getTilemap().getMakeTilemap().widthInPixels ? this.fieldScene.getTilemap().getMakeTilemap().heightInPixels : this.fieldScene.getTilemap().getMakeTilemap().widthInPixels;
         this.maxDepthValue = this.maxDepthValue + 1000
     }
 
     public init() {
         this.messageObjectInstance = new MessageObject();
-        this.messageObjectInstance.init(this.gameScene, this.usePatern);
+        this.messageObjectInstance.init(this.fieldScene, this.usePatern);
         const textLine = this.messageObjectInstance.getTextInfomation().textLine;
         const lineSpaceValue = this.messageObjectInstance.getTextInfomation().lineSpaceValue;
 
-        this.messageOperation = new MessageOperation(this.gameScene, this.usePatern, textLine, lineSpaceValue);
+        this.messageOperation = new MessageOperation(this.fieldScene, this.usePatern, textLine, lineSpaceValue);
         this.bubbleTalkData = new BubbleTalkData(this.bubbleTalkKey);
     }
 
@@ -77,7 +77,7 @@ export class BubbleTalk {
 
                 //会話データを検索
                 //const talkdata = this.bubbleTalkData.getBubbleTalkData();
-                const talkdata = this.bubbleTalkData.getBubbleTalkDataJson(this.gameScene);
+                const talkdata = this.bubbleTalkData.getBubbleTalkDataJson(this.fieldScene);
 
                 //配列ごとに台詞を描画
                 for (const obj of talkdata!) {
@@ -128,8 +128,8 @@ export class BubbleTalk {
                 let lineCount = 0;
                 for (const text of talks) {
                     lineCount++;
-                    await this.messageOperation.typeWriter(this.gameScene, this.textObject, text, this.clickZone);
-                    await this.messageOperation.textScroll(this.gameScene, this.textObject, this.clickZone, lineCount, talks.length, this.textLine);
+                    await this.messageOperation.typeWriter(this.fieldScene, this.textObject, text, this.clickZone);
+                    await this.messageOperation.textScroll(this.fieldScene, this.textObject, this.clickZone, lineCount, talks.length, this.textLine);
                 }
 
                 //次のセリフ前にテキストを初期化
@@ -143,7 +143,7 @@ export class BubbleTalk {
     private createTextObject(charKey: string, talks: string[]) {
 
         //テキストオブジェクト作成
-        this.textObject = this.messageObjectInstance.createTextObject(this.gameScene, 0, 0, talks);
+        this.textObject = this.messageObjectInstance.createTextObject(this.fieldScene, 0, 0, talks);
 
         //テキストの横幅を設定
         this.messageWidth = this.textObject.width;//メッセージの範囲を更新
@@ -159,7 +159,7 @@ export class BubbleTalk {
 
         //npcが存在する場合
         if (this.npc) {
-            this.fieldObjectCheck = new FieldObjectCheck((this.gameScene as GameScene).getPlayer(), this.npc);
+            this.fieldObjectCheck = new FieldObjectCheck((this.fieldScene as FieldScene).getPlayer(), this.npc);
             playerPosition = this.fieldObjectCheck.getObjectPosition().object1XPosition;
             npcPosition = this.fieldObjectCheck.getObjectPosition().object2XPosition;
         }
@@ -167,12 +167,12 @@ export class BubbleTalk {
         //プレイヤー発言中の場合
         if (charKey === 'meina') {
             if (playerPosition === 'left') {
-                textX = (this.gameScene as GameScene).getPlayer().x - this.messageWidth;
+                textX = (this.fieldScene as FieldScene).getPlayer().x - this.messageWidth;
             } else {
-                textX = (this.gameScene as GameScene).getPlayer().x;
+                textX = (this.fieldScene as FieldScene).getPlayer().x;
             }
             this.bubblePosition = playerPosition;
-            textY = (this.gameScene as GameScene).getPlayer().y - 150;
+            textY = (this.fieldScene as FieldScene).getPlayer().y - 150;
         } else if (this.npc !== undefined) {
             if (npcPosition === 'left') {
                 textX = this.npc!.x - this.messageWidth;
@@ -198,7 +198,7 @@ export class BubbleTalk {
         this.textLine = this.textObject.getData('textLine');
 
         //テキストの位置
-        this.textObject.setDepth(Number(this.gameScene.game.config.height));//depthは適当な値、他に配置物を追加する場合は都度調整
+        this.textObject.setDepth(Number(this.fieldScene.game.config.height));//depthは適当な値、他に配置物を追加する場合は都度調整
 
         //削除対象に登録
         this.messageOperation.addMessageObjectList(this.textObject);
@@ -208,17 +208,17 @@ export class BubbleTalk {
     private createMessageWindow(charKey: string) {
 
         if (charKey === 'meina') {
-            const messageWindow = new MessageWindow(this.gameScene);
+            const messageWindow = new MessageWindow(this.fieldScene);
             messageWindow.init();
             messageWindow.createBubbleWindow(
                 this.textObject,
-                (this.gameScene as GameScene).getPlayer().getCenter().x,
-                (this.gameScene as GameScene).getPlayer().getCenter().y,
+                (this.fieldScene as FieldScene).getPlayer().getCenter().x,
+                (this.fieldScene as FieldScene).getPlayer().getCenter().y,
                 this.bubblePosition,
                 undefined);
             this.messageWindow = messageWindow;
         } else if (this.npc !== undefined) {
-            const messageWindow = new MessageWindow(this.gameScene);
+            const messageWindow = new MessageWindow(this.fieldScene);
             messageWindow.init();
             messageWindow.createBubbleWindow(
                 this.textObject,
@@ -238,7 +238,7 @@ export class BubbleTalk {
         const whiteColor = Phaser.Display.Color.HexStringToColor('#ffffff').color;
 
         //メッセージ表示範囲のマスク作成
-        this.cropRectMask = this.gameScene.add.graphics();
+        this.cropRectMask = this.fieldScene.add.graphics();
         this.cropRectMask.x = this.textObject.x;//座標初期値を設定
         this.cropRectMask.y = this.textObject.y;
         this.cropRectMask.fillStyle(whiteColor);
@@ -257,12 +257,12 @@ export class BubbleTalk {
         //キャラクター名が存在する場合
         if (charKey) {
             //キャラクターデータから検索クラスを生成
-            const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
+            const searchCharacterData = new SearchCharacterData(this.fieldScene.cache.json);
             const name = searchCharacterData.getCharacterData(charKey).name;
 
             //名前が存在する場合
             if (name !== 'noName') {
-                this.characterNameText = this.messageObjectInstance.createTextObject(this.gameScene, 0, 0, name);
+                this.characterNameText = this.messageObjectInstance.createTextObject(this.fieldScene, 0, 0, name);
 
                 //ラベル位置は調整する事
                 const labelX = this.textX;
@@ -282,12 +282,12 @@ export class BubbleTalk {
         //キャラクター名が存在する場合
         if (charKey) {
             //キャラクターデータの確認
-            const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
+            const searchCharacterData = new SearchCharacterData(this.fieldScene.cache.json);
             const name = searchCharacterData.getCharacterData(charKey).name;
 
             //キャラクター名が存在する場合
             if (name !== 'noName') {
-                const characterLabelWindow = new MessageWindow(this.gameScene);
+                const characterLabelWindow = new MessageWindow(this.fieldScene);
                 characterLabelWindow.init();
                 characterLabelWindow.createOneColumnOneWindow(this.characterNameText, 8);
                 this.characterLabelWindow = characterLabelWindow;
@@ -302,14 +302,14 @@ export class BubbleTalk {
     private setImage(charKey: string) {
 
         if (charKey === 'meina') {
-            this.characterIcon = this.gameScene.add.image(this.textX - 50, this.textY, 'Icon_' + this.gameScene.getPlayer().getData('ImageKey'));
+            this.characterIcon = this.fieldScene.add.image(this.textX - 50, this.textY, 'Icon_' + this.fieldScene.getPlayer().getData('ImageKey'));
 
             //削除対象に登録
             this.messageOperation.addMessageObjectList(this.characterIcon);
 
         } else if (this.npc !== undefined) {
             if (this.npc!.getData('ImageKey')) {
-                this.characterIcon = this.gameScene.add.image(this.textX - 50, this.textY, 'Icon_' + this.npc!.getData('ImageKey')!);
+                this.characterIcon = this.fieldScene.add.image(this.textX - 50, this.textY, 'Icon_' + this.npc!.getData('ImageKey')!);
 
                 //削除対象に登録
                 this.messageOperation.addMessageObjectList(this.characterIcon);
@@ -346,11 +346,11 @@ export class BubbleTalk {
     private createClickZone() {
 
         //マップ全体をクリックゾーンに設定
-        this.clickZone = this.gameScene.add.zone(
-            this.gameScene.getTilemap().getMakeTilemap().widthInPixels / 2,
-            this.gameScene.getTilemap().getMakeTilemap().heightInPixels / 2,
-            this.gameScene.getTilemap().getMakeTilemap().widthInPixels,
-            this.gameScene.getTilemap().getMakeTilemap().heightInPixels);
+        this.clickZone = this.fieldScene.add.zone(
+            this.fieldScene.getTilemap().getMakeTilemap().widthInPixels / 2,
+            this.fieldScene.getTilemap().getMakeTilemap().heightInPixels / 2,
+            this.fieldScene.getTilemap().getMakeTilemap().widthInPixels,
+            this.fieldScene.getTilemap().getMakeTilemap().heightInPixels);
 
         //カーソル設定
         this.clickZone.setInteractive({ useHandCursor: true });
@@ -375,7 +375,7 @@ export class BubbleTalk {
             state: State.NOSTATE
         }, 'NoState');
 
-        (this.gameScene as GameScene).input.setDefaultCursor('default');
+        (this.fieldScene as FieldScene).input.setDefaultCursor('default');
     }
 
 }

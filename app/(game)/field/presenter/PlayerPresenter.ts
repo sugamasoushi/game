@@ -1,4 +1,4 @@
-import { GameScene, State } from "../../lib/types";
+import { FieldScene, State } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
 import { FieldPresenter } from "./FieldPresenter";
 import { Player } from "../view/character/Player";
@@ -17,7 +17,7 @@ export class PlayerPresenter {
     private lastTapTime: number = 0;
 
     constructor(
-        private gameScene: GameScene,
+        private fieldScene: FieldScene,
         private fieldMapModel: FieldMapModel,
         private fieldPresenter: FieldPresenter,
         private inputManager: InputManager
@@ -48,7 +48,7 @@ export class PlayerPresenter {
             (playerPartyList[2] as Player).setInputManager(this.inputManager);
         }
 
-        this.gameScene.events.once('shutdown', () => {
+        this.fieldScene.events.once('shutdown', () => {
             this.subs.unsubscribe();
         });
 
@@ -58,7 +58,7 @@ export class PlayerPresenter {
     //画像などの紐づけを行う。※非同期になっているのか分からないがMapObjectで生成するとカメラ設定が先に動いてヌルポになる
     private setAnyObject() {
         const settingData = new DataDefinition();
-        const imageKey = settingData.getCharacterImageKey(this.gameScene, this.player.name)!.normal;
+        const imageKey = settingData.getCharacterImageKey(this.fieldScene, this.player.name)!.normal;
         this.player.setData('ImageKey', imageKey);
     }
 
@@ -73,7 +73,7 @@ export class PlayerPresenter {
             if (pointer.leftButtonReleased()) {
 
                 // Phaserの現在のゲーム内時間(ミリ秒)
-                const currentTime = this.gameScene.time.now;
+                const currentTime = this.fieldScene.time.now;
 
                 // 前回のタップから300ミリ秒以内の連打なら、処理を完全に無視する
                 if (currentTime - this.lastTapTime < 300) {
@@ -148,7 +148,7 @@ export class PlayerPresenter {
 
             //ぼかし
             //https://newdocs.phaser.io/docs/3.70.0/Phaser.GameObjects.Components.FX#addBlur
-            const mainCamera: Phaser.Cameras.Scene2D.Camera = this.gameScene.cameras.main;
+            const mainCamera: Phaser.Cameras.Scene2D.Camera = this.fieldScene.cameras.main;
             mainCamera.postFX.addBlur(2, 1, 1, 1, 0xffffff, 1);
 
             //状態更新
