@@ -1,5 +1,5 @@
 import { SaveDataManager } from "../core/SaveDataManager";
-import { GameStateManager } from "../GameAllState/GameStateManager";
+import { GameStateManager } from "../core/GameStateManager";
 import { Sound } from "../scenes/Sound";
 import { SearchItem } from "./SearchItem";
 

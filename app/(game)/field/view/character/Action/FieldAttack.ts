@@ -2,11 +2,10 @@ import { MagicFrame } from "@/app/(game)/util/Effect/MagicFrame";
 import { Player } from "../Player";
 import { FieldScene } from "@/app/(game)/lib/types";
 import { Npc } from "../Npc";
-import { CharacterGameObject } from '../../../../event/view/CharacterGameObject';
+import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class FieldAttack {
     private fieldScene: FieldScene;
-    private characterGameObject: CharacterGameObject
     private effect: MagicFrame;
     private sprite: Player;
     private x: number;
@@ -18,8 +17,6 @@ export class FieldAttack {
         this.sprite = sprite;
         this.x = x;
         this.y = y;
-
-        this.characterGameObject = new CharacterGameObject();
     }
 
     frameBullet(x: number, y: number) {
@@ -34,10 +31,11 @@ export class FieldAttack {
     }
 
     private attack() {
-        const fieldEnemyList = this.characterGameObject.getFieldEnemyList(this.fieldScene);
+        const gameStateManager = GameStateManager.getInstance();
+        const fieldEnemyList = gameStateManager.currentFieldEnemyList;
 
         if (fieldEnemyList) {
-            fieldEnemyList.forEach(enemy => {
+            (fieldEnemyList as Npc[]).forEach((enemy: Npc) => {
                 const hitEvent = this.fieldScene.physics.add.overlap(this.effect, enemy,
                     () => {
                         //console.log('overlapCallback');

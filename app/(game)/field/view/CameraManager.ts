@@ -1,5 +1,6 @@
 import { FieldScene } from "../../lib/types";
 import { Player } from "./character/Player";
+import { GameStateManager } from "../../core/GameStateManager";
 
 export class CameraManager {
     private mainCamera: Phaser.Cameras.Scene2D.Camera;
@@ -9,8 +10,10 @@ export class CameraManager {
         this.mainCamera = fieldScene.cameras.main;
     }
 
-    public execute(makeTilemap: Phaser.Tilemaps.Tilemap, player: Player,) {
-        this.player = player;
+    public execute(makeTilemap: Phaser.Tilemaps.Tilemap) {
+        const gameStateManager = GameStateManager.getInstance();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
+
         this.mainCamera.startFollow(this.player, true);//プレイヤーに追従
         this.mainCamera.setBounds(-64, -64, makeTilemap.widthInPixels + 128, makeTilemap.heightInPixels + 128);//マップの最大値
     }

@@ -1,6 +1,6 @@
 import { CacheDataUpdate } from "../../core/CacheDataUpdate";
 
-export class ChestModel {
+export class NpcModel {
 
     constructor(private scene: Phaser.Scene) { }
 

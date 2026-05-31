@@ -2,7 +2,7 @@ import { Eventer, EventObjState } from "../lib/types";
 import { Event } from "../scenes/Event";
 import { Player } from "../field/view/character/Player";
 import { Npc } from "../field/view/character/Npc";
-import { gameStateManager } from "../GameAllState/GameStateManager";
+import { gameStateManager } from "../core/GameStateManager";
 import { State } from "../lib/StateTypes";
 
 //イベントクラスの基底クラス

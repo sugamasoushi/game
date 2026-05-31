@@ -25,6 +25,8 @@ export interface GameState {
   money: number;
   playerPartyList: Phaser.GameObjects.Sprite[];
   playerActorList: ActorState[];
+  fieldNpcList: Phaser.GameObjects.Sprite[];
+  fieldEnemyList: Phaser.GameObjects.Sprite[];
   battleFlag: boolean;
   isGameOver: boolean;
   fieldData: FieldData;

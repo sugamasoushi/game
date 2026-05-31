@@ -12,6 +12,9 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 
+import { SpriteType_3x4 } from "../../field/view/character/SpriteType_3x4";
+import { GameStateManager } from "../../core/GameStateManager";
+
 export class EVENT010401 extends BaseEvent {
     private fieldScene: FieldScene;
     private settingData: DataDefinition;
@@ -44,7 +47,8 @@ export class EVENT010401 extends BaseEvent {
         this.settingData.updateEventFlg(this.eventScene, 'EVENT010401', false);
 
         //プレイヤー設定
-        this.player = this.fieldScene.getPlayer();
+        const gameStateManager = GameStateManager.getInstance();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
         this.player.stopAnimation();
 
         //NPC設定
@@ -55,12 +59,11 @@ export class EVENT010401 extends BaseEvent {
     async execEvent() {
 
         //キャラクタースプライトを作成
-        const lamy = this.fieldScene.getMapObject().createSprite(
-            'normal', //npcのタイプ
-            '0304', //spriteのタイプ
+        const lamy = new SpriteType_3x4(
             this.fieldScene,
             816,
             496,
+            'normal', //npcのタイプ
             'tex_lamy', //タイル画像のキー
             'lamyNPC',//キャラ名
             'stand_up',//向き

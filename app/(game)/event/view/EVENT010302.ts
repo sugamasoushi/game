@@ -6,6 +6,8 @@ import { DataDefinition } from "../../Data/DataDefinition";
 import { Npc } from "../../field/view/character/Npc";
 import { Player } from "../../field/view/character/Player";
 import { CharacterGameObject } from './CharacterGameObject';
+import { GameStateManager } from "../../core/GameStateManager";
+
 
 export class EVENT010302 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -36,7 +38,8 @@ export class EVENT010302 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010401', true);
 
         //プレイヤー設定
-        this.player = this.fieldScene.getPlayer();
+        const gameStateManager = GameStateManager.getInstance();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
         this.player.stopAnimation();
 
         //NPC設定

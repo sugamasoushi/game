@@ -2,7 +2,7 @@ import { FieldScene } from '../../lib/SceneTypes';
 import { MenuModel } from "../model/MenuModel";
 import { MenuView } from "../view/MenuView";
 import { CacheDataUpdate } from "../../core/CacheDataUpdate";
-import { GameStateManager } from '../../GameAllState/GameStateManager';
+import { GameStateManager } from '../../core/GameStateManager';
 import { State } from '../../lib/types';
 import { Sound } from '../../scenes/Sound';
 

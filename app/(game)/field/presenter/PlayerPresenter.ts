@@ -1,16 +1,16 @@
 import { FieldScene, State } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
-import { FieldPresenter } from "./FieldPresenter";
 import { Player } from "../view/character/Player";
-import { GameStateManager, gameStateManager } from "../../GameAllState/GameStateManager";
+import { GameStateManager, gameStateManager } from "../../core/GameStateManager";
 import { FieldAttack } from '../view/character/Action/FieldAttack';
 import { DataDefinition } from '../../Data/DataDefinition';
-import { FieldMapModel } from "../model/FieldMapModel";
 import { Subscription } from "rxjs";
+import { PlayerModel } from "../model/PlayerModel";
+import { PlayerView } from "../view/PlayerView";
+import { TileMap } from "../view/TileMap";
 
 export class PlayerPresenter {
     private player: Player;
-    private fieldAttack: FieldAttack;
     private subs = new Subscription();
 
     //移動時のタップ連打防止
@@ -18,18 +18,29 @@ export class PlayerPresenter {
 
     constructor(
         private fieldScene: FieldScene,
-        private fieldMapModel: FieldMapModel,
-        private fieldPresenter: FieldPresenter,
+        private playerModel: PlayerModel,
+        private playerView: PlayerView,
+        private tileMap: TileMap,
         private inputManager: InputManager
-    ) { }
+    ) {
+        this.playerModel = new PlayerModel(fieldScene);
+        this.playerView = new PlayerView(this.fieldScene, this.tileMap);
+    }
 
-    public execute() {
+    public update(time: number, delta: number) {
+
+    }
+
+    public async execute() {
+        await this.playerModel.execute();
+        await this.playerView.execute();
+
         this.execClickMove();
         this.execKeyMove();
         this.execFieldClick();
 
         //プレイヤーを作成
-        this.player = this.fieldPresenter.getPlayer();
+        this.player = this.playerView.getPlayer();
         this.player.setCursors(this.inputManager.phaserCursors);
         this.player.setInputManager(this.inputManager);
 
@@ -52,11 +63,6 @@ export class PlayerPresenter {
             this.subs.unsubscribe();
         });
 
-        this.setAnyObject();
-    }
-
-    //画像などの紐づけを行う。※非同期になっているのか分からないがMapObjectで生成するとカメラ設定が先に動いてヌルポになる
-    private setAnyObject() {
         const settingData = new DataDefinition();
         const imageKey = settingData.getCharacterImageKey(this.fieldScene, this.player.name)!.normal;
         this.player.setData('ImageKey', imageKey);

@@ -5,8 +5,9 @@ import { FieldScene, EventObjState, State } from "../../lib/types";
 import { BaseEvent } from "../../core/BaseEvent";
 import { DataDefinition } from "../../Data/DataDefinition";
 
-import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
+import { GameStateManager } from "../../core/GameStateManager";
 import { InputManager } from "../../core/input/InputManager";
+import { Player } from "../../field/view/character/Player";
 
 //Event.tsは未使用
 export class EVENT010101 extends BaseEvent {
@@ -25,7 +26,8 @@ export class EVENT010101 extends BaseEvent {
         this.settingData.updateEventFlg(this.eventScene, 'EVENT010101', false);
         this.switchingEventObjFlg('EVENT010101', false);
 
-        this.fieldScene.getPlayer().stopAnimation();
+        const gameStateManager = GameStateManager.getInstance();
+        (gameStateManager.currentPlayerPartyList[0] as Player).stopAnimation();
     }
 
     //イベント実行

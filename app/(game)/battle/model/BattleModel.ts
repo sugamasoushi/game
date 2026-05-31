@@ -1,7 +1,7 @@
 import { BattleScene, FieldScene, CharacterStatus } from "../../lib/types";
 import { Npc } from "../../field/view/character/Npc";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
-import { gameStateManager } from "../../GameAllState/GameStateManager";
+import { gameStateManager } from "../../core/GameStateManager";
 
 export class BattleModel {
     private battleScene: BattleScene;

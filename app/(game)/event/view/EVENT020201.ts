@@ -8,7 +8,7 @@ import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
-import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { GameStateManager } from "../../core/GameStateManager";
 import { InputManager } from "../../core/input/InputManager";
 
 export class EVENT020201 extends BaseEvent {

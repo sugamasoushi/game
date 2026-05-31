@@ -1,5 +1,5 @@
 import { BattleScene } from "@/app/(game)/lib/types";
-import { GameStateManager } from "@/app/(game)/GameAllState/GameStateManager";
+import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class cave extends Phaser.GameObjects.Container {
     private debugFlg: boolean | undefined;
@@ -141,7 +141,7 @@ export class cave extends Phaser.GameObjects.Container {
 
         // 1. まずシェーダーを作る（コードは最初にお渡ししたものでOKです）
         this.maskShader = this.scene.add.shader('circleMask', width / 2, height / 2, width, height);
-        
+
         // マスク自体は画面に表示する必要がないので非表示にする
         this.maskShader.setVisible(false);
 

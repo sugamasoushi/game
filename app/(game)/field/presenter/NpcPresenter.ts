@@ -1,25 +1,29 @@
 import { FieldScene } from "../../lib/types";
+import { NpcModel } from "../model/NpcModel";
+import { NpcView } from "../view/NpcView";
+import { TileMap } from "../view/TileMap";
 import { InputManager } from "../../core/input/InputManager";
-import { FieldPresenter } from "./FieldPresenter";
-
-import { FieldMapModel } from "../model/FieldMapModel";
 
 export class NpcPresenter {
 
     constructor(
         private fieldScene: FieldScene,
-        private fieldMapModel: FieldMapModel,
-        private fieldPresenter: FieldPresenter,
+        private npcModel: NpcModel,
+        private npcView: NpcView,
+        private tileMap: TileMap,
         private inputManager: InputManager
-    ) { }
+    ) {
+        this.npcModel = new NpcModel(fieldScene);
+        this.npcView = new NpcView(this.fieldScene, this.tileMap, this.inputManager);
+    }
 
-    public execute() {
-        /**
-         * このクラスにNPCの操作を移動したいが、後回しにする
-         * 今のところは各スプライトで描画や移動を詰め込んでいる状態
-         * NPCは外部からの入力は吹き出し会話くらいしか無く、MVPデザインから逸脱しすぎているわけでは無いと評価
-         */
+    public update(time: number, delta: number) {
 
+    }
+
+    public async execute() {
+        await this.npcModel.execute();
+        await this.npcView.execute();
     }
 
 

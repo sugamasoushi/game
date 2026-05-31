@@ -1,6 +1,6 @@
 import { MessageWindow } from "../../util/MessageWindow";
 import { MessageObject } from "../../util/MessageObject";
-import { GameStateManager } from '../../GameAllState/GameStateManager';
+import { GameStateManager } from '../../core/GameStateManager';
 import { State } from '../../lib/types';
 
 export class MenuButton {

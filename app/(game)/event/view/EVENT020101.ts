@@ -7,7 +7,7 @@ import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
-import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { GameStateManager } from "../../core/GameStateManager";
 import { Npc } from "../../field/view/character/Npc";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
 

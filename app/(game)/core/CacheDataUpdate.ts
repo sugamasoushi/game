@@ -1,5 +1,5 @@
 import { PlayerData } from "../lib/PlayerDataTypes";
-import { GameStateManager } from "../GameAllState/GameStateManager";
+import { GameStateManager } from "../core/GameStateManager";
 import { SaveDataManager } from "./SaveDataManager";
 
 export class CacheDataUpdate {

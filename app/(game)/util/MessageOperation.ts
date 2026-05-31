@@ -4,6 +4,8 @@ import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from "rxjs";
 import { take } from "rxjs/operators";
 import { filter } from "rxjs/operators";
+import { GameStateManager } from '../core/GameStateManager';
+import { Player } from '../field/view/character/Player';
 
 export class MessageOperation {
     private eventScene: FieldScene | EventScene;
@@ -216,12 +218,14 @@ export class MessageOperation {
     }
 
     _deleteTween(scene: Phaser.Scene, deleteMessageObject: Phaser.GameObjects.GameObject[]) {//tweenはタイマー、リピート等の使い方をしなければGCで自動削除される。
+        const gameStateManager = GameStateManager.getInstance();
+        const player = gameStateManager.currentPlayerPartyList[0] as Player;
         return new Promise<void>(resolve => {
             scene.tweens.add({
                 targets: deleteMessageObject,//テキスト及び吹き出しオブジェクトを画面から削除
                 scale: 0,
-                x: (scene as FieldScene).getPlayer().x,
-                y: (scene as FieldScene).getPlayer().y,
+                x: player.x,
+                y: player.y,
                 ease: 'sine.inout',
                 duration: 200,
                 onComplete: () => {

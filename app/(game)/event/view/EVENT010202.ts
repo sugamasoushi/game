@@ -6,6 +6,7 @@ import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
+import { GameStateManager } from "../../core/GameStateManager";
 
 export class EVENT010202 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -36,7 +37,8 @@ export class EVENT010202 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010201', false);
 
         //プレイヤー設定
-        this.player = this.fieldScene.getPlayer();
+        const gameStateManager = GameStateManager.getInstance();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
         this.player.state = CharacterState.event;
         this.player.stopAnimation();
 

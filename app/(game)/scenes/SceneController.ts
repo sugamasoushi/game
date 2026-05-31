@@ -5,7 +5,7 @@
 import { Scene } from 'phaser';
 import { State } from '../lib/StateTypes';
 import { Subscription } from 'rxjs';
-import { GameStateManager } from '../GameAllState/GameStateManager';
+import { GameStateManager } from '../core/GameStateManager';
 import { ExecutionEnvironment } from '../core/ExecutionEnvironment';
 
 export class SceneController extends Scene {

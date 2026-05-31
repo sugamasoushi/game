@@ -6,6 +6,7 @@ import { Npc } from "./character/Npc";
 import { Player } from './character/Player';
 import { Sound } from "../../scenes/Sound";
 import { ExecutionEnvironment } from '../../core/ExecutionEnvironment';
+import { GameStateManager } from "../../core/GameStateManager";
 
 export class MapEffect extends Phaser.GameObjects.Container {
     private debugFlg: boolean | undefined;
@@ -19,12 +20,7 @@ export class MapEffect extends Phaser.GameObjects.Container {
     private npcNormalList: Npc[] = [];
     private npcEnemyList: Npc[] = [];
 
-    private eventObjects: Phaser.Physics.Arcade.StaticGroup;
-    private clickEventObjects: Phaser.Physics.Arcade.Sprite[] = [];
-    private mapMoveObjects: Phaser.Physics.Arcade.StaticGroup;
     private chestSpriteObjects: Phaser.Physics.Arcade.Sprite[] = [];
-    private treeGlassSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
-    private treeStemSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
 
     private soundScene: Sound;
 
@@ -49,13 +45,14 @@ export class MapEffect extends Phaser.GameObjects.Container {
     }
 
     public async execute(tileMap: TileMap, mapObject: MapObject) {
+
+        const gameStateManager = GameStateManager.getInstance();
+
         this.TileMap = tileMap;
-        this.player = mapObject.getPlayer();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
 
         // リストを初期化
-        this.playerPartyList = mapObject.getPlayerPartyList();
-        this.npcNormalList = mapObject.getFieldNpclList();
-        this.npcEnemyList = mapObject.getFieldEnemyList();
+        this.playerPartyList = gameStateManager.currentPlayerPartyList as Phaser.Physics.Arcade.Sprite[];
         this.light = [];
         this.ellipse = [];
         this.timerEventObj = null;

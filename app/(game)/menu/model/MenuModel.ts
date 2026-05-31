@@ -1,5 +1,5 @@
 import { FieldScene } from '../../lib/SceneTypes';
-import { GameStateManager } from '../../GameAllState/GameStateManager';
+import { GameStateManager } from '../../core/GameStateManager';
 import { ItemUpdate } from '../../Data/ItemUpdate';
 
 export class MenuModel {
@@ -44,19 +44,23 @@ export class MenuModel {
     }
 
     public getPlayerData() {
-        return this.fieldScene.getPlayer().data;
+        const gameStateManager = GameStateManager.getInstance();
+        return gameStateManager.currentPlayerPartyList[0].data;
     }
 
     public getPlayerDataList() {
-        return this.fieldScene.getPlayer().data.list;
+        const gameStateManager = GameStateManager.getInstance();
+        return gameStateManager.currentPlayerPartyList[0].data.list;
     }
 
     public getItemData() {
-        return this.fieldScene.getPlayer().data;
+        const gameStateManager = GameStateManager.getInstance();
+        return gameStateManager.currentPlayerPartyList[0].data;
     }
 
     public getPlayerItemCount(itemName: string) {
-        return this.fieldScene.getPlayer().getData(itemName);
+        const gameStateManager = GameStateManager.getInstance();
+        return gameStateManager.currentPlayerPartyList[0].getData(itemName);
     }
 
     public getPlayerPartyList(): Phaser.GameObjects.Sprite[] {

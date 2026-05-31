@@ -1,5 +1,5 @@
 import { BattleScene } from "@/app/(game)/lib/types";
-import { GameStateManager } from "@/app/(game)/GameAllState/GameStateManager";
+import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class DefaultField extends Phaser.GameObjects.Container {
 

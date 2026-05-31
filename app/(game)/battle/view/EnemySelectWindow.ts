@@ -5,7 +5,7 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
 import { DataDefinition } from "../../Data/DataDefinition";
-import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { GameStateManager } from "../../core/GameStateManager";
 import { SearchBattleField } from "./battoleField/SearchBattleField";
 import { SearchBattleFieldData } from "../../Data/SearchBattleFieldData";
 

@@ -17,7 +17,7 @@ import PlayerAttack from "./PlayerAttack";
 import PlayerGuard from "./PlayerGuard";
 import EnemyAttack from "./EnemyAttack";
 
-import { gameStateManager } from "../../GameAllState/GameStateManager";
+import { gameStateManager } from "../../core/GameStateManager";
 import { ItemUpdate } from "../../Data/ItemUpdate";
 
 import { Sound } from "../../scenes/Sound";

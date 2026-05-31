@@ -1,6 +1,6 @@
 import { EventScene } from '../lib/SceneTypes';
 import { SerchEvent } from "../event/SearchEvent";
-import { GameStateManager, gameStateManager } from "../GameAllState/GameStateManager";
+import { GameStateManager, gameStateManager } from "../core/GameStateManager";
 
 export class Event extends Phaser.Scene implements EventScene {
 

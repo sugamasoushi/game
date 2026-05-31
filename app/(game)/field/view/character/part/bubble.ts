@@ -1,6 +1,8 @@
 import { FieldScene } from "@/app/(game)/lib/types";
 import { BaseParts } from "@/app/(game)/core/BaseParts";
 import { CharacterState } from "@/app/(game)/lib/FieldTypes";
+import { GameStateManager } from "@/app/(game)/core/GameStateManager";
+import { Player } from "../Player";
 
 export class bubble extends BaseParts {
     private frameRate: number = 5;
@@ -70,7 +72,9 @@ export class bubble extends BaseParts {
     private display() {
         if (this.sprite.state !== CharacterState.normal) return;
 
-        const player: Phaser.Physics.Arcade.Sprite = (this.scene as FieldScene).getPlayer();
+        const gameStateManager = GameStateManager.getInstance();
+        const player = gameStateManager.currentPlayerPartyList[0] as Player;
+
         //プレイヤーが近ければ表示する
         if (Phaser.Math.Difference(this.sprite.x, player.x) < 100 && Phaser.Math.Difference(this.sprite.y, player.y) < 100) {
             this.setVisible(true);

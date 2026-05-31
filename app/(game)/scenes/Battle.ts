@@ -18,8 +18,8 @@ import { BattlePresenter } from "../battle/presenter/BattlePresenter";
 
 import { Npc } from "../field/view/character/Npc";
 
-import { gameStateManager } from "../GameAllState/GameStateManager";
-import { GameStateManager } from "../GameAllState/GameStateManager";
+import { gameStateManager } from "../core/GameStateManager";
+import { GameStateManager } from "../core/GameStateManager";
 import { CacheDataUpdate } from "../core/CacheDataUpdate";
 
 export class Battle extends Phaser.Scene implements BattleScene {

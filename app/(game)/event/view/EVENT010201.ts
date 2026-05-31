@@ -6,6 +6,7 @@ import { Npc } from "../../field/view/character/Npc";
 import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
+import { GameStateManager } from "../../core/GameStateManager";
 
 type TalkLine = { [chara: string]: string[] };
 type TalkGroup = Record<string, TalkLine[]>;
@@ -60,7 +61,8 @@ export class EVENT010201 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010202', false);
 
         //プレイヤー設定
-        this.player = this.fieldScene.getPlayer();
+        const gameStateManager = GameStateManager.getInstance();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
         this.player.state = CharacterState.event;
         this.player.stopAnimation();
 

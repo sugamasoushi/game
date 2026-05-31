@@ -2,7 +2,7 @@ import { UiModel } from "../model/UiModel";
 import { MenuButton } from "../view/MenuButton";
 import { LeftButton } from "../view/LeftButton";
 import { RightButton } from "../view/RightButton";
-import { GameStateManager } from "../../GameAllState/GameStateManager";
+import { GameStateManager } from "../../core/GameStateManager";
 import { State } from "../../lib/StateTypes";
 import { Subscription } from "rxjs";
 

@@ -2,7 +2,7 @@ import { FieldScene } from '../lib/SceneTypes';
 import { MenuModel } from "../menu/model/MenuModel";
 import { MenuView } from "../menu/view/MenuView";
 import { MenuPresenter } from "../menu/presenter/MenuPresenter";
-import { gameStateManager } from "../GameAllState/GameStateManager";
+import { gameStateManager } from "../core/GameStateManager";
 
 export class Menu extends Phaser.Scene {
 

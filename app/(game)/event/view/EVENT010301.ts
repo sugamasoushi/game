@@ -10,6 +10,7 @@ import { SpriteType_3x4 } from "../../field/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
+import { GameStateManager } from "../../core/GameStateManager";
 
 export class EVENT010301 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -43,7 +44,8 @@ export class EVENT010301 extends BaseEvent {
         this.switchingEventObjFlg('EVENT010302', true);
 
         //プレイヤー設定
-        this.player = this.fieldScene.getPlayer();
+        const gameStateManager = GameStateManager.getInstance();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
         this.player.state = CharacterState.event;
         this.player.stopAnimation();
 

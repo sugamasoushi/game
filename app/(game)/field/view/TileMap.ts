@@ -1,7 +1,7 @@
 import { FieldScene } from "../../lib/types";
 import { FieldData } from "../../lib/types";
 import { tilesets, MapLayerDepth } from "../../lib/FieldTypes";
-import { GameStateManager } from '@/app/(game)/GameAllState/GameStateManager';
+import { GameStateManager } from "../../core/GameStateManager";
 import { SearchTileNamedata } from "../../Data/SearchTileNamedata";
 
 interface AnimationTileMapLayer extends Phaser.Tilemaps.TilemapLayer {
@@ -33,10 +33,6 @@ interface AnimationTileMapLayer extends Phaser.Tilemaps.TilemapLayer {
  * @class Map
  */
 export class TileMap extends Phaser.GameObjects.Container {
-    private fieldData: FieldData;
-
-    private fieldScene: FieldScene;
-    private makeTilemap: Phaser.Tilemaps.Tilemap;
 
     private collisionLayer: Phaser.Tilemaps.TilemapLayer;
 
@@ -50,12 +46,16 @@ export class TileMap extends Phaser.GameObjects.Container {
     private mapHighLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighestLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
 
-    constructor(scene: FieldScene, fieldData: FieldData) {
-        super(scene);
-        this.fieldScene = scene;
+    constructor(
+        private fieldScene: FieldScene,
+        private fieldData: FieldData,
+        private makeTilemap: Phaser.Tilemaps.Tilemap
+    ) {
+        super(fieldScene);
+        this.fieldScene = fieldScene;
         this.addToUpdateList();
 
-        this.makeTilemap = this.fieldScene.make.tilemap({ key: fieldData.mapKey });
+        this.makeTilemap = makeTilemap;
     }
 
 
@@ -208,8 +208,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             const mapkey = this.fieldData.mapKey;
 
             //mapkeyからTiledデータを呼び出す
-            const tilemap: Phaser.Tilemaps.Tilemap = this.fieldScene.make.tilemap({ key: mapkey });
-            this.makeTilemap = tilemap;
+            const tilemap: Phaser.Tilemaps.Tilemap = this.makeTilemap;
 
             //タイルマップのプロパティからバトル情報を設定
             if (Array.isArray(tilemap.properties)) {

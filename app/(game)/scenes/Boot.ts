@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { GameStateManager } from '../GameAllState/GameStateManager';
+import { GameStateManager } from '../core/GameStateManager';
 import { InputManager } from '../core/input/InputManager';
 
 export class Boot extends Scene {

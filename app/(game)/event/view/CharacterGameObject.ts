@@ -26,11 +26,6 @@ export class CharacterGameObject {
         return characterSprite!;
     }
 
-    //フィールドの敵リストを取得
-    public getFieldEnemyList(fieldScene: FieldScene): Npc[] {
-        return fieldScene.getMapObject().getFieldEnemyList();
-    }
-
     //キャラクターの立ち絵を取得しスクロール
     public setCharacterImage(scene: Phaser.Scene, initX: number, initY: number, characterKey: string, characterImageKey: string, moveToX: number, scale: number, duration: number) {
         return new Promise<void>(resolve => {

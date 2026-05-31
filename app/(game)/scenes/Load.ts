@@ -5,7 +5,7 @@
 import { Scene } from 'phaser';
 import { tilesets } from '../lib/FieldTypes';
 import { State } from '../lib/StateTypes';
-import { GameStateManager } from '../GameAllState/GameStateManager';
+import { GameStateManager } from '../core/GameStateManager';
 
 export class Load extends Scene {
     private gameWidth: number;
