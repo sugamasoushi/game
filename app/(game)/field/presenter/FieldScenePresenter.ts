@@ -95,6 +95,7 @@ export class FieldScenePresenter {
         if (this.playerView) { this.playerView.update(time, delta); }
         if (this.npcPresenter) { this.npcPresenter.update(time, delta); }
         if (this.npcView) { this.npcView.update(time, delta); }
+        if (this.mapEffect) { this.mapEffect.update(time, delta); }
     }
 
     public async execute(sceneKey: string) {
@@ -202,10 +203,13 @@ export class FieldScenePresenter {
             await this.chestPresenter.execute();
         }
 
+        //mapObjectはテスト用になった
         this.mapObject = new MapObject(this.fieldScene);
-        this.mapEffect = new MapEffect(this.fieldScene);
         await this.mapObject.execute(this.tileMap);
-        await this.mapEffect.execute(this.tileMap, this.mapObject);
+
+        //エフェクト作成
+        this.mapEffect = new MapEffect(this.fieldScene, this.tileMap);
+        await this.mapEffect.execute();
 
         this.fieldMessageWindow.init();
 

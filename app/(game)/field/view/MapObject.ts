@@ -1,8 +1,5 @@
 import { FieldScene } from "../../lib/SceneTypes";
-import { FieldData } from "../../lib/FieldTypes";
 import { TileMap } from "./TileMap";
-import { Sound } from "../../scenes/Sound";
-import { InputManager } from '../../core/input/InputManager';
 import { Player } from "./character/Player";
 import { GameStateManager } from "../../core/GameStateManager";
 
@@ -14,8 +11,6 @@ export class MapObject extends Phaser.GameObjects.Container {
     private treeGlassSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
     private treeStemSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
 
-    private soundScene: Sound;
-
     private plane!: Phaser.GameObjects.Plane;
     // クラスのメンバ変数として、前フレームのカメラ位置を記憶
     private lastCameraX: number = 0;
@@ -25,7 +20,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         super(scene);
         this.gameScene = scene;
         this.addToUpdateList();
-        this.soundScene = this.gameScene.scene.get('Sound') as Sound;
     }
 
     public async execute(tileMap: TileMap) {
@@ -34,10 +28,6 @@ export class MapObject extends Phaser.GameObjects.Container {
 
         //テスト用平面表示
         //this.createPlane();
-    }
-
-    preUpdate(time: number, delta: number) {
-        //this.updatePlaneRotation();
     }
 
     private createObject() {
@@ -80,7 +70,6 @@ export class MapObject extends Phaser.GameObjects.Container {
         });
     }
 
-    //------------------------オブジェクトサンプル
     private settingTreeGlassSpriteObjects(obj: Phaser.Physics.Arcade.Sprite) {
         return new Promise<void>(async (resolve) => {
 
@@ -107,7 +96,6 @@ export class MapObject extends Phaser.GameObjects.Container {
     private settingTreeStemSpriteObjects(obj: Phaser.Physics.Arcade.Sprite) {
         obj.setDepth(obj.y);
     }
-    //------------------------オブジェクトサンプル
 
 
     private updatePlaneRotation() {
