@@ -1,10 +1,9 @@
 import { FieldScene } from "../../lib/SceneTypes";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
-import { CharacterState, FieldData, MapLayerDepth } from "../../lib/types";
+import { CharacterState, MapLayerDepth } from "../../lib/types";
 import { TileMap } from "./TileMap";
 import { Player } from "./character/Player";
 import { GameStateManager } from "../../core/GameStateManager";
-
 
 export class PlayerView {
 
@@ -102,9 +101,5 @@ export class PlayerView {
             resolve();
         });
 
-    }
-
-    public getPlayer() {
-        return this.player;
     }
 }

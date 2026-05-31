@@ -39,8 +39,8 @@ export class PlayerPresenter {
         this.execKeyMove();
         this.execFieldClick();
 
-        //プレイヤーを作成
-        this.player = this.playerView.getPlayer();
+        //入力設定
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
         this.player.setCursors(this.inputManager.phaserCursors);
         this.player.setInputManager(this.inputManager);
 
@@ -119,19 +119,20 @@ export class PlayerPresenter {
 
     private execFieldClick() {
 
-        //Pキー押下
-        this.subs.add(this.inputManager.action$.subscribe((action) => {
-            if (action === 'P') {
-                console.log("Pキー押下")
+        //Pキー押下（Phasereによる設定）→使用しない
+        //this.keys = this.input.keyboard!.addKeys("P,H,A,S,E,R") as GameKeys;
+        // this.subs.add(this.inputManager.action$.subscribe((action) => {
+        //     if (action === 'P') {
+        //         console.log("Pキー押下")
 
-                //ゲーム状態の確認
-                const gameStateManager = GameStateManager.getInstance();
-                if (gameStateManager.currentState !== State.NOSTATE) { return; }
+        //         //ゲーム状態の確認
+        //         const gameStateManager = GameStateManager.getInstance();
+        //         if (gameStateManager.currentState !== State.NOSTATE) { return; }
 
-                const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
-                fieldAttack.frameBullet(this.player.x, this.player.y);
-            }
-        }));
+        //         const fieldAttack = new FieldAttack(this.player, this.player.x, this.player.y);
+        //         fieldAttack.frameBullet(this.player.x, this.player.y);
+        //     }
+        // }));
 
         this.subs.add(this.inputManager.fieldAttackButton$.subscribe(() => {
             //ゲーム状態の確認

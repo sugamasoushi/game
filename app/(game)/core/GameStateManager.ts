@@ -1,5 +1,5 @@
 import { FieldData } from '../lib/FieldTypes';
-import { State, GameState } from '../lib/StateTypes';
+import { State, BgmState, GameState } from '../lib/StateTypes';
 import { BehaviorSubject, Observable, distinctUntilChanged } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { ActorState } from '../core/ActorState';
@@ -13,11 +13,11 @@ const INITIAL_STATE: GameState = {
     fieldNpcList: [],
     fieldEnemyList: [],
     battleFlag: false,
-    isGameOver: false,
     fieldData: { gameMode: 'string', mapKey: 'string', x: 0, y: 0, x2: 0, y2: 0, initStandKey: 'string' },
     battleData: { usePatern: 'string', fieldHitEnemy: undefined, canNotRunaway: false },
     battleFieldKey: 'string',
-    eventObj: undefined
+    eventObj: undefined,
+    bgmState: BgmState.NOSTATE
 }
 
 export class GameStateManager {
@@ -25,7 +25,6 @@ export class GameStateManager {
 
     // 内部保持用。初期値をセット。
     private gameState$ = new BehaviorSubject<GameState>(INITIAL_STATE);
-
 
     // 外部公開用のObservable。scoreだけを抜き出して公開。
     public readonly money$: Observable<number> = this.gameState$.pipe(map(gameState => gameState.money));
@@ -81,11 +80,37 @@ export class GameStateManager {
 
         map(() => undefined),
         //流れてくるデータは GameState オブジェクト（HPやMoneyなど全部入り）ですが、これ以降の処理にはそれらの詳細データは不要で「開始したという事実」だけが欲しいので、データを空っぽ（undefined）に変換しています。
-        // //そのため、型が Observable<void> になっています。
+        //そのため、型が Observable<void> になっています。
 
         take(1)
         //ここが重要です。 この条件に一致した「最初の1回」だけを流し、その瞬間にこのストリームを完了（Complete）させます。
         //これがないと、ゲーム中に何度も FIELD 状態になるたびに通知が飛んでしまいますが、take(1) があることで「初期化時の一回だけ」といった限定的な使い方が可能になります。
+    );
+
+    public readonly mapKey$ = this.gameState$.pipe(
+        map(gameState => gameState.fieldData.mapKey),//GameStateから、fieldDataのmapKeyだけを抜き出す
+        distinctUntilChanged()//前回の mapKey と同じ値が来た場合は、ストリームに値を流さずスキップする
+    );
+
+    public readonly bgmState$: Observable<BgmState> = this.gameState$.pipe(
+        map(gameState => gameState.bgmState),//GameStateから、fieldDataのmapKeyだけを抜き出す
+        distinctUntilChanged()//前回の mapKey と同じ値が来た場合は、ストリームに値を流さずスキップする
+    );
+
+    // ゲームオーバー判定専用のストリーム
+    public readonly onGameOver$: Observable<void> = this.gameState$.pipe(
+        filter(gameState => {
+            const party = gameState.playerPartyList;
+
+            // すべてのメンバーのHPが0以下であるかを確認
+            const isAllDead = party.every(member => {
+                const hp = member.getData('HP');
+                return hp !== undefined && hp <= 0;
+            });
+            return isAllDead;
+        }),
+        map(() => undefined),//戻り値を強制的に voidに変換し、その他の不要データを消している
+        take(1)//onGameOver$を購読している対象を全て解除する
     );
 
     constructor() { }
@@ -111,31 +136,10 @@ export class GameStateManager {
         this.gameState$.next(nextState);
     }
 
-    // 3. ゲームオーバー判定専用のストリーム
-    // take(1) を使うことで、一度発火したら完了するように設計
-    public readonly onGameOver$: Observable<void> = this.gameState$.pipe(
-        filter(gameState => {
-            // パーティ全員のHPをチェック
-            const party = gameState.playerPartyList;
-            if (party.length === 0) return false;
-
-            // すべてのメンバーのHPが0以下であるかを確認
-            const isAllDead = party.every(member => {
-                const hp = member.getData('HP');
-                return hp !== undefined && hp <= 0;
-            });
-
-            return isAllDead && !gameState.isGameOver;
-        }),
-        map(() => undefined),
-        take(1)
-    );
-
     // ゲームオーバー状態をセットする
     public triggerGameOver() {
-        this.updateState({ state: State.GAMEOVER, isGameOver: true }, 'system');
+        this.updateState({ state: State.GAMEOVER }, 'system');
     }
-
 
     // 戦闘中かどうかのチェック
     public startBattle(): void {
@@ -189,6 +193,14 @@ export class GameStateManager {
         this.gameState$.next({
             ...currentState,
             battleFieldKey: key
+        });
+    }
+
+    public setBgmState(bgmState: BgmState): void {
+        const currentState = this.gameState$.value;
+        this.gameState$.next({
+            ...currentState,
+            bgmState: bgmState
         });
     }
 

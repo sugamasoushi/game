@@ -4,7 +4,7 @@
 
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
+import { FieldScene, EventObjState, CharacterState, BgmState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
 import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
@@ -301,7 +301,9 @@ export class EVENT010401 extends BaseEvent {
                             this.eventScene.scene.stop('Field');
                             this.eventScene.scene.stop('Event');
 
-                            this.eventScene.game.events.emit('BGM_ALL_STOP');
+                            //現在のBGM状態を更新
+                            const gameStateManager = GameStateManager.getInstance();
+                            gameStateManager.setBgmState(BgmState.NOSTATE);
 
                             endTween.destroy();
                             resolve();

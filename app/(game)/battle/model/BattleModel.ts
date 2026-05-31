@@ -38,6 +38,7 @@ export class BattleModel {
 
         //敵数をランダムで作成
         const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
+        //const enemyValue = 1;
         //const enemyValue = 2;
 
         for (let i = 0; i < enemyValue; i++) {

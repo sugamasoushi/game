@@ -1,4 +1,4 @@
-import { BattleScene, ViewsContainer, SkillDetail } from "../../lib/types";
+import { BattleScene, ViewsContainer, SkillDetail, BgmState } from "../../lib/types";
 import { BattleModel } from "../model/BattleModel";
 import { CommandSelectModel } from "../model/CommandSelectModel";
 import { TurnModel } from "../model/TurnModel";
@@ -91,7 +91,6 @@ export class BattlePresenter {
     }
 
     public async create(events: Phaser.Events.EventEmitter, views: ViewsContainer) {
-        this.battleScene.game.events.emit('BGM_BATTLE', '');
 
         this.endEvents = events;
 
@@ -569,9 +568,8 @@ export class BattlePresenter {
                 this.battleModel.getFieldHitEnemy().deleteCharacter();
             }
 
-            //await this.battleMessageWindow.messageOutput('ゲームオーバー', 1000);
+            //ゲームオーバー
             gameStateManager.triggerGameOver();
-            this.endEvents.emit('BattleEnd');
         }
 
         //ターンを更新

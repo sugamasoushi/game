@@ -86,11 +86,6 @@ export class ChestPresenter {
         //プレイヤーとの距離が近い場合
         if (Phaser.Math.Difference(obj.x, player.x) < 40 && Phaser.Math.Difference(obj.y, player.y) < 40) {
 
-            for (const player of playerPartyList) {
-                player.state = CharacterState.event;
-                (player as Phaser.Physics.Arcade.Sprite).setVelocity(0);
-            }
-
             const getItemName = obj.getData('item');
             const getItemNum = obj.getData('num');
             const bubbleTalkKey = obj.getData('bubbleTalkKey');
@@ -107,6 +102,11 @@ export class ChestPresenter {
 
             //キャラ向きとオブジェクト位置からイベント発生可否をチェック
             if (fieldPlayerChk.checkPlayerClickEvent()) {
+
+                for (const player of playerPartyList) {
+                    player.state = CharacterState.event;
+                    (player as Phaser.Physics.Arcade.Sprite).setVelocity(0);
+                }
 
                 //メッセージ表示
                 new Promise<void>(resolve => {

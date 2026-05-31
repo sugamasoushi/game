@@ -1,24 +1,16 @@
 import { FieldScene, FieldData } from "../../lib/types";
 import { GameStateManager } from "../../core/GameStateManager";
-import { Player } from "../view/character/Player";
-import { Npc } from "../view/character/Npc";
 
 export class FieldSceneModel {
     private gameStateManager: GameStateManager;
 
     private makeTilemapData: Phaser.Tilemaps.Tilemap;
-    // private mapObject: MapObject;
     private currentFieldData: FieldData;
-    private player: Player;
-
-    private npcNormalList: Npc[] = [];
-    private npcEnemyList: Npc[] = [];
 
     private checkEventObjectFlg: boolean = false;
     private checkClickEventObjectFlg: boolean = false;
     private checkMapMoveFlg: boolean = false;
     private checkChestFlg: boolean = false;
-
 
     constructor(private fieldScene: FieldScene) { }
 
@@ -62,12 +54,6 @@ export class FieldSceneModel {
     }
 
     public getMakeTilemapData(): Phaser.Tilemaps.Tilemap { return this.makeTilemapData; }
-
-    // public setMapObjectData(mapObject: MapObject) {
-    //     this.mapObject = mapObject;
-    //     // this.player = mapObject.getPlayer();
-
-    // }
 
     get eventObjectFlg() { return this.checkEventObjectFlg; }
     get clickEventObjectFlg() { return this.checkClickEventObjectFlg; }

@@ -38,7 +38,7 @@ export class Menu extends Phaser.Scene {
 
         // ゲームオーバーの監視
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-            this.input.enabled = false;
+            gameStateManager.triggerGameOver();
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
     }

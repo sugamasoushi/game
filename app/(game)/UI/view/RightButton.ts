@@ -23,9 +23,9 @@ export class RightButton {
         const gameConfigWidth: number = Number(this.uiScene.game.canvas.width);
         const gameConfigHeight: number = Number(this.uiScene.game.canvas.height);
 
-        const buttonSize = 48; // ボタン1つ分のサイズ
-        const centerX = gameConfigWidth - buttonSize * 1.5 - 32; // 右端から余白
-        const centerY = gameConfigHeight - buttonSize * 1.5 - 32;
+        const buttonSize = 60; // ボタン1つ分のサイズ
+        const centerX = gameConfigWidth - buttonSize * 1.5 - 8; // 右端から余白
+        const centerY = gameConfigHeight - buttonSize * 1.5 - 8;
 
         const messageObjectInstance = new MessageObject();
         messageObjectInstance.init(this.uiScene);
@@ -36,7 +36,7 @@ export class RightButton {
         this.menuWindow.createCircleWindow(centerX, centerY, buttonSize * 1.6);
         this.menuWindow.setDepth(400);
 
-        const radius = buttonSize * 1.6;
+        const radius = buttonSize * 2.4;
         this.hitZone = this.uiScene.add.zone(centerX, centerY, radius * 2, radius * 2);
         this.hitZone.setDepth(405);
         this.hitZone.setInteractive(new Phaser.Geom.Circle(radius, radius, radius), Phaser.Geom.Circle.Contains);

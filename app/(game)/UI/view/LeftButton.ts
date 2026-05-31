@@ -22,9 +22,9 @@ export class LeftButton {
     private createMenuButton() {
         const gameConfigHeight: number = Number(this.uiScene.game.canvas.height);
 
-        const buttonSize = 48; // ボタン1つ分のサイズ
-        const centerX = buttonSize * 1.5 + 32; // 十字パッドの中心X
-        const centerY = gameConfigHeight - buttonSize * 1.5 - 32; // 十字パッドの中心Y
+        const buttonSize = 64; // ボタン1つ分のサイズ
+        const centerX = buttonSize * 1.5 + 2; // 十字パッドの中心X
+        const centerY = gameConfigHeight - buttonSize * 1.5 - 2; // 十字パッドの中心Y
 
         const messageObjectInstance = new MessageObject();
         messageObjectInstance.init(this.uiScene);
@@ -36,7 +36,7 @@ export class LeftButton {
         this.menuWindow.setDepth(400);
 
         // 全体をまとめる円形ヒットゾーン（伝播防止用）
-        const radius = buttonSize * 1.6;
+        const radius = buttonSize * 2.4;
         this.hitZone = this.uiScene.add.zone(centerX, centerY, radius * 2, radius * 2);
         this.hitZone.setDepth(405);
         this.hitZone.setInteractive(new Phaser.Geom.Circle(radius, radius, radius), Phaser.Geom.Circle.Contains);

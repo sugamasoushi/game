@@ -25,7 +25,7 @@ export class MessageOperation {
     private textObject: Phaser.GameObjects.Text;
     private subs = new Subscription();
 
-    constructor(eventScene: EventScene, usePatern: string, textLine: number, lineSpaceValue: number) {
+    constructor(eventScene: FieldScene | EventScene, usePatern: string, textLine: number, lineSpaceValue: number) {
         this.eventScene = eventScene;
         this.usePatern = usePatern;
         this.textLine = textLine;

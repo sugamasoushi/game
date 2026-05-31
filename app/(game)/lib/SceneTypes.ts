@@ -1,6 +1,5 @@
 
 export interface FieldScene extends Phaser.Scene {
-  getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys;
   getMainCamera(): Phaser.Cameras.Scene2D.Camera;
   resumeScene(): void;
 }

@@ -19,6 +19,15 @@ export enum State {
   GAME_RESTART = 55
 }
 
+export enum BgmState {
+  NOSTATE = 0,
+  TITLE = 10,
+  FIELD = 20,
+  BATTLE = 30,
+  EVENT = 40,
+  GAMEOVER = 50
+}
+
 export interface GameState {
   state: State;
   sceneKey?: string; // 更新元のキーを追加
@@ -28,11 +37,11 @@ export interface GameState {
   fieldNpcList: Phaser.GameObjects.Sprite[];
   fieldEnemyList: Phaser.GameObjects.Sprite[];
   battleFlag: boolean;
-  isGameOver: boolean;
   fieldData: FieldData;
   battleData: { usePatern: string, fieldHitEnemy?: Npc, canNotRunaway: boolean };
   battleFieldKey: string;
   eventObj?: Phaser.Physics.Arcade.Sprite;
+  bgmState: BgmState;
 }
 
 /** 状態（State）の振る舞い */

@@ -1,5 +1,5 @@
 import { BattleScene, FieldScene } from "../lib/SceneTypes";
-import { State } from "../lib/StateTypes";
+import { State, BgmState } from "../lib/StateTypes";
 
 import { BattleModel } from "../battle/model/BattleModel";
 import { CommandSelectModel } from "../battle/model/CommandSelectModel";
@@ -23,7 +23,6 @@ import { GameStateManager } from "../core/GameStateManager";
 import { CacheDataUpdate } from "../core/CacheDataUpdate";
 
 export class Battle extends Phaser.Scene implements BattleScene {
-    private fieldScene: FieldScene;
 
     //model
     private battleModel: BattleModel;
@@ -44,12 +43,10 @@ export class Battle extends Phaser.Scene implements BattleScene {
     private battlePresenter: BattlePresenter;
 
     private cursorsKeys: Phaser.Types.Input.Keyboard.CursorKeys;//キーボード設定
-    private mainCamera: Phaser.Cameras.Scene2D.Camera;
 
     constructor() { super('Battle'); }
 
     init() {//dataはマップ上の敵キャラ接触で連携されるデータ
-        this.fieldScene = (this.scene.get('Field') as FieldScene);
 
         //rxjsのフラグを更新
         gameStateManager.startBattle();
@@ -108,19 +105,16 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
     async create(data: { sceneKey: string }) {
 
+        //暗転からのフェードイン
+        this.cameras.main.fadeIn(200);
+
+        //現在のBGM状態を更新
+        gameStateManager.setBgmState(BgmState.BATTLE);
+
         //Phaserのイベントエミッター
         this.events.on('BattleEnd', () => {
-
             this.endScene();
-
         }, this);
-
-        // ゲームオーバーの監視
-        const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-            this.input.enabled = false;
-            this.cameras.main.fadeOut(1000);
-        });
-        this.events.once('shutdown', () => gameOverSub.unsubscribe());
 
         this.battlePresenter.create(
             this.events,
@@ -147,17 +141,13 @@ export class Battle extends Phaser.Scene implements BattleScene {
             duration: 700,
             amount: 40,
             onComplete: () => {
-                this.cameras.main.fadeOut(100);
 
-                //バトルシーンを停止
-                this.scene.stop();
-
-                //フィールドBGMを再開
-                this.game.events.emit('BGM_FIELD');
-
-                //状態管理クラス
+                //シーンの更新
                 const manager = GameStateManager.getInstance();
                 manager.updateState({ state: State.FIELD_RESUME }, 'resume');
+
+                //現在のBGM状態を更新
+                manager.setBgmState(BgmState.FIELD);
 
                 //キャッシュを更新
                 const cacheDataUpdate = new CacheDataUpdate(this);
@@ -166,7 +156,10 @@ export class Battle extends Phaser.Scene implements BattleScene {
                 //状態更新
                 manager.updateState({ state: State.NOSTATE }, 'BattleEnd');
 
-                this.events.emit('shutdown')
+                this.events.emit('shutdown');
+
+                //バトルシーンを停止
+                this.scene.stop();
             }
         });
     }
@@ -176,13 +169,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
     }
 
     public getMainCamera(): Phaser.Cameras.Scene2D.Camera {
-        return this.mainCamera;
+        return this.cameras.main;
     }
-
-    //画面更新を再開。このメソッドは別シーンから参照される。
-    // public resumeScene() {
-    //     this.mainCamera.postFX.clear();
-    //     this.scene.resume();
-    // }
-
 }

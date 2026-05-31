@@ -1,16 +1,11 @@
 import { Scene } from 'phaser';
 import { EventBus } from '../EventBus';
 import { FieldScene } from '../lib/SceneTypes';
-import { GameKeys } from '../lib/CommonTypes';
 import { ReadyEvents } from '../lib/typesGamescene';
 import { FieldScenePresenter } from '../field/presenter/FieldScenePresenter';
-
 import { FieldSceneModel } from '../field/model/FieldSceneModel';
 
-import { Player } from '../field/view/character/Player';
-
 import { GameStateManager, gameStateManager } from '../core/GameStateManager';
-
 import { InputManager } from '../core/input/InputManager';
 import { CameraManager } from '../field/view/CameraManager';
 import { FieldMessageWindow } from '../field/view/FieldMessageWindow';
@@ -18,16 +13,11 @@ import { FieldMessageWindow } from '../field/view/FieldMessageWindow';
 export class Field extends Scene implements FieldScene {
 
     private fieldSceneModel: FieldSceneModel;
+    private fieldScenePresenter: FieldScenePresenter;
 
     private inputManager: InputManager;
     private cameraManager: CameraManager;
-
-    private fieldScenePresenter: FieldScenePresenter;
-
-    private cursorsKeys: Phaser.Types.Input.Keyboard.CursorKeys;//キーボード設定
     private mainCamera: Phaser.Cameras.Scene2D.Camera;
-    private keys!: GameKeys;
-    private player: Player;
 
     private fieldMessageWindow: FieldMessageWindow;
 
@@ -61,9 +51,6 @@ export class Field extends Scene implements FieldScene {
 
         //各種設定
         this.mainCamera = this.cameras.main;
-        this.cursorsKeys = this.input.keyboard!.createCursorKeys();//キーボード設定
-        this.keys = this.input.keyboard!.addKeys("P,H,A,S,E,R") as GameKeys;
-
 
         // フィールド（マップや動的タイルセット）の生成・ロード完了を待つ
         // ※ fieldPresenter.create が内部で非同期処理（Promiseやload.start）を行っている前提です
@@ -79,10 +66,7 @@ export class Field extends Scene implements FieldScene {
 
         // ゲームオーバーの監視
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-            this.input.enabled = false;
-            if (this.mainCamera) {
-                this.mainCamera.fadeOut(1000);
-            }
+            gameStateManager.triggerGameOver();
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
 
@@ -116,14 +100,6 @@ export class Field extends Scene implements FieldScene {
         }
 
         this.scene.resume(); // これにより上の 'resume' イベントが発火する
-    }
-
-    changeScene() {
-        this.scene.start('GameOver');
-    }
-
-    public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {
-        return this.cursorsKeys;
     }
 
     public getMainCamera(): Phaser.Cameras.Scene2D.Camera {

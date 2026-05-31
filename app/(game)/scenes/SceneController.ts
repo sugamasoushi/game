@@ -142,6 +142,7 @@ export class SceneController extends Scene {
                 this.scene.stop('Menu');
                 this.scene.stop('Event');
                 this.scene.stop('Battle');
+                this.scene.stop('UI');
                 break;
             case State.GAME_RESTART:
                 console.log('Game restart', sceneKey)

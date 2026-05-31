@@ -136,7 +136,7 @@ export class InputManager {
         this.scene.input.mouse!.disableContextMenu();//右クリックのコンテキストメニューを非表示にする
         this.cursors = this.scene.input.keyboard!.createCursorKeys();// Phaserのカーソルキー（上下左右+Space/Shift）を作成
 
-        // Phaserのキーイベントを監視し、Actionに変換してSubjectへ
+        // 1.Phaserのキーイベントを監視し、Actionに変換してSubjectへ
         Object.entries(KEY_MAP).forEach(([action, keyCode]) => {
             const keyObj = this.scene.input.keyboard!.addKey(keyCode);
             keyObj.on('down', () => {
@@ -145,7 +145,7 @@ export class InputManager {
             this.gameKeys[action] = keyObj;
         });
 
-        // キーボード入力からの変換
+        // 2.Subjectから渡されたキーボード入力を変換
         this.subs.add(this.action$.subscribe(action => {
             if (action === 'CURSOR_RIGHT') this.rightSubject.next();
             if (action === 'CURSOR_LEFT') this.leftSubject.next();
@@ -158,7 +158,7 @@ export class InputManager {
             if (action === 'SPACE') this.decideSubject.next();
             if (action === 'ESC') this.cancelSubject.next();
             if (action === 'M') this.menuSubject.next();
-            //if (action === 'P') this.fieldAttackSubject.next();//FieldPreseterで実装してる
+            if (action === 'P') this.fieldAttackSubject.next();//FieldPreseterで実装してる
         }));
 
     }

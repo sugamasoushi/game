@@ -1,4 +1,4 @@
-import { FieldScene, State } from "../../lib/types";
+import { FieldScene, BgmState, State } from "../../lib/types";
 import { FieldSceneModel } from "../model/FieldSceneModel";
 import { TileMap } from "../view/TileMap";
 
@@ -128,19 +128,17 @@ export class FieldScenePresenter {
             //cameraFilter.hue(180);
         }
 
-        //マップ情報の判定、検索処理とか実装する必要がある
-        if (this.fieldSceneModel.getCurrentFieldData().mapKey === '0102') {
-            this.fieldScene.game.events.emit('BGM_FIELD', sceneKey, 'waterFall');
-        } else {
-            this.fieldScene.game.events.emit('BGM_FIELD', sceneKey, '');
-        }
+        const gameStateManager = GameStateManager.getInstance();
+
+        //現在のBGM状態を更新
+        gameStateManager.setBgmState(BgmState.FIELD);
 
 
         //view-------------------------------------------------
         //console.log("タイルセットのロードを開始します...");
-        this.tileMap = new TileMap(this.fieldScene, this.fieldSceneModel.getCurrentFieldData(), this.fieldSceneModel.getMakeTilemapData());
-        await this.tileMap.loadTileSetFile(this.fieldSceneModel.getCurrentFieldData());
-        await this.tileMap.execute(this.fieldSceneModel.getCurrentFieldData());
+        this.tileMap = new TileMap(this.fieldScene, gameStateManager.currentFieldData, this.fieldSceneModel.getMakeTilemapData());
+        await this.tileMap.loadTileSetFile(gameStateManager.currentFieldData);
+        await this.tileMap.execute(gameStateManager.currentFieldData);
 
         this.playerPresenter = new PlayerPresenter(
             this.fieldScene,
@@ -218,7 +216,6 @@ export class FieldScenePresenter {
 
         //各種設定
         this.cameraManager.execute(this.tileMap.getMakeTilemap());
-        // this.fieldSceneModel.setMapObjectData(this.mapObject);
 
         // イベントエミッター設定
         this.setGameEvent();
@@ -370,6 +367,4 @@ export class FieldScenePresenter {
             this.subs.unsubscribe();
         });
     }
-
-    public getPlayer() { return this.playerView.getPlayer(); }
 }

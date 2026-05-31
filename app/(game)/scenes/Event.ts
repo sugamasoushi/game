@@ -34,7 +34,7 @@ export class Event extends Phaser.Scene implements EventScene {
 
         // ゲームオーバーの監視
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-            this.input.enabled = false;
+            gameStateManager.triggerGameOver();
         });
         this.events.once('shutdown', () => {
             gameOverSub.unsubscribe();

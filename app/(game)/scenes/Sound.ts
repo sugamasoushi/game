@@ -1,12 +1,27 @@
 import { Scene } from 'phaser';
+import { BgmState } from '../lib/StateTypes';
+import { GameStateManager } from '../core/GameStateManager';
+import { Subscription } from 'rxjs';
 
 export class Sound extends Scene {
     private debugFlg: boolean | undefined;
+    private subs = new Subscription();
+
+    // 💡 音量設定（0.0 〜 1.0）
+    public masterVolume: number = 1; // 全体の音量
+    public bgmVolume: number = 0.7;    // BGM用
+    public bgsVolume: number = 0.7;    // 環境音（Background Sound）用
+    public seVolume: number = 0.7;     // 効果音用
+
+    private currentBgmKey: string;
+    private currentBgsKey: string;
+    private currentBgm: Phaser.Sound.HTML5AudioSound
+    private currentBgs: Phaser.Sound.HTML5AudioSound
 
     gameScene: Phaser.Scene | null;
 
     //BGM
-    bgm1: Phaser.Sound.HTML5AudioSound;
+    fieldBgm: Phaser.Sound.HTML5AudioSound;
     battleBgm: Phaser.Sound.HTML5AudioSound;
 
     //SE
@@ -43,8 +58,8 @@ export class Sound extends Scene {
     create() {
         this.gameScene = this.scene.get('Field');
 
-        this.bgm1 = this.sound.add('bgm_otobokeDance', { loop: true }) as Phaser.Sound.HTML5AudioSound;
-        this.bgm1.setVolume(0.9);
+        this.fieldBgm = this.sound.add('bgm_otobokeDance', { loop: true }) as Phaser.Sound.HTML5AudioSound;
+        this.fieldBgm.setVolume(0.9);
         this.battleBgm = this.sound.add('bgm_aruges', { loop: true }) as Phaser.Sound.HTML5AudioSound;
         this.battleBgm.setVolume(0.15);
 
@@ -62,6 +77,7 @@ export class Sound extends Scene {
         this.SE_attack.volume = 0.7;
         this.SE_attack6 = this.sound.add('SE_attack6', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_attack6.volume = 0.7;
+
         this.SE_victory = this.sound.add('SE_victory', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_victory.volume = 0.7;
         this.SE_karuipunch = this.sound.add('SE_karuipunch', { loop: false }) as Phaser.Sound.HTML5AudioSound;
@@ -97,35 +113,123 @@ export class Sound extends Scene {
         this.SE_boosterJump1 = this.sound.add('SE_boosterJump1', { loop: false }) as Phaser.Sound.HTML5AudioSound;
         this.SE_boosterJump1.volume = 0.7;
 
-        this.game.events.on('BGM_FIELD', (sceneKey: string, seKey: string) => {
-            if (this.debugFlg) return;
-
-            if (sceneKey !== 'FieldMove') {
-                this.stopAllBgm();
-                this.bgm1.play();
-            }
-            if (seKey && seKey === 'waterFall') {
-                this.SE_waterFall.play();
-            } else {
-                this.SE_waterFall.stop()
-            }
-        })
-
-        this.game.events.on('BGM_BATTLE', () => {//(key: string)
-            if (this.debugFlg) return;
-
-            console.log('BGM_BATTLE')
-            this.stopAllBgm();
-            this.battleBgm.play();
-        })
-
-        this.game.events.on('BGM_ALL_STOP', () => {
-            this.sound.getAllPlaying().forEach(sound => { sound.stop(); })
-        })
-
+        this.setSubscription();
     }
 
     stopAllBgm() {
-        this.sound.getAllPlaying().forEach(sound => { sound.stop(); })
+
+        this.sound.getAllPlaying().forEach(sound => {
+            sound.stop();
+        })
+    }
+
+    setSubscription() {
+        const gameStateManager = GameStateManager.getInstance();
+        this.subs.add(
+            gameStateManager.bgmState$.subscribe((bgmState) => {
+
+                switch (bgmState) {
+                    case BgmState.TITLE:
+                        //Loadシーンで読み込みTitleで実行するため何もしない
+                        break;
+                    case BgmState.FIELD:
+                        this.updateBgm(gameStateManager.currentFieldData.mapKey);
+                        break;
+                    case BgmState.BATTLE:
+                        if (this.debugFlg) return
+                        this.playBgm('bgm_aruges');
+                        if (this.currentBgs) this.currentBgs.stop();
+                        this.currentBgsKey = '';
+                        break;
+                    case BgmState.NOSTATE:
+                        this.sound.getAllPlaying().forEach(sound => { sound.stop(); })
+                        break;
+                }
+            })
+        );
+
+        this.subs.add(
+            gameStateManager.mapKey$.subscribe((mapKey) => {
+                this.updateBgm(mapKey);
+            })
+        );
+    }
+
+    private updateBgm(mapKey: string) {
+        if (this.debugFlg) return
+
+        if (mapKey === '0102') {
+            this.onFieldMap0102();
+        } else {
+            this.onFieldDefaultBgm();
+        }
+    }
+
+    public onFieldDefaultBgm() {
+        this.playBgm('bgm_otobokeDance');
+    }
+
+    public onFieldMap0102() {
+        this.playBgm('bgm_otobokeDance');
+        this.playBgs('SE_waterFall');
+    }
+
+    /**
+     * BGMを再生する
+     */
+    public playBgm(key: string) {
+        // 同じBGMが既に流れているなら何もしない
+        if (this.currentBgmKey === key) return;
+
+        // 古いBGMがあれば止める（またはフェードアウト）
+        if (this.currentBgm) this.currentBgm.stop();
+
+        this.currentBgmKey = key;
+
+        this.currentBgm = this.sound.get(key) as Phaser.Sound.HTML5AudioSound;
+        const actualVolume = this.currentBgm.volume * this.bgmVolume * this.masterVolume;
+        this.currentBgm.play({ loop: true, volume: actualVolume });
+    }
+
+    /**
+     * 環境音（BGS）を再生する
+     */
+    public playBgs(key: string) {
+        if (this.currentBgsKey === key) return;
+        if (this.currentBgs) this.currentBgs.stop();
+
+        this.currentBgsKey = key;
+
+        // 💡 BGS専用の音量設定を適用
+        this.currentBgs = this.sound.get(key) as Phaser.Sound.HTML5AudioSound;
+        const actualVolume = this.currentBgs.volume * this.bgsVolume * this.masterVolume;
+        this.currentBgs.play({ loop: true, volume: actualVolume });
+    }
+
+    /**
+     * オプション画面などで「BGMの音量」が変更されたときに呼び出す
+     */
+    public updateBgmVolume(newVolume: number) {
+        this.bgmVolume = newVolume;
+        if (this.currentBgm && this.currentBgm instanceof Phaser.Sound.WebAudioSound) {
+            // リアルタイムに再生中の音量を変更
+            this.currentBgm.setVolume(this.bgmVolume * this.masterVolume);
+        }
+    }
+
+    /**
+     * オプション画面などで「環境音の音量」が変更されたときに呼び出す
+     */
+    public updateBgsVolume(newVolume: number) {
+        this.bgsVolume = newVolume;
+        if (this.currentBgs && this.currentBgs instanceof Phaser.Sound.WebAudioSound) {
+            // リアルタイムに再生中の環境音の音量を変更
+            this.currentBgs.setVolume(this.bgsVolume * this.masterVolume);
+        }
+    }
+
+    destroy() {
+        //基本的に購読解除しない
+        this.subs.unsubscribe();
     }
 }

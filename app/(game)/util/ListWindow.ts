@@ -134,25 +134,6 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
         })
     }
 
-    //キー入力状態のチェック
-    private updateNowChoiceNoKeyboard() {
-        const minNo = 0;
-        const maxNo = this.choicetList.length;
-
-        //キー押下でリストの選択番号を更新する
-        if (this.fromScene.getCursorsKeys().down.isDown) {
-            //更新後の選択番号がリスト番号の最大値を超える場合
-            if (this.nowChoiceNo + 1 >= maxNo) { return; }
-            this.nextChoiceNo = this.nowChoiceNo + 1;
-            this.cursorUpdate();
-        } else if (this.fromScene.getCursorsKeys().up.isDown) {
-            //更新後の選択番号がリスト番号の最小値超える場合
-            if (this.nowChoiceNo - 1 < minNo) { return; }
-            this.nextChoiceNo = this.nowChoiceNo - 1;
-            this.cursorUpdate();
-        }
-    }
-
     //マウス操作
     private selectCheck() {
         //マウスオーバーで選択を更新
