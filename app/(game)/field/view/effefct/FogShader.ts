@@ -119,21 +119,10 @@ export class FogShader {
         fog.setMask(fogMask.createGeometryMask());
         fog2.setMask(fogMask.createGeometryMask());
 
-
-
-        //以下はbgRenderTextureとBitmapMaskの座標位置を補正するための変換処理
-        // キャプチャしたテクスチャ名を使って、位置調整用のダミースプライトを作成する
-        // ※座標を「画面の中心」にし、Originを「(0.5, 0.5)」にすることで、Phaserのマスク計算と完全一致させます。
-        // const maskDummySprite = this.fieldScene.add.sprite(width / 2, height / 2, 'bg_captured_image');
-        // maskDummySprite.setOrigin(0.5, 0.5);
-        // maskDummySprite.setVisible(false); // 画面には表示しない
-
-        // // 3. このダミースプライトをソースにして BitmapMask を作成（型エラーは一切起きません）
-        // const mapMask = new Phaser.Display.Masks.BitmapMask(this.fieldScene, maskDummySprite);
-
-        // 4. 霧にマスクを適用
-        // fog.setMask(mapMask);
-        // fog2.setMask(mapMask);
+        this.fieldScene.events.on('shutdown', () => {
+            fog.destroy();
+            fog2.destroy();
+        });
     }
 
 
@@ -316,6 +305,11 @@ export class FogShader {
             } else {
                 shader.setDepth(MapLayerDepth.Highest);
             }
+
+
+            this.fieldScene.events.on('shutdown', () => {
+                shader.destroy();
+            });
 
         }
     }

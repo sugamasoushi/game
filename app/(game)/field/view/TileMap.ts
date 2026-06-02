@@ -48,7 +48,6 @@ export class TileMap extends Phaser.GameObjects.Container {
 
     constructor(
         private fieldScene: FieldScene,
-        private fieldData: FieldData,
         private makeTilemap: Phaser.Tilemaps.Tilemap
     ) {
         super(fieldScene);
@@ -164,9 +163,7 @@ export class TileMap extends Phaser.GameObjects.Container {
         });
     }
 
-    public async execute(fieldData: FieldData) {
-        this.fieldData = fieldData;
-
+    public async execute() {
         //マップ作成　※非同期処理は無
         await this.createTileMap();
 
@@ -205,7 +202,6 @@ export class TileMap extends Phaser.GameObjects.Container {
      */
     private createTileMap(): Promise<void> {
         return new Promise<void>(resolve => {
-            const mapkey = this.fieldData.mapKey;
 
             //mapkeyからTiledデータを呼び出す
             const tilemap: Phaser.Tilemaps.Tilemap = this.makeTilemap;

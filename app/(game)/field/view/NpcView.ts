@@ -91,6 +91,10 @@ export class NpcView {
 
                                 npc!.setInputManager(this.inputManager);
 
+                                this.fieldScene.events.on('shutdown', () => {
+                                    npc!.destroy();
+                                });
+
                             } catch (e) {
                                 console.log('NPC作成エラー')
                                 console.log(e)

@@ -98,6 +98,12 @@ export class PlayerView {
             // 状態管理クラスのパーティリストを更新
             gameStateManager.setPlayerPartyList(this.playerPartyList);
 
+            this.gameScene.events.on('shutdown', () => {
+                for (const player of this.playerPartyList) {
+                    player.destroy();
+                }
+            });
+
             resolve();
         });
 

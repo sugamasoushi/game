@@ -67,6 +67,10 @@ export class Light2D {
         if (!this.lightFlg) return;
         return new Promise<void>(async (resolve) => {
 
+            /**
+             * lightオブジェクトは効果対象のオブジェクトが削除されればPhaserが自動で削除される
+             */
+
             for (const obj of this.lightObjectLayer.objects) {
 
                 //初期値

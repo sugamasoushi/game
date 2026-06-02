@@ -185,6 +185,12 @@ export class WaterReflectionShader {
 
         shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
         shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
+
+
+        this.fieldScene.events.on('shutdown', () => {
+            cropRectMask.destroy();
+            shader.destroy();
+        });
     }
 
     private async createSmartPhoneVersion() {
@@ -281,7 +287,6 @@ export class WaterReflectionShader {
             }
         );
 
-
         const cropRectMask = this.fieldScene.add.graphics();
         cropRectMask.x = 0;//座標初期値を設定
         cropRectMask.y = 0;
@@ -291,5 +296,10 @@ export class WaterReflectionShader {
 
         shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
         shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
+
+        this.fieldScene.events.on('shutdown', () => {
+            cropRectMask.destroy();
+            shader.destroy();
+        });
     }
 }

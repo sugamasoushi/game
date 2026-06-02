@@ -38,6 +38,11 @@ export class BgRenderTexture {
             // 背景専用のRenderTexture（絶対にクリアしない、マップ情報保持用）
             if (this.fieldScene.textures.exists('bg_captured_image')) { this.fieldScene.textures.removeKey('bg_captured_image'); }
 
+            this.fieldScene.events.on('shutdown', () => {
+                this.bgRenderTexture!.destroy();
+                resolve();
+            });
+
             const width = this.tileMap.getMakeTilemap().widthInPixels;
             const height = this.tileMap.getMakeTilemap().heightInPixels;
 
