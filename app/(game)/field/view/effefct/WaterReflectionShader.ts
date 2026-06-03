@@ -225,7 +225,7 @@ export class WaterReflectionShader {
             uniform sampler2D iChannel1; // char_captured_image (キャラクター)
             uniform float offsetY_bg; // 外部から渡される反射位置オフセット
 
-            // Phaser 3から自動的に渡される、このオブジェクト固有の正確なUV座標
+            // Phaser 3から自動的に渡される、このオブジェクト固有的正確なUV座標
             varying vec2 outTexCoord; 
 
             void main(void) {
@@ -237,21 +237,27 @@ export class WaterReflectionShader {
                 float fade = smoothstep(fadeStart, fadeEnd, uv.y);
                 
                 // 【波の大きさを一定に保つためのスケール補正】
-                vec2 baseScale = vec2(1000.0, 1000.0);
+                // [OPT] baseScale を小さくすると波の周期が短くなり計算回数が減少します
+                vec2 baseScale = vec2(500.0, 500.0);
                 vec2 scale = resolution / baseScale;
 
                 // 遠近感（パース）の計算
+                // [OPT] 遠近感計算が不要なら定数に置き換えても可
                 float perspective = 1.0 / (uv.y * 2.0 + 0.1);
                 
                 // 簡易的なサイン・コサイン波によるUVの歪み計算（重いノイズや法線計算は一切行いません）
                 // 縦方向と横方向で異なる周波数と速度の波を重ね合わせ、自然な水面の揺らぎを作ります
+                // [OPT] waveUV の係数 12.0, 15.0 を下げると波の速度・振幅が減少し軽くなる
                 vec2 waveUV = vec2(uv.x * 12.0 * scale.x, (1.0 - uv.y) * 15.0 * scale.y * perspective);
                 
-                float waveX = sin(waveUV.x + time * 1.5) * cos(waveUV.y + time * 1.0);
+                // [OPT] time 乗数を小さくするとアニメーションが遅くなり負荷が下がる
+                float waveX = sin(waveUV.x + time * 1.0) * cos(waveUV.y + time * 1.0);
+                // [OPT] waveY の係数も同様に調整可能
                 float waveY = cos(waveUV.x * 0.8 - time * 1.2) * sin(waveUV.y * 1.2 + time * 1.6);
                 
                 // 歪み量（強度）を決定。上側でフェードさせます。
-                vec2 distortion = vec2(waveX, waveY) * 0.008 * fade;
+                // [OPT] 歪み係数 0.008 を減らすと波の揺らぎが弱くなり軽くなる
+                vec2 distortion = vec2(waveX, waveY) * 0.004 * fade;
 
                 // 背景画像（マップ）の反射位置オフセットと屈折
                 vec2 distortedUV_bg = clamp(uv + distortion + vec2(0.0, offsetY_bg), 0.0, 1.0);
@@ -273,10 +279,11 @@ export class WaterReflectionShader {
                 
                 // 【簡易スペキュラーハイライト】
                 // 重い法線反射ベクトル（normalizeやdot）を計算する代わりに、サイン波のピーク部分から直接きらめきを生成します
-                // float highlight = smoothstep(0.85, 1.0, waveX * waveY * 0.5 + 0.5) * 0.25 * fade;
-                // vec3 specularColor = vec3(1.0, 1.0, 1.0) * highlight;
+                // [OPT] ハイライト計算は軽量化できるが、見た目に影響する場合は調整
+                float highlight = smoothstep(1.0, 1.0, waveX * waveY * 0.5 + 0.5) * 0.25 * fade;
+                vec3 specularColor = vec3(1.0, 1.0, 1.0) * highlight;
                 
-                // gl_FragColor = vec4(finalColor + specularColor, 1.0);
+                gl_FragColor = vec4(finalColor + specularColor, 1.0);
             }
         `;
 

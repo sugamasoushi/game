@@ -50,7 +50,7 @@ export class BgRenderTexture {
                 if (execEnv.isElectron()) {
                     this.bgRenderTexture.draw(tilemapLayer);
                 } else {
-                    this.bgRenderTexture.draw(tilemapLayer, 0.3, 0.3);
+                    this.bgRenderTexture.draw(tilemapLayer, 0.5, 0.5);
                 }
 
             }
