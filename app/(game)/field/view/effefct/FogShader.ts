@@ -5,6 +5,9 @@ import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
 
 export class FogShader {
     private debugFlg: boolean | undefined;
+    private fogMaskList: Array<Phaser.GameObjects.Graphics> = [];
+    private fogList: Array<Phaser.GameObjects.TileSprite> = [];
+    private fogShaderList: Array<Phaser.GameObjects.Shader> = [];
 
     constructor(private fieldScene: FieldScene, private TileMap: TileMap) {
         this.debugFlg = fieldScene.game.config.physics.arcade?.debug;
@@ -48,7 +51,7 @@ export class FogShader {
 
                 if (prop.name === 'fog_front') {
                     //エフェクトオブジェクトを作成
-                    this.createFog_Ground(prop.value);
+                    this.createFogShader(prop.value);
                 }
             }
         }
@@ -119,19 +122,24 @@ export class FogShader {
         fog.setMask(fogMask.createGeometryMask());
         fog2.setMask(fogMask.createGeometryMask());
 
+        this.fogList.push(fog);
+        this.fogList.push(fog2);
+        this.fogMaskList.push(fogMask);
+
         this.fieldScene.events.on('shutdown', () => {
-            fog.destroy();
-            fog2.destroy();
+            for (const fog of this.fogList) {
+                fog.destroy();
+            }
+            this.fogList = [];
         });
     }
 
 
-    private async createFog_Ground(fogData: string) {
+    private async createFogShader(fogData: string) {
 
         // PC版（Electron）の場合に作成
         const execEnv = new ExecutionEnvironment();
         if (execEnv.isElectron() || this.debugFlg) {
-
 
             // タイルマップから解像度を取得
             const width = this.TileMap.getMakeTilemap().widthInPixels;
@@ -306,6 +314,7 @@ export class FogShader {
                 shader.setDepth(MapLayerDepth.Highest);
             }
 
+            this.fogShaderList.push(shader);
 
             this.fieldScene.events.on('shutdown', () => {
                 shader.destroy();

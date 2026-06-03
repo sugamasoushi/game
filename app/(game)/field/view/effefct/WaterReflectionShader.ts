@@ -5,6 +5,8 @@ import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
 
 export class WaterReflectionShader {
     private debugFlg: boolean | undefined;
+    private waterShaderList: Array<Phaser.GameObjects.Shader> = [];
+    private waterCropRectMaskList: Array<Phaser.GameObjects.Graphics> = [];
 
     constructor(private fieldScene: FieldScene, private tileMap: TileMap) {
         this.debugFlg = fieldScene.game.config.physics.arcade?.debug;
@@ -186,10 +188,15 @@ export class WaterReflectionShader {
         shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
         shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
 
+        this.waterShaderList.push(shader);
+        this.waterCropRectMaskList.push(cropRectMask);
 
         this.fieldScene.events.on('shutdown', () => {
-            cropRectMask.destroy();
-            shader.destroy();
+            console.log('shutdown');
+            this.waterShaderList.forEach(shader => shader.destroy());
+            this.waterCropRectMaskList.forEach(cropRectMask => cropRectMask.destroy());
+            this.waterShaderList = [];
+            this.waterCropRectMaskList = [];
         });
     }
 
@@ -297,9 +304,14 @@ export class WaterReflectionShader {
         shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
         shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
 
+        this.waterShaderList.push(shader);
+        this.waterCropRectMaskList.push(cropRectMask);
+
         this.fieldScene.events.on('shutdown', () => {
-            cropRectMask.destroy();
-            shader.destroy();
+            this.waterShaderList.forEach(shader => shader.destroy());
+            this.waterCropRectMaskList.forEach(cropRectMask => cropRectMask.destroy());
+            this.waterShaderList = [];
+            this.waterCropRectMaskList = [];
         });
     }
 }
