@@ -28,7 +28,6 @@ export class WaterReflectionShader {
             const execEnv = new ExecutionEnvironment();
             if (execEnv.isElectron() || this.debugFlg) {
                 this.createPcVersion();
-
             } else {
                 this.createSmartPhoneVersion();
             }
@@ -274,10 +273,10 @@ export class WaterReflectionShader {
                 
                 // 【簡易スペキュラーハイライト】
                 // 重い法線反射ベクトル（normalizeやdot）を計算する代わりに、サイン波のピーク部分から直接きらめきを生成します
-                float highlight = smoothstep(0.85, 1.0, waveX * waveY * 0.5 + 0.5) * 0.25 * fade;
-                vec3 specularColor = vec3(1.0, 1.0, 1.0) * highlight;
+                // float highlight = smoothstep(0.85, 1.0, waveX * waveY * 0.5 + 0.5) * 0.25 * fade;
+                // vec3 specularColor = vec3(1.0, 1.0, 1.0) * highlight;
                 
-                gl_FragColor = vec4(finalColor + specularColor, 1.0);
+                // gl_FragColor = vec4(finalColor + specularColor, 1.0);
             }
         `;
 
