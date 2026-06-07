@@ -4,6 +4,16 @@ import { Npc } from "@/app/(game)/field/view/character/Npc";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
 
+// キャラクター描画に必要なプロパティを持つ型
+type CharacterLike = Phaser.GameObjects.Sprite & {
+    displayHeight?: number;
+    visible?: boolean;
+    depth?: number;
+    scaleY?: number;
+    x?: number;
+    y?: number;
+};
+
 export class BgRenderTexture {
 
     private playerPartyList: Phaser.Physics.Arcade.Sprite[] = [];
@@ -26,7 +36,10 @@ export class BgRenderTexture {
         await this.createCharacterRendertexture();
     }
 
-    public update(time: number, delta: number) {
+    public update(_time: number, _delta: number) {
+        // 引数が将来使われる可能性があるため参照しておく（未使用エラー対策）
+        void _time;
+        void _delta;
         this.updateRenderTexture();
     }
 
@@ -100,29 +113,21 @@ export class BgRenderTexture {
 
 
 
-            for (const player of this.playerPartyList) {
-                const originalScaleY = player.scaleY;
-                player.scaleY *= -1; // 上下反転
-                this.renderTexture.draw(player, player.x, player.y + player.displayHeight);
-                player.scaleY = originalScaleY; // 元に戻す
-            }
+            // キャラクターを depth の小さい順（奥→手前）にソートして描画する
+            const chars: CharacterLike[] = [
+                ...this.playerPartyList as CharacterLike[],
+                ...this.npcNormalList as CharacterLike[],
+                ...this.npcEnemyList as CharacterLike[]
+            ];
 
-            for (const npc of this.npcNormalList) {
-                if (npc.visible) {
-                    const originalScaleY = npc.scaleY;
-                    npc.scaleY *= -1; // 上下反転
-                    this.renderTexture.draw(npc, npc.x, npc.y + npc.displayHeight);
-                    npc.scaleY = originalScaleY; // 元に戻す
-                }
-            }
+            chars.sort((a, b) => (a.depth ?? 0) - (b.depth ?? 0));
 
-            for (const npc of this.npcEnemyList) {
-                if (npc.visible) {
-                    const originalScaleY = npc.scaleY;
-                    npc.scaleY *= -1; // 上下反転
-                    this.renderTexture.draw(npc, npc.x, npc.y + npc.displayHeight);
-                    npc.scaleY = originalScaleY; // 元に戻す
-                }
+            for (const obj of chars) {
+                if (!obj || obj.visible === false) continue;
+                const originalScaleY = obj.scaleY;
+                obj.scaleY *= -1; // 上下反転
+                this.renderTexture.draw(obj, obj.x, obj.y + (obj.displayHeight ?? 0));
+                obj.scaleY = originalScaleY; // 元に戻す
             }
 
             // この画像キーでシェーダーがキャラクターのテクスチャを参照します
@@ -153,29 +158,21 @@ export class BgRenderTexture {
         // this.player.scaleY = originalScaleY; // 元に戻す
 
 
-        for (const player of this.playerPartyList) {
-            const originalScaleY = player.scaleY;
-            player.scaleY *= -1; // 上下反転
-            this.renderTexture.draw(player, player.x, player.y + player.displayHeight);
-            player.scaleY = originalScaleY; // 元に戻す
-        }
+        // 描画は常に depth の小さい順に（奥→手前）行う
+        const chars: CharacterLike[] = [
+            ...this.playerPartyList as CharacterLike[],
+            ...this.npcNormalList as CharacterLike[],
+            ...this.npcEnemyList as CharacterLike[]
+        ];
 
-        for (const npc of this.npcNormalList) {
-            if (npc.visible) {
-                const originalScaleY = npc.scaleY;
-                npc.scaleY *= -1; // 上下反転
-                this.renderTexture.draw(npc, npc.x, npc.y + npc.displayHeight);
-                npc.scaleY = originalScaleY; // 元に戻す
-            }
-        }
+        chars.sort((a, b) => (a.depth ?? 0) - (b.depth ?? 0));
 
-        for (const npc of this.npcEnemyList) {
-            if (npc.visible) {
-                const originalScaleY = npc.scaleY;
-                npc.scaleY *= -1; // 上下反転
-                this.renderTexture.draw(npc, npc.x, npc.y + npc.displayHeight);
-                npc.scaleY = originalScaleY; // 元に戻す
-            }
+        for (const obj of chars) {
+            if (!obj || obj.visible === false) continue;
+            const originalScaleY = obj.scaleY;
+            obj.scaleY *= -1;
+            this.renderTexture.draw(obj, obj.x, obj.y + (obj.displayHeight ?? 0));
+            obj.scaleY = originalScaleY;
         }
     }
 }
