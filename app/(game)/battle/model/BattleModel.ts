@@ -37,9 +37,9 @@ export class BattleModel {
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
 
         //敵数をランダムで作成
-        const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
+        //const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
         //const enemyValue = 1;
-        //const enemyValue = 2;
+        const enemyValue = 2;
 
         for (let i = 0; i < enemyValue; i++) {
 
@@ -239,6 +239,7 @@ export class BattleModel {
             partyMember.data.remove('BattleTarget');
             partyMember.data.remove('BattleTargetIcon');
             partyMember.data.remove('attackType');
+            partyMember.data.remove('avoid');
         }
     }
 

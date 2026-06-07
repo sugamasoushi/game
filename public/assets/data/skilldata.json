@@ -15,7 +15,7 @@
             "name": "防御",
             "type": "guard",
             "description": "がっちりガード！",
-            "mpCost": 0,
+            "mpCost": 5,
             "effectClassName": "",
             "value": 20,
             "selectComment": ""
@@ -23,8 +23,8 @@
         "02": {
             "name": "回避",
             "type": "avoid",
-            "description": "避けるな！",
-            "mpCost": 0,
+            "description": "馬鹿め！後ろだ！",
+            "mpCost":15,
             "effectClassName": "",
             "value": 0,
             "selectComment": ""

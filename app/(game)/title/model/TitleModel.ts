@@ -63,7 +63,7 @@ export class TitleModel {
             sv.textSpeed
         );
 
-        console.log(this.titleScene.cache.json.get('savedata'));
+        //console.log(this.titleScene.cache.json.get('savedata'));
     }
 
     /** 現在の optionData を GameStateManager へ反映する */

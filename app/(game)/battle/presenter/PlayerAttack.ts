@@ -47,6 +47,7 @@ export default class PlayerAttack {
                                     // console.log(skillDetail);
                                     const searchMagicEffect = new SearchMagicEffect(skillDetail, this.battleScene, targetX, targetY);
                                     const effect = searchMagicEffect.searchMagicEffect();
+                                    this.attacker.data.values.MP -= skillDetail.mpCost;
                                     return effect!.attackAnimation();
                                 default:
                                     return Promise.resolve();

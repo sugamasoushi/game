@@ -46,30 +46,33 @@ export default class EnemyAttack {
                 const guardBonus = this.target.getData('GuardValue') || 0;
                 const damage = Math.max(baseAttack - guardBonus, 1);
 
-                await Promise.all([
-                    battleMessageWindow.messageOutput(this.target.getData('name') + 'に' + damage + 'のダメージ！', undefined),
-                    this.blinking(targetIcon)
-                ]);
-
                 //回避チェック
                 if (this.target.getData('avoid')) {
-                    battleMessageWindow.messageOutput(this.target.getData('name') + 'は回避した！', 600);
-                    return;
-                }
+                    await Promise.all([
+                        battleMessageWindow.messageOutput(this.target.getData('name') + 'は回避した！', 600),
+                        this.soundScene.playSe('SE_highSpeedMove')
+                    ]);
+                } else {
 
-                //ガードチェック
-                if (this.target.getData('guardPoint') > 0) {
-                    battleMessageWindow.messageOutput(this.target.getData('name') + 'は防御した！', 600);
-                    // this.target.setData('guardPoint', 0);
-                }
+                    await Promise.all([
+                        battleMessageWindow.messageOutput(this.target.getData('name') + 'に' + damage + 'のダメージ！', undefined),
+                        this.blinking(targetIcon)
+                    ]);
 
-                //HP更新
-                this.target.data.values.HP -= damage;
-                if (this.target.data.values.HP <= 0) {
-                    this.target.data.values.HP = 0;
+                    //ガードチェック
+                    if (this.target.getData('guardPoint') > 0) {
+                        await battleMessageWindow.messageOutput(this.target.getData('name') + 'は防御した！', 600);
+                        // this.target.setData('guardPoint', 0);
+                    }
 
-                    //倒した相手のアイコンをグレーアウト
-                    this.battleScene.events.emit('PLAYER_ICON_LIGHTDOWN', this.target.name);
+                    //HP更新
+                    this.target.data.values.HP -= damage;
+                    if (this.target.data.values.HP <= 0) {
+                        this.target.data.values.HP = 0;
+
+                        //倒した相手のアイコンをグレーアウト
+                        this.battleScene.events.emit('PLAYER_ICON_LIGHTDOWN', this.target.name);
+                    }
                 }
 
                 //攻撃対象を初期化

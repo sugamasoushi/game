@@ -15,6 +15,7 @@ import { StateMachine } from "./StateMachine";
 
 import PlayerAttack from "./PlayerAttack";
 import PlayerGuard from "./PlayerGuard";
+import PlayerAvoid from "./PlayerAvoid";
 import EnemyAttack from "./EnemyAttack";
 
 import { gameStateManager } from "../../core/GameStateManager";
@@ -503,13 +504,18 @@ export class BattlePresenter {
 
             // 攻撃意図の確認（スキルが防御系かどうか）
             const skillDetail = battler.getData('UseSkill');
-            const isGuardSkill = skillDetail?.type === 'guard';
             const target = battler.getData('BattleTarget');
 
-            if (isGuardSkill) {
-                // 明示的に防御を選択している場合
+            if (skillDetail?.type === 'guard') {
+                // 防御を選択している場合
                 const playerGuard = new PlayerGuard(this.battleScene);
                 await playerGuard.guard(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
+
+            } else if (skillDetail?.type === 'avoid') {
+                // 回避を選択している場合
+                const playerAvoid = new PlayerAvoid(this.battleScene);
+                await playerAvoid.avoid(this.battleMessageWindow, battler as Phaser.GameObjects.Sprite);
+
             } else {
                 // 攻撃（通常攻撃・特技・魔法）の場合、ターゲットの生存チェック
                 if (!target || target.getData('HP') <= 0) {

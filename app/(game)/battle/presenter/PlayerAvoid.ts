@@ -2,7 +2,7 @@ import { Sound } from "../../scenes/Sound";
 import { BattleMessageWindow } from "../view/BattleMessageWindow";
 import { SkillDetail } from "../../lib/types";
 
-export default class PlayerGuard {
+export default class PlayerAvoid {
     private battleScene: Phaser.Scene;
     private battler: Phaser.GameObjects.Sprite;
     private targetEnemy: Phaser.GameObjects.Image;
@@ -18,18 +18,18 @@ export default class PlayerGuard {
         this.soundScene = this.battleScene.scene.get('Sound') as Sound;
     }
 
-    public guard(battleMessageWindow: BattleMessageWindow, battler: Phaser.GameObjects.Sprite) {
+    public avoid(battleMessageWindow: BattleMessageWindow, battler: Phaser.GameObjects.Sprite) {
         return new Promise<void>(resolve => {
             if (battler.data.values.HP <= 0) return resolve();
             this.battler = battler;
 
-            //ガード値を設定
-            // スキルが未設定（オート時など）の場合は基本防御力をそのままボーナスとして設定
+            //回避値を設定
+            // スキルが未設定（オート時など）の場合は基本回避力をそのままボーナスとして設定
             const skillDetail: SkillDetail = this.battler.getData('UseSkill');
-            const baseGuard = this.battler.getData('Guard') || 0;
-            const skillValue = skillDetail?.value || baseGuard; 
+            // const baseAvoid = this.battler.getData('Avoid') || 0;//※現在は回避ステータス無し
+            // const skillValue = skillDetail?.value || baseAvoid; 
             
-            this.battler.setData('GuardValue', skillValue);
+            this.battler.setData('avoid', 'avoid');
             this.battler.data.values.MP -= skillDetail.mpCost;
 
             (async () => {

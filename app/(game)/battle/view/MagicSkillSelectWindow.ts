@@ -70,7 +70,8 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
 
             textObj.x = textX + (col * columnWidth);
             textObj.y = textY + (row * (textObj.height + lineSpaceValue));
-            textObj.setDepth(Number(this.scene.game.config.height) + 1);
+            //textObj.setDepth(Number(this.scene.game.config.height) + 1);
+            textObj.setDepth(this.depth);
 
             textObj.on('pointerover', () => {
                 this.allow.updatePosition(textObj);
@@ -79,6 +80,12 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
 
             textObj.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
                 pointer.reset();
+
+                // MPが足りない場合は選択できないようにする
+                if (this.nowSelectCharacter.data.values.MP < skillDetail.mpCost) {
+                    (this.scene as BattleScene).events.emit('BATTLE_MESSAGE_OUTPUT', 'MPが足りない！', 1200);
+                    return;
+                }
 
                 this.nowSelectCharacter.setData('SkillType', 'magic');
                 this.nowSelectCharacter.setData('UseSkill', skillDetail);
@@ -114,7 +121,8 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         if (this.selectList.length > 0) {
             this.allow.updatePosition(this.selectList[this.nowSelectNo]);
         }
-        this.allow.setDepth(Number(this.scene.game.config.height) + 1);
+        //this.allow.setDepth(Number(this.scene.game.config.height) + 1);
+        this.allow.setDepth(this.depth);
 
         //クリック可能に設定
         this.enableSelect();
@@ -132,7 +140,8 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         messageObjectInstance.getTextInfomation();
 
         this.backButton = messageObjectInstance.createTextObject(this.scene, x, y + 16, "✖");
-        this.backButton.setDepth(Number(this.scene.game.config.height) + 1);
+        //this.backButton.setDepth(Number(this.scene.game.config.height) + 1);
+        this.backButton.setDepth(this.depth);
 
         //ウィンドウ作成
         this.backButtonWindow = new MessageWindow(this.scene);
@@ -143,7 +152,8 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         // 左右の余白を等しく設定
         this.backButtonWindow.x = x;
         this.backButtonWindow.y = y + 16;
-        this.backButtonWindow.setDepth(Number(this.scene.game.config.height));
+        //this.backButtonWindow.setDepth(Number(this.scene.game.config.height));
+        this.backButtonWindow.setDepth(this.depth);
 
         this.backButton.setDepth(this.backButtonWindow.depth + 1);
         this.backButton.setInteractive({ useHandCursor: true });
@@ -201,6 +211,7 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
         ).subscribe(() => {
             if (!this.visible || !this.active || !this.canDecide) return;
             if (this.selectList.length > 0) {
+
                 const playerData = this.nowSelectCharacter.data.list;
                 const magicSkills = playerData.magic || [];
                 const skillId = magicSkills[this.nowSelectNo];
@@ -209,6 +220,13 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
                     const skillDetail: SkillDetail = searchSkill.getSkillData('magic', skillId)!;
                     this.nowSelectCharacter.setData('SkillType', 'magic');
                     this.nowSelectCharacter.setData('UseSkill', skillDetail);
+
+                    // MPが足りない場合は処理しない
+                    if (this.nowSelectCharacter.data.values.MP < skillDetail.mpCost) {
+                        (this.scene as BattleScene).events.emit('BATTLE_MESSAGE_OUTPUT', 'MPが足りない！', 1200);
+                        return;
+                    }
+
                     this.selectExec(skillDetail.type);
                 }
             }

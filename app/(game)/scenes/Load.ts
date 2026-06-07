@@ -239,6 +239,7 @@ export class Load extends Scene {
         this.load.audio('SE_Beep5', 'assets/sound/ビープ音5.mp3');
         this.load.audio('SE_decisionButton15', 'assets/sound/決定ボタンを押す15.mp3');
         this.load.audio('SE_boosterJump1', 'assets/sound/ブースタージャンプ1.mp3');
+        this.load.audio('SE_highSpeedMove', 'assets/sound/高速移動.mp3');
         //https://soundeffect-lab.info/sound/battle/
 
         this.load.video('meina_video', 'assets/video/ComfyUI_00010_.mp4');
