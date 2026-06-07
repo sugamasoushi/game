@@ -35,7 +35,7 @@ export class MenuPresenter {
         // マウスポインタの初期化
         this.scene.input.setDefaultCursor('default');
 
-        this.soundScene.SE_cardOpen.play();
+        this.soundScene.playSe('SE_cardOpen');
     }
 
     public create() {
@@ -61,7 +61,7 @@ export class MenuPresenter {
     }
 
     private onCloseMenu() {
-        this.soundScene.SE_bookClose.play();
+        this.soundScene.playSe('SE_bookClose');
 
         //Phaserのトップレベルのイベント
         this.scene.game.events.emit('UI_CLOSE');

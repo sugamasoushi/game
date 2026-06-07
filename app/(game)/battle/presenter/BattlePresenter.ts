@@ -165,7 +165,7 @@ export class BattlePresenter {
 
             //攻撃方法選択ウィンドウに移動
             this.stateMachine.push('ATTACK_SELECT');
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
         });
 
         //【攻撃方法選択】【アイテム】
@@ -173,7 +173,7 @@ export class BattlePresenter {
 
             //アイテム選択ウィンドウに移動
             this.stateMachine.push('ITEM_SELECT');
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
         });
 
         // シーン終了時にイベントを破棄
@@ -209,7 +209,7 @@ export class BattlePresenter {
         //【攻撃方法選択】【攻撃】
         this.views.attackSelect.on('Attack_Select_Submit', () => {
             this.stateMachine.push('ENEMY_SELECT');
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
         });
 
         //【攻撃方法選択】【戻る】
@@ -235,14 +235,14 @@ export class BattlePresenter {
         this.views.attackSelect.on('SpecialSkill_Select_Submit', () => {
 
             this.stateMachine.push('SPECIAL_SKILL_SELECT');
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
         });
 
         //【攻撃方法選択】【魔法】
         this.views.attackSelect.on('MagicSkill_Select_Submit', () => {
 
             this.stateMachine.push('MAGIC_SKILL_SELECT');
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
         });
 
         // シーン終了時にイベントを破棄
@@ -271,7 +271,7 @@ export class BattlePresenter {
         //【特技選択】【特技】
         this.views.specialSkillSelect.on('Attack_Select_Submit', () => {
             this.stateMachine.push('ENEMY_SELECT');
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
         });
 
         //【特技選択】【攻撃しない】
@@ -280,7 +280,7 @@ export class BattlePresenter {
             //点滅を停止
             const character = this.commandSelectModel.getCurrentCharacter().name;
             this.playerPartyWindow.deleteNowLightUpDown(character);
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
 
             this.commandSelectModel.nextTurn();
         });
@@ -317,7 +317,7 @@ export class BattlePresenter {
         //【魔法選択】【魔法】
         this.views.magicSkillSelect.on('Attack_Select_Submit', () => {
             this.stateMachine.push('ENEMY_SELECT');
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
         });
 
         //【魔法選択】【攻撃しない】
@@ -326,7 +326,7 @@ export class BattlePresenter {
             //点滅を停止
             const character = this.commandSelectModel.getCurrentCharacter().name;
             this.playerPartyWindow.deleteNowLightUpDown(character);
-            this.soundScene.SE_Beep5.play();
+            this.soundScene.playSe('SE_Beep5');
 
             this.commandSelectModel.nextTurn();
         });
@@ -365,7 +365,7 @@ export class BattlePresenter {
             //点滅を停止
             const character = this.commandSelectModel.getCurrentCharacter().name;
             this.playerPartyWindow.deleteNowLightUpDown(character);
-            this.soundScene.SE_decisionButton15.play();
+            this.soundScene.playSe('SE_decisionButton15');
 
             //キャラクターに選択対象の敵を登録
             this.commandSelectModel.getCurrentCharacter().setData('BattleTarget', enemy);
@@ -544,7 +544,7 @@ export class BattlePresenter {
         //勝利
         if (winner === 'player') {
             gameStateManager.addMoney(10);
-            this.soundScene.SE_victory.play({ loop: false });
+            this.soundScene.playSe('SE_victory');
 
             //フィールドの敵を消去
             if (this.battleModel.getUsePatern() === 'normal') {

@@ -47,41 +47,41 @@ export default class PlayerGuard {
     }
 
     //攻撃エフェクト
-    private attackTween(effect: Phaser.GameObjects.Sprite) {
-        this.soundScene.SE_fire.play();
-        return new Promise<void>(resolve => {
-            const tween = this.battleScene.tweens.add({
-                targets: effect,
-                scale: 2,
-                ease: 'sine.inout',
-                repeat: 2,
-                yoyo: true,
-                duration: this.attackDuration,
-                onComplete: () => {
-                    resolve();
-                    this.soundScene.SE_fire.stop();
-                    tween.destroy();
-                }
-            });
-        })
-    }
+    // private attackTween(effect: Phaser.GameObjects.Sprite) {
+    //     this.soundScene.SE_fire.play();
+    //     return new Promise<void>(resolve => {
+    //         const tween = this.battleScene.tweens.add({
+    //             targets: effect,
+    //             scale: 2,
+    //             ease: 'sine.inout',
+    //             repeat: 2,
+    //             yoyo: true,
+    //             duration: this.attackDuration,
+    //             onComplete: () => {
+    //                 resolve();
+    //                 this.soundScene.SE_fire.stop();
+    //                 tween.destroy();
+    //             }
+    //         });
+    //     })
+    // }
 
     //フェードアウト
-    private deleteEnemy(target: Phaser.GameObjects.Image) {
-        return new Promise<void>(resolve => {
-            this.battleScene.tweens.addCounter({//このtweenはオブジェクトをターゲットとせず、設定した値を更新し続ける
-                from: 1,
-                to: 0,
-                duration: 100,
-                ease: 'linear',
-                onUpdate: (tween) => {
-                    //取得した値をセットする
-                    target.setAlpha(tween.getValue()!);
-                    target.getData('backGaugeHP').setAlpha(tween.getValue());
-                    target.getData('gaugeHP').setAlpha(tween.getValue());
-                    resolve();
-                },
-            });
-        })
-    }
+    // private deleteEnemy(target: Phaser.GameObjects.Image) {
+    //     return new Promise<void>(resolve => {
+    //         this.battleScene.tweens.addCounter({//このtweenはオブジェクトをターゲットとせず、設定した値を更新し続ける
+    //             from: 1,
+    //             to: 0,
+    //             duration: 100,
+    //             ease: 'linear',
+    //             onUpdate: (tween) => {
+    //                 //取得した値をセットする
+    //                 target.setAlpha(tween.getValue()!);
+    //                 target.getData('backGaugeHP').setAlpha(tween.getValue());
+    //                 target.getData('gaugeHP').setAlpha(tween.getValue());
+    //                 resolve();
+    //             },
+    //         });
+    //     })
+    // }
 }

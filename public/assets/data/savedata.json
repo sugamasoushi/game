@@ -109,6 +109,13 @@
             "duration": 100
         }
     },
+    "OptionData": {
+        "masterVolume": 100,
+        "bgmVolume": 100,
+        "bgsVolume": 100,
+        "seVolume": 100,
+        "textSpeed": 50
+    },
     "EventFlag": {
         "EVENT010101": true,
         "EVENT010201": true,

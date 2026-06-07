@@ -116,7 +116,7 @@ export default class PlayerAttack {
 
     //相手点滅
     private blinking(enemy: Phaser.GameObjects.Image) {
-        this.soundScene.SE_attack.play();
+        this.soundScene.playSe('SE_attack');
         return new Promise<void>(resolve => {
             let flag = true;
             const timer = this.battleScene.time.addEvent({
@@ -130,7 +130,7 @@ export default class PlayerAttack {
                         enemy.setAlpha(1);
                     }
                     if (timer.repeatCount === 0) {
-                        // this.soundScene.attackSE.stop();
+                        // this.soundScene.playSe('SE_attack').stop();
                         resolve();
                     }
                 },

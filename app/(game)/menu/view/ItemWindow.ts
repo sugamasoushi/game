@@ -109,7 +109,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             itemName.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
                 if (pointer.leftButtonDown()) {
                     pointer.reset();
-                    this.soundScene.SE_decideButton.play();
+                    this.soundScene.playSe('SE_decideButton');
                     this.selectedIndex = i;
                     this.execItemUse(i);
                 }
@@ -126,8 +126,10 @@ export class ItemWindow extends Phaser.GameObjects.Container {
 
 
 
-    private closeCharacterSelectWindow() {
-        this.soundScene.SE_cancelButton.play();
+    private closeCharacterSelectWindow(canselFlg: boolean = false) {
+        if (canselFlg) {
+            this.soundScene.playSe('SE_cancelButton');
+        }
 
         if (this.characterSelectWindow) {
             this.characterSelectWindow.hide();
@@ -221,7 +223,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
 
             // 戻るボタン押下時の処理
             this.characterSelectWindow.onBack = () => {
-                this.closeCharacterSelectWindow();
+                this.closeCharacterSelectWindow(true);
             };
 
         } else {
@@ -303,7 +305,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             throttleTime(duration)
         ).subscribe(() => {
             if (!this.isItemSelectMode || !this.canDecide || (this.characterSelectWindow && this.characterSelectWindow.visible)) return;
-            this.soundScene.SE_decideButton.play();
+            this.soundScene.playSe('SE_decideButton');
             this.execItemUse(this.selectedIndex);
         }));
     }

@@ -31,7 +31,7 @@ export class MagicFrame extends EffectCommon {
 
     //特殊効果
     override async specialEffect() {
-        this.soundScene.SE_fire.play();
+        this.soundScene.playSe('SE_fire', 0.3, true);
         return new Promise<void>(resolve => {
             const tween = this.scene.tweens.add({
                 targets: this,
@@ -42,7 +42,7 @@ export class MagicFrame extends EffectCommon {
                 duration: this.attackDuration,
                 onComplete: () => {
                     resolve();
-                    this.soundScene.SE_fire.stop();
+                    this.soundScene.stopSe();
                     tween.destroy();
                 }
             });

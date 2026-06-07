@@ -20,14 +20,18 @@ export class SaveDataManager {
     }
 
     //セーブデータをローカルストレージまたはElectronから読み込み
-    public async loadSaveData(scene: Phaser.Scene) {
+    public async loadSaveData(scene: Phaser.Scene): Promise<boolean> {
+        let result = false;
+
         let savedata;
         if (window.electronAPI) {
             savedata = await window.electronAPI.loadData();
             if (typeof savedata === 'string') {
                 try {
                     savedata = JSON.parse(savedata);
-                } catch (e) { }
+                } catch (e) {
+                    console.error("Failed to parse savedata from Electron:", e);
+                }
             }
         } else {
             const localData = localStorage.getItem('savedata');
@@ -46,33 +50,37 @@ export class SaveDataManager {
             if (currentSaveData) {
                 Object.assign(currentSaveData, savedata);
             }
-        }
-    }
-
-    //セーブデータをローカルストレージまたはElectronから読み込み
-    public async checkSaveData(scene: Phaser.Scene) {
-        let result = false;
-        let savedata;
-        if (window.electronAPI) {
-            savedata = await window.electronAPI.loadData();
-            if (typeof savedata === 'string') {
-                try {
-                    savedata = JSON.parse(savedata);
-                } catch (e) { }
-            }
-        } else {
-            const localData = localStorage.getItem('savedata');
-            if (localData) {
-                savedata = JSON.parse(localData);
-            }
-        }
-
-        //データが存在する場合
-        if (savedata) {
             result = true;
         }
         return result;
     }
+
+    //セーブデータをローカルストレージまたはElectronから読み込み
+    // public async checkSaveData() {
+    //     let result = false;
+    //     let savedata;
+    //     if (window.electronAPI) {
+    //         savedata = await window.electronAPI.loadData();
+    //         if (typeof savedata === 'string') {
+    //             try {
+    //                 savedata = JSON.parse(savedata);
+    //             } catch (e) {
+    //                 console.error("Failed to parse savedata from Electron:", e);
+    //             }
+    //         }
+    //     } else {
+    //         const localData = localStorage.getItem('savedata');
+    //         if (localData) {
+    //             savedata = JSON.parse(localData);
+    //         }
+    //     }
+
+    //     //データが存在する場合
+    //     if (savedata) {
+    //         result = true;
+    //     }
+    //     return result;
+    // }
 
     /**
      * アイテムリストのチェック

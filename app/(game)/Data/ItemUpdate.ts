@@ -51,7 +51,8 @@ export class ItemUpdate {
         if (!itemDetail) return;
 
         // 効果音再生
-        this.soundScene.SE_idea.play();
+        this.soundScene.playSe('SE_idea');
+        console.log('ItemUpdate - useItem:', itemName, 'count:', count, 'memberIndex:', memberIndex);
 
         // アイテムごとの回復処理
         if (itemDetail.type === 'heal' && itemDetail.subject) {

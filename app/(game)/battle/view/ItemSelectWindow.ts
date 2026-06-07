@@ -159,7 +159,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                         };
 
                     } else {
-                        this.soundScene.SE_newsTitle.play();
+                        this.soundScene.playSe('SE_newsTitle');
 
                         // 使用後の個数を反映（メンバー1人の場合はインデックス0）
                         this.battleModel.getPlayerPartyList()[0].data.values[listName] -= 1;
@@ -170,7 +170,10 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                         countObj.setText(count.toString());
                         if (count <= 0) {
                             textObj.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+                            countObj.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
                         }
+                        this.setActive(true);
+                        this.enableSelect();
                         this.selectExec(listName);
                     }
 
@@ -302,7 +305,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
         messageObjectInstance.init(this.scene);
         messageObjectInstance.getTextInfomation();
 
-        this.backButton = messageObjectInstance.createTextObject(this.scene, x, y + 16, "✖");
+        this.backButton = messageObjectInstance.createTextObject(this.scene, x - 48, y + 48, "✖");
         this.backButton.setDepth(Number(this.scene.game.config.height) + 1);
 
         //ウィンドウ作成
@@ -312,8 +315,8 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
         this.backButtonWindow.createOneColumnOneWindow(this.backButton, 16);
 
         // 左右の余白を等しく設定
-        this.backButtonWindow.x = x;
-        this.backButtonWindow.y = y + 16;
+        this.backButtonWindow.x = x - 48;
+        this.backButtonWindow.y = y + 48;
         this.backButtonWindow.setDepth(Number(this.scene.game.config.height));
 
         this.backButton.setDepth(this.backButtonWindow.depth + 1);

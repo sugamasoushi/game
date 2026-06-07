@@ -1,4 +1,4 @@
-import { BattleScene, FieldScene } from "../lib/SceneTypes";
+import { BattleScene } from "../lib/SceneTypes";
 import { State, BgmState } from "../lib/StateTypes";
 
 import { BattleModel } from "../battle/model/BattleModel";

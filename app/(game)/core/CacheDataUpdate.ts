@@ -1,4 +1,5 @@
 import { PlayerData } from "../lib/PlayerDataTypes";
+import { OptionData } from "../lib/FieldTypes";
 import { GameStateManager } from "../core/GameStateManager";
 import { SaveDataManager } from "./SaveDataManager";
 
@@ -13,6 +14,16 @@ export class CacheDataUpdate {
     public phaserCacheDataUpdate() {
         const manager = GameStateManager.getInstance();
         const savedata = this.scene.cache.json.get('savedata');
+
+        //オプションデータの同期
+        const savedataOption = this.scene.cache.json.get('savedata').OptionData as OptionData;
+        savedataOption.masterVolume = manager.currentOptionData.masterVolume;
+        savedataOption.bgmVolume = manager.currentOptionData.bgmVolume;
+        savedataOption.seVolume = manager.currentOptionData.seVolume;
+        savedataOption.bgsVolume = manager.currentOptionData.bgsVolume;
+        savedataOption.textSpeed = manager.currentOptionData.textSpeed;
+
+        // プレイヤーデータの同期
         const partyList = manager.currentPlayerPartyList;
 
         if (partyList.length === 0) return;

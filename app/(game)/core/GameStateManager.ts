@@ -1,4 +1,4 @@
-import { FieldData } from '../lib/FieldTypes';
+import { FieldData, OptionData } from '../lib/FieldTypes';
 import { State, BgmState, GameState } from '../lib/StateTypes';
 import { BehaviorSubject, Observable, distinctUntilChanged } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -13,11 +13,12 @@ const INITIAL_STATE: GameState = {
     fieldNpcList: [],
     fieldEnemyList: [],
     battleFlag: false,
-    fieldData: { gameMode: 'string', mapKey: 'string', x: 0, y: 0, x2: 0, y2: 0, initStandKey: 'string' },
+    fieldData: { gameMode: 'string', mapKey: 'init', x: 0, y: 0, x2: 0, y2: 0, initStandKey: 'string' },
     battleData: { usePatern: 'string', fieldHitEnemy: undefined, canNotRunaway: false },
     battleFieldKey: 'string',
     eventObj: undefined,
-    bgmState: BgmState.NOSTATE
+    bgmState: BgmState.NOSTATE,
+    optionData: { masterVolume: 100, bgmVolume: 100, bgsVolume: 100, seVolume: 100, textSpeed: 50 }
 }
 
 export class GameStateManager {
@@ -87,14 +88,32 @@ export class GameStateManager {
         //これがないと、ゲーム中に何度も FIELD 状態になるたびに通知が飛んでしまいますが、take(1) があることで「初期化時の一回だけ」といった限定的な使い方が可能になります。
     );
 
-    public readonly mapKey$ = this.gameState$.pipe(
-        map(gameState => gameState.fieldData.mapKey),//GameStateから、fieldDataのmapKeyだけを抜き出す
-        distinctUntilChanged()//前回の mapKey と同じ値が来た場合は、ストリームに値を流さずスキップする
+    // public readonly mapData$ = this.gameState$.pipe(
+    //     // 💡 オブジェクトとして1つにまとめて下流に流す
+    //     map(gameState => ({
+    //         mapKey: gameState.fieldData.mapKey,
+    //         state: gameState.state
+    //     })),
+    //     // 💡 オブジェクト比較になるため、mapKeyが変わったときだけ流すようにカスタム比較を入れる
+    //     distinctUntilChanged((prev, curr) => prev.mapKey === curr.mapKey)
+    // );
+
+    public readonly bgmState$: Observable<{ bgmState: BgmState; mapKey: string }> = this.gameState$.pipe(
+        // 💡 欲しい2つのデータをオブジェクトにまとめて下流に流す
+        map(gameState => ({
+            bgmState: gameState.bgmState,
+            mapKey: gameState.fieldData.mapKey
+        })),
+
+        // 💡 「bgmState」と「mapKey」のどちらか片方でも前回から変化した時だけ通知する（重複を完全ガード）
+        distinctUntilChanged((prev, curr) => {
+            return prev.bgmState === curr.bgmState && prev.mapKey === curr.mapKey;
+        })
     );
 
-    public readonly bgmState$: Observable<BgmState> = this.gameState$.pipe(
-        map(gameState => gameState.bgmState),//GameStateから、fieldDataのmapKeyだけを抜き出す
-        distinctUntilChanged()//前回の mapKey と同じ値が来た場合は、ストリームに値を流さずスキップする
+    public readonly optionData$: Observable<OptionData> = this.gameState$.pipe(
+        map(gameState => gameState.optionData),
+        distinctUntilChanged()
     );
 
     // ゲームオーバー判定専用のストリーム
@@ -204,6 +223,20 @@ export class GameStateManager {
         });
     }
 
+    public setOptionData(master: number, bgm: number, bgs: number, se: number, textSpeed: number = 50): void {
+        const currentState = this.gameState$.value;
+        this.gameState$.next({
+            ...currentState,
+            optionData: {
+                masterVolume: master,
+                bgmVolume: bgm,
+                bgsVolume: bgs,
+                seVolume: se,
+                textSpeed: textSpeed
+            }
+        });
+    }
+
     //状態のリセットは必ず意識する事
     public reset(): void { this.gameState$.next(INITIAL_STATE); }
 
@@ -225,6 +258,7 @@ export class GameStateManager {
     public get currentFieldNpcList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.fieldNpcList; }
     public get currentFieldEnemyList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.fieldEnemyList; }
     public get currentBattleFieldKey(): string { return this.gameState$.value.battleFieldKey; }
+    public get currentOptionData(): OptionData { return this.gameState$.value.optionData; }
 }
 
 // 唯一のインスタンスを公開（シングルトン）

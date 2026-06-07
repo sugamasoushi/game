@@ -1,5 +1,5 @@
 import { BattleScene } from "@/app/(game)/lib/types";
-import { GameStateManager } from "@/app/(game)/core/GameStateManager";
+import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
 
 export class cave extends Phaser.GameObjects.Container {
     private debugFlg: boolean | undefined;
@@ -36,7 +36,7 @@ export class cave extends Phaser.GameObjects.Container {
         this.createCenterLight();
         this.createLeftLight();
         this.createRightLight();
-        this.createWaterSurface();
+        this.createSparkling();
     }
 
     private createBackground() {
@@ -130,27 +130,35 @@ export class cave extends Phaser.GameObjects.Container {
         this.rightLightFlg = true;
     }
 
-    private async createWaterSurface() {
+    private async createSparkling() {
 
-        // タイルマップから解像度を取得
-        const width = this.scene.game.canvas.width;
-        const height = this.scene.game.canvas.height;
+        // PC版（Electron）かどうかの判定
+        const execEnv = new ExecutionEnvironment();
+        if (execEnv.isElectron() || this.debugFlg) {
 
-        const shader = this.scene.add.shader('nightsky', width / 2, height / 2, width, height);
-        shader.setUniform('alpha', 0.3);
+            // タイルマップから解像度を取得
+            const width = this.scene.game.canvas.width;
+            const height = this.scene.game.canvas.height;
 
-        // 1. まずシェーダーを作る（コードは最初にお渡ししたものでOKです）
-        this.maskShader = this.scene.add.shader('circleMask', width / 2, height / 2, width, height);
+            const shader = this.scene.add.shader('nightsky', width / 2, height / 2, width, height);
+            shader.setUniform('alpha', 0.3);
 
-        // マスク自体は画面に表示する必要がないので非表示にする
-        this.maskShader.setVisible(false);
+            // 1. まずシェーダーを作る（コードは最初にお渡ししたものでOKです）
+            this.maskShader = this.scene.add.shader('circleMask', width / 2, height / 2, width, height);
 
-        // 2. このシェーダーを元に、Phaserの「BitmapMask」オブジェクトを作成する
-        const bitmapMask = new Phaser.Display.Masks.BitmapMask(this.scene, this.maskShader);
+            // マスク自体は画面に表示する必要がないので非表示にする
+            this.maskShader.setVisible(false);
 
-        // 3. くり抜きたい対象にマスクを適用する
-        // これにより、対象のオブジェクトは「円の内側」だけが表示されるようになります！
-        shader.setMask(bitmapMask);
+            // 2. このシェーダーを元に、Phaserの「BitmapMask」オブジェクトを作成する
+            const bitmapMask = new Phaser.Display.Masks.BitmapMask(this.scene, this.maskShader);
+
+            // 3. くり抜きたい対象にマスクを適用する
+            // これにより、対象のオブジェクトは「円の内側」だけが表示されるようになります！
+            shader.setMask(bitmapMask);
+
+        } else {
+            // モバイル端末など性能が低い環境では、シェーダーを使用しない
+        }
     }
 
     public destroy() {

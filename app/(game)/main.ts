@@ -35,7 +35,7 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: isDebug,//当たり判定とかを表示してくれる
+            //debug: isDebug,//当たり判定とかを表示してくれる
             fps: 60,
             gravity: { x: 0, y: 0 }
         },

@@ -52,6 +52,7 @@ export class MessageOperation {
     //文字描画
     public async typeWriter(scene: Phaser.Scene, textObject: Phaser.GameObjects.Text, text: string, clickZone?: Phaser.GameObjects.Zone) {
         const inputManager = InputManager.getInstance(scene);
+        const gameStateManager = GameStateManager.getInstance();
 
         return new Promise<void>(resolve => {
             let i = 0;
@@ -95,7 +96,7 @@ export class MessageOperation {
                 callback: () => {
                     if (isSkipped) return;
                     textObject.text += text[i];
-                    this.soundScene.SE_message.play({ loop: false });
+                    this.soundScene.playSe('SE_message');
 
                     if (text[i] === '\n') {
                         if (sub) sub.unsubscribe();
@@ -112,7 +113,7 @@ export class MessageOperation {
                     }
                 },
                 repeat: text.length - 1,
-                delay: 50
+                delay: gameStateManager.currentOptionData.textSpeed
             });
         });
     }
@@ -207,7 +208,7 @@ export class MessageOperation {
                 targets: textObject,
                 y: scrollY,
                 ease: 'sine.inout',
-                duration: 500,
+                duration: 400,
                 onComplete: () => {
                     textObject.text = '';//テキストをクリア
                     textObject.y = defaultY;//y座標を戻す

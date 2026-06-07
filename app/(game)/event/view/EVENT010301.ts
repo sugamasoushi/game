@@ -62,7 +62,7 @@ export class EVENT010301 extends BaseEvent {
         //ゲームシーンのスプライトを操作
         //同時処理、全ての処理完了まで待機
         await Promise.all([
-            this.soundScene.SE_karuipunch.play({ loop: false }),
+            this.soundScene.playSe('SE_karuipunch'),
             //カメラ効果
             new Promise<void>(resolve => {
                 this.fieldScene.getMainCamera().shake(100, 0.02);

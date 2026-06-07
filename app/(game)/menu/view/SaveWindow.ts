@@ -97,7 +97,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
             await saveDataManager.setSaveData(this.scene);
 
             //セーブ完了
-            this.soundScene.SE_jajaann.play();
+            this.soundScene.playSe('SE_jajaann');
             this.stopSaveAnimation();
 
             //テキストを再設定
@@ -109,6 +109,8 @@ export class SaveWindow extends Phaser.GameObjects.Container {
             this.messageObject.setOrigin(0.5);
             this.messageObject.x = mainColumn.scrollValue / 2;
             this.messageObject.y = mainColumn.containtsY / 2 + this.messageObject.height * 2 + this.messageObject.height / 2;
+
+            console.log(this.scene.cache.json.get('savedata'));
 
             //ウィンドウを再設定
             this.messageWindow.destroy();

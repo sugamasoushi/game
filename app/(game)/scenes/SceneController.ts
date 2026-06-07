@@ -19,9 +19,11 @@ export class SceneController extends Scene {
     }
 
     preload() {
+
         //オープニング用ファイル読み込み
         //※Phaserやブラウザが読み込み完了を待ってくれないため、事前に読み込んでおく必要がある
         this.load.audio('opening', 'assets/audio/opening.mp3');
+        this.load.audio('SE_syakiin', 'assets/sound/シャキーン3.mp3');
 
         this.load.image('meinaOpImage', 'assets/img/CharaStand/メイナOP画像.png');
         this.load.image('meinaOpImageHome', 'assets/img/background/ComfyUI_temp_xsgbd_00098_.png');
@@ -78,6 +80,9 @@ export class SceneController extends Scene {
         this.scene.launch('UI');
         this.scene.bringToTop('UI');
         this.scene.sleep('UI');// 非表示にする（眠らせる）
+
+        //サウンドシーンを並行して実行
+        this.scene.launch('Sound');
     }
 
     private handleStateChange(state: State, sceneKey: string) {

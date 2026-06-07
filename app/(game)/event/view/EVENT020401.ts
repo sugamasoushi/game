@@ -80,7 +80,7 @@ export class EVENT010401 extends BaseEvent {
         await Promise.all([
             //カメラ効果
             new Promise<void>(resolve => {
-                this.soundScene.SE_karuipunch.play({ loop: false });
+                this.soundScene.playSe('SE_karuipunch');
                 this.fieldScene.cameras.main.shake(100, 0.02);
                 resolve();
             }),

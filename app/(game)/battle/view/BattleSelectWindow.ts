@@ -105,7 +105,7 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
             this.emit('Battle_Select_Submit', 0);//パーティの戦闘を指定
             this.disableSelect();
         } else if (index === 1) {//オート
-            this.soundScene.SE_boosterJump1.play();
+            this.soundScene.playSe('SE_boosterJump1');
             this.battleScene.events.emit('AUTO_BATTLE_SELECT', true)
             this.disableSelect();
         } else if (index === 2) {//アイテム

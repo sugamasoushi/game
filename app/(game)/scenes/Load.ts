@@ -3,7 +3,6 @@
  * LoadSceneを挟むことで全シーンのインスタンス作成後の画面遷移で自作メソッドが実行される。これはjavascriptそのものやphaserやsocket.ioの実行順序の問題だと思う
  */
 import { Scene } from 'phaser';
-import { tilesets } from '../lib/FieldTypes';
 import { State } from '../lib/StateTypes';
 import { GameStateManager } from '../core/GameStateManager';
 
@@ -12,9 +11,17 @@ export class Load extends Scene {
     private gameHeight: number;
     private progress!: Phaser.GameObjects.Graphics;//! 明確な割り当てアサーション演算子。クラスのプロパティが型アノテーションで示された型でセットされていることをコンパイラーに伝える記号。
 
+    private newGameFlg: boolean = false;
+
     constructor() {
         // Sceneを拡張してクラスを作る際にコンストラクタでSceneの設定を渡します
         super('Load');
+    }
+
+    init(data: { sceneKey: string }) {
+        if (data.sceneKey === 'New Game') {
+            this.newGameFlg = true;
+        }
     }
 
     // create()はpreload内のアセットのロードが完了したら実行される
@@ -23,6 +30,14 @@ export class Load extends Scene {
         this.gameHeight = Number(this.game.config.height)
 
         this.progress = this.add.graphics();
+
+        if (this.newGameFlg) {
+            if (this.cache.json.exists('savedata')) {
+                this.cache.json.remove('savedata');
+            }
+            this.load.json('savedata', 'assets/data/savedata.json');
+        }
+
 
         //プログレスバー
         //読み込みが完了するたびに更新されるvalueを使って表現する
@@ -274,7 +289,6 @@ export class Load extends Scene {
         }, [], this.scene);
 
         // アセットのロードを開始（preload外でロードを行う場合はこのメソッドを呼ぶ必要がある）
-        //多分今時点で使われてない
         this.load.start();
 
         this.scene.stop();

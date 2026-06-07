@@ -26,7 +26,8 @@ export class MessageObject {
         if (
             (scene.scene.key === 'Field' && usePatern !== 'BubbleTalk') ||
             scene.scene.key === 'Event' ||
-            scene.scene.key === 'Battle'
+            scene.scene.key === 'Battle' ||
+            scene.scene.key === 'Title'
             //scene.scene.key === 'Menu'
         ) {
             const settingTextData = scene.cache.json.get('savedata').GameSetting.EventWindow;

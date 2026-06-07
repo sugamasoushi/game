@@ -30,7 +30,7 @@ export class NormalAttack extends EffectCommon {
     }
     //特殊効果
     override async specialEffect() {
-        this.soundScene.SE_attack6.play({ loop: true });
+        this.soundScene.playSe('SE_attack6');
         return new Promise<void>(resolve => {
             const tween = this.scene.tweens.add({
                 targets: this,
@@ -40,7 +40,7 @@ export class NormalAttack extends EffectCommon {
                 duration: this.attackDuration,
                 onComplete: () => {
                     resolve();
-                    this.soundScene.SE_attack6.stop();
+                    this.soundScene.stopSe();
                     tween.destroy();
                 }
             });

@@ -1,4 +1,5 @@
 import { FieldData } from "./FieldTypes";
+import { OptionData } from "./FieldTypes";
 import { Npc } from "../field/view/character/Npc";
 import { ViewsContainer } from "./BattleTypes";
 import { ActorState } from "../core/ActorState";
@@ -42,6 +43,7 @@ export interface GameState {
   battleFieldKey: string;
   eventObj?: Phaser.Physics.Arcade.Sprite;
   bgmState: BgmState;
+  optionData: OptionData;
 }
 
 /** 状態（State）の振る舞い */

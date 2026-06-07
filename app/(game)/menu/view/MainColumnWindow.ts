@@ -294,7 +294,7 @@ export class MainColumnWindow {
         this.updateTabAnimation(); // スクロール開始時にアニメーションを停止
         const duration = 200;
 
-        this.soundScene.SE_cardTurnOver.play();
+        this.soundScene.playSe('SE_cardTurnOver');
 
         // 全てのラベルの色を灰色に戻す
         for (const ColumnLabelText of this.mainColumnLabelText) {

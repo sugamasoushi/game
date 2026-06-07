@@ -1,0 +1,344 @@
+import { Title } from '../../scenes/Title';
+import { TitleSelect } from '../../lib/TitleTypes';
+import { TitleModel } from '../model/TitleModel';
+import { Option, VolumeItemType } from '../view/Option';
+import { Opening } from '../view/Opening';
+import { TitleLogo } from '../view/TitleLogo';
+import { NewGameButton } from '../view/NewGameButton';
+import { ContinueButton } from '../view/ContinueButton';
+import { OptionButton } from '../view/OptionButton';
+
+import { InputManager } from '../../core/input/InputManager';
+import { GameStateManager } from '../../core/GameStateManager';
+import { Subscription, throttleTime } from 'rxjs';
+import { State } from '../../lib/StateTypes';
+import { DataDefinition } from '../../Data/DataDefinition';
+import { EventBus } from '../../EventBus';
+
+export class TitlePresenter {
+    private subs = new Subscription();
+    private inputManager: InputManager;
+    private manager: GameStateManager;
+
+    constructor(
+        private scene: Title,
+        private titleModel: TitleModel,
+        private option: Option,
+        private opening: Opening,
+        private logo: TitleLogo,
+        private newGameButton: NewGameButton,
+        private continueButton: ContinueButton,
+        private optionButton: OptionButton
+    ) {
+        this.manager = GameStateManager.getInstance();
+    }
+
+    // public update(time: number, delta: number) {
+    //     // this.option.update(time, delta);
+    // }
+
+    public async execute() {
+
+        // セーブデータを読み込み
+        await this.titleModel.loadSaveData();
+
+        // オプションデータを読み込み
+        this.titleModel.loadOptionData();
+
+        // オープニングアニメーションとタイトルテキストの表示
+        await this.opening.playOpening();
+        await this.logo.showTitleText();
+
+        // ボタン
+        await this.newGameButton.createMenuButtons();
+        await this.continueButton.createMenuButtons(this.titleModel.hasContinueData);
+        await this.optionButton.createMenuButtons();
+
+        // 入力のセットアップ
+        this.inputManager = InputManager.getInstance(this.scene);
+        this.setupInput();
+        this.setupViewCallbacks();
+
+        this.enableInteractiveAll();
+
+        // 選択状態の初期更新
+        this.updateSelection();
+
+        // 外部にシーンレディを通知
+        EventBus.emit('current-scene-ready', this.scene);
+    }
+
+    // コールバックの設定
+    private setupViewCallbacks() {
+        /**
+         * ボタンの関数が実行されたらpresenterの関数を実行
+         */
+        this.newGameButton.onNewGame = () => this.execNewGame();
+        this.continueButton.onContinue = () => this.execContinue();
+        this.optionButton.onOption = () => this.execOption();
+
+        this.option.onVolumeClick = (item: VolumeItemType, volume: number) => this.onOptionVolumeClick(item, volume);
+
+        // オプション画面の✖ボタンが押されたらcloseOptionを実行
+        // ※ hideOptionMenuはbackSubmit内で既に呼ばれるため、ここではモデル状態の更新とボタン復帰のみ行う
+        this.option.onBack = () => this.onOptionBack();
+    }
+
+    private setupInput() {
+        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+
+        // 下キー
+        this.subs.add(this.inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+            if (this.titleModel.isOptionActive) return;
+
+            // 選択Noの更新
+            this.titleModel.nowSelectNo++;
+
+            // 最大値を超えたらNEWGAMEに戻す
+            if (this.titleModel.nowSelectNo > this.titleModel.maxSelectNo) {
+                this.titleModel.nowSelectNo = TitleSelect.NEWGAME;
+            }
+
+            this.updateSelection();
+        }));
+
+        // 上キー
+        this.subs.add(this.inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+            if (this.titleModel.isOptionActive) return;
+
+            // 選択Noの更新
+            this.titleModel.nowSelectNo--;
+
+            // 最小値を下回ったらOPTIONに戻す
+            if (this.titleModel.nowSelectNo < this.titleModel.minSelectNo) {
+                this.titleModel.nowSelectNo = TitleSelect.OPTION;
+            }
+
+            this.updateSelection();
+        }));
+
+        this.subs.add(this.inputManager.decideButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+
+            // オプション画面表示中は処理しない
+            if (this.titleModel.isOptionActive) return;
+
+            // 各ボタンの実行
+            switch (this.titleModel.nowSelectNo) {
+                case TitleSelect.NEWGAME:
+                    this.execNewGame();
+                    break;
+                case TitleSelect.CONTINUE:
+                    this.execContinue();
+                    break;
+                case TitleSelect.OPTION:
+                    this.execOption();
+                    break;
+            }
+        }));
+
+        // オプション画面用入力
+        this.subs.add(this.inputManager.leftButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+            if (!this.titleModel.isOptionActive) return;
+            this.adjustVolume(-10);
+        }));
+
+        this.subs.add(this.inputManager.rightButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+            if (!this.titleModel.isOptionActive) return;
+            this.adjustVolume(10);
+        }));
+
+        // オプション画面中の上下キーはフォーカス移動
+        this.subs.add(this.inputManager.upButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+            if (!this.titleModel.isOptionActive) return;
+            this.option.focusPrev();
+        }));
+
+        this.subs.add(this.inputManager.downButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+            if (!this.titleModel.isOptionActive) return;
+            this.option.focusNext();
+        }));
+
+        this.subs.add(this.inputManager.cancelButton$.pipe(
+            throttleTime(duration)
+        ).subscribe(() => {
+            if (!this.titleModel.isOptionActive) return;
+            this.closeOption();
+        }));
+    }
+
+    private async execNewGame() {
+
+        this.disableInteractiveAll();
+
+        /**
+         * 初期データはLoadシーンで読み込むため、ここでは状態の更新のみ行う
+         */
+
+        // 決定演出
+        await this.newGameButton.playDecideEffect();
+
+        // 状態をロードに更新
+        this.manager.updateState({
+            state: State.LOAD,
+            fieldData: {
+                gameMode: 'New Game',
+                mapKey: '0101',
+                x: 495,
+                y: 337,
+                x2: 0,
+                y2: 0,
+                initStandKey: 'stand_left',
+            }
+        }, 'New Game');
+
+        this.opening.stopOpening();
+
+        this.scene.events.emit('OPENING_MUSIC_END');
+        this.scene.scene.stop();
+    }
+
+    private async execContinue() {
+
+        this.disableInteractiveAll();
+
+        // 決定演出
+        await this.continueButton.playDecideEffect();
+
+        // ローカルストレージ等のデータを読み込み
+        //await this.titleModel.loadSaveData(this.scene);
+
+        // 状態を更新
+        this.manager.updateState({
+            state: State.LOAD,
+            fieldData: {
+                gameMode: 'Continue',
+                mapKey: this.scene.cache.json.get('savedata').playerData.PlayerMapKey,
+                x: this.scene.cache.json.get('savedata').playerData.PlayerPosition.x,
+                y: this.scene.cache.json.get('savedata').playerData.PlayerPosition.y,
+                x2: 0,
+                y2: 0,
+                initStandKey: this.scene.cache.json.get('savedata').playerData.initStandKey,
+            }
+        }, 'Continue');
+
+        // コンティニューの場合、初期イベントのフラグを倒す
+        const settingData = new DataDefinition();
+        settingData.updateEventFlg(this.scene, 'EVENT0001', false);
+
+        this.opening.stopOpening();
+
+        this.scene.events.emit('OPENING_MUSIC_END');
+        this.scene.scene.stop();
+    }
+
+    private execOption() {
+        if (this.titleModel.isOptionActive) return;
+        this.titleModel.isOptionActive = true;
+
+        this.disableInteractiveAll();
+
+        // 現在の音量データをすべてオプションメニューに渡す
+        const currentVolumes = this.manager.currentOptionData;
+        this.option.showOptionMenu(currentVolumes);
+    }
+
+    private adjustVolume(delta: number) {
+        const item = this.option.getFocusedItem();
+        const currentVol = this.option.getFocusedVolume();
+        const newVol = Phaser.Math.Clamp(currentVol + delta, 0, 100);
+
+        // フォーカス中の項目の音量をUIに反映
+        this.option.setPendingVolume(item, newVol);
+
+        // モデルのデータを更新
+        this.titleModel.setPendingVolume(item, newVol);
+
+        // GameStateManager に同期
+        this.titleModel.updateOptionData();
+    }
+
+    private onOptionVolumeClick(item: VolumeItemType, volume: number) {
+        this.option.setPendingVolume(item, volume);
+        this.titleModel.setPendingVolume(item, volume);
+        this.titleModel.updateOptionData();
+    }
+
+    private closeOption() {
+        if (!this.titleModel.isOptionActive) return;
+        this.titleModel.isOptionActive = false;
+
+        this.option.hideOptionMenu();
+        this.enableInteractiveAll();
+
+        // 選択状態の更新
+        this.updateSelection();
+    }
+
+    /** ✖ボタン経由で閉じる（hideOptionMenuはOption側で実行済みのため呼ばない） */
+    private onOptionBack() {
+        if (!this.titleModel.isOptionActive) return;
+        this.titleModel.isOptionActive = false;
+
+        this.enableInteractiveAll();
+        this.updateSelection();
+    }
+
+    public updateSelection() {
+
+        this.newGameButton.noSelect();
+        this.continueButton.noSelect();
+        this.optionButton.noSelect();
+
+        if (this.titleModel.nowSelectNo == TitleSelect.NEWGAME) {
+            this.newGameButton.selection();
+            this.continueButton.noSelect();
+            this.optionButton.noSelect();
+        }
+
+        if (this.titleModel.nowSelectNo == TitleSelect.CONTINUE) {
+            if (this.titleModel.hasContinueData) {
+                this.continueButton.selection();
+                this.newGameButton.noSelect();
+                this.optionButton.noSelect();
+            }
+        }
+
+        if (this.titleModel.nowSelectNo == TitleSelect.OPTION) {
+            this.optionButton.selection();
+            this.newGameButton.noSelect();
+            this.continueButton.noSelect();
+        }
+    }
+
+    public disableInteractiveAll() {
+        this.newGameButton.disableInteractive();
+        this.continueButton.disableInteractive();
+        this.optionButton.disableInteractive();
+    }
+
+    public enableInteractiveAll() {
+        this.newGameButton.enableInteractive();
+        if (this.titleModel.hasContinueData) {
+            this.continueButton.enableInteractive();
+        }
+        this.optionButton.enableInteractive();
+    }
+
+    public destroy() {
+        this.subs.unsubscribe();
+    }
+}

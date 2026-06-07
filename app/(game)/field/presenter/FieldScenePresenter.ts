@@ -134,7 +134,6 @@ export class FieldScenePresenter {
         //現在のBGM状態を更新
         gameStateManager.setBgmState(BgmState.FIELD);
 
-
         //view-------------------------------------------------
         //console.log("タイルセットのロードを開始します...");
         this.tileMap = new TileMap(this.fieldScene, this.fieldSceneModel.getMakeTilemapData());

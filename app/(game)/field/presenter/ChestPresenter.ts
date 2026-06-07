@@ -127,7 +127,7 @@ export class ChestPresenter {
                 });
 
                 obj.play('chest_open');
-                this.soundScene.SE_chestOpen.play();
+                this.soundScene.playSe('SE_chestOpen');
 
                 //プレイヤーの持ち物を更新
                 player.stopAnimation();

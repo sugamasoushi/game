@@ -23,7 +23,6 @@ export class Boot extends Scene {
         this.load.image('LondonBridge', 'assets/img/LondonBridge/LondonBridge.bmp');
         this.load.image('GameStartAlert', 'assets/img/background/ゲームスタートお知らせ.png');
         this.load.json('savedata', 'assets/data/savedata.json');
-        this.load.audio('SE_syakiin', 'assets/sound/シャキーン3.mp3');
     }
 
     create() {

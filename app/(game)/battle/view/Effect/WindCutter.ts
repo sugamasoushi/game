@@ -31,26 +31,13 @@ export class WindCutter extends EffectCommon {
 
     //特殊効果
     override async specialEffect() {
-        this.soundScene.SE_windCutter.play();
+        this.soundScene.playSe('SE_windCutter');
 
         return new Promise<void>(resolve => {
             this.scene.time.delayedCall(this.attackDuration, () => {
-                this.soundScene.SE_windCutter.stop();
+                //this.soundScene.stopSe('SE_windCutter');
                 resolve();
             }, undefined, this.scene);
-
-            // const tween = this.scene.tweens.add({
-            //     targets: this,
-            //     scale: 3,
-            //     alpha: 0,
-            //     // ease: 'sine.inout',
-            //     duration: this.attackDuration,
-            //     onComplete: () => {
-            //         resolve();
-            //         this.soundScene.SE_windCutter.stop();
-            //         tween.destroy();
-            //     }
-            // });
         })
     }
 }

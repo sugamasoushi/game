@@ -63,3 +63,11 @@ export interface animationKey {
   moveDirection: string,
   standframe: string,
 }
+
+export interface OptionData {
+  masterVolume: number,
+  bgmVolume: number,
+  bgsVolume: number,
+  seVolume: number,
+  textSpeed: number, // 追加のオプション項目（例: テキスト表示速度）
+}

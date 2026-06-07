@@ -90,7 +90,7 @@ export default class EnemyAttack {
     private attackTween() {
         console.log('attackTween')
         return new Promise<void>(resolve => {
-            const tween = this.battleScene.tweens.add({
+            this.battleScene.tweens.add({
                 targets: this.attacker,
                 scale: this.attacker.scaleX + 0.02,
                 ease: 'sine.inout',
@@ -107,7 +107,7 @@ export default class EnemyAttack {
 
     //画面効果
     private leanBack() {
-        this.soundScene.SE_punch.play();
+        this.soundScene.playSe('SE_punch');
         return new Promise<void>(resolve => {
             this.battleScene.cameras.main.shake(100, 0.02);
             this.battleScene.time.delayedCall(500, () => {
@@ -118,7 +118,7 @@ export default class EnemyAttack {
 
     //相手点滅
     private blinking(target: Phaser.GameObjects.Image) {
-        this.soundScene.SE_attack.play();
+        this.soundScene.playSe('SE_attack');
 
         return new Promise<void>(resolve => {
             let flag = true;
