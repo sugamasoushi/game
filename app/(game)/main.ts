@@ -12,6 +12,9 @@ import { Event } from './scenes/Event';
 import { Battle } from './scenes/Battle';
 import { Sound } from './scenes/Sound';
 
+import testPipline from '../../public/assets/img/effect/pipelines/SwirlPostPipeline.js';
+import PlasmaPost2FX from '../../public/assets/img/effect/pipelines/PlasmaPost2FX.js';
+
 let phaserGame: Phaser.Game | null = null;
 
 // 画面が縦向きの場合は幅と高さを入れ替える//1024*576//1280*720
@@ -61,7 +64,8 @@ const config: Phaser.Types.Core.GameConfig = {
         Battle,
         Sound,
         GameOver
-    ]
+    ],
+    pipeline: { testPipline, PlasmaPost2FX }
 };
 
 const StartGame = (parent: string) => {

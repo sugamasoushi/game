@@ -15,7 +15,6 @@ export class FogShader {
 
     public async execute() {
         this.setEffectInfomation();
-        this.testShader()
 
         //エフェクトの作成
         this.createEffect();
@@ -26,16 +25,6 @@ export class FogShader {
     //エフェクトの情報を設定
     private setEffectInfomation() {
         const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
-    }
-
-    private testShader() {
-        const width = this.TileMap.getMakeTilemap().widthInPixels;
-        const height = this.TileMap.getMakeTilemap().heightInPixels;
-
-        // const testShader = this.fieldScene.add.shader('fireball', 400, 300, 800, 600);
-
-        //this.fieldScene.add.shader('blueSky', width / 2, height / 2, width, height);
-        //this.fieldScene.add.shader('nightsky', width / 2, height / 2, width, height);
     }
 
     private createEffect() {
@@ -75,7 +64,7 @@ export class FogShader {
         if (fogData === 'Lowest') {
             fog.setDepth(MapLayerDepth.Lowest + 10);
         } else {
-            fog.setDepth(MapLayerDepth.Highest);
+            fog.setDepth(height + MapLayerDepth.Highest + 100);
         }
 
         // 必要なら少し拡大してノイズの目を粗く（霧っぽく）する
@@ -106,9 +95,6 @@ export class FogShader {
             fog2.tilePositionX += 0.9;
             fog2.tilePositionY += 0.4;
         });
-
-        fog.setDepth(MapLayerDepth.Lowest + 1);
-        fog2.setDepth(MapLayerDepth.Lowest + 2);
 
         //マップ外を非表示にするためのマスクを作成
         //メッセージ表示範囲のマスク作成

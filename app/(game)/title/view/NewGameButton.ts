@@ -93,6 +93,10 @@ export class NewGameButton {
     }
 
     public disableInteractive() {
+        if (this.selectTween) {
+            this.selectTween.stop();
+            this.selectTween = null;
+        }
         this.newGameStart.disableInteractive();
         this.newGameStart.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
         return this;

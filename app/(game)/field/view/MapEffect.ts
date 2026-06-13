@@ -1,10 +1,10 @@
 import { FieldScene } from "../../lib/SceneTypes";
 import { TileMap } from "./TileMap";
-
 import { Light2D } from "./effefct/Light2D";
 import { FogShader } from "./effefct/FogShader";
 import { BgRenderTexture } from "./effefct/BgRenderTexture";
 import { WaterReflectionShader } from './effefct/WaterReflectionShader';
+import { TiledMapPropatiesEntity } from "./character/TiledMapEntity";
 
 export class MapEffect {
     private lightFlg = false;
@@ -19,7 +19,7 @@ export class MapEffect {
     private waterReflectionShaderFlg = false;
     private waterReflectionShaderInstance: WaterReflectionShader;
 
-    constructor(private fieldScene: FieldScene, private tileMap: TileMap) {
+    constructor(private fieldScene: FieldScene, private tileMap: TileMap, private tiledMapPropatiesEntity: TiledMapPropatiesEntity) {
         this.setLightInfomation();
 
         if (this.lightFlg) this.light2DInstance = new Light2D(this.fieldScene);
@@ -52,7 +52,7 @@ export class MapEffect {
     private setLightInfomation() {
 
         const makeTileMap: Phaser.Tilemaps.Tilemap = this.tileMap.getMakeTilemap();
-        if (makeTileMap.getObjectLayer('LIGHT')) { this.lightFlg = true; }
+        if (makeTileMap.getObjectLayer('LIGHT') || this.tiledMapPropatiesEntity.ambientColor) { this.lightFlg = true; }
         if (makeTileMap.getObjectLayer('WATER_SURFACE')) {
             this.bgRenderTextureFlg = true;
             this.waterReflectionShaderFlg = true;

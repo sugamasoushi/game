@@ -71,3 +71,9 @@ export interface OptionData {
   seVolume: number,
   textSpeed: number, // 追加のオプション項目（例: テキスト表示速度）
 }
+
+export interface PropertyItem {
+  name: string;
+  type?: string;
+  value: string | number | boolean | null | undefined;
+}

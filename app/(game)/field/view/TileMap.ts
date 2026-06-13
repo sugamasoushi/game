@@ -1,8 +1,9 @@
-import { FieldScene } from "../../lib/types";
-import { FieldData } from "../../lib/types";
+import { FieldScene, FieldData, PropertyItem } from "../../lib/types";
 import { tilesets, MapLayerDepth } from "../../lib/FieldTypes";
 import { GameStateManager } from "../../core/GameStateManager";
 import { SearchTileNamedata } from "../../Data/SearchTileNamedata";
+import PlasmaPostFX from "../../../../public/assets/img/effect/pipelines/PlasmaPostFX.js";
+import { TiledMapPropatiesEntity } from "./character/TiledMapEntity";
 
 interface AnimationTileMapLayer extends Phaser.Tilemaps.TilemapLayer {
     useAnimTile: number[];
@@ -45,6 +46,8 @@ export class TileMap extends Phaser.GameObjects.Container {
     private mapLowLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighestLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
+
+    private TiledMapPropatiesEntity: TiledMapPropatiesEntity;
 
     constructor(
         private fieldScene: FieldScene,
@@ -157,6 +160,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             if (!this.fieldScene.load.isLoading()) {
                 //console.log("Phaserの内部ダウンロードを開始します...");
                 this.fieldScene.load.start();
+
             } else {
                 //console.log("ローダーは既に稼働中です。完了を待ちます。");
             }
@@ -203,20 +207,13 @@ export class TileMap extends Phaser.GameObjects.Container {
     private createTileMap(): Promise<void> {
         return new Promise<void>(resolve => {
 
-            //mapkeyからTiledデータを呼び出す
+            //TiledのPropatiesをマッピングしたエンティティ生成
             const tilemap: Phaser.Tilemaps.Tilemap = this.makeTilemap;
+            this.TiledMapPropatiesEntity = new TiledMapPropatiesEntity(tilemap.properties as PropertyItem[]);
 
-            //タイルマップのプロパティからバトル情報を設定
-            if (Array.isArray(tilemap.properties)) {
-                for (const prop of tilemap.properties) {
-                    if (prop.name === 'battleFieldKey') {
-                        const p = prop as { name: string; value: string };
-                        // 状態管理クラスのパーティリストを更新
-                        const gameStateManager = GameStateManager.getInstance();
-                        gameStateManager.setBattleFieldKey(p.value);
-                    }
-                }
-            }
+            const gameStateManager = GameStateManager.getInstance();
+            gameStateManager.setBattleFieldKey(this.TiledMapPropatiesEntity.battleFieldKey);
+
 
             //JSONから読み込んだTiledデータにはレイヤー、タイルセットのキー情報、オブジェクト情報、タイルアニメーション情報が含まれている
             //Tiledデータにタイルセットの画像情報を設定
@@ -334,12 +331,14 @@ export class TileMap extends Phaser.GameObjects.Container {
                             // }
                         }
                     }
+
+                    //tilemapLayer.setPostPipeline(PlasmaPostFX);
                 }
 
-                //高さを設定（PO=Player Over）
+                //必ずプレイヤーの上（PO=Player Over）
                 if (tilemap.layers[i].name.substring(0, 2) === 'PO') {
                     //console.log(scene.tilemap.layers[i].heightInPixels);
-                    tilemap.layers[i].tilemapLayer.setDepth(tilemap.layers[i].heightInPixels);
+                    tilemap.layers[i].tilemapLayer.setDepth(tilemap.layers[i].heightInPixels + MapLayerDepth.Highest + i);
                 }
 
                 //プレイヤーと同じ高さに設定するマップオブジェクトへの参照を格納
@@ -631,5 +630,6 @@ export class TileMap extends Phaser.GameObjects.Container {
     public getWaterSrufaceSubjectTilemapLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.waterSrufaceSubjectTilemapLayerList; }
     public getMoonLightSubjectTilemapLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.moonLightSubjectTilemapLayerList; }
 
+    public getTiletiledMapTiledMapPropatiesEntity() { return this.TiledMapPropatiesEntity }
 
 }

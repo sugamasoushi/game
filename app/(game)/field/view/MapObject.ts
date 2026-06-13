@@ -3,6 +3,8 @@ import { TileMap } from "./TileMap";
 import { Player } from "./character/Player";
 import { GameStateManager } from "../../core/GameStateManager";
 
+import PlasmaPost2FX from '../../../../public/assets/img/effect/pipelines/PlasmaPost2FX.js';
+
 export class MapObject extends Phaser.GameObjects.Container {
 
     private gameScene: FieldScene;
@@ -12,6 +14,7 @@ export class MapObject extends Phaser.GameObjects.Container {
     private treeStemSpriteObjects: Phaser.Physics.Arcade.StaticGroup;
 
     private plane!: Phaser.GameObjects.Plane;
+    private shineShader?: Phaser.GameObjects.Shader;
     // クラスのメンバ変数として、前フレームのカメラ位置を記憶
     private lastCameraX: number = 0;
     private lastCameraY: number = 0;
@@ -26,8 +29,25 @@ export class MapObject extends Phaser.GameObjects.Container {
         this.TileMap = tileMap;
         await this.createObject();
 
+        this.testShader()
+
         //テスト用平面表示
         //this.createPlane();
+
+        //const pipeline = this.scene.cameras.main.setPostPipeline(PlasmaPost2FX);
+
+    }
+
+    private testShader() {
+        const width = this.TileMap.getMakeTilemap().widthInPixels;
+        const height = this.TileMap.getMakeTilemap().heightInPixels;
+
+        //this.scene.add.shader('fireball', 400, 300, 800, 600);
+
+        //this.fieldScene.add.shader('blueSky', width / 2, height / 2, width, height);
+        //this.fieldScene.add.shader('nightsky', width / 2, height / 2, width, height);
+
+        //this.scene.add.shader('sunRays', width / 2, height / 2, width, height);
     }
 
     private createObject() {

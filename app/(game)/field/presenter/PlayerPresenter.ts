@@ -27,9 +27,7 @@ export class PlayerPresenter {
         this.playerView = new PlayerView(this.fieldScene, this.tileMap);
     }
 
-    public update(time: number, delta: number) {
-
-    }
+    public update(time: number, delta: number) { }
 
     public async execute() {
         await this.playerModel.execute();
@@ -153,10 +151,11 @@ export class PlayerPresenter {
             //状態がNOSTATE以外の場合は、メニューを開かない
             if (gameStateManager.currentState !== State.NOSTATE) { return; }
 
-            //ぼかし
-            //https://newdocs.phaser.io/docs/3.70.0/Phaser.GameObjects.Components.FX#addBlur
-            const mainCamera: Phaser.Cameras.Scene2D.Camera = this.fieldScene.cameras.main;
-            mainCamera.postFX.addBlur(2, 1, 1, 1, 0xffffff, 1);
+            // //ぼかし
+            // //https://newdocs.phaser.io/docs/3.70.0/Phaser.GameObjects.Components.FX#addBlur
+            // const mainCamera: Phaser.Cameras.Scene2D.Camera = this.fieldScene.cameras.main;
+            // mainCamera.postFX.addBlur(2, 1, 1, 1, 0xffffff, 1);
+            this.fieldScene.events.emit('CAMERA_BLUR')
 
             //状態更新
             gameStateManager.updateState({ state: State.MENU }, 'menu');

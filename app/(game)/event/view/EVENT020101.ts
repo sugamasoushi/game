@@ -5,7 +5,6 @@ import { CharacterGameObject } from './CharacterGameObject';
 import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { DataDefinition } from "../../Data/DataDefinition";
-import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../core/GameStateManager";
 import { Npc } from "../../field/view/character/Npc";
@@ -66,10 +65,10 @@ export class EVENT020101 extends BaseEvent {
 
         await this.execFadeOut();
         await new Promise<void>(resolve => {
-            this.meina.setMapPosition(1248, 896)
-            this.lamy.setMapPosition(1248, 800)
-            this.meina.setStandFrame(this.meina.getAnimationKey().standRight)
-            this.lamy.setStandFrame(this.lamy.getAnimationKey().standRight)
+            this.meina.setMapPosition(608, 448)
+            this.lamy.setMapPosition(512, 448)
+            this.meina.setStandFrame(this.meina.getAnimationKey().standUp)
+            this.lamy.setStandFrame(this.lamy.getAnimationKey().standUp)
             resolve()
         })
         await this.execFadeIn();
@@ -134,8 +133,8 @@ export class EVENT020101 extends BaseEvent {
             { lamy: ['ら、楽勝だったわぁ・・・。\n'] }
         ], this.characterGameObject);
 
-        this.meina.setStandFrame(this.meina.getAnimationKey().standUp)
-        this.lamy.setStandFrame(this.lamy.getAnimationKey().standDown)
+        this.meina.setStandFrame(this.meina.getAnimationKey().standLeft)
+        this.lamy.setStandFrame(this.lamy.getAnimationKey().standRight)
 
         //怒りのジャンプ
         this.eventScene.tweens.add({
@@ -169,7 +168,7 @@ export class EVENT020101 extends BaseEvent {
                 resolve();
             }),
             this.stopAnyTime(500),
-            this.meina.setAnimDirection('walk_right')
+            this.meina.setAnimDirection('walk_up')
         ]);
 
         await Promise.all([

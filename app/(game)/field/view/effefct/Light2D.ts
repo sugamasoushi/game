@@ -16,7 +16,6 @@ export class Light2D {
 
     private light: Phaser.GameObjects.Light[] = [];
     private lightObjectLayer: Phaser.Tilemaps.ObjectLayer;
-    private lightFlg: boolean = false;
     private ellipse: Phaser.Geom.Ellipse[] = [];
     private timerEventObj: Phaser.Time.TimerEvent | null = null;
 
@@ -44,17 +43,14 @@ export class Light2D {
     private setLightInfomation() {
         const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
 
-        if (makeTileMap.getObjectLayer('LIGHT')) {
-            this.lightFlg = true;
-            this.lightObjectLayer = (makeTileMap.getObjectLayer('LIGHT')!);
+        this.lightObjectLayer = (makeTileMap.getObjectLayer('LIGHT')!);
 
-            for (const tp of this.TileMap.getTilemapLayerList()) {
-                tp.setPipeline('Light2D');
-            }
-            // for (const chestSpriteObject of this.chestSpriteObjects) {
-            //     chestSpriteObject.setPipeline('Light2D');
-            // }
+        for (const tp of this.TileMap.getTilemapLayerList()) {
+            tp.setPipeline('Light2D');
         }
+        // for (const chestSpriteObject of this.chestSpriteObjects) {
+        //     chestSpriteObject.setPipeline('Light2D');
+        // }
     }
 
     public update(time: number, delta: number) {
@@ -64,67 +60,71 @@ export class Light2D {
     }
 
     private createLight() {
-        if (!this.lightFlg) return;
         return new Promise<void>(async (resolve) => {
+
+            this.fieldScene.lights.enable()
+            this.fieldScene.lights.setAmbientColor(0xffffff);
+
+            //プレイヤーにライトを作成
+            this.playerLight = this.fieldScene.lights.addLight(this.player.x, this.player.y, 200);
+            this.playerLight.setIntensity(0.5);
+            this.playerLightFlg = true;
 
             /**
              * lightオブジェクトは効果対象のオブジェクトが削除されればPhaserが自動で削除される
              */
 
-            for (const obj of this.lightObjectLayer.objects) {
+            if (this.lightObjectLayer.objects) {
+                for (const obj of this.lightObjectLayer.objects) {
 
-                //初期値
-                let radius = 200;//光の半径
-                let color = 0xffffff;//光の色
-                let intensity = 1.0;//光の強さ
+                    //初期値
+                    let radius = 200;//光の半径
+                    let color = 0xffffff;//光の色
+                    let intensity = 1.0;//光の強さ
+                    let type = "";
 
-                for (const property of obj.properties) {
-                    if (property.name === 'radius' && property.value !== '') { radius = property.value; }
-                    if (property.name === 'color' && property.value !== '') { color = property.value; }
-                    if (property.name === 'intensity' && property.value !== '') { intensity = property.value; }
-                }
+                    for (const property of obj.properties) {
+                        if (property.name === 'radius' && property.value !== '') { radius = property.value; }
+                        if (property.name === 'color' && property.value !== '') { color = property.value; }
+                        if (property.name === 'intensity' && property.value !== '') { intensity = property.value; }
+                        if (property.type === 'type' && property.value !== '') { type = property.value; }
+                    }
 
-                const light = this.fieldScene.lights.addLight(obj.x, obj.y, radius);
-                light.setColor(color);
-                light.setIntensity(intensity);
+                    const light = this.fieldScene.lights.addLight(obj.x, obj.y, radius);
+                    light.setColor(color);
+                    light.setIntensity(intensity);
+                    //this.light.push(light);
 
-                const ellipse = new Phaser.Geom.Ellipse(obj.x, obj.y, 10, 10);
+                    if (type === 'fire') {
+                        const ellipse = new Phaser.Geom.Ellipse(obj.x, obj.y, 10, 10);
 
-                this.timerEventObj = this.fieldScene.time.addEvent({
-                    delay: 100,
-                    callback: function () {
-                        Phaser.Geom.Ellipse.Random(ellipse, light);
-                    },
-                    callbackScope: this,
-                    repeat: -1
-                });
+                        this.timerEventObj = this.fieldScene.time.addEvent({
+                            delay: 100,
+                            callback: function () {
+                                Phaser.Geom.Ellipse.Random(ellipse, light);
+                            },
+                            callbackScope: this,
+                            repeat: -1
+                        });
 
-                this.light.push(light);
-                this.ellipse.push(ellipse);
-            }
-
-            if (this.debugFlg) {
-                this.playerLight = this.fieldScene.lights.addLight(this.player.x, this.player.y, 200);
-                this.playerLight.setIntensity(0.5);
-                this.playerLightFlg = true;
-            }
-
-            this.fieldScene.lights.enable()
-            this.fieldScene.lights.setAmbientColor(0xffffff);
-
-            //タイルマップのプロパティからeffect情報を設定
-            const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
-            if (Array.isArray(makeTileMap.properties)) {
-                for (const prop of makeTileMap.properties) {
-                    if (prop.name === 'ambientColor') {
-                        //環境光の色を設定
-                        this.fieldScene.lights.setAmbientColor(prop.value);
-                        //0xffffff
-                        //0x222244
+                        //this.ellipse.push(ellipse);
                     }
                 }
+
+                //タイルマップのプロパティからeffect情報を設定
+                const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
+                if (Array.isArray(makeTileMap.properties)) {
+                    for (const prop of makeTileMap.properties) {
+                        if (prop.name === 'ambientColor') {
+                            //環境光の色を設定
+                            this.fieldScene.lights.setAmbientColor(prop.value);
+                            //0xffffff
+                            //0x222244
+                        }
+                    }
+                }
+                resolve();
             }
-            resolve();
         });
     }
 

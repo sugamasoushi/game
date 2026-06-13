@@ -98,6 +98,10 @@ export class ContinueButton {
     }
 
     public disableInteractive() {
+        if (this.selectTween) {
+            this.selectTween.stop();
+            this.selectTween = null;
+        }
         this.ContinueStart.disableInteractive();
         this.ContinueStart.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
         return this;

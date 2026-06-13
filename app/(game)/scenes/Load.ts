@@ -98,7 +98,6 @@ export class Load extends Scene {
         this.load.glsl('watershader', 'assets/img/effect/shader/water.frag');
 
 
-
         this.load.image('noise', 'assets/img/effect/noise/Super Noise/Super Noise 14 - 512x512.png');
         this.load.image('noise2', 'assets/img/effect/noise/Super Perlin/Super Perlin 12 - 512x512.png');
 

@@ -247,7 +247,7 @@ export class BubbleTalk {
         //メッセージ表示範囲のマスク作成
         this.cropRectMask = this.fieldScene.add.graphics();
         this.cropRectMask.x = this.textObject.x;//座標初期値を設定
-        this.cropRectMask.y = this.textObject.y;
+        this.cropRectMask.y = this.textObject.y - 5;
         this.cropRectMask.fillStyle(whiteColor);
         this.cropRectMask.fillRect(0, 0, this.messageWidth, this.textObject.height * this.textLine + this.lineSpaceValue);
         //cropRectMask.fillPath().setDepth(messageObject.depth - 1);//確認用

@@ -111,24 +111,6 @@ export class FieldScenePresenter {
         //     0.5//strengthぼかしの強さ。 
         // );
 
-        const mainCamera = this.fieldScene.cameras.main;
-
-        if (mainCamera.postFX) {
-            // カラーマトリックスエフェクトをカメラに追加
-            const cameraFilter = mainCamera.postFX.addColorMatrix();
-
-            // 【調整例A】コントラストを高めて、陰影をクッキリさせる
-            cameraFilter.contrast(0.5);      // 1.0が基準。1.4でかなりクッキリします
-
-            // 【調整例B】全体を少し暗くして、ライトの光（懐中電灯など）を引き立たせる
-            cameraFilter.brightness(-0.2);   // 0.0が基準。-0.1でほんのりダークに
-
-            // 【調整例C】彩度を少し下げて、ドット絵のギラギラ感を抑えトーンを馴染ませる
-            cameraFilter.saturate(0.5);     // 1.0が基準。0.85で少し渋い色合いに
-
-            //cameraFilter.hue(180);
-        }
-
         const gameStateManager = GameStateManager.getInstance();
 
         //現在のBGM状態を更新
@@ -207,7 +189,7 @@ export class FieldScenePresenter {
         await this.mapObject.execute(this.tileMap);
 
         //エフェクト作成
-        this.mapEffect = new MapEffect(this.fieldScene, this.tileMap);
+        this.mapEffect = new MapEffect(this.fieldScene, this.tileMap, this.tileMap.getTiletiledMapTiledMapPropatiesEntity());
         await this.mapEffect.execute();
 
         this.fieldMessageWindow.init();
@@ -219,6 +201,8 @@ export class FieldScenePresenter {
 
         //各種設定
         this.cameraManager.execute(this.tileMap.getMakeTilemap());
+        this.cameraManager.setTiledMapPropatiesEntity(this.tileMap.getTiletiledMapTiledMapPropatiesEntity());
+        this.cameraManager.execCameraEffect();
 
         // イベントエミッター設定
         this.setGameEvent();
@@ -351,6 +335,14 @@ export class FieldScenePresenter {
                 battleData: { usePatern: battleData.usePatern, fieldHitEnemy: battleData.fieldHitEnemy, canNotRunaway: battleData.canNotRunaway }
             }, battleData.usePatern);
 
+        });
+
+        this.fieldScene.events.on('CAMERA_BLUR', () => {
+            this.cameraManager.cameraBlur();
+        });
+
+        this.fieldScene.events.on('CAMERA_NORMAL_EFFECT', () => {
+            this.cameraManager.execCameraEffect();
         });
 
         // シーン終了時にイベントを破棄

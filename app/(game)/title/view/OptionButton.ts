@@ -99,6 +99,10 @@ export class OptionButton {
     }
 
     public disableInteractive() {
+        if (this.selectTween) {
+            this.selectTween.stop();
+            this.selectTween = null;
+        }
         this.OptionStart.disableInteractive();
         this.OptionStart.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
         return this;

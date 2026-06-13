@@ -81,23 +81,25 @@ export class Field extends Scene implements FieldScene {
 
     //画面更新を再開。このメソッドは別シーンから参照される。
     public resumeScene() {
-        this.mainCamera.postFX.clear();
+        // this.mainCamera.postFX.clear();
 
-        if (this.mainCamera.postFX) {
-            // カラーマトリックスエフェクトをカメラに追加
-            const cameraFilter = this.mainCamera.postFX.addColorMatrix();
+        // if (this.mainCamera.postFX) {
+        //     // カラーマトリックスエフェクトをカメラに追加
+        //     const cameraFilter = this.mainCamera.postFX.addColorMatrix();
 
-            // 【調整例A】コントラストを高めて、陰影をクッキリさせる
-            cameraFilter.contrast(0.5);      // 1.0が基準。1.4でかなりクッキリします
+        //     // 【調整例A】コントラストを高めて、陰影をクッキリさせる
+        //     cameraFilter.contrast(0.5);      // 1.0が基準。1.4でかなりクッキリします
 
-            // 【調整例B】全体を少し暗くして、ライトの光（懐中電灯など）を引き立たせる
-            cameraFilter.brightness(-0.2);   // 0.0が基準。-0.1でほんのりダークに
+        //     // 【調整例B】全体を少し暗くして、ライトの光（懐中電灯など）を引き立たせる
+        //     cameraFilter.brightness(-0.2);   // 0.0が基準。-0.1でほんのりダークに
 
-            // 【調整例C】彩度を少し下げて、ドット絵のギラギラ感を抑えトーンを馴染ませる
-            cameraFilter.saturate(0.5);     // 1.0が基準。0.85で少し渋い色合いに
+        //     // 【調整例C】彩度を少し下げて、ドット絵のギラギラ感を抑えトーンを馴染ませる
+        //     cameraFilter.saturate(0.5);     // 1.0が基準。0.85で少し渋い色合いに
 
-            //cameraFilter.hue(180);
-        }
+        //     //cameraFilter.hue(180);
+        // }
+
+        this.events.emit('CAMERA_NORMAL_EFFECT');
 
         this.scene.resume(); // これにより上の 'resume' イベントが発火する
     }

@@ -97,7 +97,7 @@ export class NpcView {
 
                             } catch (e) {
                                 console.log('NPC作成エラー')
-                                console.log(e)
+                                console.log(npcObj, e)
                             }
                         }
                     }

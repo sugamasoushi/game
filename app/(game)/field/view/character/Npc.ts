@@ -31,6 +31,9 @@ export class Npc extends BaseSprite {
     private makeTilemapData: Phaser.Tilemaps.Tilemap
     private collisionLayer: Phaser.Tilemaps.TilemapLayer
 
+    private cropRectMask: Phaser.GameObjects.Graphics;
+    private GeometryMask: Phaser.Display.Masks.GeometryMask;
+
     constructor(
         fieldScene: FieldScene,
         x: number,
@@ -64,6 +67,9 @@ export class Npc extends BaseSprite {
         this._setInput();
         this.energyHP();
         this.delete();
+
+        //キャラクターの下側を非表示にするマスク
+        //this.updateCharacterShapesMask();
     }
 
     init() {
@@ -419,4 +425,125 @@ export class Npc extends BaseSprite {
 
     public setMakeTilemapData(makeTilemapData: Phaser.Tilemaps.Tilemap) { this.makeTilemapData = makeTilemapData; }
     public setCollisionLayer(collisionLayer: Phaser.Tilemaps.TilemapLayer) { this.collisionLayer = collisionLayer; }
+
+    //キャラの一部を非表示にするマスク
+    private updateCharacterShapesMask() {
+
+        const makeTilemap: Phaser.Tilemaps.Tilemap = this.makeTilemapData;
+
+        //以下のチェックはGraphicsの処理を減らすため、対象タイルマップの存在有無チェックを行っていたが、一つのGraphicsに複数描画する分には殆ど処理は重くならないため不要とする
+        // if (!makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x - this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x - this.tileSize / 2 * this.scale, this.y + this.tileSize / 2 * this.scale, false, undefined, mapName) &&
+        //     !makeTilemap.getTileAtWorldXY(this.x, this.y - maskHeight, false, undefined, mapName)) {
+        //     this.clearMask();
+        //     return;
+        // }
+
+        //更新前にマスクを削除
+        if (this.GeometryMask) { this.clearMask(); }
+
+        //初回作成時
+        if (!this.cropRectMask) { this.cropRectMask = this.scene.add.graphics(); };
+
+        //デバッグ用、trueの場合は非表示
+        this.cropRectMask.setVisible(false);
+
+        this.cropRectMask.setDepth(5000);
+        this.cropRectMask.clear();//再描画のためクリア
+
+        const whiteColor = Phaser.Display.Color.HexStringToColor('#ffffff').color;
+        this.cropRectMask.fillStyle(whiteColor);
+
+        //キャラクターの足元を基準とする、値はタイルサイズ32を基準
+        const maskY = this.y + 32 / 2;
+
+        //四角形オブジェクト作成
+        for (const obj of makeTilemap.objects) {
+            if (obj.name === "MASK_RECT") {
+                for (const rect of obj.objects) {
+                    for (const property of rect.properties) {
+                        if (property.name === "height") {
+                            this.cropRectMask.fillRect(
+                                rect.x!,
+                                maskY - property.value! > rect.y! ? maskY - property.value! : rect.y!,
+                                rect.width!,
+                                (rect.y! + rect.height! - maskY + property.value!) < 0 ? 0 : (rect.y! + rect.height! - maskY + property.value!)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        //多角形オブジェクト作成
+        for (const obj of makeTilemap.objects) {
+            if (obj.name === "MASK_POLYGON") {
+                for (const polygon of obj.objects) {
+                    for (const property of polygon.properties) {
+                        if (property.name === "height") {
+                            if (polygon.polygon) {
+                                // 1. 座標を修正してポイント配列を作成（前回のアドバイス通り）
+                                const points = polygon.polygon.map(p => ({
+                                    x: (polygon.x || 0) + p.x,
+                                    y: (polygon.y || 0) + p.y
+                                }));
+
+                                // 2. ポリゴンを「this.y 以下」にクリッピングして描画する
+                                // ※ GeometryMaskはステンシルバッファで動作するためERASEブレンドモードが効かない
+                                //    そのため、描画する領域自体を数学的に絞り込む（Sutherland-Hodgman法）
+                                const clippedPoints = clipPolygonToBottom(points, maskY - property.value!);
+                                if (clippedPoints.length >= 3) {
+                                    this.cropRectMask.fillStyle(0xffffff, 1);
+                                    this.cropRectMask.setBlendMode(Phaser.BlendModes.NORMAL);
+                                    this.cropRectMask.fillPoints(clippedPoints, true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // //図形を作成
+            this.cropRectMask.fillPath();
+
+            //マスク作成のためcreateGeometryMaskを作成し、マスク処理を反転
+            this.GeometryMask = this.cropRectMask.createGeometryMask();
+            this.GeometryMask.setInvertAlpha();
+            this.setMask(this.GeometryMask);
+        }
+    }
+}
+
+/**
+ * Sutherland-Hodgman法でポリゴンを「y >= clipY」の半平面にクリッピングする
+ * キャラクターのY座標以下の部分だけを残すために使用
+ */
+function clipPolygonToBottom(points: { x: number; y: number }[], clipY: number): { x: number; y: number }[] {
+    const result: { x: number; y: number }[] = [];
+    const n = points.length;
+
+    for (let i = 0; i < n; i++) {
+        const current = points[i];
+        const next = points[(i + 1) % n];
+
+        const currentInside = current.y >= clipY;
+        const nextInside = next.y >= clipY;
+
+        if (currentInside) {
+            result.push(current);
+        }
+
+        // エッジがクリップ境界（y = clipY）を跨ぐ場合は交点を追加
+        if (currentInside !== nextInside) {
+            const t = (clipY - current.y) / (next.y - current.y);
+            result.push({
+                x: current.x + t * (next.x - current.x),
+                y: clipY
+            });
+        }
+    }
+
+    return result;
 }

@@ -522,7 +522,7 @@
                         {
                          "name":"moveToMap",
                          "type":"string",
-                         "value":"0001"
+                         "value":"0103"
                         }, 
                         {
                          "name":"moveX",
@@ -532,7 +532,7 @@
                         {
                          "name":"moveY",
                          "type":"int",
-                         "value":100
+                         "value":1728
                         }, 
                         {
                          "name":"note",
