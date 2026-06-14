@@ -28,7 +28,8 @@ export class SceneController extends Scene {
         this.load.image('meinaOpImage', 'assets/img/CharaStand/メイナOP画像.png');
         this.load.image('meinaOpImageHome', 'assets/img/background/ComfyUI_temp_xsgbd_00098_.png');
         this.load.image('lamyOpImage', 'assets/img/CharaStand/ラミィOP画像.png');
-        this.load.image('lamyOpImageHome', 'assets/img/background/ComfyUI_temp_xsgbd_00071_.png');
+        this.load.image('lamyOpImageHome', 'assets/img/background/battle_forest mansion.png');
+        
         this.load.image('spark', 'assets/img/effect/elec3.png');
     }
 

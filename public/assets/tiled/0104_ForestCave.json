@@ -711,7 +711,7 @@
          "name":"collision",
          "opacity":1,
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":50,
          "x":0,
          "y":0
@@ -946,7 +946,7 @@
         {
          "name":"battleFieldKey",
          "type":"string",
-         "value":"battle_cave"
+         "value":"battle_forest"
         }, 
         {
          "name":"fog",

@@ -5,7 +5,7 @@ export class Fog {
     constructor(private battleScene: BattleScene) { }
 
     //霧を作成
-    public createFog() {
+    public createFog(depth?: number) {
 
         // create 内
         const width = this.battleScene.sys.canvas.width;
@@ -17,7 +17,7 @@ export class Fog {
 
         // 2. 霧っぽく見せるための設定
         fog.setBlendMode(Phaser.BlendModes.SCREEN); // 黒背景を透過させて白だけ残す
-        fog.setAlpha(0.2);                         // 透明度を下げて「うっすら」にする
+        fog.setAlpha(0.1);                         // 透明度を下げて「うっすら」にする
 
         // 必要なら少し拡大してノイズの目を粗く（霧っぽく）する
         fog.setScale(1.5);
@@ -28,7 +28,7 @@ export class Fog {
 
         // 2. 霧っぽく見せるための設定
         fog2.setBlendMode(Phaser.BlendModes.SCREEN); // 黒背景を透過させて白だけ残す
-        fog2.setAlpha(0.7);                         // 透明度を下げて「うっすら」にする
+        fog2.setAlpha(0.1);                         // 透明度を下げて「うっすら」にする
 
         // 必要なら少し拡大してノイズの目を粗く（霧っぽく）する
         fog2.setScale(1.0);
@@ -41,5 +41,10 @@ export class Fog {
             fog2.tilePositionX += 0.9;
             fog2.tilePositionY += 0.4;
         });
+
+        if (depth) {
+            fog.setDepth(depth);
+            fog2.setDepth(depth);
+        }
     }
 }

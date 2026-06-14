@@ -84,6 +84,7 @@ export class Load extends Scene {
         this.load.image('battle_hill_01', 'assets/img/background/battle_hill_01.png');
         this.load.image('battle_hill_02', 'assets/img/background/battle_hill_02.png');
         this.load.image('battle_hill_03', 'assets/img/background/battle_hill_03.png');
+        this.load.image('battle_forest', 'assets/img/background/battle_forest.png');
         this.load.image('battle_cave', ['assets/img/background/ComfyUI_temp_xpgcm_00020_.png', 'assets/img/background/ComfyUI_temp_xpgcm_00020__n.png']);
 
         this.load.atlas('flares', 'assets/img/effect/flares.png', 'assets/img/effect/flares.json');

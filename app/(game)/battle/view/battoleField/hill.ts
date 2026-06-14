@@ -49,6 +49,8 @@ export class hill extends Phaser.GameObjects.Container {
         // PC版（Electron）かどうかの判定
         const execEnv = new ExecutionEnvironment();
         if (execEnv.isElectron() || this.debugFlg) {
+
+            //かなり重いシェーダー
             this.shader = this.scene.add.shader('blueSky', width / 2, height / 2, width, height);
             this.shader.setDepth(0);
 
@@ -57,6 +59,7 @@ export class hill extends Phaser.GameObjects.Container {
             //霧を雲として使う
             this.fog.createFog();
 
+            //空
             const linearFadeFrag = `
                 #ifdef GL_ES
                 precision mediump float;
