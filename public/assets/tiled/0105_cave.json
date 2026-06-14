@@ -599,8 +599,8 @@
                         }, 
                         {
                          "name":"intensity",
-                         "type":"string",
-                         "value":"5"
+                         "type":"int",
+                         "value":5
                         }, 
                         {
                          "name":"radius",
@@ -632,8 +632,8 @@
                         }, 
                         {
                          "name":"intensity",
-                         "type":"string",
-                         "value":"5"
+                         "type":"int",
+                         "value":5
                         }, 
                         {
                          "name":"radius",
@@ -665,8 +665,8 @@
                         }, 
                         {
                          "name":"intensity",
-                         "type":"string",
-                         "value":"5"
+                         "type":"int",
+                         "value":5
                         }, 
                         {
                          "name":"radius",

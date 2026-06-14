@@ -47,7 +47,7 @@ export class TileMap extends Phaser.GameObjects.Container {
     private mapLowLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighestLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
-
+    private mapMask: Phaser.GameObjects.Graphics;
     private tileMapPropatiesEntity: TiledMapPropatiesEntity;
 
     constructor(
@@ -188,6 +188,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             this.mapLowLayerList = [];
             this.mapHighLayerList = [];
             this.mapHighestLayerList = [];
+            this.mapMask.destroy();
         });
     }
 
@@ -235,6 +236,18 @@ export class TileMap extends Phaser.GameObjects.Container {
             this.waterSrufaceSubjectTilemapLayerList.splice(0);
             this.moonLightSubjectTilemapLayerList.splice(0);
             this.animationTileMapLayer.splice(0);
+
+            //マップ外を非表示にするためのマスクを作成
+            const width = tilemap.widthInPixels;
+            const height = tilemap.heightInPixels;
+            const mapMask = this.fieldScene.add.graphics();
+            mapMask.x = 0;//座標初期値を設定
+            mapMask.y = 0;
+            mapMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
+            mapMask.fillRect(0, 0, width, height);
+            this.mapMask = mapMask;
+            mapMask.setVisible(false);//非表示にする
+
 
             // タイルマップ作成
             for (let i = 0; i < tilemap.layers.length; i++) {
@@ -324,11 +337,24 @@ export class TileMap extends Phaser.GameObjects.Container {
                         this.waterSrufaceSubjectTilemapLayerList.push(tilemapLayer);
                     }
 
-                    //背景レイヤーのスクロール設定
+                    //レイヤーのスクロール設定
                     if (tiledMapLayerPropatiesEntity.scrollX || tiledMapLayerPropatiesEntity.scrollY) {
                         tilemapLayer.setDepth(MapLayerDepth.Lowest + i);
                         tilemapLayer.setScrollFactor(tiledMapLayerPropatiesEntity.scrollX!, tiledMapLayerPropatiesEntity.scrollY)
                     }
+
+                    /**
+                    * 必ずプレイヤーの上（PO=Player Over）
+                    * 
+                    * 備考：Tiledのグループレイヤー機能に頼る
+                    * グループ名で判定する方が簡単
+                    */
+                    if (tilemap.layers[i].name.substring(0, 2) === 'PO') {
+                        //console.log(scene.tilemap.layers[i].heightInPixels);
+                        tilemapLayer.setDepth(tilemap.layers[i].heightInPixels + MapLayerDepth.Highest + i);
+                    }
+
+                    tilemapLayer.setMask(mapMask.createGeometryMask());
                 }
 
                 /**
@@ -337,10 +363,10 @@ export class TileMap extends Phaser.GameObjects.Container {
                  * 備考：Tiledのグループレイヤー機能に頼る
                  * グループ名で判定する方が簡単
                  */
-                if (tilemap.layers[i].name.substring(0, 2) === 'PO') {
-                    //console.log(scene.tilemap.layers[i].heightInPixels);
-                    tilemap.layers[i].tilemapLayer.setDepth(tilemap.layers[i].heightInPixels + MapLayerDepth.Highest + i);
-                }
+                // if (tilemap.layers[i].name.substring(0, 2) === 'PO') {
+                //     //console.log(scene.tilemap.layers[i].heightInPixels);
+                //     tilemap.layers[i].tilemapLayer.setDepth(tilemap.layers[i].heightInPixels + MapLayerDepth.Highest + i);
+                // }
             }
 
             /*

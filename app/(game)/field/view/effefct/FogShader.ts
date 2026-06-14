@@ -14,18 +14,12 @@ export class FogShader {
     }
 
     public async execute() {
-        this.setEffectInfomation();
 
         //エフェクトの作成
         this.createEffect();
     }
 
-    public update(time: number, delta: number) { }
-
-    //エフェクトの情報を設定
-    private setEffectInfomation() {
-        const makeTileMap: Phaser.Tilemaps.Tilemap = this.tileMap.getMakeTilemap();
-    }
+    //public update(time: number, delta: number) { }
 
     private createEffect() {
 
@@ -77,7 +71,7 @@ export class FogShader {
         if (fogData === 'Lowest') {
             fog2.setDepth(MapLayerDepth.Lowest);
         } else {
-            fog2.setDepth(MapLayerDepth.Highest);
+            fog2.setDepth(height + MapLayerDepth.Highest + 100);
         }
 
         // 必要なら少し拡大してノイズの目を粗く（霧っぽく）する
