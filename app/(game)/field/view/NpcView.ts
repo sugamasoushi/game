@@ -6,6 +6,7 @@ import { SpriteType_3x4 } from "./character/SpriteType_3x4";
 import { SpriteType_4x4 } from "./character/SpriteType_4x4";
 import { GameStateManager } from "../../core/GameStateManager";
 import { TileMap } from "./TileMap";
+import { DataDefinition } from "../../Data/DataDefinition";
 
 export class NpcView {
 
@@ -39,15 +40,22 @@ export class NpcView {
                                 const entity = new TiledObjectEntity(npcObj.properties);
 
                                 //イベント関連の敵の場合、イベントフラグが立ってなければ作成しない
-                                if (entity.eventKey) {
-                                    const eventFlgData = this.fieldScene.cache.json.get('savedata').EventFlag;
-                                    for (const key in eventFlgData) {
-                                        const k = key as keyof typeof eventFlgData;
-                                        if (k === entity.eventKey && !eventFlgData[k]) {
-                                            // console.log(key, eventFlgData[k])
-                                            resolve();
-                                            return;
-                                        }
+                                if (entity.createJudgeEventKey) {
+                                    const dataDefinition = new DataDefinition();
+                                    if (!dataDefinition.getEventFlgFromSaveDataInfomation(this.fieldScene, entity.createJudgeEventKey)) {
+                                        resolve();
+                                        return;
+                                    }
+                                }
+
+                                //吹き出し会話の設定
+                                let bubbleTalkKey = entity.bubbleTalkDefaultKey;
+                                if(entity.bubbleJugeEventKey){
+                                    const dataDefinition = new DataDefinition();
+
+                                    //イベントが完了していた場合のセリフを設定
+                                    if(!dataDefinition.getEventFlgFromSaveDataInfomation(this.fieldScene, entity.bubbleJugeEventKey)){
+                                        bubbleTalkKey = entity.bubbleTalkKeyEventOff;
                                     }
                                 }
 
@@ -61,7 +69,7 @@ export class NpcView {
                                     entity.name, //name : ゲーム内変数としてのキャラ名、画像などで使用
                                     entity.standkey, //指定されていなければ下向き配置
                                     entity.imageKey, //imageKey : 立ち絵のキー、アイコンにも使用
-                                    entity.bubbleTalkKey //指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
+                                    bubbleTalkKey //指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
                                 );
 
                                 npc!.setMakeTilemapData(this.tileMap.getMakeTilemap());
@@ -71,9 +79,7 @@ export class NpcView {
 
                                 npc!.setVisible(entity.isVisible);
 
-                                if (entity.scale) {
-                                    npc!.setScale(entity.scale);
-                                }
+                                if (entity.scale) { npc!.setScale(entity.scale); }
 
                                 if (entity.npcType === 'normal') {
                                     this.npcNormalList.push(npc as Npc);

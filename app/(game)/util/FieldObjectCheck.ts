@@ -1,4 +1,4 @@
-import { BaseSprite } from "../core/BaseSprite";
+import { Player } from "../field/view/character/Player";
 
 type ObjectPosition = {
     object1XPosition: string;
@@ -13,8 +13,8 @@ type ObjectDirection = {
 }
 
 export class FieldObjectCheck {
-    private object1: BaseSprite;
-    private object2: BaseSprite;
+    private object1: Player;
+    private object2: Phaser.Physics.Arcade.Sprite;
     private object1XPosition: string;//左か右
     private object2XPosition: string;
     private object1YPosition: string;//上か下
@@ -22,7 +22,7 @@ export class FieldObjectCheck {
     private object1Direction: string;
     private object2Direction: string;
 
-    constructor(object1: BaseSprite, object2: BaseSprite) {
+    constructor(object1: Player, object2: Phaser.Physics.Arcade.Sprite) {
 
         this.positionCheck(object1, object2);
         this.directionCheck(object1, object2);
@@ -30,7 +30,7 @@ export class FieldObjectCheck {
     }
 
     //キャラの位置関係をチェック、値は計算しない
-    private positionCheck(object1: BaseSprite, object2: BaseSprite) {
+    private positionCheck(object1: Player, object2: Phaser.Physics.Arcade.Sprite) {
         this.object1 = object1;
         this.object2 = object2;
 
@@ -57,7 +57,7 @@ export class FieldObjectCheck {
         }
     }
 
-    private directionCheck(object1: BaseSprite, object2: BaseSprite) {
+    private directionCheck(object1: Player, object2: Phaser.Physics.Arcade.Sprite) {
 
         const rad = Phaser.Math.Angle.Between(object1.x, object1.y, object2.x, object2.y);
 

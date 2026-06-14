@@ -87,7 +87,7 @@ export class DataDefinition {
     }
 
     //キャラクターの画像キーを取得
-    public getCharacterImageKey(scene: Phaser.Scene, characterName: string) {
+    public getCharacterImageKey(scene: Phaser.Scene, characterName: string) : ImageKeyData | undefined {
         const imageKeyData = scene.cache.json.get('characterdata');
 
         for (const key in imageKeyData) {
@@ -113,6 +113,8 @@ export class DataDefinition {
         //savedataのfalse,trueを0,1で返す
         for (const key in eventFlgData) {
             const k = key as keyof typeof eventFlgData;
+
+            //イベント状態をセーブデータから取得
             if (k === eventName) {
                 if (eventFlgData[k] === false) {
                     // console.log(key, eventFlgData[k])

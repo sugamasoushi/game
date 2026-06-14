@@ -136,6 +136,7 @@ export class Sound extends Scene {
         //     })
         // );
 
+        //音量設定
         this.subs.add(
             gameStateManager.optionData$.subscribe((optionData) => {
                 //console.log('Sound.ts - optionData changed:', optionData);
@@ -261,40 +262,40 @@ export class Sound extends Scene {
         if (this.currentSe) this.currentSe.stop();
     }
 
-    /**
-     * オプション画面などで「BGMの音量」が変更されたときに呼び出す
-     */
-    public updateBgmVolume(newVolume: number) {
-        this.bgmVolume = newVolume;
-        if (this.currentBgm && this.currentBgm instanceof Phaser.Sound.WebAudioSound) {
-            // リアルタイムに再生中の音量を変更
-            this.currentBgm.setVolume(this.bgmVolume * this.masterVolume);
-        }
-    }
+    // /**
+    //  * オプション画面などで「BGMの音量」が変更されたときに呼び出す
+    //  */
+    // public updateBgmVolume(newVolume: number) {
+    //     this.bgmVolume = newVolume;
+    //     if (this.currentBgm && this.currentBgm instanceof Phaser.Sound.WebAudioSound) {
+    //         // リアルタイムに再生中の音量を変更
+    //         this.currentBgm.setVolume(this.bgmVolume * this.masterVolume);
+    //     }
+    // }
 
-    /**
-     * オプション画面などで「環境音の音量」が変更されたときに呼び出す
-     */
-    public updateBgsVolume(newVolume: number) {
-        this.bgsVolume = newVolume;
-        if (this.currentBgs && this.currentBgs instanceof Phaser.Sound.WebAudioSound) {
-            // リアルタイムに再生中の環境音の音量を変更
-            this.currentBgs.setVolume(this.bgsVolume * this.masterVolume);
-        }
-    }
+    // /**
+    //  * オプション画面などで「環境音の音量」が変更されたときに呼び出す
+    //  */
+    // public updateBgsVolume(newVolume: number) {
+    //     this.bgsVolume = newVolume;
+    //     if (this.currentBgs && this.currentBgs instanceof Phaser.Sound.WebAudioSound) {
+    //         // リアルタイムに再生中の環境音の音量を変更
+    //         this.currentBgs.setVolume(this.bgsVolume * this.masterVolume);
+    //     }
+    // }
 
-    /**
-     * オプション画面などで「マスタ音量」が変更されたときに呼び出す
-     */
-    public updateMasterVolume(newVolume: number) {
-        this.masterVolume = newVolume;
-        if (this.currentBgm) {
-            this.currentBgm.setVolume(this.bgmVolume * this.masterVolume);
-        }
-        if (this.currentBgs) {
-            this.currentBgs.setVolume(this.bgsVolume * this.masterVolume);
-        }
-    }
+    // /**
+    //  * オプション画面などで「マスタ音量」が変更されたときに呼び出す
+    //  */
+    // public updateMasterVolume(newVolume: number) {
+    //     this.masterVolume = newVolume;
+    //     if (this.currentBgm) {
+    //         this.currentBgm.setVolume(this.bgmVolume * this.masterVolume);
+    //     }
+    //     if (this.currentBgs) {
+    //         this.currentBgs.setVolume(this.bgsVolume * this.masterVolume);
+    //     }
+    // }
 
     destroy() {
         //基本的に購読解除しない

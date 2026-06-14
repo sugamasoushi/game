@@ -383,7 +383,7 @@
                  "name":"grandpa",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
+                         "name":"bubbleTalkDefaultKey",
                          "type":"string",
                          "value":"bubbleTalk0101.talk002"
                         }, 
@@ -449,6 +449,12 @@
                  "height":32,
                  "id":5,
                  "name":"bubbleTalk0101.talk001",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkDefaultKey",
+                         "type":"string",
+                         "value":"bubbleTalk0101.talk001"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

@@ -85,7 +85,8 @@ export class TitlePresenter {
     }
 
     private setupInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        //const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = 200;
 
         // 下キー
         this.subs.add(this.inputManager.downButton$.pipe(
@@ -93,13 +94,16 @@ export class TitlePresenter {
         ).subscribe(() => {
             if (this.titleModel.isOptionActive) return;
 
-            // 選択Noの更新
-            this.titleModel.nowSelectNo++;
+            // 選択Noの更新（CONTINUE が無効ならスキップする）
+            do {
+                this.titleModel.nowSelectNo++;
 
-            // 最大値を超えたらNEWGAMEに戻す
-            if (this.titleModel.nowSelectNo > this.titleModel.maxSelectNo) {
-                this.titleModel.nowSelectNo = TitleSelect.NEWGAME;
-            }
+                // 最大値を超えたらNEWGAMEに戻す
+                if (this.titleModel.nowSelectNo > this.titleModel.maxSelectNo) {
+                    this.titleModel.nowSelectNo = TitleSelect.NEWGAME;
+                }
+                // もし CONTINUE が無効ならループして次の選択肢へ進む
+            } while (this.titleModel.nowSelectNo === TitleSelect.CONTINUE && !this.titleModel.hasContinueData);
 
             this.updateSelection();
         }));
@@ -110,13 +114,16 @@ export class TitlePresenter {
         ).subscribe(() => {
             if (this.titleModel.isOptionActive) return;
 
-            // 選択Noの更新
-            this.titleModel.nowSelectNo--;
+            // 選択Noの更新（CONTINUE が無効ならスキップする）
+            do {
+                this.titleModel.nowSelectNo--;
 
-            // 最小値を下回ったらOPTIONに戻す
-            if (this.titleModel.nowSelectNo < this.titleModel.minSelectNo) {
-                this.titleModel.nowSelectNo = TitleSelect.OPTION;
-            }
+                // 最小値を下回ったらOPTIONに戻す
+                if (this.titleModel.nowSelectNo < this.titleModel.minSelectNo) {
+                    this.titleModel.nowSelectNo = TitleSelect.OPTION;
+                }
+                // もし CONTINUE が無効ならループして前の選択肢へ戻る
+            } while (this.titleModel.nowSelectNo === TitleSelect.CONTINUE && !this.titleModel.hasContinueData);
 
             this.updateSelection();
         }));
@@ -181,6 +188,7 @@ export class TitlePresenter {
     }
 
     private async execNewGame() {
+        console.log("execNewGame");
 
         this.disableInteractiveAll();
 

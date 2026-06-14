@@ -36,8 +36,18 @@ export class TiledObjectEntity {
         return typeof value === "string" ? value : "";
     }
 
-    get bubbleTalkKey(): string {
-        const value = this.dataMap.get("bubbleTalkKey");
+    get bubbleTalkDefaultKey(): string {
+        const value = this.dataMap.get("bubbleTalkDefaultKey");
+        return typeof value === "string" ? value : "";
+    }
+
+    get bubbleTalkKeyEventOff(): string {
+        const value = this.dataMap.get("bubbleTalkKeyEventOff");
+        return typeof value === "string" ? value : "";
+    }
+
+    get bubbleJugeEventKey(): string {
+        const value = this.dataMap.get("bubbleJugeEventKey");
         return typeof value === "string" ? value : "";
     }
 
@@ -81,8 +91,8 @@ export class TiledObjectEntity {
         return typeof value === "number" ? value : 1;
     }
 
-    get eventKey(): string {
-        const value = this.dataMap.get("eventKey");
+    get createJudgeEventKey(): string {
+        const value = this.dataMap.get("createJudgeEventKey");
         return typeof value === "string" ? value : "";
     }
 }

@@ -182,7 +182,7 @@ export class EVENT010301 extends BaseEvent {
 
                 //イベント後のキャラに吹き出し会話を設定
                 this.lamyNPC.setBubbleTalkKey('bubbleTalk0001.talk002');
-                this.lamyNPC.talkSetting();
+                this.lamyNPC.bubbleTalkSetting();
                 this.lamyNPC.setInputManager(InputManager.getInstance(this.fieldScene));
                 (this.lamyNPC as SpriteType_3x4).setBubble();
                 this.lamyNPC.setData('ImageKey', '20240908');

@@ -3502,7 +3502,7 @@
                  "name":"kuroneko",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
+                         "name":"bubbleTalkDefaultKey",
                          "type":"string",
                          "value":"bubbleTalk0102.talk002"
                         }, 
@@ -3570,7 +3570,7 @@
                  "name":"sironeko",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
+                         "name":"bubbleTalkDefaultKey",
                          "type":"string",
                          "value":"bubbleTalk0102.talk001"
                         }, 
@@ -3873,6 +3873,12 @@
                  "height":64,
                  "id":71,
                  "name":"bubbleTalk0102.talk004",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkDefaultKey",
+                         "type":"string",
+                         "value":"bubbleTalk0102.talk004"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

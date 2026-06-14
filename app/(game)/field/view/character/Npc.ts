@@ -78,7 +78,7 @@ export class Npc extends BaseSprite {
         //不動についてはbody.setPushable(false);というのもあるらしい
         this._collideSetting();
         this.statusSetting();
-        this.talkSetting();
+        this.bubbleTalkSetting();
     };
 
     private energyHP() {
@@ -152,7 +152,7 @@ export class Npc extends BaseSprite {
         this.bubbleTalkKey = bubbleTalkKey;
     }
 
-    public talkSetting() {
+    public bubbleTalkSetting() {
 
         //tiledでtalkデータを設定する事
         if (this.bubbleTalkKey) {

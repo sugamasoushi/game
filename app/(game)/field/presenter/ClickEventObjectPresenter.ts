@@ -4,11 +4,11 @@ import { ClickEventObjectView } from "../view/ClickEventObjectView";
 import { FieldScene } from "../../lib/types";
 import { GameStateManager } from "../../core/GameStateManager";
 import { BubbleTalk } from "../view/character/Action/BubbleTalk";
-import { BaseSprite } from "../../core/BaseSprite";
 import { FieldObjectCheck } from "../../util/FieldObjectCheck";
 
 import { Subscription } from "rxjs";
 import { InputManager } from "../../core/input/InputManager";
+import { Player } from "../view/character/Player";
 
 export class ClickEventObjectPresenter {
 
@@ -58,17 +58,17 @@ export class ClickEventObjectPresenter {
 
         //状態管理クラス
         const gameStateManager = GameStateManager.getInstance();
-        const player = gameStateManager.currentPlayerPartyList[0] as BaseSprite;
+        const player = gameStateManager.currentPlayerPartyList[0] as Player;
 
         //操作ロックされている場合、何もしない
         if (gameStateManager.currentState !== State.NOSTATE) return;
 
         //吹き出し会話を設定
-        const bubbleTalk = new BubbleTalk(this.fieldScene, undefined, obj.name, this.makeTileMap);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
+        const bubbleTalk = new BubbleTalk(this.fieldScene, obj, obj.getData('bubbleTalkDefaultKey'), this.makeTileMap);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
         bubbleTalk.init();
 
         //プレイヤーとオブジェクトのチェック
-        const fieldPlayerChk = new FieldObjectCheck(player, obj as BaseSprite);
+        const fieldPlayerChk = new FieldObjectCheck(player, obj as Phaser.Physics.Arcade.Sprite);
 
         //キャラ向きとオブジェクト位置からイベント発生可否をチェック
         if (fieldPlayerChk.checkPlayerClickEvent()) {

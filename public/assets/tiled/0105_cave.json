@@ -124,7 +124,7 @@
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":30,
          "id":13,
-         "name":"\u30bf\u30a4\u30eb\u30ec\u30a4\u30e4\u30fc9",
+         "name":"ground_3",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -496,7 +496,7 @@
                  "name":"boss",
                  "properties":[
                         {
-                         "name":"eventKey",
+                         "name":"createJudgeEventKey",
                          "type":"string",
                          "value":"EVENT020101"
                         }, 
@@ -589,7 +589,7 @@
                 {
                  "height":0,
                  "id":13,
-                 "name":"moon",
+                 "name":"blue",
                  "point":true,
                  "properties":[
                         {
@@ -622,7 +622,7 @@
                 {
                  "height":0,
                  "id":14,
-                 "name":"window",
+                 "name":"yellow",
                  "point":true,
                  "properties":[
                         {
@@ -655,7 +655,7 @@
                 {
                  "height":0,
                  "id":15,
-                 "name":"window",
+                 "name":"yellow",
                  "point":true,
                  "properties":[
                         {
