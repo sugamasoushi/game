@@ -2,6 +2,7 @@ import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { TileMap } from "@/app/(game)/field/view/TileMap";
 import { Player } from "@/app/(game)/field/view/character/Player";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
+import { TiledLightObjectEntity } from "../Entity/TiledLightObjectEntity";
 
 export class Light2D {
     private debugFlg: boolean | undefined;
@@ -63,7 +64,8 @@ export class Light2D {
         return new Promise<void>(async (resolve) => {
 
             this.fieldScene.lights.enable()
-            this.fieldScene.lights.setAmbientColor(0xffffff);
+            const defaultAmbientColor = 0xffffff;
+            //this.fieldScene.lights.setAmbientColor(0xffffff);//初期値
 
             //プレイヤーにライトを作成
             this.playerLight = this.fieldScene.lights.addLight(this.player.x, this.player.y, 200);
@@ -83,12 +85,12 @@ export class Light2D {
                     let intensity = 1.0;//光の強さ
                     let type = "";
 
-                    for (const property of obj.properties) {
-                        if (property.name === 'radius' && property.value !== '') { radius = property.value; }
-                        if (property.name === 'color' && property.value !== '') { color = property.value; }
-                        if (property.name === 'intensity' && property.value !== '') { intensity = property.value; }
-                        if (property.type === 'type' && property.value !== '') { type = property.value; }
-                    }
+                    //オブジェクト設定値を取得
+                    const tiledLightObjectEntity = new TiledLightObjectEntity(obj.properties);
+                    radius = tiledLightObjectEntity.radius;
+                    color = Number(tiledLightObjectEntity.color);
+                    intensity = tiledLightObjectEntity.intensity;
+                    type = tiledLightObjectEntity.type;
 
                     const light = this.fieldScene.lights.addLight(obj.x, obj.y, radius);
                     light.setColor(color);
@@ -106,23 +108,20 @@ export class Light2D {
                             callbackScope: this,
                             repeat: -1
                         });
-
                         //this.ellipse.push(ellipse);
+                    }
+
+                    if (tiledLightObjectEntity.scrollX || tiledLightObjectEntity.scrollY) {
+                        light.setScrollFactor(tiledLightObjectEntity.scrollX!, tiledLightObjectEntity.scrollY)
                     }
                 }
 
                 //タイルマップのプロパティからeffect情報を設定
-                const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
-                if (Array.isArray(makeTileMap.properties)) {
-                    for (const prop of makeTileMap.properties) {
-                        if (prop.name === 'ambientColor') {
-                            //環境光の色を設定
-                            this.fieldScene.lights.setAmbientColor(prop.value);
-                            //0xffffff
-                            //0x222244
-                        }
-                    }
-                }
+                const ambientColor = this.TileMap.getTileMapPropatiesEntity().ambientColor === '' ? defaultAmbientColor : Number(this.TileMap.getTileMapPropatiesEntity().ambientColor);
+                this.fieldScene.lights.setAmbientColor(ambientColor);
+                //0xffffff
+                //0x222244
+
                 resolve();
             }
         });

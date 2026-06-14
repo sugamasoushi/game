@@ -1,5 +1,5 @@
 import { FieldScene } from "../../lib/SceneTypes";
-import { TiledObjectEntity } from "./character/TiledObjectEntity";
+import { TiledObjectEntity } from "./Entity/TiledObjectEntity";
 import { InputManager } from "../../core/input/InputManager";
 import { Npc } from "./character/Npc";
 import { SpriteType_3x4 } from "./character/SpriteType_3x4";

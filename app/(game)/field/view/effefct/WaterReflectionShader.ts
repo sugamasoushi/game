@@ -185,6 +185,10 @@ export class WaterReflectionShader {
         cropRectMask.setVisible(false);//非表示にする
 
         shader.setMask(cropRectMask.createGeometryMask().setInvertAlpha());
+
+        /**
+         * depthの補正値は検討の余地あり 
+         */
         shader.setDepth(MapLayerDepth.Lowest + 10);//MapLayerDepth.Low
 
         this.waterShaderList.push(shader);

@@ -4,7 +4,7 @@ import { Light2D } from "./effefct/Light2D";
 import { FogShader } from "./effefct/FogShader";
 import { BgRenderTexture } from "./effefct/BgRenderTexture";
 import { WaterReflectionShader } from './effefct/WaterReflectionShader';
-import { TiledMapPropatiesEntity } from "./character/TiledMapEntity";
+import { TiledMapPropatiesEntity } from "./Entity/TiledMapPropatiesEntity";
 
 export class MapEffect {
     private lightFlg = false;
@@ -48,7 +48,7 @@ export class MapEffect {
         if (this.lightFlg) this.light2DInstance.update(time, delta);
     }
 
-    //エフェクト情報を設定
+    //タイルマップのプロパティからeffect情報を設定
     private setLightInfomation() {
 
         const makeTileMap: Phaser.Tilemaps.Tilemap = this.tileMap.getMakeTilemap();
@@ -58,12 +58,7 @@ export class MapEffect {
             this.waterReflectionShaderFlg = true;
         }
 
-        //タイルマップのプロパティからeffect情報を設定
-        if (Array.isArray(makeTileMap.properties)) {
-            for (const prop of makeTileMap.properties) {
-                if (prop.name === 'fog') { this.fogFlg = true; }
-                if (prop.name === 'fog_front') { this.fogFlg = true; }
-            }
-        }
+        if (this.tileMap.getTileMapPropatiesEntity().fog !== '') { this.fogFlg = true; }
+        if (this.tileMap.getTileMapPropatiesEntity().fog_front !== '') { this.fogFlg = true; }
     }
 }

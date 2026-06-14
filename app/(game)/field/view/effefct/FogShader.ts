@@ -9,7 +9,7 @@ export class FogShader {
     private fogList: Array<Phaser.GameObjects.TileSprite> = [];
     private fogShaderList: Array<Phaser.GameObjects.Shader> = [];
 
-    constructor(private fieldScene: FieldScene, private TileMap: TileMap) {
+    constructor(private fieldScene: FieldScene, private tileMap: TileMap) {
         this.debugFlg = fieldScene.game.config.physics.arcade?.debug;
     }
 
@@ -24,25 +24,21 @@ export class FogShader {
 
     //エフェクトの情報を設定
     private setEffectInfomation() {
-        const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
+        const makeTileMap: Phaser.Tilemaps.Tilemap = this.tileMap.getMakeTilemap();
     }
 
     private createEffect() {
-        const makeTileMap: Phaser.Tilemaps.Tilemap = this.TileMap.getMakeTilemap();
+
+        /**
+         * depthの補正値は検討の余地あり 
+         */
 
         //タイルマップのプロパティからeffect情報を設定
-        if (Array.isArray(makeTileMap.properties)) {
-            for (const prop of makeTileMap.properties) {
-                if (prop.name === 'fog') {
-                    //エフェクトオブジェクトを作成
-                    this.createFogTexture(prop.value);
-                }
-
-                if (prop.name === 'fog_front') {
-                    //エフェクトオブジェクトを作成
-                    this.createFogShader(prop.value);
-                }
-            }
+        if (this.tileMap.getTileMapPropatiesEntity().fog !== '') {
+            this.createFogTexture(this.tileMap.getTileMapPropatiesEntity().fog);
+        }
+        if (this.tileMap.getTileMapPropatiesEntity().fog_front !== '') {
+            this.createFogShader(this.tileMap.getTileMapPropatiesEntity().fog_front);
         }
     }
 
@@ -50,8 +46,8 @@ export class FogShader {
     private createFogTexture(fogData: string) {
 
         // create 内
-        const width = this.TileMap.getMakeTilemap().widthInPixels;
-        const height = this.TileMap.getMakeTilemap().heightInPixels;
+        const width = this.tileMap.getMakeTilemap().widthInPixels;
+        const height = this.tileMap.getMakeTilemap().heightInPixels;
 
         // 1. 通常の画像ではなく「TileSprite（並べて敷き詰められるスプライト）」として配置
         // 画面サイズより少し大きめにしておくと端が綺麗になります
@@ -62,7 +58,7 @@ export class FogShader {
         fog.setAlpha(0.1);                         // 透明度を下げて「うっすら」にする
 
         if (fogData === 'Lowest') {
-            fog.setDepth(MapLayerDepth.Lowest + 10);
+            fog.setDepth(MapLayerDepth.Lowest);
         } else {
             fog.setDepth(height + MapLayerDepth.Highest + 100);
         }
@@ -79,7 +75,7 @@ export class FogShader {
         fog2.setAlpha(0.3);                         // 透明度を下げて「うっすら」にする
 
         if (fogData === 'Lowest') {
-            fog2.setDepth(MapLayerDepth.Lowest + 10);
+            fog2.setDepth(MapLayerDepth.Lowest);
         } else {
             fog2.setDepth(MapLayerDepth.Highest);
         }
@@ -120,7 +116,6 @@ export class FogShader {
         });
     }
 
-
     private async createFogShader(fogData: string) {
 
         // PC版（Electron）の場合に作成
@@ -128,8 +123,8 @@ export class FogShader {
         if (execEnv.isElectron() || this.debugFlg) {
 
             // タイルマップから解像度を取得
-            const width = this.TileMap.getMakeTilemap().widthInPixels;
-            const height = this.TileMap.getMakeTilemap().heightInPixels;
+            const width = this.tileMap.getMakeTilemap().widthInPixels;
+            const height = this.tileMap.getMakeTilemap().heightInPixels;
 
             const frag = `
 			#ifdef GL_ES

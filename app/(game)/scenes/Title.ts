@@ -33,7 +33,7 @@ export class Title extends Scene {
         this.load.tilemapTiledJSON({ key: '0002', url: 'assets/tiled/0002_testtile.json' });
         this.load.tilemapTiledJSON({ key: '0101', url: 'assets/tiled/0101_home.json' });
         this.load.tilemapTiledJSON({ key: '0102', url: 'assets/tiled/0102_HomeForest.json' });
-        this.load.tilemapTiledJSON({ key: '0103', url: 'assets/tiled/0103_RuinedCity.json' });
+        this.load.tilemapTiledJSON({ key: '0103', url: 'assets/tiled/0103_ForestMansion.json' });
         this.load.tilemapTiledJSON({ key: '0104', url: 'assets/tiled/0104_ForestCave.json' });
         this.load.tilemapTiledJSON({ key: '0105', url: 'assets/tiled/0105_cave.json' });
         this.load.tilemapTiledJSON({ key: '0201', url: 'assets/tiled/0201_Gensou.json' });

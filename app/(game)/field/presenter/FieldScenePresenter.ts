@@ -189,7 +189,7 @@ export class FieldScenePresenter {
         await this.mapObject.execute(this.tileMap);
 
         //エフェクト作成
-        this.mapEffect = new MapEffect(this.fieldScene, this.tileMap, this.tileMap.getTiletiledMapTiledMapPropatiesEntity());
+        this.mapEffect = new MapEffect(this.fieldScene, this.tileMap, this.tileMap.getTileMapPropatiesEntity());
         await this.mapEffect.execute();
 
         this.fieldMessageWindow.init();
@@ -201,7 +201,7 @@ export class FieldScenePresenter {
 
         //各種設定
         this.cameraManager.execute(this.tileMap.getMakeTilemap());
-        this.cameraManager.setTiledMapPropatiesEntity(this.tileMap.getTiletiledMapTiledMapPropatiesEntity());
+        this.cameraManager.setTiledMapPropatiesEntity(this.tileMap.getTileMapPropatiesEntity());
         this.cameraManager.execCameraEffect();
 
         // イベントエミッター設定

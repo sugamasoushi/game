@@ -3,7 +3,8 @@ import { tilesets, MapLayerDepth } from "../../lib/FieldTypes";
 import { GameStateManager } from "../../core/GameStateManager";
 import { SearchTileNamedata } from "../../Data/SearchTileNamedata";
 import PlasmaPostFX from "../../../../public/assets/img/effect/pipelines/PlasmaPostFX.js";
-import { TiledMapPropatiesEntity } from "./character/TiledMapEntity";
+import { TiledMapPropatiesEntity } from "./Entity/TiledMapPropatiesEntity";
+import { TiledMapLayerPropatiesEntity } from "./Entity/TiledMapLayerPropatiesEntity";
 
 interface AnimationTileMapLayer extends Phaser.Tilemaps.TilemapLayer {
     useAnimTile: number[];
@@ -47,7 +48,7 @@ export class TileMap extends Phaser.GameObjects.Container {
     private mapHighLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighestLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
 
-    private TiledMapPropatiesEntity: TiledMapPropatiesEntity;
+    private tileMapPropatiesEntity: TiledMapPropatiesEntity;
 
     constructor(
         private fieldScene: FieldScene,
@@ -209,10 +210,10 @@ export class TileMap extends Phaser.GameObjects.Container {
 
             //TiledのPropatiesをマッピングしたエンティティ生成
             const tilemap: Phaser.Tilemaps.Tilemap = this.makeTilemap;
-            this.TiledMapPropatiesEntity = new TiledMapPropatiesEntity(tilemap.properties as PropertyItem[]);
+            this.tileMapPropatiesEntity = new TiledMapPropatiesEntity(tilemap.properties as PropertyItem[]);
 
             const gameStateManager = GameStateManager.getInstance();
-            gameStateManager.setBattleFieldKey(this.TiledMapPropatiesEntity.battleFieldKey);
+            gameStateManager.setBattleFieldKey(this.tileMapPropatiesEntity.battleFieldKey);
 
 
             //JSONから読み込んだTiledデータにはレイヤー、タイルセットのキー情報、オブジェクト情報、タイルアニメーション情報が含まれている
@@ -235,7 +236,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             this.moonLightSubjectTilemapLayerList.splice(0);
             this.animationTileMapLayer.splice(0);
 
-            // タイルレイヤーを作成する。
+            // タイルマップ作成
             for (let i = 0; i < tilemap.layers.length; i++) {
 
                 //タイルマップレイヤーの配列に格納されているgidを全て抽出し、最大値と最小値の範囲を求める。
@@ -288,6 +289,16 @@ export class TileMap extends Phaser.GameObjects.Container {
                 })
                 //console.log("使用するタイルセット = " + tilesetName);
 
+
+                /** 
+                 * 
+                 * レイヤー毎の設定
+                 * 
+                 */
+
+                //レイヤーのプロパティを読み込み
+                const tiledMapLayerPropatiesEntity = new TiledMapLayerPropatiesEntity(tilemap.layers[i].properties as PropertyItem[]);
+
                 //レイヤーで使用するタイルセットをレイヤーに設定し描画する。
                 if (tilesetName === 'collision') {
                     //レイヤーがcollisionの場合、衝突判定及び非表示を設定。
@@ -299,61 +310,37 @@ export class TileMap extends Phaser.GameObjects.Container {
                     this.collisionLayer.setVisible(false);//非表示にするだけならこちらを使用する
 
                 } else {
-                    //描画のみ
                     const tilemapLayer = tilemap.createLayer(tilemap.layers[i].name, tilesetName)!;
 
                     //初期値はプレイヤーの下とする
-                    //tilemap.layers[i].tilemapLayer.setDepth(i);
                     tilemapLayer.setDepth(MapLayerDepth.Low + i);
                     tilemapLayer.setVisible(tilemapLayer.layer.visible);
 
-                    //レンダーテクスチャ用リストに追加
+                    //レイヤーリストに追加
                     this.tilemapLayerList.push(tilemapLayer);
 
-                    //レイヤーの仕分け
-                    if (tilemapLayer.layer.properties) {
-                        for (const obj of tilemapLayer.layer.properties) {
-
-                            type obj = {
-                                name: string;
-                                value: boolean;
-                                type: string;
-                            }
-
-                            //水面反射の対象レイヤーリスト
-                            if ((obj as obj).name === 'WaterSurface' && (obj as obj).value === true) {
-                                this.waterSrufaceSubjectTilemapLayerList.push(tilemapLayer);
-                            }
-
-                            // //月光の対象レイヤーリスト
-                            // if ((obj as obj).name === 'frontFog' && (obj as obj).value === true) {
-                            //     this.moonLightSubjectTilemapLayerList.push(tilemapLayer);
-                            // }
-                        }
+                    //水面反射の対象レイヤーリスト
+                    if (tiledMapLayerPropatiesEntity.WaterSurface) {
+                        this.waterSrufaceSubjectTilemapLayerList.push(tilemapLayer);
                     }
 
-                    //tilemapLayer.setPostPipeline(PlasmaPostFX);
+                    //背景レイヤーのスクロール設定
+                    if (tiledMapLayerPropatiesEntity.scrollX || tiledMapLayerPropatiesEntity.scrollY) {
+                        tilemapLayer.setDepth(MapLayerDepth.Lowest + i);
+                        tilemapLayer.setScrollFactor(tiledMapLayerPropatiesEntity.scrollX!, tiledMapLayerPropatiesEntity.scrollY)
+                    }
                 }
 
-                //必ずプレイヤーの上（PO=Player Over）
+                /**
+                 * 必ずプレイヤーの上（PO=Player Over）
+                 * 
+                 * 備考：Tiledのグループレイヤー機能に頼る
+                 * グループ名で判定する方が簡単
+                 */
                 if (tilemap.layers[i].name.substring(0, 2) === 'PO') {
                     //console.log(scene.tilemap.layers[i].heightInPixels);
                     tilemap.layers[i].tilemapLayer.setDepth(tilemap.layers[i].heightInPixels + MapLayerDepth.Highest + i);
                 }
-
-                //プレイヤーと同じ高さに設定するマップオブジェクトへの参照を格納
-                // if (tilemap.layers[i].name.substring(0, 2) === 'PW') {
-                //     this.playerWithMapList.push(tilemap.layers[i].name);
-                //     // console.log(this.playerWithDepthMapName);
-                //     //scene.tilemap.layers[i].tilemapLayer.setDepth(scene.player.y + (32 / 2) * 0.8 - 1);//初期値、プレイヤーの高さ-1
-                // }
-
-                //背景画像のスクロールを遅らせるよう設定
-                if (tilemap.layers[i].name === 'backscreen') {
-                    tilemap.layers[i].tilemapLayer.setDepth(MapLayerDepth.Lowest + i);
-                    tilemap.layers[i].tilemapLayer.setScrollFactor(1, 0.5)
-                }
-                // console.log("getIndexList = " + scene.tilemap.layers[i].tilemapLayer.getIndexList());
             }
 
             /*
@@ -630,6 +617,6 @@ export class TileMap extends Phaser.GameObjects.Container {
     public getWaterSrufaceSubjectTilemapLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.waterSrufaceSubjectTilemapLayerList; }
     public getMoonLightSubjectTilemapLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.moonLightSubjectTilemapLayerList; }
 
-    public getTiletiledMapTiledMapPropatiesEntity() { return this.TiledMapPropatiesEntity }
+    public getTileMapPropatiesEntity() { return this.tileMapPropatiesEntity }
 
 }

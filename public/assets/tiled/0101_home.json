@@ -721,6 +721,11 @@
  "orientation":"orthogonal",
  "properties":[
         {
+         "name":"ambientColor",
+         "type":"string",
+         "value":"0xffffff"
+        }, 
+        {
          "name":"background",
          "type":"string",
          "value":"meinaOpImageHome"

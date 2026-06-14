@@ -2,7 +2,7 @@ import { FieldScene } from "../../lib/types";
 import { Player } from "./character/Player";
 import { GameStateManager } from "../../core/GameStateManager";
 import SunrayPostPipeline from "./cameraeffect/SunrayPostPipeline";
-import { TiledMapPropatiesEntity } from './character/TiledMapEntity';
+import { TiledMapPropatiesEntity } from './Entity/TiledMapPropatiesEntity';
 
 export class CameraManager {
     // カメラオブジェクトがシーンから切り離されている場合があるため
