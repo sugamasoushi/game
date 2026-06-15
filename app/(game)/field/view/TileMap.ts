@@ -340,7 +340,9 @@ export class TileMap extends Phaser.GameObjects.Container {
                     //レイヤーのスクロール設定
                     if (tiledMapLayerPropatiesEntity.scrollX || tiledMapLayerPropatiesEntity.scrollY) {
                         tilemapLayer.setDepth(MapLayerDepth.Lowest + i);
-                        tilemapLayer.setScrollFactor(tiledMapLayerPropatiesEntity.scrollX!, tiledMapLayerPropatiesEntity.scrollY)
+                        const sX = tiledMapLayerPropatiesEntity.scrollX === undefined ? 1 : tiledMapLayerPropatiesEntity.scrollX;
+                        const sY = tiledMapLayerPropatiesEntity.scrollY === undefined ? 1 : tiledMapLayerPropatiesEntity.scrollY;
+                        tilemapLayer.setScrollFactor(sX, sY)
                     }
 
                     /**
@@ -354,7 +356,7 @@ export class TileMap extends Phaser.GameObjects.Container {
                         tilemapLayer.setDepth(tilemap.layers[i].heightInPixels + MapLayerDepth.Highest + i);
                     }
 
-                    tilemapLayer.setMask(mapMask.createGeometryMask());
+                    //tilemapLayer.setMask(mapMask.createGeometryMask());
                 }
 
                 /**

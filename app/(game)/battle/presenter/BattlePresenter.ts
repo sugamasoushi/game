@@ -1,4 +1,4 @@
-import { BattleScene, ViewsContainer, SkillDetail, BgmState } from "../../lib/types";
+import { BattleScene, ViewsContainer } from "../../lib/types";
 import { BattleModel } from "../model/BattleModel";
 import { CommandSelectModel } from "../model/CommandSelectModel";
 import { TurnModel } from "../model/TurnModel";
