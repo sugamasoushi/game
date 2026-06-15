@@ -22,7 +22,8 @@ export class CameraManager {
         this.player = gameStateManager.currentPlayerPartyList[0] as Player;
 
         mainCamera.startFollow(this.player, true);//プレイヤーに追従
-        mainCamera.setBounds(-64, -64, makeTilemap.widthInPixels + 128, makeTilemap.heightInPixels + 128);//マップの最大値
+        mainCamera.setBounds(0, 0, makeTilemap.widthInPixels, makeTilemap.heightInPixels);//マップの最大値
+        //mainCamera.setBounds(-64, -64, makeTilemap.widthInPixels + 128, makeTilemap.heightInPixels + 128);//マップの最大値
     }
 
     public execFadeInStart() {

@@ -188,7 +188,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             this.mapLowLayerList = [];
             this.mapHighLayerList = [];
             this.mapHighestLayerList = [];
-            this.mapMask.destroy();
+            //this.mapMask.destroy();
         });
     }
 
@@ -238,15 +238,15 @@ export class TileMap extends Phaser.GameObjects.Container {
             this.animationTileMapLayer.splice(0);
 
             //マップ外を非表示にするためのマスクを作成
-            const width = tilemap.widthInPixels;
-            const height = tilemap.heightInPixels;
-            const mapMask = this.fieldScene.add.graphics();
-            mapMask.x = 0;//座標初期値を設定
-            mapMask.y = 0;
-            mapMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
-            mapMask.fillRect(0, 0, width, height);
-            this.mapMask = mapMask;
-            mapMask.setVisible(false);//非表示にする
+            // const width = tilemap.widthInPixels;
+            // const height = tilemap.heightInPixels;
+            // const mapMask = this.fieldScene.add.graphics();
+            // mapMask.x = 0;//座標初期値を設定
+            // mapMask.y = 0;
+            // mapMask.fillStyle(Phaser.Display.Color.HexStringToColor('#ffffff').color);
+            // mapMask.fillRect(0, 0, width, height);
+            // this.mapMask = mapMask;
+            // mapMask.setVisible(false);//非表示にする
 
 
             // タイルマップ作成

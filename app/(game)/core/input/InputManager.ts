@@ -9,6 +9,7 @@ export class InputManager {
     private gameKeys: { [key: string]: Phaser.Input.Keyboard.Key } = {};
 
     private subs = new Subscription(); // 購読をまとめる箱
+    private keyboardSubs = new Subscription(); // キーボードイベント用
 
     private inputFlgSubject$ = new BehaviorSubject<boolean>(false);
 
@@ -131,6 +132,13 @@ export class InputManager {
 
     // キーボード設定
     public setKeyboardInput() {
+        // 以前の登録をクリア
+        this.keyboardSubs.unsubscribe();
+        this.keyboardSubs = new Subscription();
+        Object.values(this.gameKeys).forEach(keyObj => {
+            keyObj.off('down');
+        });
+        this.gameKeys = {};
 
         //設定
         this.scene.input.mouse!.disableContextMenu();//右クリックのコンテキストメニューを非表示にする
@@ -146,7 +154,7 @@ export class InputManager {
         });
 
         // 2.Subjectから渡されたキーボード入力を変換
-        this.subs.add(this.action$.subscribe(action => {
+        this.keyboardSubs.add(this.action$.subscribe(action => {
             if (action === 'CURSOR_RIGHT') this.rightSubject.next();
             if (action === 'CURSOR_LEFT') this.leftSubject.next();
             if (action === 'CURSOR_UP') this.upSubject.next();
@@ -161,6 +169,13 @@ export class InputManager {
             if (action === 'P') this.fieldAttackSubject.next();//FieldPreseterで実装してる
         }));
 
+        // シーン終了（再スタート含む）時にキー参照をクリアする
+        this.scene.events.off('shutdown', this.clearKeys, this);
+        this.scene.events.once('shutdown', this.clearKeys, this);
+    }
+
+    private clearKeys() {
+        this.gameKeys = {};
     }
 
     public static getInstance(scene: Phaser.Scene) {
@@ -168,8 +183,11 @@ export class InputManager {
             console.log('new InputManager()');
             this.instance = new InputManager();
         }
-        this.instance.scene = scene;
-        this.instance.setKeyboardInput();
+        // シーンが変わった場合、またはシーンが再起動されキー設定がクリアされている場合のみキーボード入力を再設定
+        if (this.instance.scene !== scene || Object.keys(this.instance.gameKeys).length === 0) {
+            this.instance.scene = scene;
+            this.instance.setKeyboardInput();
+        }
         return this.instance;
     }
 
