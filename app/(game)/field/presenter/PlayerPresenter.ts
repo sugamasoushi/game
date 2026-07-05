@@ -27,7 +27,10 @@ export class PlayerPresenter {
         this.playerView = new PlayerView(this.fieldScene, this.tileMap);
     }
 
-    public update(time: number, delta: number) { }
+    public update(time: number, delta: number) {
+        void time;
+        void delta;
+    }
 
     public async execute() {
         await this.playerModel.execute();

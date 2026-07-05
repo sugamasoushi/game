@@ -4,6 +4,7 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
     private allowTween: Phaser.Tweens.Tween;
     private settingData: DataDefinition;
     private direction: 'up' | 'down' | 'left' | 'right' = 'right';
+    private blackEedge?:boolean
 
     constructor(scene: Phaser.Scene) {
         super(scene);
@@ -12,11 +13,12 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
         // this.name = container.name + '_SelectAllow';
     }
 
-    public init(x: number, y: number, direction: 'up' | 'down' | 'left' | 'right' = 'right'): void {
+    public init(x: number, y: number, direction: 'up' | 'down' | 'left' | 'right' = 'right', blackEedge?: boolean): void {
         this.x = x;
         this.y = y;
         this.direction = direction;
         this.settingData = new DataDefinition();
+        this.blackEedge = blackEedge;
         // settingData.getTextInfomation()
     }
 
@@ -53,22 +55,31 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
 
     private drawTriangle(fontSize: number, lineColor: number, alphaValue: number) {
         this.clear();
-        this.fillStyle(lineColor, 1).setAlpha(alphaValue);
+        this.setAlpha(alphaValue);
 
         const fs2 = fontSize / 2;
+        const drawTriangle = (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) => {
+            if (this.blackEedge) {
+                this.lineStyle(2, 0x000000, 1);
+                this.strokeTriangle(x1, y1, x2, y2, x3, y3);
+            }
+            this.fillStyle(lineColor, 1);
+            this.fillTriangle(x1, y1, x2, y2, x3, y3);
+        };
+
         switch (this.direction) {
             case 'up':
-                this.fillTriangle(0, 0, -fs2, fs2, fs2, fs2);
+                drawTriangle(0, 0, -fs2, fs2, fs2, fs2);
                 break;
             case 'down':
-                this.fillTriangle(0, fs2, -fs2, 0, fs2, 0);
+                drawTriangle(0, fs2, -fs2, 0, fs2, 0);
                 break;
             case 'left':
-                this.fillTriangle(0, fs2, fs2, 0, fs2, fontSize);
+                drawTriangle(0, fs2, fs2, 0, fs2, fontSize);
                 break;
             case 'right':
             default:
-                this.fillTriangle(0, fs2, -fs2, 0, -fs2, fontSize);
+                drawTriangle(0, fs2, -fs2, 0, -fs2, fontSize);
                 break;
         }
     }

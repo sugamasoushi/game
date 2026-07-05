@@ -3404,7 +3404,7 @@
          "name":"collision",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":60,
          "x":0,
          "y":0
@@ -3528,7 +3528,7 @@
                 {
                  "height":64,
                  "id":93,
-                 "name":"0201_GensouMap_Right",
+                 "name":"0201_GensouMap",
                  "properties":[
                         {
                          "name":"direction",
@@ -3943,6 +3943,39 @@
                  "width":64,
                  "x":928,
                  "y":1376
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":110,
+         "name":"COLLISION",
+         "objects":[
+                {
+                 "height":64,
+                 "id":115,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"deleteRelationEvent_1",
+                         "type":"string",
+                         "value":"EVENT010401"
+                        }, 
+                        {
+                         "name":"playerNum",
+                         "type":"int",
+                         "value":2
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":1696
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -4372,8 +4405,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":110,
- "nextobjectid":114,
+ "nextlayerid":111,
+ "nextobjectid":116,
  "orientation":"orthogonal",
  "properties":[
         {

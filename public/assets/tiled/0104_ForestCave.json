@@ -809,64 +809,6 @@
                 {
                  "gid":3,
                  "height":32,
-                 "id":3,
-                 "name":"slime",
-                 "properties":[
-                        {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"imageKey",
-                         "type":"string",
-                         "value":"enemy02"
-                        }, 
-                        {
-                         "name":"name",
-                         "type":"string",
-                         "value":"slime"
-                        }, 
-                        {
-                         "name":"npcType",
-                         "type":"string",
-                         "value":"enemy"
-                        }, 
-                        {
-                         "name":"spriteType",
-                         "type":"string",
-                         "value":"0304"
-                        }, 
-                        {
-                         "name":"spritesheetKey",
-                         "type":"string",
-                         "value":"enemy02"
-                        }, 
-                        {
-                         "name":"standkey",
-                         "type":"string",
-                         "value":"stand_down"
-                        }, 
-                        {
-                         "name":"visible",
-                         "type":"bool",
-                         "value":true
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":32,
-                 "x":476,
-                 "y":376
-                }, 
-                {
-                 "gid":3,
-                 "height":32,
                  "id":4,
                  "name":"slime",
                  "properties":[
@@ -921,6 +863,54 @@
                  "width":32,
                  "x":768.666666666667,
                  "y":571.333333333333
+                }, 
+                {
+                 "gid":3348,
+                 "height":32,
+                 "id":11,
+                 "name":"bat",
+                 "properties":[
+                        {
+                         "name":"imageKey",
+                         "type":"string",
+                         "value":"enemy02"
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"bat"
+                        }, 
+                        {
+                         "name":"npcType",
+                         "type":"string",
+                         "value":"enemy"
+                        }, 
+                        {
+                         "name":"spriteType",
+                         "type":"string",
+                         "value":"0304"
+                        }, 
+                        {
+                         "name":"spritesheetKey",
+                         "type":"string",
+                         "value":"bat"
+                        }, 
+                        {
+                         "name":"standkey",
+                         "type":"string",
+                         "value":"stand_down"
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":true
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":421.333333333333,
+                 "y":437.333333333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -939,8 +929,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":24,
- "nextobjectid":11,
+ "nextlayerid":25,
+ "nextobjectid":14,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -1019,6 +1009,19 @@
          "name":"\u706b\u5c71TileB(\u30c7\u30d5\u30a9\u7528)",
          "spacing":0,
          "tilecount":256,
+         "tileheight":32,
+         "tilewidth":32
+        }, 
+        {
+         "columns":3,
+         "firstgid":3342,
+         "image":"..\/img\/spritesheet\/bat.png",
+         "imageheight":128,
+         "imagewidth":96,
+         "margin":0,
+         "name":"bat",
+         "spacing":0,
+         "tilecount":12,
          "tileheight":32,
          "tilewidth":32
         }],

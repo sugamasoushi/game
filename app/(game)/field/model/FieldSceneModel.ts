@@ -11,6 +11,7 @@ export class FieldSceneModel {
     private checkClickEventObjectFlg: boolean = false;
     private checkMapMoveFlg: boolean = false;
     private checkChestFlg: boolean = false;
+    private checkCollisionObjectFlg: boolean = false;
 
     constructor(private fieldScene: FieldScene) { }
 
@@ -51,6 +52,10 @@ export class FieldSceneModel {
                 }
             }
         }
+
+        if (this.makeTilemapData.getObjectLayer('COLLISION')) {
+            this.checkCollisionObjectFlg = true;
+        }
     }
 
     public getMakeTilemapData(): Phaser.Tilemaps.Tilemap { return this.makeTilemapData; }
@@ -59,5 +64,6 @@ export class FieldSceneModel {
     get clickEventObjectFlg() { return this.checkClickEventObjectFlg; }
     get mapMoveFlg() { return this.checkMapMoveFlg; }
     get chestFlg() { return this.checkChestFlg; }
+    get collisionObjectFlg() { return this.checkCollisionObjectFlg; }
 
 }

@@ -1,6 +1,6 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
+import { FieldScene, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
 import { Npc } from "../../field/view/character/Npc";
 import { Player } from "../../field/view/character/Player";

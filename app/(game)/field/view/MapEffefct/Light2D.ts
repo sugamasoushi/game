@@ -9,11 +9,16 @@ export class Light2D {
 
     private fieldScene: FieldScene;
     private TileMap: TileMap;
-    private player: Player;
+    private player1: Player;
+    private player2: Player;
     private chestSpriteObjects: Phaser.Physics.Arcade.Sprite[] = [];
 
-    private playerLight: Phaser.GameObjects.Light;
-    private playerLightFlg: boolean = false;
+    private playerLight1: Phaser.GameObjects.Light;
+    private playerLight1Flg: boolean = false;
+
+    private player2Flg = false;
+    private playerLight2: Phaser.GameObjects.Light;
+    private playerLight2Flg: boolean = false;
 
     private light: Phaser.GameObjects.Light[] = [];
     private lightObjectLayer: Phaser.Tilemaps.ObjectLayer;
@@ -29,7 +34,12 @@ export class Light2D {
         const gameStateManager = GameStateManager.getInstance();
 
         this.TileMap = tileMap;
-        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
+        this.player1 = gameStateManager.currentPlayerPartyList[0] as Player;
+
+        if (gameStateManager.currentPlayerPartyList[1] as Player) {
+            this.player2Flg = true;
+            this.player2 = gameStateManager.currentPlayerPartyList[1] as Player;
+        }
 
         // リストを初期化
         this.light = [];
@@ -55,9 +65,17 @@ export class Light2D {
     }
 
     public update(time: number, delta: number) {
-        if (!this.playerLightFlg) return;
-        this.playerLight.x = this.player.x;
-        this.playerLight.y = this.player.y;
+        void time;
+        void delta;
+
+        if (this.playerLight1Flg) {
+            this.playerLight1.x = this.player1.x;
+            this.playerLight1.y = this.player1.y;
+        };
+        if (this.playerLight2Flg) {
+            this.playerLight2.x = this.player2.x;
+            this.playerLight2.y = this.player2.y;
+        };
     }
 
     private createLight() {
@@ -68,9 +86,15 @@ export class Light2D {
             //this.fieldScene.lights.setAmbientColor(0xffffff);//初期値
 
             //プレイヤーにライトを作成
-            this.playerLight = this.fieldScene.lights.addLight(this.player.x, this.player.y, 200);
-            this.playerLight.setIntensity(0.5);
-            this.playerLightFlg = true;
+            this.playerLight1 = this.fieldScene.lights.addLight(this.player1.x, this.player1.y, 200);
+            this.playerLight1.setIntensity(0.5);
+            this.playerLight1Flg = true;
+
+            if (this.player2Flg) {
+                this.playerLight2 = this.fieldScene.lights.addLight(this.player2.x, this.player2.y, 200);
+                this.playerLight2.setIntensity(0.5);
+                this.playerLight2Flg = true;
+            }
 
             /**
              * lightオブジェクトは効果対象のオブジェクトが削除されればPhaserが自動で削除される
@@ -121,6 +145,10 @@ export class Light2D {
                 this.fieldScene.lights.setAmbientColor(ambientColor);
                 //0xffffff
                 //0x222244
+
+                this.fieldScene.events.on('shutdown', () => {
+
+                });
 
                 resolve();
             }

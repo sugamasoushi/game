@@ -39,6 +39,10 @@ import { ClickEventObjectPresenter } from "./ClickEventObjectPresenter";
 import { ClickEventObjectView } from "../view/ClickEventObjectView";
 import { ClickEventObjectModel } from "../model/ClickEventObjectModel";
 
+import { CollisionObjectPresenter } from "./CollisionObjectPresenter";
+import { CollisionObjectView } from "../view/CollisionObjectView";
+import { CollisionObjectModel } from "../model/CollisionObjectModel";
+
 export class FieldScenePresenter {
     private subs = new Subscription(); // 購読をまとめる箱
     private uiScene: Phaser.Scene;
@@ -70,6 +74,10 @@ export class FieldScenePresenter {
     private chestModel: ChestModel;
     private chestView: ChestView;
     private chestPresenter: ChestPresenter;
+
+    private collisionObjectPresenter: CollisionObjectPresenter;
+    private collisionObjectView: CollisionObjectView;
+    private collisionObjectModel: CollisionObjectModel;
 
     constructor(
         private fieldScene: FieldScene,
@@ -182,6 +190,17 @@ export class FieldScenePresenter {
                 this.inputManager);
 
             await this.chestPresenter.execute();
+        }
+
+        //オブジェクトの衝突オブジェクトが存在する場合はMVPを生成
+        if (this.fieldSceneModel.collisionObjectFlg) {
+            this.collisionObjectPresenter = new CollisionObjectPresenter(
+                this.fieldScene,
+                this.collisionObjectModel,
+                this.collisionObjectView,
+                this.tileMap.getMakeTilemap());
+
+            await this.collisionObjectPresenter.execute();
         }
 
         //mapObjectはテスト用になった

@@ -527,7 +527,7 @@
                 {
                  "height":96,
                  "id":93,
-                 "name":"0001_testtile_Right",
+                 "name":"0103_Right",
                  "properties":[
                         {
                          "name":"direction",
@@ -564,7 +564,7 @@
                 {
                  "height":128,
                  "id":95,
-                 "name":"0002_magma_L",
+                 "name":"0106_L",
                  "properties":[
                         {
                          "name":"direction",
@@ -574,17 +574,17 @@
                         {
                          "name":"moveToMap",
                          "type":"string",
-                         "value":"0002"
+                         "value":"0106"
                         }, 
                         {
                          "name":"moveX",
                          "type":"int",
-                         "value":1600
+                         "value":1280
                         }, 
                         {
                          "name":"moveY",
                          "type":"int",
-                         "value":800
+                         "value":416
                         }, 
                         {
                          "name":"note",
@@ -643,6 +643,51 @@
         }, 
         {
          "draworder":"topdown",
+         "id":67,
+         "name":"EVENT",
+         "objects":[
+                {
+                 "height":192,
+                 "id":115,
+                 "name":"EVENT020301",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1120,
+                 "y":384
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":68,
+         "name":"OTHER",
+         "objects":[
+                {
+                 "height":0,
+                 "id":117,
+                 "name":"",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":928,
+                 "y":478
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":66,
          "name":"WATER_SURFACE",
          "objects":[
@@ -674,8 +719,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":67,
- "nextobjectid":115,
+ "nextlayerid":69,
+ "nextobjectid":118,
  "orientation":"orthogonal",
  "properties":[
         {

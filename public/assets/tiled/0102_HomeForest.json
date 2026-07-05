@@ -114,11 +114,6 @@
                  "value":"Lowest(\u6700\u4e0b\u5c64\u30ec\u30a4\u30e4\u30fc)"
                 }, 
                 {
-                 "name":"scroll",
-                 "type":"bool",
-                 "value":true
-                }, 
-                {
                  "name":"scrollX",
                  "type":"float",
                  "value":1

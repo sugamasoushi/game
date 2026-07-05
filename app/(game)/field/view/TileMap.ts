@@ -47,7 +47,7 @@ export class TileMap extends Phaser.GameObjects.Container {
     private mapLowLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
     private mapHighestLayerList: Array<Phaser.Tilemaps.TilemapLayer> = [];
-    private mapMask: Phaser.GameObjects.Graphics;
+    // private mapMask: Phaser.GameObjects.Graphics;
     private tileMapPropatiesEntity: TiledMapPropatiesEntity;
 
     constructor(
@@ -354,6 +354,8 @@ export class TileMap extends Phaser.GameObjects.Container {
                     if (tilemap.layers[i].name.substring(0, 2) === 'PO') {
                         //console.log(scene.tilemap.layers[i].heightInPixels);
                         tilemapLayer.setDepth(tilemap.layers[i].heightInPixels + MapLayerDepth.Highest + i);
+
+                        this.mapHighestLayerList.push(tilemapLayer);
                     }
 
                     //tilemapLayer.setMask(mapMask.createGeometryMask());

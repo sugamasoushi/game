@@ -7,6 +7,7 @@ import { EVENT010201 } from "./view/EVENT010201";
 import { EVENT010202 } from "./view/EVENT010202";
 import { EVENT020101 } from "./view/EVENT020101";
 import { EVENT020201 } from "./view/EVENT020201";
+import { EVENT020301 } from "./view/EVENT020301";
 
 export class SerchEvent {
 
@@ -21,5 +22,6 @@ export class SerchEvent {
         if (eventObj.name === 'EVENT010401') { return new EVENT010401(eventScene, eventObj); }
         if (eventObj.name === 'EVENT020101') { return new EVENT020101(eventScene, eventObj); }
         if (eventObj.name === 'EVENT020201') { return new EVENT020201(eventScene, eventObj); }
+        if (eventObj.name === 'EVENT020301') { return new EVENT020301(eventScene, eventObj); }
     }
 }
