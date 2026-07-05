@@ -124,7 +124,8 @@
         "EVENT010302": false,
         "EVENT010401": false,
         "EVENT020101": false,
-        "EVENT020201": false
+        "EVENT020201": false,
+        "EVENT020301": false
     },
     "itemboxFlg": [
         1,

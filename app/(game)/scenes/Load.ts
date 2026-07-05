@@ -219,6 +219,12 @@ export class Load extends Scene {
         this.load.audio('bgm_aruges', 'assets/sound/悪魔軍特攻隊長～電影のアルゲス～.mp3');
         //https://dova-s.jp/bgm/play18480.html
 
+        this.load.audio('bgm_Cave', 'assets/sound/The Cave.mp3');
+        //https://opengameart.org/content/rpg-the-cave-ambient
+
+        this.load.audio('bgm_CrystalCave', 'assets/sound/Crystal Cave.mp3');
+        //https://opengameart.org/content/crystal-cave-song18
+
         this.load.audio('SE_waterFall', 'assets/sound/滝1.mp3');
         this.load.audio('SE_doukutu', 'assets/sound/薄青い洞窟.mp3');
         this.load.audio('SE_fire', 'assets/sound/火炎魔法1.mp3');
@@ -235,7 +241,7 @@ export class Load extends Scene {
         this.load.audio('SE_newsTitle', 'assets/sound/ニュースタイトル表示1.mp3');
         this.load.audio('SE_decideButton', 'assets/sound/決定ボタンを押す44.mp3');
         this.load.audio('SE_cancelButton', 'assets/sound/キャンセル4.mp3');
-        this.load.audio('SE_cardTurnOver', 'assets/sound/カードをめくる.mp3');
+        // this.load.audio('SE_cardTurnOver', 'assets/sound/カードをめくる.mp3');
         this.load.audio('SE_idea', 'assets/sound/ひらめく2.mp3');
         this.load.audio('SE_syakiin', 'assets/sound/シャキーン3.mp3');
         this.load.audio('SE_cardOpen', 'assets/sound/カードを扇状に開く.mp3');
@@ -246,9 +252,9 @@ export class Load extends Scene {
         this.load.audio('SE_highSpeedMove', 'assets/sound/高速移動.mp3');
         //https://soundeffect-lab.info/sound/battle/
 
-        this.load.video('meina_video', 'assets/video/ComfyUI_00010_.mp4');
-        this.load.video('lamy1_video', 'assets/video/ComfyUI_00018_.mp4');
-        this.load.video('lamy2_video', 'assets/video/vidu-video-3213668993097372.mp4');
+        // this.load.video('meina_video', 'assets/video/ComfyUI_00010_.mp4');
+        // this.load.video('lamy1_video', 'assets/video/ComfyUI_00018_.mp4');
+        // this.load.video('lamy2_video', 'assets/video/vidu-video-3213668993097372.mp4');
 
         //タイル画像のロード
         //データ内のタイルセット画像のURLの一部を書き換える。配置を変更する場合は注意。
@@ -279,7 +285,7 @@ export class Load extends Scene {
         this.load.on('complete', () => {
 
             //サウンドシーンを並行して実行
-            this.scene.launch('Sound');
+            //this.scene.launch('Sound');
 
             //状態更新
             manager.updateState({ state: State.FIELD }, data.sceneKey)

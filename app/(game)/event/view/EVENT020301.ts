@@ -67,15 +67,15 @@ export class EVENT020301 extends BaseEvent {
 
         await this.execFadeOut();
         await new Promise<void>(resolve => {
-            this.meina.setMapPosition(896, 516)
-            this.lamy.setMapPosition(928, 480)
+            this.meina.setMapPosition(832, 516)
+            this.lamy.setMapPosition(864, 480)
             this.meina.setStandFrame(this.meina.getAnimationKey().standLeft)
             this.lamy.setStandFrame(this.lamy.getAnimationKey().standLeft)
             resolve();
         });
         await this.execFadeIn();
 
-        this.fieldScene.cameras.main.pan(this.meina.x - 50, this.meina.y, 500, 'Linear', false)
+        //this.fieldScene.cameras.main.pan(this.meina.x - 50, this.meina.y, 500, 'Linear', false)
 
         /*会話---------------------------------------------------------------------------------*/
 
@@ -142,9 +142,20 @@ export class EVENT020301 extends BaseEvent {
                     //スライド後、最後の画像が完了したら終了
                     if (currentImageIndex + 1 >= this.eventImage.length) {
 
-                        //仮想コントローラを再表示
-                        this.uiScene.scene.setVisible(true);
-                        resolve();
+                        //全ての画像を画面外右にスライド
+                        this.eventScene.tweens.add({
+                            targets: this.eventImage,
+                            x: screenWidth * 2,
+                            duration: 500,
+                            ease: 'Power2',
+                            complete: () => {
+                                //仮想コントローラを再表示
+                                this.uiScene.scene.setVisible(true);
+                                leftArrow.destroy();
+                                rightArrow.destroy();
+                                resolve();
+                            }
+                        });
                     }
 
                     //次ページを画面にスライド
@@ -184,6 +195,14 @@ export class EVENT020301 extends BaseEvent {
             this.uiScene.scene.setVisible(false);
         })
 
+        await this.stopAnyTime(500);
+
+        //会話開始、テキストの終了をチェックする
+        await this.eventTalk.execTalk([
+            { lamy: ['あの家にいるな！？\n', '待て！！\n'] },
+            { meina: ['入って大丈夫かな・・・\n'] },
+        ], this.characterGameObject);
+
         //イベント終了時の処理
         await this.eventEnd();
     }
@@ -207,6 +226,9 @@ export class EVENT020301 extends BaseEvent {
 
                 //キャラ画像を削除
                 this.characterGameObject.imageObjectsDestroy();
+                this.eventImage.forEach(image => {
+                    image.destroy();
+                })
 
                 //設定を戻す
                 this.fieldScene.events.emit('EVENT_END')

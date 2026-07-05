@@ -2,11 +2,13 @@ import { Title } from '../../scenes/Title';
 import { TitleSelect } from '../../lib/TitleTypes';
 import { TitleModel } from '../model/TitleModel';
 import { Option, VolumeItemType } from '../view/Option';
+import { Omake } from '../view/Omake';
 import { Opening } from '../view/Opening';
 import { TitleLogo } from '../view/TitleLogo';
 import { NewGameButton } from '../view/NewGameButton';
 import { ContinueButton } from '../view/ContinueButton';
 import { OptionButton } from '../view/OptionButton';
+import { OmakeButton } from '../view/OmakeButton';
 
 import { InputManager } from '../../core/input/InputManager';
 import { GameStateManager } from '../../core/GameStateManager';
@@ -24,11 +26,13 @@ export class TitlePresenter {
         private scene: Title,
         private titleModel: TitleModel,
         private option: Option,
+        private omake: Omake,
         private opening: Opening,
         private logo: TitleLogo,
         private newGameButton: NewGameButton,
         private continueButton: ContinueButton,
-        private optionButton: OptionButton
+        private optionButton: OptionButton,
+        private omakeButton: OmakeButton,
     ) {
         this.manager = GameStateManager.getInstance();
     }
@@ -53,6 +57,7 @@ export class TitlePresenter {
         await this.newGameButton.createMenuButtons();
         await this.continueButton.createMenuButtons(this.titleModel.hasContinueData);
         await this.optionButton.createMenuButtons();
+        await this.omakeButton.createMenuButtons();
 
         // 入力のセットアップ
         this.inputManager = InputManager.getInstance(this.scene);
@@ -76,12 +81,14 @@ export class TitlePresenter {
         this.newGameButton.onNewGame = () => this.execNewGame();
         this.continueButton.onContinue = () => this.execContinue();
         this.optionButton.onOption = () => this.execOption();
+        this.omakeButton.onOmake = () => this.execOmake();
 
         this.option.onVolumeClick = (item: VolumeItemType, volume: number) => this.onOptionVolumeClick(item, volume);
 
         // オプション画面の✖ボタンが押されたらcloseOptionを実行
         // ※ hideOptionMenuはbackSubmit内で既に呼ばれるため、ここではモデル状態の更新とボタン復帰のみ行う
         this.option.onBack = () => this.onOptionBack();
+        this.omake.onBack = () => this.onOmakeBack();
     }
 
     private setupInput() {
@@ -92,7 +99,7 @@ export class TitlePresenter {
         this.subs.add(this.inputManager.downButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (this.titleModel.isOptionActive) return;
+            if (this.titleModel.isOptionActive || this.titleModel.isOmakeActive) return;
 
             // 選択Noの更新（CONTINUE が無効ならスキップする）
             do {
@@ -112,7 +119,7 @@ export class TitlePresenter {
         this.subs.add(this.inputManager.upButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (this.titleModel.isOptionActive) return;
+            if (this.titleModel.isOptionActive || this.titleModel.isOmakeActive) return;
 
             // 選択Noの更新（CONTINUE が無効ならスキップする）
             do {
@@ -134,6 +141,10 @@ export class TitlePresenter {
 
             // オプション画面表示中は処理しない
             if (this.titleModel.isOptionActive) return;
+            if (this.titleModel.isOmakeActive) {
+                this.omake.decide();
+                return;
+            }
 
             // 各ボタンの実行
             switch (this.titleModel.nowSelectNo) {
@@ -145,6 +156,9 @@ export class TitlePresenter {
                     break;
                 case TitleSelect.OPTION:
                     this.execOption();
+                    break;
+                case TitleSelect.OMAKE:
+                    this.execOmake();
                     break;
             }
         }));
@@ -164,26 +178,26 @@ export class TitlePresenter {
             this.adjustVolume(10);
         }));
 
-        // オプション画面中の上下キーはフォーカス移動
+        // オプション・おまけ画面中の上下キーはフォーカス移動
         this.subs.add(this.inputManager.upButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.titleModel.isOptionActive) return;
-            this.option.focusPrev();
+            if (this.titleModel.isOptionActive) this.option.focusPrev();
+            if (this.titleModel.isOmakeActive) this.omake.focusPrev();
         }));
 
         this.subs.add(this.inputManager.downButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.titleModel.isOptionActive) return;
-            this.option.focusNext();
+            if (this.titleModel.isOptionActive) this.option.focusNext();
+            if (this.titleModel.isOmakeActive) this.omake.focusNext();
         }));
 
         this.subs.add(this.inputManager.cancelButton$.pipe(
             throttleTime(duration)
         ).subscribe(() => {
-            if (!this.titleModel.isOptionActive) return;
-            this.closeOption();
+            if (this.titleModel.isOptionActive) this.closeOption();
+            if (this.titleModel.isOmakeActive) this.closeOmake();
         }));
     }
 
@@ -264,6 +278,32 @@ export class TitlePresenter {
         this.option.showOptionMenu(currentVolumes);
     }
 
+    private execOmake() {
+        if (this.titleModel.isOmakeActive) return;
+        this.titleModel.isOmakeActive = true;
+
+        this.disableInteractiveAll();
+
+        this.omake.showOmake();
+    }
+
+    private closeOmake() {
+        if (!this.titleModel.isOmakeActive) return;
+        this.titleModel.isOmakeActive = false;
+
+        this.omake.hideOmakeMenu();
+        this.enableInteractiveAll();
+        this.updateSelection();
+    }
+
+    private onOmakeBack() {
+        if (!this.titleModel.isOmakeActive) return;
+        this.titleModel.isOmakeActive = false;
+
+        this.enableInteractiveAll();
+        this.updateSelection();
+    }
+
     private adjustVolume(delta: number) {
         const item = this.option.getFocusedItem();
         const currentVol = this.option.getFocusedVolume();
@@ -310,11 +350,13 @@ export class TitlePresenter {
         this.newGameButton.noSelect();
         this.continueButton.noSelect();
         this.optionButton.noSelect();
+        this.omakeButton.noSelect();
 
         if (this.titleModel.nowSelectNo == TitleSelect.NEWGAME) {
             this.newGameButton.selection();
             this.continueButton.noSelect();
             this.optionButton.noSelect();
+            this.omakeButton.noSelect();
         }
 
         if (this.titleModel.nowSelectNo == TitleSelect.CONTINUE) {
@@ -322,6 +364,7 @@ export class TitlePresenter {
                 this.continueButton.selection();
                 this.newGameButton.noSelect();
                 this.optionButton.noSelect();
+                this.omakeButton.noSelect();
             }
         }
 
@@ -329,6 +372,14 @@ export class TitlePresenter {
             this.optionButton.selection();
             this.newGameButton.noSelect();
             this.continueButton.noSelect();
+            this.omakeButton.noSelect();
+        }
+
+        if (this.titleModel.nowSelectNo == TitleSelect.OMAKE) {
+            this.omakeButton.selection();
+            this.newGameButton.noSelect();
+            this.continueButton.noSelect();
+            this.optionButton.noSelect();
         }
     }
 
@@ -336,6 +387,7 @@ export class TitlePresenter {
         this.newGameButton.disableInteractive();
         this.continueButton.disableInteractive();
         this.optionButton.disableInteractive();
+        this.omakeButton.disableInteractive();
     }
 
     public enableInteractiveAll() {
@@ -344,6 +396,7 @@ export class TitlePresenter {
             this.continueButton.enableInteractive();
         }
         this.optionButton.enableInteractive();
+        this.omakeButton.enableInteractive();
     }
 
     public destroy() {

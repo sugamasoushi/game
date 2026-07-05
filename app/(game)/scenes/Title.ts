@@ -1,11 +1,13 @@
 import { Scene } from 'phaser';
 import { TitleModel } from '../title/model/TitleModel';
 import { Option } from '../title/view/Option';
+import { Omake } from '../title/view/Omake';
 import { Opening } from '../title/view/Opening';
 import { TitleLogo } from '../title/view/TitleLogo';
 import { NewGameButton } from '../title/view/NewGameButton';
 import { ContinueButton } from '../title/view/ContinueButton';
 import { OptionButton } from '../title/view/OptionButton';
+import { OmakeButton } from '../title/view/OmakeButton';
 import { TitlePresenter } from '../title/presenter/TitlePresenter';
 
 export class Title extends Scene {
@@ -51,21 +53,25 @@ export class Title extends Scene {
         const titleModel = new TitleModel(this);
 
         const option = new Option(this);
+        const omake = new Omake(this);
         const opening = new Opening(this);
         const logo = new TitleLogo(this, titleModel);
         const newGameButton = new NewGameButton(this);
         const continueButton = new ContinueButton(this);
         const optionButton = new OptionButton(this);
+        const omakeButton = new OmakeButton(this);
 
         this.presenter = new TitlePresenter(
             this,
             titleModel,
             option,
+            omake,
             opening,
             logo,
             newGameButton,
             continueButton,
-            optionButton
+            optionButton,
+            omakeButton,
         );
 
         // 実行開始

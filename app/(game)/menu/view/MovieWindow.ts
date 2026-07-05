@@ -1,3 +1,7 @@
+/**
+ * 現在未使用
+ */
+
 import { MenuModel } from "../model/MenuModel";
 import { MainColumnWindow } from "./MainColumnWindow";
 import { MessageObject } from "../../util/MessageObject";

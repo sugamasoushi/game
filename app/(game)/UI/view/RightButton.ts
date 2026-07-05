@@ -1,6 +1,5 @@
 import { MessageWindow } from "../../util/MessageWindow";
 import { MessageObject } from "../../util/MessageObject";
-import { State } from '../../lib/types';
 
 export class RightButton {
 

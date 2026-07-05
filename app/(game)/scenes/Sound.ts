@@ -162,10 +162,14 @@ export class Sound extends Scene {
     }
 
     private updateBgm(mapKey: string) {
-        if (this.debugFlg) return
+        if (this.debugFlg) return;
 
         if (mapKey === '0102') {
             this.onFieldMap0102();
+        } else if (mapKey === '0104' || mapKey === '0105') {
+            this.onCaveBGM();
+        } else if (mapKey === '0201') {
+            this.onCrystalCaveBGM();
         } else {
             this.onFieldDefaultBgm();
         }
@@ -174,6 +178,7 @@ export class Sound extends Scene {
     public onOpening() { this.playBgm('opening', 0.5); }
 
     public onFieldDefaultBgm() {
+        console.log('onFieldDefaultBgm')
         this.playBgm('bgm_otobokeDance');
         this.playBgs('none', 0);
     }
@@ -181,6 +186,17 @@ export class Sound extends Scene {
     public onFieldMap0102() {
         this.playBgm('bgm_otobokeDance');
         this.playBgs('SE_waterFall', 0.15);
+    }
+
+    public onCaveBGM() {
+        console.log('onCaveBGM')
+        this.playBgm('bgm_Cave');
+        this.playBgs('none', 0);
+    }
+
+    public onCrystalCaveBGM() {
+        this.playBgm('bgm_CrystalCave');
+        this.playBgs('none', 0);
     }
 
     /**

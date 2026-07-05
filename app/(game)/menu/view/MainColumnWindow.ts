@@ -29,7 +29,7 @@ export class MainColumnWindow {
 
     public cropRectMask: Phaser.GameObjects.Graphics;
 
-    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'フィールドスキル', 'ステータス', 'セーブ', 'MOVIE'];
+    public mainColumn: string[] = ['コンディション', 'アイテム', '装備', 'フィールドスキル', 'ステータス', 'セーブ'];
     public nowMainColumnNo: MenuTab = MenuTab.Condition;
     public nextMainColumnNo: MenuTab = MenuTab.Condition;
 

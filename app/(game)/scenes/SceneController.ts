@@ -24,6 +24,7 @@ export class SceneController extends Scene {
         //※Phaserやブラウザが読み込み完了を待ってくれないため、事前に読み込んでおく必要がある
         this.load.audio('opening', 'assets/audio/opening.mp3');
         this.load.audio('SE_syakiin', 'assets/sound/シャキーン3.mp3');
+        this.load.audio('SE_cardTurnOver', 'assets/sound/カードをめくる.mp3');
 
         this.load.image('meinaOpImage', 'assets/img/CharaStand/メイナOP画像.png');
         this.load.image('meinaOpImageHome', 'assets/img/background/ComfyUI_temp_xsgbd_00098_.png');

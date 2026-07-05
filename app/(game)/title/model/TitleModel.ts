@@ -8,9 +8,10 @@ import { GameStateManager } from "../../core/GameStateManager";
 export class TitleModel {
     public nowSelectNo: number = TitleSelect.NEWGAME;//初期値
     public minSelectNo: number = TitleSelect.NEWGAME;
-    public maxSelectNo: number = TitleSelect.OPTION;
+    public maxSelectNo: number = TitleSelect.OMAKE;
     public hasContinueData: boolean = false;
     public isOptionActive: boolean = false;
+    public isOmakeActive: boolean = false;
     private saveDataManager: SaveDataManager;
     private gameStateManager: GameStateManager;
 
