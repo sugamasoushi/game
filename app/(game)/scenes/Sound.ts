@@ -164,14 +164,20 @@ export class Sound extends Scene {
     private updateBgm(mapKey: string) {
         if (this.debugFlg) return;
 
-        if (mapKey === '0102') {
-            this.onFieldMap0102();
-        } else if (mapKey === '0104' || mapKey === '0105') {
-            this.onCaveBGM();
-        } else if (mapKey === '0201') {
-            this.onCrystalCaveBGM();
-        } else {
-            this.onFieldDefaultBgm();
+        switch (mapKey) {
+            case '0102':
+                this.onFieldMap0102();
+                break;
+            case '0104':
+            case '0105':
+                this.onCaveBGM();
+                break;
+            case '0201':
+                this.onCrystalCaveBGM();
+                break;
+            default:
+                this.onFieldDefaultBgm();
+                break;
         }
     }
 
