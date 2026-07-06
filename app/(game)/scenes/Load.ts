@@ -80,16 +80,15 @@ export class Load extends Scene {
         this.load.image('Icon_ossan', 'assets/img/charIcon/Icon_ossan.png');
         this.load.image('20250603', 'assets/img/eventpicture/20250603.jpg');
 
-        // this.load.image('EVENT020301_1', 'assets/img/eventpicture/EVENT020301_1.png');
-        // this.load.image('EVENT020301_2', 'assets/img/eventpicture/EVENT020301_2.png');
-        // this.load.image('EVENT020301_3', 'assets/img/eventpicture/EVENT020301_3.png');
-
         this.load.image('battle_hill', 'assets/img/background/ComfyUI_temp_izzuc_00031_.png');
         this.load.image('battle_hill_01', 'assets/img/background/battle_hill_01.png');
         this.load.image('battle_hill_02', 'assets/img/background/battle_hill_02.png');
         this.load.image('battle_hill_03', 'assets/img/background/battle_hill_03.png');
         this.load.image('battle_forest', 'assets/img/background/battle_forest.png');
         this.load.image('battle_cave', ['assets/img/background/ComfyUI_temp_xpgcm_00020_.png', 'assets/img/background/ComfyUI_temp_xpgcm_00020__n.png']);
+
+        this.load.image('menu_meina', 'assets/img/CharaStand/menu_meina.png');
+        this.load.image('menu_lamy', 'assets/img/CharaStand/menu_lamy.png');
 
         this.load.atlas('flares', 'assets/img/effect/flares.png', 'assets/img/effect/flares.json');
 

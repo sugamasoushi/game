@@ -33,7 +33,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
     public async create(mainColumn: MainColumnWindow) {
 
         //キャラクターを配置
-        const niwatori = this.scene.add.image(800, 250, '20240622_鶏').setScale(0.2);
+        const niwatori = this.scene.add.image(800, 250, '20240622_鶏').setScale(0.9);
         const meina = this.scene.add.image(260, 280, '20240713_2').setScale(0.7);
         const lamy = this.scene.add.image(450, 250, '20240907_3').setScale(0.9);
 

@@ -5,6 +5,7 @@ export interface CharacterDataDetail {
     normal: string;
     smile: string;
     unger: string;
+    menu:string;
 }
 
 /** キャラクターデータの全体構造 */

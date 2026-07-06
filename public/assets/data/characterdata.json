@@ -12,7 +12,8 @@
         "icon": "Icon_20250609",
         "normal": "20250609",
         "smile": "",
-        "unger": ""
+        "unger": "",
+        "menu":"menu_meina"
     },
     "grandpa": {
         "name": "じいちゃん",
@@ -26,7 +27,8 @@
         "icon": "Icon_20240908",
         "normal": "20240908",
         "smile": "20240907_3",
-        "unger": ""
+        "unger": "",
+        "menu":"menu_lamy"
     },
     "lamyNPC": {
         "name": "ラミア娘",

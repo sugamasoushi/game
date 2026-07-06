@@ -146,9 +146,9 @@ export class CharStatusWindow extends Phaser.GameObjects.Container {
 
     private createCharacterContent(container: Phaser.GameObjects.Container, sprite: Phaser.GameObjects.Sprite, messageObject: MessageObject): void {
         const characterData = this.searchCharacterData.getCharacterData(sprite.name);
-        const portraitKey = characterData.normal;
+        const portraitKey = characterData.menu;
 
-        const charImage = this.scene.add.image(0, 0, portraitKey).setOrigin(0, 0).setScale(0.5);
+        const charImage = this.scene.add.image(0, 0, portraitKey).setOrigin(0, 0);
         container.add(charImage);
 
         // setCrop を使って表示範囲（340 x contentHeight）を切り抜く

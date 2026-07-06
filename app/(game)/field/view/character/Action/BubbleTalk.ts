@@ -330,6 +330,7 @@ export class BubbleTalk {
         const dataDefinition = new DataDefinition();
         const imageKeyData = dataDefinition.getCharacterImageKey(this.fieldScene, charKey);
 
+        //プレイヤー画像を検索して取得できた場合、それ以外はnpcとして処理
         if (imageKeyData) {
             const imageKey = imageKeyData.normal;
             this.characterIcon = this.fieldScene.add.image(this.textX - 50, this.textY, 'Icon_' + imageKey);
@@ -340,6 +341,9 @@ export class BubbleTalk {
         } else if (this.npc !== undefined) {
             if (this.npc!.getData('ImageKey')) {
                 this.characterIcon = this.fieldScene.add.image(this.textX - 50, this.textY, 'Icon_' + this.npc!.getData('ImageKey')!);
+                if(this.characterIcon.texture.key === '__MISSING'){
+                    this.characterIcon.setVisible(false)
+                }
 
                 //削除対象に登録
                 this.messageOperation.addMessageObjectList(this.characterIcon);

@@ -20,7 +20,10 @@ export class NpcView {
     ) {
     }
 
-    public update(time: number, delta: number) { }
+    public update(time: number, delta: number) { 
+        void time;
+        void delta;
+    }
 
     public async execute() {
         this.createNPC();
