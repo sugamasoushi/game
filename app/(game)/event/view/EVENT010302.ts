@@ -30,11 +30,11 @@ export class EVENT010302 extends BaseEvent {
         this.eventTalk.init();
 
         //キャッシュのイベントフラグを更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT010302', false);
+        this.updateEventFlg('EVENT010302', false);
         this.switchingEventObjFlg('EVENT010302', false);
 
         //関連イベントのフラグと当たり判定を更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT010401', true);
+        this.updateEventFlg('EVENT010401', true);
         this.switchingEventObjFlg('EVENT010401', true);
 
         //プレイヤー設定
