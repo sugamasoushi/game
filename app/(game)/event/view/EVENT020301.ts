@@ -43,7 +43,7 @@ export class EVENT020301 extends BaseEvent {
         this.eventTalk.init();
 
         //キャッシュのイベントフラグと当たり判定を更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT020301', false);
+        this.updateEventFlg('EVENT020301', false);
         this.switchingEventObjFlg('EVENT020301', false);
 
         const gameStateManager = GameStateManager.getInstance();

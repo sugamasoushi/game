@@ -3,7 +3,6 @@ import { Event } from "../../scenes/Event";
 import { MessageObject } from "../../util/MessageObject";
 import { FieldScene, EventObjState, State } from "../../lib/types";
 import { BaseEvent } from "../../core/BaseEvent";
-import { DataDefinition } from "../../Data/DataDefinition";
 
 import { GameStateManager } from "../../core/GameStateManager";
 import { InputManager } from "../../core/input/InputManager";
@@ -12,7 +11,6 @@ import { Player } from "../../field/view/character/Player";
 //Event.tsは未使用
 export class EVENT010101 extends BaseEvent {
     private fieldScene: FieldScene;
-    private settingData: DataDefinition;
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
@@ -22,8 +20,7 @@ export class EVENT010101 extends BaseEvent {
     override init() {
 
         //キャッシュのイベントフラグと衝突判定を更新
-        this.settingData = new DataDefinition();
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT010101', false);
+        this.updateEventFlg('EVENT010101', false);
         this.switchingEventObjFlg('EVENT010101', false);
 
         const gameStateManager = GameStateManager.getInstance();

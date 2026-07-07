@@ -4,13 +4,11 @@ import { FieldScene, EventObjState, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
 import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
-import { DataDefinition } from "../../Data/DataDefinition";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { GameStateManager } from "../../core/GameStateManager";
 
 export class EVENT010202 extends BaseEvent {
     private fieldScene: FieldScene;
-    private settingData: DataDefinition;
     private eventTalk: EventTalk;
 
     private characterGameObject: CharacterGameObject;
@@ -24,16 +22,15 @@ export class EVENT010202 extends BaseEvent {
 
     override init() {
         //会話用クラスのインスタンス生成
-        this.settingData = new DataDefinition();
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
         //キャッシュのイベントフラグと当たり判定を更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT010202', false);
+        this.updateEventFlg('EVENT010202', false);
         this.switchingEventObjFlg('EVENT010202', false);
 
         //関連イベントのフラグと当たり判定を更新
-        this.settingData.updateEventFlg(this.eventScene, 'EVENT010201', false);
+        this.updateEventFlg('EVENT010201', false);
         this.switchingEventObjFlg('EVENT010201', false);
 
         //プレイヤー設定
