@@ -88,88 +88,108 @@ export class SceneController extends Scene {
     }
 
     private handleStateChange(state: State, sceneKey: string) {
-        //console.log(`SceneController:  (sceneKey: ${sceneKey})`);
-
-        switch (state) {
-            case State.NOSTATE:
+        const transitions: Partial<Record<State, (sceneKey: string) => void>> = {
+            [State.NOSTATE]: () => {
                 //処理無
-                break;
-            case State.TITLE:
-                console.log('Title')
-                console.log(this.scene.manager.scenes.map(s => `${s.scene.key}: ${s.scene.settings.status}`));
-                this.scene.launch('Title', { sceneKey });
-                break;
-            case State.LOAD:
-                console.log('Load')
-                this.scene.launch('Load', { sceneKey });
-                break;
-            case State.FIELD:
-                console.log('Field')
-                this.scene.launch('Field', { sceneKey });
-                break;
-            case State.FIELD_RESTART:
-                console.log('Game restart', sceneKey)
-                this.scene.get('Field').scene.restart({ sceneKey });
-                this.scene.moveBelow('UI', 'Field')
-                break;
-            case State.FIELD_RESUME:
-                console.log('Game resume', sceneKey)
-                this.scene.get('Field').scene.resume();
-                if (this.scene.isActive('Event')) {
-                    this.scene.get('Event').scene.resume();
-                }
-                break;
-            case State.BATTLE:
-                console.log('Battle')
-                this.scene.pause('Field');
+            },
+            [State.TITLE]: () => this.transitionToTitle(sceneKey),
+            [State.LOAD]: () => this.transitionToLoad(sceneKey),
+            [State.FIELD]: () => this.transitionToField(sceneKey),
+            [State.FIELD_RESTART]: () => this.transitionToFieldRestart(sceneKey),
+            [State.FIELD_RESUME]: () => this.transitionToFieldResume(sceneKey),
+            [State.BATTLE]: () => this.transitionToBattle(sceneKey),
+            [State.MENU]: () => this.transitionToMenu(sceneKey),
+            [State.EVENT]: () => this.transitionToEvent(sceneKey),
+            [State.BUBBLE_TALK]: () => this.transitionToBubbleTalk(),
+            [State.GAMEOVER]: () => this.transitionToGameOver(),
+            [State.GAME_RESTART]: () => this.transitionToGameRestart(sceneKey)
+        };
 
-                //イベント戦闘の場合、イベントシーンも停止する
-                if (this.scene.isActive('Event')) {
-                    this.scene.pause('Event');
-                }
-                this.scene.launch('Battle', { sceneKey });
-                break;
-            case State.MENU:
-                console.log('Menu')
-                this.scene.pause('Field');
-                this.scene.launch('Menu', { sceneKey });
-                break;
-            case State.EVENT:
-                console.log('Event')
-                // this.scene.pause('Field');
-                this.scene.launch('Event', { sceneKey });
-                break;
-            case State.BUBBLE_TALK:
-                console.log('BubbleTalk')
-                break;
-            case State.GAMEOVER:
-                console.log('GameOver transition')
-                this.scene.launch('GameOver');
-                this.scene.stop('Field');
-                this.scene.stop('Menu');
-                this.scene.stop('Event');
-                this.scene.stop('Battle');
-                this.scene.stop('UI');
-                break;
-            case State.GAME_RESTART:
-                console.log('Game restart', sceneKey)
-                this.scene.stop('Field');
-                this.scene.stop('Menu');
-                this.scene.stop('Event');
-                this.scene.stop('Battle');
-                this.scene.stop('SceneController');
+        transitions[state]?.(sceneKey);
+    }
 
-                this.scene.start('Boot');
+    private transitionToTitle(sceneKey: string) {
+        console.log('Title')
+        console.log(this.scene.manager.scenes.map(s => `${s.scene.key}: ${s.scene.settings.status}`));
+        this.scene.launch('Title', { sceneKey });
+    }
 
-                /**
-                 * this.scene.stop()とsubscriptionについて
-                 * Titleにも記載したが、購読の定義と解除を間違えると操作不能状態が発生するため注意。
-                 * 各シーンではstop()によるshutdownイベントをトリガーに購読解除等を行っているため、stop()を呼ぶ際は各シーンのshutdownイベントと購読の定義を確認する事。
-                 */
+    private transitionToLoad(sceneKey: string) {
+        console.log('Load')
+        this.scene.launch('Load', { sceneKey });
+    }
 
-                break;
+    private transitionToField(sceneKey: string) {
+        console.log('Field')
+        this.scene.launch('Field', { sceneKey });
+    }
+
+    private transitionToFieldRestart(sceneKey: string) {
+        console.log('Game restart', sceneKey)
+        this.scene.get('Field').scene.restart({ sceneKey });
+        this.scene.moveBelow('UI', 'Field')
+    }
+
+    private transitionToFieldResume(sceneKey: string) {
+        console.log('Game resume', sceneKey)
+        this.scene.get('Field').scene.resume();
+        if (this.scene.isActive('Event')) {
+            this.scene.get('Event').scene.resume();
         }
+    }
 
+    private transitionToBattle(sceneKey: string) {
+        console.log('Battle')
+        this.scene.pause('Field');
+
+        //イベント戦闘の場合、イベントシーンも停止する
+        if (this.scene.isActive('Event')) {
+            this.scene.pause('Event');
+        }
+        this.scene.launch('Battle', { sceneKey });
+    }
+
+    private transitionToMenu(sceneKey: string) {
+        console.log('Menu')
+        this.scene.pause('Field');
+        this.scene.launch('Menu', { sceneKey });
+    }
+
+    private transitionToEvent(sceneKey: string) {
+        console.log('Event')
+        // this.scene.pause('Field');
+        this.scene.launch('Event', { sceneKey });
+    }
+
+    private transitionToBubbleTalk() {
+        console.log('BubbleTalk')
+    }
+
+    private transitionToGameOver() {
+        console.log('GameOver transition')
+        this.scene.launch('GameOver');
+        this.scene.stop('Field');
+        this.scene.stop('Menu');
+        this.scene.stop('Event');
+        this.scene.stop('Battle');
+        this.scene.stop('UI');
+    }
+
+    private transitionToGameRestart(sceneKey: string) {
+        console.log('Game restart', sceneKey)
+        this.scene.stop('Field');
+        this.scene.stop('Menu');
+        this.scene.stop('Event');
+        this.scene.stop('Battle');
+        this.scene.stop('SceneController');
+
+        this.scene.start('Boot');
+
+        /**
+         * this.scene.stop()とsubscriptionについて
+         * Titleにも記載したが、購読の定義と解除を間違えると操作不能状態が発生するため注意。
+         * 各シーンではstop()によるshutdownイベントをトリガーに購読解除等を行っているため、stop()を呼ぶ際は各シーンのshutdownイベントと購読の定義を確認する事。
+         */
     }
 
     async alert() {
