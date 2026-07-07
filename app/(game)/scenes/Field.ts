@@ -1,14 +1,15 @@
 import { Scene } from 'phaser';
 import { EventBus } from '../EventBus';
 import { FieldScene } from '../lib/SceneTypes';
-import { ReadyEvents } from '../lib/typesGamescene';
+// import { ReadyEvents } from '../lib/typesGamescene';
 import { FieldScenePresenter } from '../field/presenter/FieldScenePresenter';
 import { FieldSceneModel } from '../field/model/FieldSceneModel';
 
-import { GameStateManager, gameStateManager } from '../core/GameStateManager';
+import { gameStateManager } from '../core/GameStateManager';
 import { InputManager } from '../core/input/InputManager';
 import { CameraManager } from '../field/view/CameraManager';
 import { FieldMessageWindow } from '../field/view/FieldMessageWindow';
+import { State } from '../lib/types';
 
 export class Field extends Scene implements FieldScene {
 
@@ -66,7 +67,8 @@ export class Field extends Scene implements FieldScene {
 
         // ゲームオーバーの監視
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-            gameStateManager.triggerGameOver();
+            //gameStateManager.triggerGameOver();
+            gameStateManager.updateState({ state: State.GAMEOVER }, 'system');
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
 

@@ -21,7 +21,8 @@ export class Opening {
         if (debugFlg) return;
 
         //現在のBGM状態を更新
-        gameStateManager.setBgmState(BgmState.TITLE);
+        //gameStateManager.setBgmState(BgmState.TITLE);
+        gameStateManager.updateState({ bgmState: BgmState.TITLE }, 'sound');
 
         const gameWidth = Number(this.scene.game.config.width);
         const gameHeight = Number(this.scene.game.config.height);

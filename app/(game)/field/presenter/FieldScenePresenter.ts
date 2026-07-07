@@ -122,7 +122,8 @@ export class FieldScenePresenter {
         const gameStateManager = GameStateManager.getInstance();
 
         //現在のBGM状態を更新
-        gameStateManager.setBgmState(BgmState.FIELD);
+        // gameStateManager.setBgmState(BgmState.FIELD);
+        gameStateManager.updateState({ bgmState: BgmState.FIELD }, 'sound');
 
         //view-------------------------------------------------
         //console.log("タイルセットのロードを開始します...");

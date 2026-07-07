@@ -1,4 +1,4 @@
-import { BattleScene } from "../../lib/types";
+import { BattleScene, State } from "../../lib/types";
 import { BattleModel } from "../model/BattleModel";
 import { TurnModel } from "../model/TurnModel";
 import { BattleMessageWindow } from "../view/BattleMessageWindow";
@@ -98,7 +98,8 @@ export class BattleExecutor {
 
         // 勝利
         if (winner === 'player') {
-            gameStateManager.addMoney(10);
+            // gameStateManager.addMoney(10);
+            gameStateManager.updateState({ money: gameStateManager.currentMoney + 100 }, 'system');
             this.soundScene.playSe('SE_victory');
 
             // フィールドの敵を消去
@@ -124,7 +125,8 @@ export class BattleExecutor {
             }
 
             // ゲームオーバー
-            gameStateManager.triggerGameOver();
+            //gameStateManager.triggerGameOver();
+            gameStateManager.updateState({ state: State.GAMEOVER }, 'system');
         }
 
         // ターンを更新

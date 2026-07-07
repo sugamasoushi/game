@@ -2,7 +2,6 @@ import { FieldData } from "./FieldTypes";
 import { OptionData } from "./FieldTypes";
 import { Npc } from "../field/view/character/Npc";
 import { ViewsContainer } from "./BattleTypes";
-import { ActorState } from "../core/ActorState";
 // import * as Phaser from 'phaser';
 
 export enum State {
@@ -34,10 +33,8 @@ export interface GameState {
   sceneKey?: string; // 更新元のキーを追加
   money: number;
   playerPartyList: Phaser.GameObjects.Sprite[];
-  playerActorList: ActorState[];
   fieldNpcList: Phaser.GameObjects.Sprite[];
   fieldEnemyList: Phaser.GameObjects.Sprite[];
-  battleFlag: boolean;
   fieldData: FieldData;
   battleData: { usePatern: string, fieldHitEnemy?: Npc, canNotRunaway: boolean };
   battleFieldKey: string;

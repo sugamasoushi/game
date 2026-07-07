@@ -54,7 +54,8 @@ export class GameOver extends Scene {
                 manager.updateState({ state: State.GAME_RESTART }, 'GameOver');
 
                 //現在のBGM状態を更新
-                manager.setBgmState(BgmState.NOSTATE);
+                //manager.setBgmState(BgmState.NOSTATE);
+                manager.updateState({ bgmState: BgmState.NOSTATE }, 'sound');
 
                 this.scene.stop('GameOver');
             }

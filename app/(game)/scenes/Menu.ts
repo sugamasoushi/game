@@ -3,6 +3,7 @@ import { MenuModel } from "../menu/model/MenuModel";
 import { MenuView } from "../menu/view/MenuView";
 import { MenuPresenter } from "../menu/presenter/MenuPresenter";
 import { gameStateManager } from "../core/GameStateManager";
+import { State } from '../lib/types';
 
 export class Menu extends Phaser.Scene {
 
@@ -38,7 +39,8 @@ export class Menu extends Phaser.Scene {
 
         // ゲームオーバーの監視
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-            gameStateManager.triggerGameOver();
+            //gameStateManager.triggerGameOver();
+            gameStateManager.updateState({ state: State.GAMEOVER }, 'system');
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
     }

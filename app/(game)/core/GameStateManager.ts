@@ -2,17 +2,14 @@ import { FieldData, OptionData } from '../lib/FieldTypes';
 import { State, BgmState, GameState } from '../lib/StateTypes';
 import { BehaviorSubject, Observable, distinctUntilChanged } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
-import { ActorState } from '../core/ActorState';
 
 const INITIAL_STATE: GameState = {
     state: State.NOSTATE,
     sceneKey: 'string', // 更新元のキーを追加
     money: 100,
     playerPartyList: [],
-    playerActorList: [],
     fieldNpcList: [],
     fieldEnemyList: [],
-    battleFlag: false,
     fieldData: { gameMode: 'string', mapKey: 'init', x: 0, y: 0, x2: 0, y2: 0, initStandKey: 'string' },
     battleData: { usePatern: 'string', fieldHitEnemy: undefined, canNotRunaway: false },
     battleFieldKey: 'string',
@@ -26,9 +23,6 @@ export class GameStateManager {
 
     // 内部保持用。初期値をセット。
     private gameState$ = new BehaviorSubject<GameState>(INITIAL_STATE);
-
-    // 外部公開用のObservable。scoreだけを抜き出して公開。
-    public readonly money$: Observable<number> = this.gameState$.pipe(map(gameState => gameState.money));
 
     // 外部公開用のObservable。
     public readonly state$: Observable<{ state: State, fieldData: FieldData, sceneKey: string }> = this.gameState$.pipe(
@@ -88,16 +82,6 @@ export class GameStateManager {
         //これがないと、ゲーム中に何度も FIELD 状態になるたびに通知が飛んでしまいますが、take(1) があることで「初期化時の一回だけ」といった限定的な使い方が可能になります。
     );
 
-    // public readonly mapData$ = this.gameState$.pipe(
-    //     // 💡 オブジェクトとして1つにまとめて下流に流す
-    //     map(gameState => ({
-    //         mapKey: gameState.fieldData.mapKey,
-    //         state: gameState.state
-    //     })),
-    //     // 💡 オブジェクト比較になるため、mapKeyが変わったときだけ流すようにカスタム比較を入れる
-    //     distinctUntilChanged((prev, curr) => prev.mapKey === curr.mapKey)
-    // );
-
     public readonly bgmState$: Observable<{ bgmState: BgmState; mapKey: string }> = this.gameState$.pipe(
         // 💡 欲しい2つのデータをオブジェクトにまとめて下流に流す
         map(gameState => ({
@@ -156,32 +140,17 @@ export class GameStateManager {
     }
 
     // ゲームオーバー状態をセットする
-    public triggerGameOver() {
-        this.updateState({ state: State.GAMEOVER }, 'system');
-    }
+    // public triggerGameOver() {
+    //     this.updateState({ state: State.GAMEOVER }, 'system');
+    // }
 
-    // 戦闘中かどうかのチェック
-    public startBattle(): void {
-        this.gameState$.next({
-            ...this.gameState$.value,
-            battleFlag: true
-        });
-    }
-
-    public endBattle(): void {
-        this.gameState$.next({
-            ...this.gameState$.value,
-            battleFlag: false
-        });
-    }
-
-    public addMoney(num: number) {
-        const currentState = this.gameState$.value;
-        this.gameState$.next({
-            ...currentState,//まずは全ての値を取得、※元の保持データ（参照先）の変更はこのように書く
-            money: currentState.money + num
-        });
-    }
+    // public addMoney(num: number) {
+    //     const currentState = this.gameState$.value;
+    //     this.gameState$.next({
+    //         ...currentState,//まずは全ての値を取得、※元の保持データ（参照先）の変更はこのように書く
+    //         money: currentState.money + num
+    //     });
+    // }
 
     public setPlayerPartyList(playerPartyMemberList: Phaser.GameObjects.Sprite[]) {
         const currentState = this.gameState$.value;
@@ -207,21 +176,21 @@ export class GameStateManager {
         });
     }
 
-    public setBattleFieldKey(key: string): void {
-        const currentState = this.gameState$.value;
-        this.gameState$.next({
-            ...currentState,
-            battleFieldKey: key
-        });
-    }
+    // public setBattleFieldKey(key: string): void {
+    //     const currentState = this.gameState$.value;
+    //     this.gameState$.next({
+    //         ...currentState,
+    //         battleFieldKey: key
+    //     });
+    // }
 
-    public setBgmState(bgmState: BgmState): void {
-        const currentState = this.gameState$.value;
-        this.gameState$.next({
-            ...currentState,
-            bgmState: bgmState
-        });
-    }
+    // public setBgmState(bgmState: BgmState): void {
+    //     const currentState = this.gameState$.value;
+    //     this.gameState$.next({
+    //         ...currentState,
+    //         bgmState: bgmState
+    //     });
+    // }
 
     public setOptionData(master: number, bgm: number, bgs: number, se: number, textSpeed: number = 50): void {
         const currentState = this.gameState$.value;
@@ -241,9 +210,8 @@ export class GameStateManager {
     public reset(): void { this.gameState$.next(INITIAL_STATE); }
 
 
-
+    public get currentMoney(): State { return this.gameState$.value.money; }
     public get currentState(): State { return this.gameState$.value.state; }
-    public get currentBattleFlag(): boolean { return this.gameState$.value.battleFlag; }
     public get currentFieldData(): FieldData { return this.gameState$.value.fieldData!; }
     public get currentBattleData() {
         return {
@@ -254,7 +222,6 @@ export class GameStateManager {
     }
     public get currentEventObj(): Phaser.Physics.Arcade.Sprite { return this.gameState$.value.eventObj! }
     public get currentPlayerPartyList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.playerPartyList; }
-    public get currentPlayerActorList(): ActorState[] { return this.gameState$.value.playerActorList; }
     public get currentFieldNpcList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.fieldNpcList; }
     public get currentFieldEnemyList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.fieldEnemyList; }
     public get currentBattleFieldKey(): string { return this.gameState$.value.battleFieldKey; }
@@ -263,6 +230,3 @@ export class GameStateManager {
 
 // 唯一のインスタンスを公開（シングルトン）
 export const gameStateManager = GameStateManager.getInstance();
-
-
-/**NPCとの衝突で更新する */

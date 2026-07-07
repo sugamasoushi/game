@@ -48,9 +48,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
     init() {//dataはマップ上の敵キャラ接触で連携されるデータ
 
-        //rxjsのフラグを更新
-        gameStateManager.startBattle();
-
         //状態管理クラスから現在のバトル用データを取得
         const manager = GameStateManager.getInstance();
         const battleData = manager.currentBattleData;
@@ -104,12 +101,14 @@ export class Battle extends Phaser.Scene implements BattleScene {
     }
 
     async create(data: { sceneKey: string }) {
+        void data;
 
         //暗転からのフェードイン
         this.cameras.main.fadeIn(200);
 
         //現在のBGM状態を更新
-        gameStateManager.setBgmState(BgmState.BATTLE);
+        // gameStateManager.setBgmState(BgmState.BATTLE);
+        gameStateManager.updateState({ state: State.BATTLE }, 'Sound');
 
         //Phaserのイベントエミッター
         this.events.on('BattleEnd', () => {
@@ -131,9 +130,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
     public endScene() {
 
-        //rxjsのフラグを更新
-        gameStateManager.endBattle();
-
         // FX
         const pixelated = this.cameras.main.postFX.addPixelate(-1);
         this.add.tween({
@@ -147,14 +143,15 @@ export class Battle extends Phaser.Scene implements BattleScene {
                 manager.updateState({ state: State.FIELD_RESUME }, 'resume');
 
                 //現在のBGM状態を更新
-                manager.setBgmState(BgmState.FIELD);
+                // manager.setBgmState(BgmState.FIELD);
+                manager.updateState({ bgmState: BgmState.FIELD }, 'sound');
 
                 //キャッシュを更新
                 const cacheDataUpdate = new CacheDataUpdate(this);
                 cacheDataUpdate.phaserCacheDataUpdate();
 
                 //状態更新
-                manager.updateState({ state: State.NOSTATE }, 'BattleEnd');
+                manager.updateState({ state: State.NOSTATE }, 'Sound');
 
                 this.events.emit('shutdown');
 

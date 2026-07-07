@@ -1,6 +1,7 @@
 import { EventScene } from '../lib/SceneTypes';
 import { SerchEvent } from "../event/SearchEvent";
 import { GameStateManager, gameStateManager } from "../core/GameStateManager";
+import { State } from '../lib/types';
 
 export class Event extends Phaser.Scene implements EventScene {
 
@@ -34,7 +35,8 @@ export class Event extends Phaser.Scene implements EventScene {
 
         // ゲームオーバーの監視
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-            gameStateManager.triggerGameOver();
+            //gameStateManager.triggerGameOver();
+            gameStateManager.updateState({ state: State.GAMEOVER }, 'system');
         });
         this.events.once('shutdown', () => {
             gameOverSub.unsubscribe();

@@ -214,7 +214,8 @@ export class TileMap extends Phaser.GameObjects.Container {
             this.tileMapPropatiesEntity = new TiledMapPropatiesEntity(tilemap.properties as PropertyItem[]);
 
             const gameStateManager = GameStateManager.getInstance();
-            gameStateManager.setBattleFieldKey(this.tileMapPropatiesEntity.battleFieldKey);
+            //gameStateManager.setBattleFieldKey(this.tileMapPropatiesEntity.battleFieldKey);
+            gameStateManager.updateState({ battleFieldKey: this.tileMapPropatiesEntity.battleFieldKey }, 'system');
 
 
             //JSONから読み込んだTiledデータにはレイヤー、タイルセットのキー情報、オブジェクト情報、タイルアニメーション情報が含まれている

@@ -276,7 +276,8 @@ export class EVENT020201 extends BaseEvent {
 
 
                             //現在のBGM状態を更新
-                            manager.setBgmState(BgmState.NOSTATE);
+                            //manager.setBgmState(BgmState.NOSTATE);
+                            manager.updateState({ bgmState: BgmState.NOSTATE }, 'sound');
 
                             endTween.destroy();
                             resolve();
