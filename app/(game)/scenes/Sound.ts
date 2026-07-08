@@ -115,6 +115,7 @@ export class Sound extends Scene {
                         break;
                     case BgmState.BATTLE:
                         if (this.debugFlg) return
+                        console.log('battla bgm')
                         this.playBgm('bgm_aruges', 0.15);
                         if (this.currentBgs) this.currentBgs.stop();
                         this.currentBgsKey = '';

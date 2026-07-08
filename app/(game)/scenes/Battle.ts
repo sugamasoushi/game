@@ -108,7 +108,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
         //現在のBGM状態を更新
         // gameStateManager.setBgmState(BgmState.BATTLE);
-        gameStateManager.updateState({ state: State.BATTLE }, 'Sound');
+        gameStateManager.updateState({ bgmState: BgmState.BATTLE }, 'Sound');
 
         //Phaserのイベントエミッター
         this.events.on('BattleEnd', () => {
