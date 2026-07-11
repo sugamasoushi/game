@@ -4,7 +4,7 @@ import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
 import { GameStateManager } from "../../core/GameStateManager";
 import { SearchBattleField } from "./battoleField/SearchBattleField";
 import { SearchBattleFieldData } from "../../Data/SearchBattleFieldData";
@@ -223,7 +223,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const navigate = (dir: 'next' | 'prev') => {

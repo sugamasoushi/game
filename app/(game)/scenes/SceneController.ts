@@ -163,6 +163,7 @@ export class SceneController extends Scene {
 
     private transitionToBubbleTalk() {
         console.log('BubbleTalk')
+        this.scene.launch('BubbleTalk');
     }
 
     private transitionToGameOver() {

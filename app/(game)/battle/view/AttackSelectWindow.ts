@@ -4,7 +4,7 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
 
 export class AttackSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
@@ -151,7 +151,7 @@ export class AttackSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         this.subs.add(inputManager.downButton$.pipe(

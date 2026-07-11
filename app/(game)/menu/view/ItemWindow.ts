@@ -4,7 +4,8 @@ import { MessageObject } from "../../util/MessageObject";
 import { MenuTab } from "../../lib/types";
 import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
@@ -194,11 +195,11 @@ export class ItemWindow extends Phaser.GameObjects.Container {
         //パーティメンバーが2人以上の場合、使用するメンバーを選択する
         if (this.menuModel.getPlayerPartyList().length > 1) {
 
-            const dataDefinition = new DataDefinition();
+            const searchCharacterData = new SearchCharacterData(this.scene.cache.json);
 
             const partyname: string[] = [];
             for (let i = 0; i < this.menuModel.getPlayerPartyList().length; i++) {
-                const charcterName = dataDefinition.getSpriteNameData(this.scene, this.menuModel.getPlayerPartyList()[i].name);
+                const charcterName = searchCharacterData.getDisplayName(this.menuModel.getPlayerPartyList()[i].name);
                 partyname.push(charcterName);
             }
 
@@ -235,7 +236,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const onSelectStart = () => {

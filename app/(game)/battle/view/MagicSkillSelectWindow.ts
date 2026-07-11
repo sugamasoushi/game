@@ -6,7 +6,7 @@ import { SearchSkill } from "../../Data/SearchSkill";
 import { SkillDetail } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
 
 export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
     private nowSelectCharacter: Phaser.GameObjects.Sprite;
@@ -175,7 +175,7 @@ export class MagicSkillSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         this.subs.add(inputManager.downButton$.pipe(

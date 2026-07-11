@@ -3,20 +3,17 @@ export interface TileMapData {
     normalmap: string[];
 }
 
-export class SearchTileNamedata {
+/** tilemapdata.json からタイルマップ関連データを検索する */
+export class SearchTileMapData {
     private tileMapData: TileMapData;
 
     constructor(cache: Phaser.Cache.BaseCache) {
         this.tileMapData = cache.get('tilemapdata');
     }
 
-    /**
-     * 指定されたタイルセット名が法線マップを持っているか判定する
-     * @param tileSetName タイルセット名
-     * @returns 法線マップを持つ場合はtrue
-     */
+    /** 指定タイルセットが法線マップを持つか判定 */
     public isNormalMap(tileSetName: string): boolean {
-        if (!this.tileMapData || !this.tileMapData.normalmap) {
+        if (!this.tileMapData?.normalmap) {
             return false;
         }
         return this.tileMapData.normalmap.includes(tileSetName);

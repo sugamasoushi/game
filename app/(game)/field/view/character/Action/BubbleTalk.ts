@@ -1,14 +1,13 @@
 import { BubbleTalkData } from "@/app/(game)/Data/BubbleTalkData";
 import { FieldScene, State } from '@/app/(game)/lib/types';
+import { CharacterDataDetail } from "@/app/(game)/lib/CharacterDataTypes";
 import { Player } from "../Player";
 import { MessageOperation } from "@/app/(game)/util/MessageOperation";
 import { MessageWindow } from '../../../../util/MessageWindow';
 import { FieldObjectCheck } from '@/app/(game)/util/FieldObjectCheck';
 import { MessageObject } from '../../../../util/MessageObject';
-
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { SearchCharacterData } from '@/app/(game)/Data/SearchCharacterData';
-import { DataDefinition } from "@/app/(game)/Data/DataDefinition";
 
 export class BubbleTalk {
 
@@ -78,7 +77,7 @@ export class BubbleTalk {
 
                 //会話データを検索
                 //const talkdata = this.bubbleTalkData.getBubbleTalkData();
-                const talkdata = this.bubbleTalkData.getBubbleTalkDataJson(this.fieldScene);
+                const talkdata = this.bubbleTalkData.getTalkData(this.fieldScene);
 
                 //配列ごとに台詞を描画
                 for (const obj of talkdata!) {
@@ -327,11 +326,11 @@ export class BubbleTalk {
     //キャラクターのアイコンを設定
     private setImage(charKey: string) {
 
-        const dataDefinition = new DataDefinition();
-        const imageKeyData = dataDefinition.getCharacterImageKey(this.fieldScene, charKey);
+        const searchCharacterData = new SearchCharacterData(this.fieldScene.cache.json);
+        const imageKeyData = searchCharacterData.getImageKeys(charKey) as CharacterDataDetail;
 
         //プレイヤー画像を検索して取得できた場合、それ以外はnpcとして処理
-        if (imageKeyData) {
+        if (imageKeyData.name !== 'noName') {
             const imageKey = imageKeyData.normal;
             this.characterIcon = this.fieldScene.add.image(this.textX - 50, this.textY, 'Icon_' + imageKey);
 

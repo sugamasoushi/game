@@ -10,7 +10,7 @@ import { SelectAllow } from "../../util/SelectAllow";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
 
 export class MovieWindow extends Phaser.GameObjects.Container {
     private menuModel: MenuModel;
@@ -89,7 +89,7 @@ export class MovieWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const onSelectStart = () => {

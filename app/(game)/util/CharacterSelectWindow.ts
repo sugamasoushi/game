@@ -1,7 +1,8 @@
 import { MessageObject } from "../util/MessageObject";
 import { MessageWindow } from "../util/MessageWindow";
 import { SelectAllow } from "../util/SelectAllow";
-import { DataDefinition } from "../Data/DataDefinition";
+import { GameSettingData } from "../Data/GameSettingData";
+import { SearchCharacterData } from "../Data/SearchCharacterData";
 import { InputManager } from "../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
 
@@ -129,7 +130,7 @@ export class CharacterSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         this.subs.add(inputManager.downButton$.pipe(
@@ -187,8 +188,8 @@ export class CharacterSelectWindow extends Phaser.GameObjects.Container {
     show(partyList: Phaser.GameObjects.Sprite[] = []) {
         // もしcreateが呼ばれていない場合は、partyListから作成（ItemSelectWindow等からの呼び出し用）
         if (this.options.length === 0 && partyList.length > 0) {
-            const dataDefinition = new DataDefinition();
-            const partyNames = partyList.map(member => dataDefinition.getSpriteNameData(this.scene, member.name));
+            const searchCharacterData = new SearchCharacterData(this.scene.cache.json);
+            const partyNames = partyList.map(member => searchCharacterData.getDisplayName(member.name));
             this.create(partyNames);
         }
 

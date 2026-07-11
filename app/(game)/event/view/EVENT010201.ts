@@ -5,7 +5,7 @@ import { CharacterGameObject } from './CharacterGameObject';
 import { Npc } from "../../field/view/character/Npc";
 import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { GameStateManager } from "../../core/GameStateManager";
 
 type TalkLine = { [chara: string]: string[] };
@@ -15,7 +15,7 @@ type TalkData = Record<string, TalkGroup>;
 
 export class EVENT010201 extends BaseEvent {
     private fieldScene: FieldScene;
-    private settingData: DataDefinition;
+    private searchCharacterData: SearchCharacterData;
     private eventTalk: EventTalk;
 
     private characterGameObject: CharacterGameObject;
@@ -48,7 +48,7 @@ export class EVENT010201 extends BaseEvent {
 
     override init() {
         //会話用クラスのインスタンス生成
-        this.settingData = new DataDefinition();
+        this.searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
@@ -98,13 +98,13 @@ export class EVENT010201 extends BaseEvent {
         ]);
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
-        const grandpaImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).grandpa.normal;
+        const playerImageKey = this.searchCharacterData.getCharacterData('meina').normal;
+        const grandpaImageKey = this.searchCharacterData.getCharacterData('grandpa').normal;
 
         //キャラ画像を配置
         await Promise.all([
             this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
-            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'grandpa', grandpaImageKey, 200, 0.2, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'grandpa', grandpaImageKey, 200, 0.9, 200),
         ]);
 
         /*会話---------------------------------------------------------------------------------*/

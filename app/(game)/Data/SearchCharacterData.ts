@@ -1,17 +1,21 @@
 import { CharacterData, CharacterDataDetail } from "../lib/CharacterDataTypes";
 
+/** characterdata.json からキャラクター情報を検索する */
 export class SearchCharacterData {
-
     private characterData: CharacterData;
 
     constructor(cache: Phaser.Cache.BaseCache) {
         this.characterData = cache.get('characterdata');
     }
 
+    /** characterdata.json 全体を取得 */
+    public getAllData(): CharacterData {
+        return this.characterData;
+    }
+
     /**
-     * キャラクター名から画像キー詳細を取得する
+     * キャラクター名から詳細データを取得する
      * @param characterName キャラクター名 (例: 'meina')
-     * @returns キャラクターデータ詳細
      */
     public getCharacterData(characterName: string): CharacterDataDetail {
         const query = characterName.toLowerCase();
@@ -21,7 +25,17 @@ export class SearchCharacterData {
             }
         }
 
-        // 見つからない場合はデフォルトとして 空文字 を返す
         return this.characterData['noName'] as CharacterDataDetail;
+    }
+
+    /** 表示名を取得 */
+    public getDisplayName(characterName: string): string {
+        return this.getCharacterData(characterName).name;
+    }
+
+    /** 立ち絵・表情用の画像キーを取得 */
+    public getImageKeys(characterName: string): CharacterDataDetail {
+        const data = this.getCharacterData(characterName) as CharacterDataDetail;
+        return data;
     }
 }

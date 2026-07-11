@@ -4,7 +4,7 @@ import { FieldScene, CharacterState } from "../../lib/types";
 import { CharacterGameObject } from './CharacterGameObject';
 import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../core/GameStateManager";
 import { SelectAllow } from "../../util/SelectAllow";
@@ -12,7 +12,7 @@ import { SelectAllow } from "../../util/SelectAllow";
 export class EVENT020301 extends BaseEvent {
     private fieldScene: FieldScene;
     private uiScene: Phaser.Scene;
-    private settingData: DataDefinition;
+    private searchCharacterData: SearchCharacterData;
     private eventTalk: EventTalk;
 
     private characterGameObject: CharacterGameObject;
@@ -38,7 +38,7 @@ export class EVENT020301 extends BaseEvent {
         this.eventScene.load.start();
 
         //会話用クラスのインスタンス生成
-        this.settingData = new DataDefinition();
+        this.searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
@@ -80,8 +80,8 @@ export class EVENT020301 extends BaseEvent {
         /*会話---------------------------------------------------------------------------------*/
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
-        const lamyImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).lamy.normal;
+        const playerImageKey = this.searchCharacterData.getCharacterData('meina').normal;
+        const lamyImageKey = this.searchCharacterData.getCharacterData('lamy').normal;
 
         //キャラ画像を配置
         await Promise.all([

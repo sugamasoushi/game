@@ -6,7 +6,7 @@ import { SelectAllow } from "../../util/SelectAllow";
 import DebugMessage from '../../util/DebugMessage';
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
 
 export class EquipWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
@@ -103,7 +103,7 @@ export class EquipWindow extends Phaser.GameObjects.Container {
     }
 
     private setupPadKeyboardInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         const onSelectStart = () => {

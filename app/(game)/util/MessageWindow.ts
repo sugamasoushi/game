@@ -1,4 +1,4 @@
-import { DataDefinition } from "@/app/(game)/Data/DataDefinition";
+import { GameSettingData } from "@/app/(game)/Data/GameSettingData";
 
 export class MessageWindow extends Phaser.GameObjects.Graphics {
     public scene: Phaser.Scene;
@@ -9,7 +9,6 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
     private rectR = 16;//一旦デフォルトは16
     public width: number = 0;
     public height: number = 0;
-    private dataDefinition: DataDefinition;
 
     constructor(scene: Phaser.Scene) {
         super(scene);
@@ -21,8 +20,6 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
         this.scene.add.existing(this);
 
         //テキスト設定値取得用
-        this.dataDefinition = new DataDefinition();
-
         const sceneKey = this.scene.scene.key;
         const settingData = this.scene.cache.json.get('savedata').GameSetting.MessageWindow;
         this.backColor = settingData.backColor;
@@ -68,9 +65,9 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
 
     //テキストを基準に画面下側にウィンドウを作成。左右はオフセットを設定。
     public createEventMessageWindow(messageObject: Phaser.GameObjects.Text, R?: number) {
-        const eventMessageInfomation = this.dataDefinition.getEventMessageInfomation(this.scene);
+        const eventMessageSettings = GameSettingData.getEventMessageSettings(this.scene);
         const tileSize = 32;//マップのタイルサイズ32を基準とする
-        const rectR = R ? R : eventMessageInfomation.fontSize;//角の丸みの半径
+        const rectR = R ? R : eventMessageSettings.fontSize;//角の丸みの半径
         //const offset = tileSize * 4;
         const offset = 200;
 

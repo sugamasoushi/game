@@ -14,7 +14,7 @@ import { InputManager } from '../../core/input/InputManager';
 import { GameStateManager } from '../../core/GameStateManager';
 import { Subscription, throttleTime } from 'rxjs';
 import { State } from '../../lib/StateTypes';
-import { DataDefinition } from '../../Data/DataDefinition';
+import { EventFlagData } from '../../Data/EventFlagData';
 import { EventBus } from '../../EventBus';
 
 export class TitlePresenter {
@@ -92,7 +92,7 @@ export class TitlePresenter {
     }
 
     private setupInput() {
-        //const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        //const duration = GameSettingData.getInputSettings(this.scene).duration;
         const duration = 200;
 
         // 下キー
@@ -258,8 +258,7 @@ export class TitlePresenter {
         }, 'Continue');
 
         // コンティニューの場合、初期イベントのフラグを倒す
-        const settingData = new DataDefinition();
-        settingData.updateEventFlg(this.scene, 'EVENT0001', false);
+        EventFlagData.updateFlag(this.scene, 'EVENT0001', false);
 
         this.opening.stopOpening();
 

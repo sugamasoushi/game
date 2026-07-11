@@ -7,7 +7,7 @@ import { Sound } from "../../scenes/Sound";
 import { ItemUpdate } from "../../Data/ItemUpdate";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
 
 export class BattleSelectWindow extends Phaser.GameObjects.Container {
     private getCanNotRunawayFlg: boolean = false;
@@ -149,7 +149,7 @@ export class BattleSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         this.subs.add(inputManager.downButton$.pipe(

@@ -3,7 +3,7 @@ import { InputManager } from "../../core/input/InputManager";
 import { Player } from "../view/character/Player";
 import { GameStateManager, gameStateManager } from "../../core/GameStateManager";
 import { FieldAttack } from '../view/character/Action/FieldAttack';
-import { DataDefinition } from '../../Data/DataDefinition';
+import { SearchCharacterData } from '../../Data/SearchCharacterData';
 import { Subscription } from "rxjs";
 import { PlayerModel } from "../model/PlayerModel";
 import { PlayerView } from "../view/PlayerView";
@@ -64,8 +64,8 @@ export class PlayerPresenter {
             this.subs.unsubscribe();
         });
 
-        const settingData = new DataDefinition();
-        const imageKey = settingData.getCharacterImageKey(this.fieldScene, this.player.name)!.normal;
+        const searchCharacterData = new SearchCharacterData(this.fieldScene.cache.json);
+        const imageKey = searchCharacterData.getImageKeys(this.player.name).normal;
         this.player.setData('ImageKey', imageKey);
     }
 

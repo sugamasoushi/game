@@ -1,6 +1,6 @@
 import { ObjState } from "../../lib/FieldTypes";
 import { GameStateManager } from "../../core/GameStateManager";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { EventFlagData } from "../../Data/EventFlagData";
 
 export class CollisionObjectView {
 
@@ -27,8 +27,6 @@ export class CollisionObjectView {
             const playerNum = obj.getData('playerNum');
 
             const gameStateManager = GameStateManager.getInstance();
-            const dataDefinition = new DataDefinition();
-
             //有効状態に設定
             obj.state = ObjState.true;
             obj.setDepth(-100);
@@ -38,7 +36,7 @@ export class CollisionObjectView {
              * 
              * ※条件等の処理方法は検討の余地あり
              */
-            if (!dataDefinition.getEventFlgFromSaveDataInfomation(this.gameScene, deleteRelationEvent_1) &&
+            if (!EventFlagData.getFlag(this.gameScene, deleteRelationEvent_1) &&
                 playerNum === gameStateManager.currentPlayerPartyList.length) {
                 obj.body!.collisionCategory = 0;//衝突判定のON/OFFを切り替える
             }

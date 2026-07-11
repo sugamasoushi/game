@@ -4,7 +4,7 @@
 // import { MessageWindow } from "../../util/MessageWindow";
 // import { InputManager } from "../../core/input/InputManager";
 // import { Subscription, throttleTime } from "rxjs";
-// import { DataDefinition } from "../../Data/DataDefinition";
+// import { GameSettingData } from "../../Data/GameSettingData";
 // import { Sound } from "../../scenes/Sound";
 
 // export class MenuListWindow extends Phaser.GameObjects.Container {
@@ -100,7 +100,7 @@
 //             this.selectAllow.updatePosition(this.options[0]);
 //         }
 
-//         const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+//         const duration = GameSettingData.getInputSettings(this.scene).duration;
 //         const inputManager = InputManager.getInstance(this.scene);
 
 //         //このウィンドウを開いてから少し時間を空けないと、前の入力が残っていてすぐに反応してしまうことがあるため、少し遅らせてからイベントを設定する

@@ -1,4 +1,4 @@
-import { DataDefinition } from "../../Data/DataDefinition";
+import { EventFlagData } from "../../Data/EventFlagData";
 import { EventObjState } from "../../lib/FieldTypes";
 import { GameStateManager } from "../../core/GameStateManager";
 
@@ -21,10 +21,8 @@ export class EventObjectView {
         return new Promise<void>(async (resolve) => {
 
             const gameStateManager = GameStateManager.getInstance();
-            const dataDefinition = new DataDefinition();
-
             //状態設定
-            obj.state = dataDefinition.getEventFlgFromSaveDataInfomation(this.gameScene, obj.name);
+            obj.state = EventFlagData.getFlag(this.gameScene, obj.name);
 
             obj.setDepth(-1000);
 

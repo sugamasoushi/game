@@ -1,7 +1,7 @@
 import { FieldScene, FieldData, PropertyItem } from "../../lib/types";
 import { tilesets, MapLayerDepth } from "../../lib/FieldTypes";
 import { GameStateManager } from "../../core/GameStateManager";
-import { SearchTileNamedata } from "../../Data/SearchTileNamedata";
+import { SearchTileMapData } from "../../Data/SearchTileMapData";
 import PlasmaPostFX from "../../../../public/assets/img/effect/pipelines/PlasmaPostFX.js";
 import { TiledMapPropatiesEntity } from "./Entity/TiledMapPropatiesEntity";
 import { TiledMapLayerPropatiesEntity } from "./Entity/TiledMapLayerPropatiesEntity";
@@ -89,8 +89,7 @@ export class TileMap extends Phaser.GameObjects.Container {
         // データ内のタイルセット画像のURLの一部を書き換える。配置を変更する場合は注意。
         const tilesets: tilesets[] = this.fieldScene.cache.tilemap.get(fieldData.mapKey).data.tilesets;
 
-        // SearchTileNamedataのインスタンス化
-        const searchTileNamedata = new SearchTileNamedata(this.fieldScene.cache.json);
+        const searchTileMapData = new SearchTileMapData(this.fieldScene.cache.json);
 
         for (const tileset of tilesets) {
             const dataDirectry = tileset.image.split('/');
@@ -99,8 +98,7 @@ export class TileMap extends Phaser.GameObjects.Container {
             // 法線マップ（_n.png）のURLを生成
             const normalUrl = tileUrl.replace(/(\.[\w\d]+)$/, '_n$1');
 
-            // SearchTileNamedataを使用して判定
-            const hasNormalMap = searchTileNamedata.isNormalMap(tileset.name);
+            const hasNormalMap = searchTileMapData.isNormalMap(tileset.name);
 
             if (dataDirectry[2] === 'spritesheet') {
                 /**

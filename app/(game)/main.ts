@@ -9,6 +9,7 @@ import { MainMenu } from './scenes/MainMenu';
 import { AUTO, Game } from 'phaser';
 import { Menu } from './scenes/Menu';
 import { Event } from './scenes/Event';
+import { BubbleTalk } from './scenes/BubbleTalk';
 import { Battle } from './scenes/Battle';
 import { Sound } from './scenes/Sound';
 
@@ -61,6 +62,7 @@ const config: Phaser.Types.Core.GameConfig = {
         FieldGame,
         Menu,
         Event,
+        BubbleTalk,
         Battle,
         Sound,
         GameOver

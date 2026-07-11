@@ -1,7 +1,7 @@
 import { EventScene, FieldScene } from "../lib/types";
 import { MessageObject } from "./MessageObject";
 import { MessageWindow } from "./MessageWindow";
-import { DataDefinition } from "../Data/DataDefinition";
+import { GameSettingData } from "../Data/GameSettingData";
 import { Menu } from "../scenes/Menu";
 import { InputManager } from "../core/input/InputManager";
 import { Subscription } from "rxjs";
@@ -51,17 +51,18 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
         this.messageHeight = 0
         this.keyCode = 'keydown-A';
 
-        const settingData = new DataDefinition();
-        this.fontFamily = settingData.getEventMessageInfomation(this.fromScene).fontFamily;
-        const fontColorData = settingData.getEventMessageInfomation(this.fromScene).fontColor;
+        const eventMessageSettings = GameSettingData.getEventMessageSettings(this.fromScene);
+        this.fontFamily = eventMessageSettings.fontFamily;
+        const fontColorData = eventMessageSettings.fontColor;
         this.fontColor = Phaser.Display.Color.HexStringToColor(fontColorData).color;
-        this.fontSize = Number(settingData.getEventMessageInfomation(this.fromScene).fontSize);
-        this.lineSpaceValue = Number(settingData.getEventMessageInfomation(this.fromScene).lineSpaceValue);
-        this.textLine = Number(settingData.getEventMessageInfomation(this.fromScene).textLine);
-        this.alphaValue = Number(settingData.getMessageWindowInfomation(this.fromScene).alphaValue);
-        const backColorData = settingData.getMessageWindowInfomation(this.fromScene).backColor;
+        this.fontSize = Number(eventMessageSettings.fontSize);
+        this.lineSpaceValue = Number(eventMessageSettings.lineSpaceValue);
+        this.textLine = Number(eventMessageSettings.textLine);
+        const messageWindowSettings = GameSettingData.getMessageWindowSettings(this.fromScene);
+        this.alphaValue = Number(messageWindowSettings.alphaValue);
+        const backColorData = messageWindowSettings.backColor;
         this.backColor = Phaser.Display.Color.HexStringToColor(backColorData).color;
-        const lineColorData = settingData.getMessageWindowInfomation(this.fromScene).lineColor;
+        const lineColorData = messageWindowSettings.lineColor;
         this.lineColor = Phaser.Display.Color.HexStringToColor(lineColorData).color;
 
         //選択肢の作成

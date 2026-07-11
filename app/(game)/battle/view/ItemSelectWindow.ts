@@ -4,7 +4,8 @@ import { MessageObject } from "../../util/MessageObject";
 import { MessageWindow } from "../../util/MessageWindow";
 import { SelectAllow } from "../../util/SelectAllow";
 import { SaveDataManager } from "../../core/SaveDataManager";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { CharacterSelectWindow } from "../../util/CharacterSelectWindow";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
@@ -114,11 +115,11 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                     //パーティメンバーが2人以上の場合、使用するメンバーを選択する
                     if (this.battleModel.getPlayerPartyList().length > 1) {
 
-                        const dataDefinition = new DataDefinition();
+                        const searchCharacterData = new SearchCharacterData(this.scene.cache.json);
 
                         const partyname: string[] = [];
                         for (let i = 0; i < this.battleModel.getPlayerPartyList().length; i++) {
-                            const charcterName = dataDefinition.getSpriteNameData(this.scene, this.battleModel.getPlayerPartyList()[i].name);
+                            const charcterName = searchCharacterData.getDisplayName(this.battleModel.getPlayerPartyList()[i].name);
                             partyname.push(charcterName);
                         }
 
@@ -187,7 +188,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
     }
 
     private setupInput() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         this.subs.add(inputManager.downButton$.pipe(

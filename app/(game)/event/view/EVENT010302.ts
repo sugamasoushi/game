@@ -2,7 +2,7 @@ import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
 import { FieldScene, EventObjState } from "../../lib/types";
 import { EventTalk } from "../presenters/EventTalk";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { Npc } from "../../field/view/character/Npc";
 import { Player } from "../../field/view/character/Player";
 import { CharacterGameObject } from './CharacterGameObject';
@@ -11,7 +11,7 @@ import { GameStateManager } from "../../core/GameStateManager";
 
 export class EVENT010302 extends BaseEvent {
     private fieldScene: FieldScene;
-    private settingData: DataDefinition;
+    private searchCharacterData: SearchCharacterData;
     private eventTalk: EventTalk;
 
     private characterGameObject: CharacterGameObject;
@@ -25,7 +25,7 @@ export class EVENT010302 extends BaseEvent {
 
     override init() {
         //会話用クラスのインスタンス生成
-        this.settingData = new DataDefinition();
+        this.searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
         this.eventTalk = new EventTalk(this.eventScene);
         this.eventTalk.init();
 
@@ -55,7 +55,7 @@ export class EVENT010302 extends BaseEvent {
         /*会話---------------------------------------------------------------------------------*/
 
         //キャラの画像キーを取得
-        const playerImageKey = this.settingData.getImageKeyDataInfomation(this.eventScene).meina.normal;
+        const playerImageKey = this.searchCharacterData.getCharacterData('meina').normal;
 
         //キャラ画像を配置
         await Promise.all([

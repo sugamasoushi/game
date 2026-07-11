@@ -4,7 +4,7 @@ import { MessageWindow } from "../../util/MessageWindow";
 import { MenuTab } from "../../lib/types";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
-import { DataDefinition } from "../../Data/DataDefinition";
+import { GameSettingData } from "../../Data/GameSettingData";
 import { Sound } from "../../scenes/Sound";
 
 export class MainColumnWindow {
@@ -205,7 +205,7 @@ export class MainColumnWindow {
     }
 
     private windowTweenPadKeyBoard() {
-        const duration = new DataDefinition().getInputInfomation(this.scene).duration;
+        const duration = GameSettingData.getInputSettings(this.scene).duration;
         const inputManager = InputManager.getInstance(this.scene);
 
         // 右に入力された場合

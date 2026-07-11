@@ -84,7 +84,9 @@ npm run lint         # ESLint (configured in eslint.config.mjs)
 ## Data Files & Configuration
 
 - **Types**: [lib/types.ts](app/(game)/lib/types.ts) — GameState, FieldData, GameScene interface
-- **Characters**: [Data/CharacterDefinition.ts](app/(game)/Data/CharacterDefinition.ts)
+- **Characters**: [Data/SearchCharacterData.ts](app/(game)/Data/SearchCharacterData.ts)
+- **Game settings**: [Data/GameSettingData.ts](app/(game)/Data/GameSettingData.ts)
+- **Event flags**: [Data/EventFlagData.ts](app/(game)/Data/EventFlagData.ts)
 - **Dialogue**: [Data/BubbleTalkData.ts](app/(game)/Data/BubbleTalkData.ts)
 - **Maps**: `/public/assets/tiled/` (Tiled-exported JSON; loaded by FieldMapModel)
 - **Images**: `/public/assets/img/` (sprites, backgrounds, icons)

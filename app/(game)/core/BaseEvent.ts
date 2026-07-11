@@ -4,7 +4,7 @@ import { Player } from "../field/view/character/Player";
 import { Npc } from "../field/view/character/Npc";
 import { gameStateManager } from "../core/GameStateManager";
 import { State } from "../lib/StateTypes";
-import { DataDefinition } from "../Data/DataDefinition";
+import { EventFlagData } from "../Data/EventFlagData";
 
 //イベントクラスの基底クラス
 export class BaseEvent implements Eventer {
@@ -34,8 +34,7 @@ export class BaseEvent implements Eventer {
 
     //指定イベントのキャッシュフラグを更新
     protected updateEventFlg(eventName: string, flg: boolean) {
-        const settingData = new DataDefinition();
-        settingData.updateEventFlg(this.eventScene, eventName, flg);
+        EventFlagData.updateFlag(this.eventScene, eventName, flg);
     }
 
     //イベントオブジェクト検索

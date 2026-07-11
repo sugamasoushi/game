@@ -1,8 +1,7 @@
-import { DataDefinition } from '../Data/DataDefinition';
+import { GameSettingData } from '../Data/GameSettingData';
 
 export class SelectAllow extends Phaser.GameObjects.Graphics {
     private allowTween: Phaser.Tweens.Tween;
-    private settingData: DataDefinition;
     private direction: 'up' | 'down' | 'left' | 'right' = 'right';
     private blackEedge?:boolean
 
@@ -17,7 +16,6 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
         this.x = x;
         this.y = y;
         this.direction = direction;
-        this.settingData = new DataDefinition();
         this.blackEedge = blackEedge;
         // settingData.getTextInfomation()
     }
@@ -29,9 +27,10 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
 
         const fontSize = 24;
         //const fontSize = this.settingData.getEventMessageInfomation(this.scene).fontSize;
-        const lineColorString = this.settingData.getMessageWindowInfomation(this.scene).lineColor;
+        const messageWindowSettings = GameSettingData.getMessageWindowSettings(this.scene);
+        const lineColorString = messageWindowSettings.lineColor;
         const lineColor = Phaser.Display.Color.HexStringToColor(lineColorString).color;
-        const alphaValue = this.settingData.getMessageWindowInfomation(this.scene).alphaValue;
+        const alphaValue = messageWindowSettings.alphaValue;
 
         this.drawTriangle(fontSize, lineColor, alphaValue);
         // this.setDepth(this.depthValue + 1);
@@ -107,10 +106,11 @@ export class SelectAllow extends Phaser.GameObjects.Graphics {
         this.clear();
         if (this.allowTween) this.allowTween.pause();
 
-        const fontSize = this.settingData.getEventMessageInfomation(this.scene).fontSize;
-        const lineColorString = this.settingData.getMessageWindowInfomation(this.scene).lineColor;
+        const fontSize = GameSettingData.getEventMessageSettings(this.scene).fontSize;
+        const messageWindowSettings = GameSettingData.getMessageWindowSettings(this.scene);
+        const lineColorString = messageWindowSettings.lineColor;
         const lineColor = Phaser.Display.Color.HexStringToColor(lineColorString).color;
-        const alphaValue = this.settingData.getMessageWindowInfomation(this.scene).alphaValue;
+        const alphaValue = messageWindowSettings.alphaValue;
 
         this.drawTriangle(fontSize, lineColor, alphaValue);
     }
