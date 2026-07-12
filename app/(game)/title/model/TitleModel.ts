@@ -4,6 +4,7 @@ import { VolumeItem, VolumeItemType } from "../view/Option";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { Title } from "../../scenes/Title";
 import { GameStateManager } from "../../core/GameStateManager";
+import { ExecutionEnvironment } from '@/app/(game)/core/ExecutionEnvironment';
 
 export class TitleModel {
     public nowSelectNo: number = TitleSelect.NEWGAME;//初期値
@@ -12,6 +13,7 @@ export class TitleModel {
     public hasContinueData: boolean = false;
     public isOptionActive: boolean = false;
     public isOmakeActive: boolean = false;
+    private gameClearFlg: boolean = false;
     private saveDataManager: SaveDataManager;
     private gameStateManager: GameStateManager;
 
@@ -29,23 +31,22 @@ export class TitleModel {
         this.gameStateManager = GameStateManager.getInstance();
     }
 
-    // public async checkSaveData(): Promise<boolean> {
-    //     this.hasContinueData = await this.saveDataManager.checkSaveData();
-    //     if (this.hasContinueData) {
-    //         this.nowSelectNo = TitleSelect.CONTINUE;
-    //     }
-    //     return this.hasContinueData;
-    // }
+    public async loadSaveData(): Promise<void> {
+        this.hasContinueData = await this.saveDataManager.loadSaveData(this.titleScene);
 
-    public async loadSaveData(): Promise<void> { 
-         this.hasContinueData = await this.saveDataManager.loadSaveData(this.titleScene); 
-         if (this.hasContinueData) {
+        //セーブデータが存在する場合
+        if (this.hasContinueData) {
             this.nowSelectNo = TitleSelect.CONTINUE;
+
+            //クリアフラグ
+            if (this.titleScene.cache.json.get('savedata').GameClearFlg as boolean) {
+                this.gameClearFlg = this.titleScene.cache.json.get('savedata').GameClearFlg as boolean;
+            }
         }
     }
 
     /** savedata から音量データを読み込み、optionData と GameStateManager の両方を更新する */
-    public loadOptionData() {
+    public async loadOptionData(): Promise<void> {
         const sv = this.titleScene.cache.json.get('savedata').OptionData as OptionData;
 
         // optionData を savedata の値で同期させる
@@ -64,7 +65,24 @@ export class TitleModel {
             sv.textSpeed
         );
 
-        //console.log(this.titleScene.cache.json.get('savedata'));
+        //描画モード
+        if (this.titleScene.cache.json.get('savedata').HighDraw !== undefined || null) {
+            const highDraw = this.titleScene.cache.json.get('savedata').HighDraw as boolean;
+            this.updateHighDraw(highDraw);
+        }
+
+        //仮想パッド
+        const env = new ExecutionEnvironment();
+        if (this.titleScene.cache.json.get('savedata').VirtualPad !== undefined || null) {
+            const virtualPad = this.titleScene.cache.json.get('savedata').VirtualPad as boolean;
+            this.updateVirtualPad(virtualPad);
+
+        } else if (env.isBowserSmartPhone() || env.isPWA()) {
+            this.updateVirtualPad(true);
+
+        } else {
+            this.updateVirtualPad(false);
+        }
     }
 
     /** 現在の optionData を GameStateManager へ反映する */
@@ -76,6 +94,16 @@ export class TitleModel {
             this.optionData.seVolume,
             this.optionData.textSpeed
         );
+    }
+
+    /** 描画モードフラグを更新 */
+    public updateHighDraw(flg: boolean) {
+        this.gameStateManager.updateState({ highDraw: flg }, 'system');
+    }
+
+    /** 仮想パッドフラグを更新 */
+    public updateVirtualPad(flg: boolean) {
+        this.gameStateManager.updateState({ virtualPad: flg }, 'system');
     }
 
     public setPendingVolume(item: VolumeItemType, volume: number) {
@@ -90,4 +118,5 @@ export class TitleModel {
     }
 
     get currentOptionData(): OptionData { return this.optionData; }
+    get isGameClearFlg(): boolean { return this.gameClearFlg; }
 }

@@ -1,7 +1,7 @@
 import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { TileMap } from "@/app/(game)/field/view/TileMap";
-import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
+import { GameStateManager } from '@/app/(game)/core/GameStateManager';
 
 export class FogShader {
     private debugFlg: boolean | undefined;
@@ -112,9 +112,9 @@ export class FogShader {
 
     private async createFogShader(fogData: string) {
 
-        // PC版（Electron）の場合に作成
-        const execEnv = new ExecutionEnvironment();
-        if (execEnv.isElectron() || this.debugFlg) {
+        // 描画判定
+        const gameStateManager = GameStateManager.getInstance();
+        if (gameStateManager.isHighDraw || gameStateManager.isDebugMode) {
 
             // タイルマップから解像度を取得
             const width = this.tileMap.getMakeTilemap().widthInPixels;

@@ -14,7 +14,7 @@ export class RightButton {
         this.gameScene = uiScene.scene.get('Field') as Phaser.Scene;
     }
 
-    public async execute() {
+    public async execute(): Promise<void> {
         this.createMenuButton();
     }
 
@@ -155,6 +155,15 @@ export class RightButton {
             button.disableInteractive();
         });
         this.menuWindow.setAlpha(0.3);
+    }
+
+    public setVisibleFalse() {
+        this.hitZone.disableInteractive();
+        this.buttons.forEach(button => {
+            button.setVisible(false);
+            button.disableInteractive();
+        });
+        this.menuWindow.setVisible(false);
     }
 }
 

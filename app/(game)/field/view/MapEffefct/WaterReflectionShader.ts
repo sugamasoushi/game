@@ -1,7 +1,7 @@
 import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { TileMap } from "../TileMap";
-import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
+import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class WaterReflectionShader {
     private debugFlg: boolean | undefined;
@@ -24,9 +24,9 @@ export class WaterReflectionShader {
                 alert("WaterSurfaceのオブジェクト配置は1つのみです")
             }
 
-            // PC版（Electron）かどうかの判定
-            const execEnv = new ExecutionEnvironment();
-            if (execEnv.isElectron() || this.debugFlg) {
+            // 描画判定
+            const gameStateManager = GameStateManager.getInstance();
+            if (gameStateManager.isHighDraw || gameStateManager.isDebugMode) {
                 this.createPcVersion();
             } else {
                 this.createSmartPhoneVersion();

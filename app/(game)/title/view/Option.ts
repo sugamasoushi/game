@@ -10,6 +10,8 @@ export const VolumeItem = {
     BGS: 2,
     SE: 3,
     TEXT_SPEED: 4,
+    RENDER_MODE: 5,
+    VIRTUAL_PAD_SELECT: 6
 } as const;
 export type VolumeItemType = typeof VolumeItem[keyof typeof VolumeItem];
 
@@ -20,11 +22,30 @@ interface VolumeBarSet {
     right: Phaser.GameObjects.Text;
 }
 
+/** 描画・仮想パッド選択に必要なオブジェクト群 */
+interface BinarySelector {
+    left: Phaser.GameObjects.Text;
+    value: Phaser.GameObjects.Text;
+    right: Phaser.GameObjects.Text;
+}
+
 export class Option {
     private optionGroup: Phaser.GameObjects.Group | null = null;
 
-    /** 各音量項目のバーオブジェクト（master/bgm/bgs/se 順） */
+    /** 各音量項目のバーオブジェクト（master/bgm/bgs/se/textSpeed 順） */
     private volumeBars: VolumeBarSet[] = [];
+
+    /** 描画モード選択UI */
+    private renderModeSelector: BinarySelector | null = null;
+
+    /** 仮想パッド選択UI */
+    private virtualPadSelector: BinarySelector | null = null;
+
+    /** 現在の描画モード（true: PC / false: スマートフォン） */
+    private pendingHighDraw: boolean = true;
+
+    /** 現在の仮想パッド設定（true: ON / false: OFF） */
+    private pendingVirtualPad: boolean = true;
 
     /** 現在の音量データ（表示・操作用の一時データ） */
     private pendingVolumes: OptionData = {
@@ -45,83 +66,31 @@ export class Option {
     private backButton: Phaser.GameObjects.Text | null = null;
     private backButtonWindow: MessageWindow | null = null;
 
-    /** 戻るボタンが押されたときのコールバック（Presenterで設定） */
+    /** コールバック（Presenterで設定） */
     public onBack: () => void = () => { };
-
     public onVolumeClick: (item: VolumeItemType, volume: number) => void = () => { };
+    public onRenderModeClick: (highDraw: boolean) => void = () => { };
+    public onVirtualPadClick: (enabled: boolean) => void = () => { };
 
     constructor(private titleScene: Title) { }
 
     // public update(time: number, delta: number): void { }
 
-    /** 現在の保留中音量データを返す */
-    public getPendingVolumes(): OptionData {
-        return { ...this.pendingVolumes };
-    }
-
-    /** マスタ音量を設定（後方互換用） */
-    public setPendingMasterVolume(volume: number) {
-        this.pendingVolumes.masterVolume = Phaser.Math.Clamp(volume, 0, 100);
-        this.updateBarDisplay(VolumeItem.MASTER, this.pendingVolumes.masterVolume);
-    }
-
-    /** 指定項目の音量を設定 */
-    public setPendingVolume(item: VolumeItemType, volume: number) {
-        const clamped = Phaser.Math.Clamp(volume, 0, 100);
-        this.focusedItem = item;
-        switch (item) {
-            case VolumeItem.MASTER: this.pendingVolumes.masterVolume = clamped; break;
-            case VolumeItem.BGM: this.pendingVolumes.bgmVolume = clamped; break;
-            case VolumeItem.BGS: this.pendingVolumes.bgsVolume = clamped; break;
-            case VolumeItem.SE: this.pendingVolumes.seVolume = clamped; break;
-            case VolumeItem.TEXT_SPEED: this.pendingVolumes.textSpeed = clamped; break;
-        }
-        this.updateBarDisplay(item, clamped);
-        this.updateCursor();
-    }
-
-    /** 現在フォーカス中の項目 */
-    public getFocusedItem(): VolumeItemType { return this.focusedItem; }
-
-    /** フォーカス項目の音量 */
-    public getFocusedVolume(): number {
-        switch (this.focusedItem) {
-            case VolumeItem.MASTER: return this.pendingVolumes.masterVolume;
-            case VolumeItem.BGM: return this.pendingVolumes.bgmVolume;
-            case VolumeItem.BGS: return this.pendingVolumes.bgsVolume;
-            case VolumeItem.SE: return this.pendingVolumes.seVolume;
-            case VolumeItem.TEXT_SPEED: return this.pendingVolumes.textSpeed ?? 50;
-        }
-    }
-
-    /** フォーカスを次の項目へ移動 */
-    public focusNext() {
-        const max = VolumeItem.TEXT_SPEED;
-        this.focusedItem = (this.focusedItem < max
-            ? this.focusedItem + 1
-            : VolumeItem.MASTER) as VolumeItemType;
-        this.updateCursor();
-    }
-
-    /** フォーカスを前の項目へ移動 */
-    public focusPrev() {
-        const max = VolumeItem.TEXT_SPEED;
-        this.focusedItem = (this.focusedItem > VolumeItem.MASTER
-            ? this.focusedItem - 1
-            : max) as VolumeItemType;
-        this.updateCursor();
-    }
-
     /** オプションメニューを表示 */
-    public showOptionMenu(volumes: OptionData) {
+    public showOptionMenu(volumes: OptionData, highDraw: boolean, virtualPad: boolean) {
         this.pendingVolumes = { ...volumes };
+        this.pendingHighDraw = highDraw;
+        this.pendingVirtualPad = virtualPad;
         this.focusedItem = VolumeItem.MASTER;
         this.volumeBars = [];
         this.cursorTexts = [];
+        this.renderModeSelector = null;
+        this.virtualPadSelector = null;
 
         const height = Number(this.titleScene.game.config.height);
         const textX = 270;
-        const textY = 300;
+        const rowGap = 100;
+        const textY = 300 - rowGap; // 描画モード追加行分、全体を上にずらす
         const depth = height + 10000;
 
         const messageObject = new MessageObject();
@@ -134,6 +103,8 @@ export class Option {
             messageObject.createTextObject(this.titleScene, textX, textY + 225, ['環境音量']),
             messageObject.createTextObject(this.titleScene, textX, textY + 275, ['効果音量']),
             messageObject.createTextObject(this.titleScene, textX, textY + 325, ['テキストスピード']),
+            messageObject.createTextObject(this.titleScene, textX, textY + 375, ['描画モード']),
+            messageObject.createTextObject(this.titleScene, textX, textY + 425, ['仮想パッド']),
         ];
         labels.forEach(t => t.setDepth(depth));
 
@@ -141,7 +112,6 @@ export class Option {
         messageWindow.init();
         messageWindow.createEventMessageWindow(labels[0]);
 
-        // 各音量項目のバー描画
         const itemVolumes: number[] = [
             volumes.masterVolume,
             volumes.bgmVolume,
@@ -155,7 +125,15 @@ export class Option {
             messageWindow as unknown as Phaser.GameObjects.GameObject,
         ];
 
-        const rows = [textY + 125, textY + 175, textY + 225, textY + 275, textY + 325];
+        const rows = [
+            textY + 125,
+            textY + 175,
+            textY + 225,
+            textY + 275,
+            textY + 325,
+            textY + 375,
+            textY + 425
+        ];
 
         for (let i = 0; i < itemVolumes.length; i++) {
             const rowY = rows[i];
@@ -197,11 +175,85 @@ export class Option {
             this.updateBarDisplay(i as VolumeItemType, itemVolumes[i]);
         }
 
+        // 描画モード行
+        const renderModeY = rows[VolumeItem.RENDER_MODE];
+        const renderModeCursor = messageObject.createTextObject(this.titleScene, textX - 30, renderModeY, ['']);
+        renderModeCursor.setDepth(depth);
+
+        const renderModeLeft = messageObject.createTextObject(this.titleScene, textX + 300, renderModeY, ['◀']);
+        renderModeLeft.setDepth(depth);
+
+        const renderModeValue = messageObject.createTextObject(this.titleScene, textX + 400, renderModeY, ['']);
+        renderModeValue.setDepth(depth);
+
+        const renderModeRight = messageObject.createTextObject(this.titleScene, textX + 700, renderModeY, ['▶']);
+        renderModeRight.setDepth(depth);
+
+        renderModeLeft.setInteractive({ useHandCursor: true });
+        renderModeRight.setInteractive({ useHandCursor: true });
+
+        renderModeLeft.on('pointerdown', () => {
+            this.setPendingHighDraw(false);
+            this.onRenderModeClick(false);
+        });
+        renderModeRight.on('pointerdown', () => {
+            this.setPendingHighDraw(true);
+            this.onRenderModeClick(true);
+        });
+
+        this.renderModeSelector = { left: renderModeLeft, value: renderModeValue, right: renderModeRight };
+        this.cursorTexts.push(renderModeCursor);
+        allObjects.push(renderModeCursor, renderModeLeft, renderModeValue, renderModeRight);
+        this.updateRenderModeDisplay();
+
+        // 仮想パッド行
+        const virtualPadY = rows[VolumeItem.VIRTUAL_PAD_SELECT];
+        const virtualPadCursor = messageObject.createTextObject(this.titleScene, textX - 30, virtualPadY, ['']);
+        virtualPadCursor.setDepth(depth);
+
+        const virtualPadLeft = messageObject.createTextObject(this.titleScene, textX + 300, virtualPadY, ['◀']);
+        virtualPadLeft.setDepth(depth);
+
+        const virtualPadValue = messageObject.createTextObject(this.titleScene, textX + 400, virtualPadY, ['']);
+        virtualPadValue.setDepth(depth);
+
+        const virtualPadRight = messageObject.createTextObject(this.titleScene, textX + 700, virtualPadY, ['▶']);
+        virtualPadRight.setDepth(depth);
+
+        virtualPadLeft.setInteractive({ useHandCursor: true });
+        virtualPadRight.setInteractive({ useHandCursor: true });
+
+        virtualPadLeft.on('pointerdown', () => {
+            this.setPendingVirtualPad(false);
+            this.onVirtualPadClick(false);
+        });
+        virtualPadRight.on('pointerdown', () => {
+            this.setPendingVirtualPad(true);
+            this.onVirtualPadClick(true);
+        });
+
+        this.virtualPadSelector = { left: virtualPadLeft, value: virtualPadValue, right: virtualPadRight };
+        this.cursorTexts.push(virtualPadCursor);
+        allObjects.push(virtualPadCursor, virtualPadLeft, virtualPadValue, virtualPadRight);
+        this.updateVirtualPadDisplay();
+
         this.optionGroup = this.titleScene.add.group(allObjects);
         this.updateCursor();
 
         // 戻るボタンを作成してグループに追加
         this.backButtonCreate(textX + 780, textY + 90);
+    }
+
+    /** 描画モード表示を更新 */
+    private updateRenderModeDisplay() {
+        if (!this.renderModeSelector) return;
+        this.renderModeSelector.value.setText(this.pendingHighDraw ? 'ＰＣ（高負荷）' : 'ＳＰ（低負荷）');
+    }
+
+    /** 仮想パッド表示を更新 */
+    private updateVirtualPadDisplay() {
+        if (!this.virtualPadSelector) return;
+        this.virtualPadSelector.value.setText(this.pendingVirtualPad ? 'ＯＮ' : 'ＯＦＦ');
     }
 
     /** バー表示を更新 */
@@ -243,6 +295,8 @@ export class Option {
         }
         this.volumeBars = [];
         this.cursorTexts = [];
+        this.renderModeSelector = null;
+        this.virtualPadSelector = null;
     }
 
     private backButtonCreate(x: number, y: number) {
@@ -273,5 +327,103 @@ export class Option {
     private backSubmit() {
         this.hideOptionMenu();
         this.onBack();
+    }
+
+    /** 現在の保留中音量データを返す */
+    public getPendingVolumes(): OptionData {
+        return { ...this.pendingVolumes };
+    }
+
+    /** マスタ音量を設定（後方互換用） */
+    public setPendingMasterVolume(volume: number) {
+        this.pendingVolumes.masterVolume = Phaser.Math.Clamp(volume, 0, 100);
+        this.updateBarDisplay(VolumeItem.MASTER, this.pendingVolumes.masterVolume);
+    }
+
+    /** 指定項目の音量を設定 */
+    public setPendingVolume(item: VolumeItemType, volume: number) {
+        const clamped = Phaser.Math.Clamp(volume, 0, 100);
+        this.focusedItem = item;
+        switch (item) {
+            case VolumeItem.MASTER: this.pendingVolumes.masterVolume = clamped; break;
+            case VolumeItem.BGM: this.pendingVolumes.bgmVolume = clamped; break;
+            case VolumeItem.BGS: this.pendingVolumes.bgsVolume = clamped; break;
+            case VolumeItem.SE: this.pendingVolumes.seVolume = clamped; break;
+            case VolumeItem.TEXT_SPEED: this.pendingVolumes.textSpeed = clamped; break;
+        }
+        this.updateBarDisplay(item, clamped);
+        this.updateCursor();
+    }
+
+    /** 現在フォーカス中の項目 */
+    public getFocusedItem(): VolumeItemType { return this.focusedItem; }
+
+    /** フォーカス項目の音量 */
+    public getFocusedVolume(): number {
+        switch (this.focusedItem) {
+            case VolumeItem.MASTER: return this.pendingVolumes.masterVolume;
+            case VolumeItem.BGM: return this.pendingVolumes.bgmVolume;
+            case VolumeItem.BGS: return this.pendingVolumes.bgsVolume;
+            case VolumeItem.SE: return this.pendingVolumes.seVolume;
+            case VolumeItem.TEXT_SPEED: return this.pendingVolumes.textSpeed ?? 50;
+            default: return 0;
+        }
+    }
+
+    /** フォーカスを次の項目へ移動 */
+    public focusNext() {
+        const max = VolumeItem.VIRTUAL_PAD_SELECT;
+        this.focusedItem = (this.focusedItem < max
+            ? this.focusedItem + 1
+            : VolumeItem.MASTER) as VolumeItemType;
+        this.updateCursor();
+    }
+
+    /** フォーカスを前の項目へ移動 */
+    public focusPrev() {
+        const max = VolumeItem.VIRTUAL_PAD_SELECT;
+        this.focusedItem = (this.focusedItem > VolumeItem.MASTER
+            ? this.focusedItem - 1
+            : max) as VolumeItemType;
+        this.updateCursor();
+    }
+
+    /** 描画モードを設定（true: PC / false: スマートフォン） */
+    public setPendingHighDraw(highDraw: boolean) {
+        console.log(highDraw)
+        this.pendingHighDraw = highDraw;
+        this.focusedItem = VolumeItem.RENDER_MODE;
+        this.updateRenderModeDisplay();
+        this.updateCursor();
+    }
+
+    /** 描画モードを左右キー方向に循環切り替え（スマートフォン ⇔ PC） */
+    public cycleRenderMode(delta: number): boolean {
+        const options = [false, true] as const;
+        const currentIndex = this.pendingHighDraw ? 1 : 0;
+        const nextIndex = delta > 0
+            ? (currentIndex + 1) % options.length
+            : (currentIndex - 1 + options.length) % options.length;
+        this.setPendingHighDraw(options[nextIndex]);
+        return options[nextIndex];
+    }
+
+    /** 仮想パッドを設定（true: ON / false: OFF） */
+    public setPendingVirtualPad(enabled: boolean) {
+        this.pendingVirtualPad = enabled;
+        this.focusedItem = VolumeItem.VIRTUAL_PAD_SELECT;
+        this.updateVirtualPadDisplay();
+        this.updateCursor();
+    }
+
+    /** 仮想パッドを左右キー方向に循環切り替え（OFF ⇔ ON） */
+    public cycleVirtualPad(delta: number): boolean {
+        const options = [false, true] as const;
+        const currentIndex = this.pendingVirtualPad ? 1 : 0;
+        const nextIndex = delta > 0
+            ? (currentIndex + 1) % options.length
+            : (currentIndex - 1 + options.length) % options.length;
+        this.setPendingVirtualPad(options[nextIndex]);
+        return options[nextIndex];
     }
 }

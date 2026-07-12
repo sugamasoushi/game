@@ -1,6 +1,6 @@
 import { BattleScene } from "@/app/(game)/lib/types";
-import { ExecutionEnvironment } from "../../../core/ExecutionEnvironment";
 import { Fog } from "../Effect/Fog";
+import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class hill extends Phaser.GameObjects.Container {
     private debugFlg: boolean | undefined;
@@ -46,9 +46,9 @@ export class hill extends Phaser.GameObjects.Container {
         const width = this.scene.game.canvas.width;
         const height = this.scene.game.canvas.height;
 
-        // PC版（Electron）かどうかの判定
-        const execEnv = new ExecutionEnvironment();
-        if (execEnv.isElectron() || this.debugFlg) {
+        // 描画判定
+        const gameStateManager = GameStateManager.getInstance();
+        if (gameStateManager.isHighDraw || gameStateManager.isDebugMode) {
 
             //かなり重いシェーダー
             this.shader = this.scene.add.shader('blueSky', width / 2, height / 2, width, height);

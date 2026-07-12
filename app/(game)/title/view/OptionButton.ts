@@ -33,14 +33,6 @@ export class OptionButton {
             this.selectTween = null;
         }
 
-        // if (target) {
-        //     this.titleScene.tweens.add({
-        //         targets: target,
-        //         alpha: 0,
-        //         duration: 200
-        //     });
-        // }
-
         return new Promise(resolve => {
             this.titleScene.tweens.add({
                 targets: target,

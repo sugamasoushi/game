@@ -1,5 +1,4 @@
 import { BattleScene } from "@/app/(game)/lib/types";
-import { ExecutionEnvironment } from "../../../core/ExecutionEnvironment";
 import { Fog } from "../Effect/Fog";
 
 export class forest extends Phaser.GameObjects.Container {

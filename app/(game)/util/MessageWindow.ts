@@ -64,16 +64,17 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
     }
 
     //テキストを基準に画面下側にウィンドウを作成。左右はオフセットを設定。
-    public createEventMessageWindow(messageObject: Phaser.GameObjects.Text, R?: number) {
+    public createEventMessageWindow(messageObject: Phaser.GameObjects.Text, R?: number, extraTopHeight?: number) {
         const eventMessageSettings = GameSettingData.getEventMessageSettings(this.scene);
         const tileSize = 32;//マップのタイルサイズ32を基準とする
         const rectR = R ? R : eventMessageSettings.fontSize;//角の丸みの半径
         //const offset = tileSize * 4;
         const offset = 200;
+        const extraTop = extraTopHeight ?? 0;
 
         //初期位置を設定
         this.x = offset;
-        this.y = messageObject.y - tileSize;
+        this.y = messageObject.y - tileSize - extraTop;
 
         this.width = Number(messageObject.scene.game.canvas.width) - offset * 2;
         this.height = this.scene.game.canvas.height - this.y - tileSize;

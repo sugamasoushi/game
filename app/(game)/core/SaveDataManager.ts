@@ -55,32 +55,6 @@ export class SaveDataManager {
         return result;
     }
 
-    //セーブデータをローカルストレージまたはElectronから読み込み
-    // public async checkSaveData() {
-    //     let result = false;
-    //     let savedata;
-    //     if (window.electronAPI) {
-    //         savedata = await window.electronAPI.loadData();
-    //         if (typeof savedata === 'string') {
-    //             try {
-    //                 savedata = JSON.parse(savedata);
-    //             } catch (e) {
-    //                 console.error("Failed to parse savedata from Electron:", e);
-    //             }
-    //         }
-    //     } else {
-    //         const localData = localStorage.getItem('savedata');
-    //         if (localData) {
-    //             savedata = JSON.parse(localData);
-    //         }
-    //     }
-
-    //     //データが存在する場合
-    //     if (savedata) {
-    //         result = true;
-    //     }
-    //     return result;
-    // }
 
     /**
      * アイテムリストのチェック

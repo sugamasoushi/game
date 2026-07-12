@@ -28,6 +28,11 @@ export enum BgmState {
   GAMEOVER = 50
 }
 
+export enum DrawingSate {
+  LOW = 10,
+  HIGH = 20
+}
+
 export interface GameState {
   state: State;
   sceneKey?: string; // 更新元のキーを追加
@@ -41,6 +46,10 @@ export interface GameState {
   eventObj?: Phaser.Physics.Arcade.Sprite;
   bgmState: BgmState;
   optionData: OptionData;
+  highDraw: boolean;
+  virtualPad: boolean;
+  gameClearFlg: boolean;
+  debugMode: boolean;
 }
 
 /** 状態（State）の振る舞い */

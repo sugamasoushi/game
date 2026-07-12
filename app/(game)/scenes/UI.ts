@@ -5,10 +5,8 @@ import { UiModel } from '../UI/model/UiModel';
 import { MenuButton } from '../UI/view/MenuButton';
 import { LeftButton } from '../UI/view/LeftButton';
 import { RightButton } from '../UI/view/RightButton';
-import { ExecutionEnvironment } from '../core/ExecutionEnvironment';
 
 export class UI extends Scene {
-    private debugFlg: boolean | undefined;
 
     game: Phaser.Game;
 
@@ -23,30 +21,11 @@ export class UI extends Scene {
 
     init() {
         console.log("UI scene")
-        this.debugFlg = this.game.config.physics.arcade?.debug;
 
         this.uiModel = new UiModel(this);
         this.menuButton = new MenuButton(this);
         this.leftButton = new LeftButton(this);
         this.rightButton = new RightButton(this);
-
-        const execEnv = new ExecutionEnvironment();
-
-        // Electron環境かつ開発モードではない場合は仮想パッドを非表示（処理を無効化）
-        if (execEnv.isElectron() && !this.debugFlg) {
-
-            this.leftButton.execute = async () => { };
-            this.leftButton.fadeIn = () => { };
-            this.leftButton.fadeOut = () => { };
-            this.leftButton.setEnable = () => { };
-            this.leftButton.setDisable = () => { };
-
-            this.rightButton.execute = async () => { };
-            this.rightButton.fadeIn = () => { };
-            this.rightButton.fadeOut = () => { };
-            this.rightButton.setEnable = () => { };
-            this.rightButton.setDisable = () => { };
-        }
 
         this.uiPresenter = new UiPresenter(
             this,
@@ -71,11 +50,15 @@ export class UI extends Scene {
             this.rightButton.setDisable();
         });
 
+        this.game.events.on('UI_VISIBLE_FALSE', () => {
+            this.leftButton.setVisibleFalse();
+            this.rightButton.setVisibleFalse();
+        });
+
         //イベントの解除
         this.game.events.once('shutdown', () => {
             //this.game.events.off('UI_OPEN');
             this.game.events.off('UI_CLOSE');
         });
     }
-
 }

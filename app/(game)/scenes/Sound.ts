@@ -9,9 +9,9 @@ export class Sound extends Scene {
 
     // 💡 音量設定（0.0 〜 1.0）
     public masterVolume: number = 1; // 全体の音量
-    public bgmVolume: number = 0.7;    // BGM用
-    public bgsVolume: number = 0.7;    // 環境音（Background Sound）用
-    public seVolume: number = 0.7;     // 効果音用
+    public bgmVolume: number = 1;    // BGM用
+    public bgsVolume: number = 1;    // 環境音（Background Sound）用
+    public seVolume: number = 1;     // 効果音用
 
     private currentBgmKey: string;
     private currentBgsKey: string;
@@ -91,6 +91,7 @@ export class Sound extends Scene {
         // this.SE_boosterJump1.volume = 0.7;
 
         this.setSubscription();
+        this.events.once('shutdown', () => this.subs.unsubscribe());
     }
 
     stopAllBgm() {
@@ -126,16 +127,6 @@ export class Sound extends Scene {
                 }
             })
         );
-
-        // this.subs.add(
-        //     gameStateManager.mapData$.subscribe(({ mapKey, state }) => {
-
-        //         //初期値の場合は処理しない
-        //         if (mapKey === 'init' || state === State.LOAD || state === State.GAME_RESTART) return;
-
-        //         //this.updateBgm(mapKey);
-        //     })
-        // );
 
         //音量設定
         this.subs.add(
@@ -319,9 +310,4 @@ export class Sound extends Scene {
     //         this.currentBgs.setVolume(this.bgsVolume * this.masterVolume);
     //     }
     // }
-
-    destroy() {
-        //基本的に購読解除しない
-        this.subs.unsubscribe();
-    }
 }

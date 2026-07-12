@@ -1,5 +1,5 @@
 import { BattleScene } from "@/app/(game)/lib/types";
-import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
+import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class cave extends Phaser.GameObjects.Container {
     private debugFlg: boolean | undefined;
@@ -132,9 +132,9 @@ export class cave extends Phaser.GameObjects.Container {
 
     private async createSparkling() {
 
-        // PC版（Electron）かどうかの判定
-        const execEnv = new ExecutionEnvironment();
-        if (execEnv.isElectron() || this.debugFlg) {
+        // 描画判定
+        const gameStateManager = GameStateManager.getInstance();
+        if (gameStateManager.isHighDraw || gameStateManager.isDebugMode) {
 
             // タイルマップから解像度を取得
             const width = this.scene.game.canvas.width;

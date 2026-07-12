@@ -33,7 +33,7 @@ export class UiPresenter {
         this.gameScene = this.uiScene.scene.get('Field') as Phaser.Scene;
     }
 
-    public execute() {
+    public async execute() {
         const gameStateManager = GameStateManager.getInstance();
 
         //this.menuButton.execute();

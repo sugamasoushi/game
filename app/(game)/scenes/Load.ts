@@ -292,6 +292,11 @@ export class Load extends Scene {
 
             // 再表示する（起こす）
             this.scene.wake('UI');
+
+            //仮想パッド設定
+            if (!manager.isVirtualPad) {
+                this.game.events.emit('UI_VISIBLE_FALSE');
+            }
         });
 
         this.scene.scene.time.delayedCall(10, () => {

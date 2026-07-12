@@ -116,6 +116,9 @@
         "seVolume": 100,
         "textSpeed": 50
     },
+    "HighDraw": true,
+    "VirtualPad": true,
+    "GameClearFlg": false,
     "EventFlag": {
         "EVENT010101": true,
         "EVENT010201": true,

@@ -30,7 +30,8 @@ export class SceneController extends Scene {
         this.load.image('meinaOpImageHome', 'assets/img/background/ComfyUI_temp_xsgbd_00098_.png');
         this.load.image('lamyOpImage', 'assets/img/CharaStand/ラミィOP画像.png');
         this.load.image('lamyOpImageHome', 'assets/img/background/battle_forest mansion.png');
-        
+        this.load.image('manualIcon', 'assets/img/manual/manualIcon.png');
+
         this.load.image('spark', 'assets/img/effect/elec3.png');
     }
 
@@ -45,12 +46,17 @@ export class SceneController extends Scene {
             }, 100);
         });
 
-        //gameAllStateModel.isInitialize(this.registry, this.cache);//まだ使えてない
-
-        await this.alert();
-
         //状態管理クラス
         const manager = GameStateManager.getInstance();
+
+        //開発モードの設定
+        if (this.game.config.physics.arcade?.debug) { manager.updateState({ debugMode: true }, 'system'); }
+
+        //実行環境の情報を更新
+        const executionEnvironment = new ExecutionEnvironment();
+        executionEnvironment.updateHighDraw();
+
+        await this.alert();
 
         // 既存インスタンスが存在する場合は購読を解除（念押しチェック）
         if (this.stateSubscription) {
@@ -194,9 +200,8 @@ export class SceneController extends Scene {
     }
 
     async alert() {
-        if (this.debugFlg) return;
-
         const executionEnvironment = new ExecutionEnvironment();
+        if (executionEnvironment.isDebug()) return;
 
         const gameWidth = Number(this.game.config.width)
         const gameHeight = Number(this.game.config.height)

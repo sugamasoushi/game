@@ -23,6 +23,12 @@ export class CacheDataUpdate {
         savedataOption.bgsVolume = manager.currentOptionData.bgsVolume;
         savedataOption.textSpeed = manager.currentOptionData.textSpeed;
 
+        //描画モードの同期
+        (this.scene.cache.json.get('savedata').HighDraw as boolean) = manager.isHighDraw;
+
+        //仮想パッド情報の同期
+        (this.scene.cache.json.get('savedata').VirtualPad as boolean) = manager.isVirtualPad;
+
         // プレイヤーデータの同期
         const partyList = manager.currentPlayerPartyList;
 

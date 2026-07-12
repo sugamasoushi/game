@@ -12,7 +12,7 @@ export class Omake {
 
     private selectedIndex: number = 0;
     private isPlaying: boolean = false;
-    private videoArray = ['メイナ', 'ラミィ１', 'ラミィ２', 'イベント01', 'イベント02'];
+    private videoArray = ['設定とか', 'ラミィアタック', 'イベント01', 'イベント02'];
 
     private soundScene: Sound;
 
@@ -146,48 +146,30 @@ export class Omake {
 
         try {
             switch (key) {
-                case 'メイナ': {
-                    await loadVideo('meina_video', 'video/ComfyUI_00010_.mp4');
-                    const video = this.titleScene.add.video(gameWidth / 2, gameHeight / 2, 'meina_video');
-                    video.setDepth(depth);
-                    video.setScale(0.6);
-                    video.play();
-                    await new Promise<void>(resolve => {
-                        video.once('complete', () => {
-                            this.titleScene.time.delayedCall(time, () => {
-                                video.destroy();
-                                resolve();
-                            });
-                        });
+                case '設定とか': {
+                    const key = 'omake1';
+                    await loadImage(key, 'img/eventpicture/omake1.png');
+                    const screenX = Number(this.titleScene.game.config.width);
+                    const screenY = Number(this.titleScene.game.config.height);
+                    const eventImage = this.titleScene.add.image(screenX / 2, screenY / 2, key);
+                    eventImage.setDepth(depth).setInteractive({ useHandCursor: true });
+                    eventImage.once('pointerdown', () => {
+                        eventImage.destroy();
                     });
                     break;
                 }
-                case 'ラミィ１': {
-                    await loadVideo('lamy1_video', 'video/ComfyUI_00018_.mp4');
-                    const video1 = this.titleScene.add.video(gameWidth / 2, gameHeight / 2, 'lamy1_video');
+                case 'ラミィアタック': {
+                    this.soundScene.sound.pauseAll();
+                    await loadVideo('lamy_video', 'video/vidu-video-3213668993097372.mp4');
+                    const video1 = this.titleScene.add.video(gameWidth / 2, gameHeight / 2, 'lamy_video');
                     video1.setDepth(depth);
                     video1.setScale(0.8);
                     video1.play();
                     await new Promise<void>(resolve => {
                         video1.once('complete', () => {
                             this.titleScene.time.delayedCall(time, () => {
+                                this.soundScene.sound.resumeAll();
                                 video1.destroy();
-                                resolve();
-                            });
-                        });
-                    });
-                    break;
-                }
-                case 'ラミィ２': {
-                    await loadVideo('lamy2_video', 'video/vidu-video-3213668993097372.mp4');
-                    const video2 = this.titleScene.add.video(gameWidth / 2, gameHeight / 2, 'lamy2_video');
-                    video2.setDepth(depth);
-                    video2.setScale(0.5);
-                    video2.play();
-                    await new Promise<void>(resolve => {
-                        video2.once('complete', () => {
-                            this.titleScene.time.delayedCall(time, () => {
-                                video2.destroy();
                                 resolve();
                             });
                         });
@@ -259,7 +241,7 @@ export class Omake {
 
                                 //スライド後、最後の画像が完了したら終了
                                 if (currentImageIndex + 1 >= eventImage.length) {
-                                    eventImage.forEach(img =>{
+                                    eventImage.forEach(img => {
                                         img.destroy();
                                     })
                                     leftArrow.destroy();

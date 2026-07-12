@@ -15,7 +15,11 @@ const INITIAL_STATE: GameState = {
     battleFieldKey: 'string',
     eventObj: undefined,
     bgmState: BgmState.NOSTATE,
-    optionData: { masterVolume: 100, bgmVolume: 100, bgsVolume: 100, seVolume: 100, textSpeed: 50 }
+    optionData: { masterVolume: 100, bgmVolume: 100, bgsVolume: 100, seVolume: 100, textSpeed: 50 },
+    highDraw: true,
+    virtualPad: true,
+    gameClearFlg: false,
+    debugMode: false
 }
 
 export class GameStateManager {
@@ -97,6 +101,13 @@ export class GameStateManager {
 
     public readonly optionData$: Observable<OptionData> = this.gameState$.pipe(
         map(gameState => gameState.optionData),
+        distinctUntilChanged()
+    );
+
+    public readonly virtualPad$: Observable<boolean> = this.gameState$.pipe(
+        map(gameState => gameState.virtualPad),
+
+        //同じ入力値だった場合は通知しない
         distinctUntilChanged()
     );
 
@@ -226,6 +237,10 @@ export class GameStateManager {
     public get currentFieldEnemyList(): Phaser.GameObjects.Sprite[] { return this.gameState$.value.fieldEnemyList; }
     public get currentBattleFieldKey(): string { return this.gameState$.value.battleFieldKey; }
     public get currentOptionData(): OptionData { return this.gameState$.value.optionData; }
+    public get isHighDraw(): boolean { return this.gameState$.value.highDraw; }
+    public get isVirtualPad(): boolean { return this.gameState$.value.virtualPad; }
+    public get isGameClearFlg(): boolean { return this.gameState$.value.gameClearFlg; }
+    public get isDebugMode(): boolean { return this.gameState$.value.debugMode; }
 }
 
 // 唯一のインスタンスを公開（シングルトン）

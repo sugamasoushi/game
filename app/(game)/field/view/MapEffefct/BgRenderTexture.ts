@@ -2,7 +2,6 @@ import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { TileMap } from "@/app/(game)/field/view/TileMap";
 import { Npc } from "@/app/(game)/field/view/character/Npc";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
-import { ExecutionEnvironment } from "@/app/(game)/core/ExecutionEnvironment";
 
 // キャラクター描画に必要なプロパティを持つ型
 type CharacterLike = Phaser.GameObjects.Sprite & {
@@ -58,9 +57,9 @@ export class BgRenderTexture {
             this.bgRenderTexture = this.fieldScene.add.renderTexture(0, 0, width, height);
             for (const tilemapLayer of this.tileMap.getWaterSrufaceSubjectTilemapLayerList()) {
 
-                // PC版（Electron）かどうかの判定
-                const execEnv = new ExecutionEnvironment();
-                if (execEnv.isElectron()) {
+                // 描画判定
+                const gameStateManager = GameStateManager.getInstance();
+                if (gameStateManager.isHighDraw || gameStateManager.isDebugMode) {
                     this.bgRenderTexture.draw(tilemapLayer);
                 } else {
                     this.bgRenderTexture.draw(tilemapLayer, 0.5, 0.5);

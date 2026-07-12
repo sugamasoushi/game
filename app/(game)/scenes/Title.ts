@@ -9,6 +9,7 @@ import { ContinueButton } from '../title/view/ContinueButton';
 import { OptionButton } from '../title/view/OptionButton';
 import { OmakeButton } from '../title/view/OmakeButton';
 import { TitlePresenter } from '../title/presenter/TitlePresenter';
+import { ManualButton } from '../title/view/ManualButton';
 
 export class Title extends Scene {
     private debugFlg: boolean | undefined;
@@ -60,6 +61,7 @@ export class Title extends Scene {
         const continueButton = new ContinueButton(this);
         const optionButton = new OptionButton(this);
         const omakeButton = new OmakeButton(this);
+        const manualButton = new ManualButton(this);
 
         this.presenter = new TitlePresenter(
             this,
@@ -72,6 +74,7 @@ export class Title extends Scene {
             continueButton,
             optionButton,
             omakeButton,
+            manualButton
         );
 
         // 実行開始

@@ -2,24 +2,24 @@ import { GameObjects } from 'phaser';
 import { Title } from '../../scenes/Title';
 
 export class OmakeButton {
-    public OmakeStart: GameObjects.Text;
+    public OmakeButton: GameObjects.Text;
     private selectTween: Phaser.Tweens.Tween | null = null;
     public onOmake: () => void = () => { };
 
     constructor(private titleScene: Title) { }
 
-    public createMenuButtons() {
+    public createOmakeButtons() {
         return new Promise<void>(resolve => {
             const gameWidth = Number(this.titleScene.game.config.width);
             const gameHeight = Number(this.titleScene.game.config.height);
 
-            this.OmakeStart = this.titleScene.add.text(
+            this.OmakeButton = this.titleScene.add.text(
                 gameWidth / 2, gameHeight / 2 + 320,
                 "おまけ", { fontFamily: "Arial Black", fontSize: 32, color: "#00a6ed" });
-            this.OmakeStart.setOrigin(0.5, 0.5).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
-            this.OmakeStart.setDepth(gameHeight);
-            this.OmakeStart.setInteractive({ useHandCursor: true });
-            this.OmakeStart.on('pointerdown', () => this.onOmake());
+            this.OmakeButton.setOrigin(0.5, 0.5).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
+            this.OmakeButton.setDepth(gameHeight);
+            this.OmakeButton.setInteractive({ useHandCursor: true });
+            this.OmakeButton.on('pointerdown', () => this.onOmake());
 
             resolve();
         });
@@ -69,10 +69,10 @@ export class OmakeButton {
 
     public selection() {
 
-        this.OmakeStart.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
+        this.OmakeButton.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
 
         this.selectTween = this.titleScene.tweens.add({
-            targets: this.OmakeStart,
+            targets: this.OmakeButton,
             scale: 1.1,
             duration: 500,
             yoyo: true,
@@ -86,8 +86,8 @@ export class OmakeButton {
             this.selectTween.stop();
             this.selectTween = null;
         }
-        this.OmakeStart.setScale(1);
-        this.OmakeStart.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+        this.OmakeButton.setScale(1);
+        this.OmakeButton.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
     }
 
     public disableInteractive() {
@@ -95,14 +95,21 @@ export class OmakeButton {
             this.selectTween.stop();
             this.selectTween = null;
         }
-        this.OmakeStart.disableInteractive();
-        this.OmakeStart.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
+        this.OmakeButton.disableInteractive();
+        this.OmakeButton.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
         return this;
     }
+
     public enableInteractive() {
-        this.OmakeStart.setInteractive({ useHandCursor: true });
-        this.OmakeStart.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
+        this.OmakeButton.setInteractive({ useHandCursor: true });
+        this.OmakeButton.setTint(Phaser.Display.Color.GetColor(255, 255, 255));
         return this;
+    }
+
+    public omakeVisible() {
+        this.OmakeButton.disableInteractive();
+        this.OmakeButton.setVisible(false);
+
     }
 
 }

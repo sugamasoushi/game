@@ -171,4 +171,15 @@ export class LeftButton {
         }
         this.menuWindow.setAlpha(0.3);
     }
+
+    public setVisibleFalse() {
+        //this.hitZone.disableInteractive();
+        for (const text of this.buttonTexts) {
+            text.setVisible(false);
+        }
+        for (const zone of this.buttonZones) {
+            zone.disableInteractive();
+        }
+        this.menuWindow.setVisible(false);
+    }
 }

@@ -184,6 +184,12 @@ export class BubbleTalk {
             } else {
                 textX = playerSprite.x;
             }
+            console.log(textX)
+            //アイコン含め、テキストが画面外左にはみ出た場合
+            if (textX - 100 < 0) {
+                textX = 0 + 100 + 32;
+            }
+
             this.bubblePosition = playerPosition;
             textY = playerSprite.y - 150;
 
@@ -192,6 +198,11 @@ export class BubbleTalk {
                 textX = this.npc!.x - this.messageWidth;
             } else {
                 textX = this.npc!.x;
+            }
+
+            //テキストが画面外左にはみ出た場合
+            if (textX < 0) {
+                textX = 0 + 32;
             }
             this.bubblePosition = npcPosition;
             textY = this.npc.y - 150;
@@ -211,7 +222,7 @@ export class BubbleTalk {
         //表示する行数（今は２行）
         this.textLine = this.textObject.getData('textLine');
 
-        //テキストの位置
+        //テキストの深度
         this.textObject.setDepth(Number(this.fieldScene.game.config.height));//depthは適当な値、他に配置物を追加する場合は都度調整
 
         //削除対象に登録
@@ -340,7 +351,7 @@ export class BubbleTalk {
         } else if (this.npc !== undefined) {
             if (this.npc!.getData('ImageKey')) {
                 this.characterIcon = this.fieldScene.add.image(this.textX - 50, this.textY, 'Icon_' + this.npc!.getData('ImageKey')!);
-                if(this.characterIcon.texture.key === '__MISSING'){
+                if (this.characterIcon.texture.key === '__MISSING') {
                     this.characterIcon.setVisible(false)
                 }
 
