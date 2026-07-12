@@ -1,7 +1,7 @@
 //NewGame選択時のイベント
 import { Event } from "../../scenes/Event";
 import { MessageObject } from "../../util/MessageObject";
-import { FieldScene, EventObjState, State } from "../../lib/types";
+import { FieldScene, State } from "../../lib/types";
 import { BaseEvent } from "../../core/BaseEvent";
 
 import { GameStateManager } from "../../core/GameStateManager";
@@ -42,9 +42,9 @@ export class EVENT010101 extends BaseEvent {
         //テキストオブジェクト作成
         const textObject = messageObjectInstance.createTextObject(this.eventScene, 0, 0,
             '昔々（？）\n'
-            + 'ある山奥に一人の少女が暮らしていました。\n'
+            + 'ある山奥に一人の魔術師見習いが暮らしていました。\n'
             + '\n'
-            + '彼女の名前は「メイナ」\n'
+            + '見習いの名前は「メイナ」\n'
             + '物心付いた頃から家具付きの家に住んでおり、キッチンも寝室も別々でした。\n'
             + '謎の鶏に育てられ、基本的な生活習慣は身についており、最近は魚料理を夢見ています。\n'
             + '山奥ですからね。\n'
@@ -76,7 +76,7 @@ export class EVENT010101 extends BaseEvent {
                 resolve();
             };
 
-            const textScroll = this.eventScene.tweens.add({
+            this.eventScene.tweens.add({
                 targets: textObject,
                 y: -1 * (textObject.height),
                 flipY: true,
@@ -124,7 +124,7 @@ export class EVENT010101 extends BaseEvent {
         this.fieldScene.events.emit('EVENT_END', true)
 
         // 再表示する（起こす）
-        const uiScene = this.eventScene.scene.get('UI') as Phaser.Scene;
+        this.eventScene.scene.get('UI') as Phaser.Scene;
         this.eventScene.scene.wake('UI');
     }
 }
