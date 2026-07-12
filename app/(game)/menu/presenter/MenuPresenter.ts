@@ -50,6 +50,7 @@ export class MenuPresenter {
         });
         this.scene.events.on('MenuCloseClick', this.onCloseMenu, this);
         this.scene.events.on('USE_ITEM', this.onUseItem, this);
+        this.scene.events.on('TITLE_BACK', this.onTitleBack, this);
     }
 
     //アイテム使用
@@ -92,5 +93,33 @@ export class MenuPresenter {
             this.scene.events.off('USE_ITEM');
             this.scene.events.off('UPDATE_CONDITION');
         });
+    }
+
+    private onTitleBack() {
+        console.log('タイトルバック')
+
+        //Phaserのトップレベルのイベント
+        this.scene.game.events.emit('UI_CLOSE');
+
+        const mainCamera = this.scene.cameras.main;
+        mainCamera.once('camerafadeoutcomplete', () => {
+
+            // アニメーション完了後の処理
+            this.scene.scene.stop();
+
+            //状態更新
+            const gameStateManager = GameStateManager.getInstance();
+            gameStateManager.updateState({ state: State.GAME_RESTART }, 'system');
+
+            // イベントリスナーの解除
+            this.scene.events.off('GAME_INPUT_TRUE');
+            this.scene.events.off('GAME_INPUT_FALSE');
+            this.scene.events.off('MenuCloseClick');
+            this.scene.events.off('USE_ITEM');
+            this.scene.events.off('UPDATE_CONDITION');
+
+        });
+
+        mainCamera.fadeOut(200);
     }
 }

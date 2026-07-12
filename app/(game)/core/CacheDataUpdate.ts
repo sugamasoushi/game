@@ -29,6 +29,9 @@ export class CacheDataUpdate {
         //仮想パッド情報の同期
         (this.scene.cache.json.get('savedata').VirtualPad as boolean) = manager.isVirtualPad;
 
+        //クリア情報の同期
+        (this.scene.cache.json.get('savedata').GameClearFlg as boolean) = manager.isGameClearFlg;
+
         // プレイヤーデータの同期
         const partyList = manager.currentPlayerPartyList;
 

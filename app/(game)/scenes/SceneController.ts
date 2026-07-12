@@ -177,6 +177,7 @@ export class SceneController extends Scene {
         this.scene.stop('Event');
         this.scene.stop('Battle');
         this.scene.stop('UI');
+        //※GameOverシーンがRESTART
     }
 
     private transitionToGameRestart(sceneKey: string) {
@@ -185,8 +186,9 @@ export class SceneController extends Scene {
         this.scene.stop('Menu');
         this.scene.stop('Event');
         this.scene.stop('Battle');
+        this.scene.stop('UI');
+        
         this.scene.stop('SceneController');
-
         this.scene.start('Boot');
 
         /**

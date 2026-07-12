@@ -10,6 +10,7 @@ import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../core/GameStateManager";
 import { InputManager } from "../../core/input/InputManager";
+import { SaveDataManager } from './../../core/SaveDataManager';
 
 export class EVENT020201 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -245,6 +246,10 @@ export class EVENT020201 extends BaseEvent {
         titleText.setOrigin(0.5, 0).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true).setAlpha(0);
         titleText.setDepth(Number(this.eventScene.game.config.height) + 10);
 
+        //クリア状態に更新
+        const gameStateManager = GameStateManager.getInstance();
+        gameStateManager.updateState({ gameClearFlg: true }, 'system');
+
         //フェード
         await new Promise<void>(resolve => {
             this.eventScene.tweens.add({
@@ -257,6 +262,10 @@ export class EVENT020201 extends BaseEvent {
                 }
             });
         })
+
+        //セーブ処理
+        const saveDataManager = new SaveDataManager();
+        await saveDataManager.setSaveData(this.eventScene);
 
         // //会話シーン終了のチェック
         await new Promise<void>(resolve => {

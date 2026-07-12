@@ -163,7 +163,7 @@ export class Omake {
                     await loadVideo('lamy_video', 'video/vidu-video-3213668993097372.mp4');
                     const video1 = this.titleScene.add.video(gameWidth / 2, gameHeight / 2, 'lamy_video');
                     video1.setDepth(depth);
-                    video1.setScale(0.8);
+                    video1.setScale(0.5);
                     video1.play();
                     await new Promise<void>(resolve => {
                         video1.once('complete', () => {
