@@ -9,14 +9,11 @@ import { GameStateManager } from '../core/GameStateManager';
 import { ExecutionEnvironment } from '../core/ExecutionEnvironment';
 
 export class SceneController extends Scene {
-    private debugFlg: boolean | undefined;
     private stateSubscription: Subscription | undefined;
 
     constructor() { super('SceneController'); }
 
-    init() {
-        this.debugFlg = this.game.config.physics.arcade?.debug;
-    }
+    init() { }
 
     preload() {
 

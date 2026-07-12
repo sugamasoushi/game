@@ -91,7 +91,10 @@ export class Sound extends Scene {
         // this.SE_boosterJump1.volume = 0.7;
 
         this.setSubscription();
-        this.events.once('shutdown', () => this.subs.unsubscribe());
+        this.events.once('shutdown', () => {
+            //購読解除しない
+            //this.subs.unsubscribe()
+        });
     }
 
     stopAllBgm() {

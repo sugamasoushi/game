@@ -514,17 +514,17 @@
                         {
                          "name":"moveToMap",
                          "type":"string",
-                         "value":"0104"
+                         "value":"0201"
                         }, 
                         {
                          "name":"moveX",
                          "type":"int",
-                         "value":1248
+                         "value":0
                         }, 
                         {
                          "name":"moveY",
                          "type":"int",
-                         "value":32
+                         "value":544
                         }, 
                         {
                          "name":"note",

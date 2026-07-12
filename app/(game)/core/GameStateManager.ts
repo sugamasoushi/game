@@ -150,19 +150,6 @@ export class GameStateManager {
         this.gameState$.next(nextState);
     }
 
-    // ゲームオーバー状態をセットする
-    // public triggerGameOver() {
-    //     this.updateState({ state: State.GAMEOVER }, 'system');
-    // }
-
-    // public addMoney(num: number) {
-    //     const currentState = this.gameState$.value;
-    //     this.gameState$.next({
-    //         ...currentState,//まずは全ての値を取得、※元の保持データ（参照先）の変更はこのように書く
-    //         money: currentState.money + num
-    //     });
-    // }
-
     public setPlayerPartyList(playerPartyMemberList: Phaser.GameObjects.Sprite[]) {
         const currentState = this.gameState$.value;
         this.gameState$.next({
@@ -186,22 +173,6 @@ export class GameStateManager {
             fieldEnemyList: enemyList
         });
     }
-
-    // public setBattleFieldKey(key: string): void {
-    //     const currentState = this.gameState$.value;
-    //     this.gameState$.next({
-    //         ...currentState,
-    //         battleFieldKey: key
-    //     });
-    // }
-
-    // public setBgmState(bgmState: BgmState): void {
-    //     const currentState = this.gameState$.value;
-    //     this.gameState$.next({
-    //         ...currentState,
-    //         bgmState: bgmState
-    //     });
-    // }
 
     public setOptionData(master: number, bgm: number, bgs: number, se: number, textSpeed: number = 50): void {
         const currentState = this.gameState$.value;
