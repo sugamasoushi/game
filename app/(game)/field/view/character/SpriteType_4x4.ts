@@ -1,6 +1,6 @@
 import { FieldScene } from "@/app/(game)/lib/types";
 import { Npc } from "./Npc";
-import { Shadow } from "./part/Shadow";
+// import { Shadow } from "./part/Shadow";
 import { bubble } from "./part/bubble";
 
 export class SpriteType_4x4 extends Npc {
@@ -9,7 +9,7 @@ export class SpriteType_4x4 extends Npc {
     constructor(fieldScene: FieldScene, x: number, y: number, npcType: string, spriteSheetKey: string, characterName: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
         super(fieldScene, x, y, npcType, spriteSheetKey, characterName, initStandKey, imageKey, bubbleTalkKey);
         this._animationSetting(spriteSheetKey);
-        this._setShadow(initStandKey);
+        // this._setShadow(initStandKey);
         this._setBubble();
     }
 
@@ -66,12 +66,12 @@ export class SpriteType_4x4 extends Npc {
         });
     }
 
-    _setShadow(initStandKey: string) {
-        if (this.shadowFlag) {
-            const shadowSprite = new Shadow(this, this.fieldScene, this.x, this.y, 'chicken_shadow', initStandKey);
-            this.spriteObjList.push(shadowSprite);
-        }
-    }
+    // _setShadow(initStandKey: string) {
+    //     if (this.shadowFlag) {
+    //         const shadowSprite = new Shadow(this, this.fieldScene, this.x, this.y, 'chicken_shadow', initStandKey);
+    //         this.spriteObjList.push(shadowSprite);
+    //     }
+    // }
 
     _setBubble() {
         //吹き出しテキストがある場合に設定

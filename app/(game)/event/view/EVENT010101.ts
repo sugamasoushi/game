@@ -42,9 +42,8 @@ export class EVENT010101 extends BaseEvent {
         //テキストオブジェクト作成
         const textObject = messageObjectInstance.createTextObject(this.eventScene, 0, 0,
             '昔々（？）\n'
-            + 'ある山奥に一人の魔術師見習いが暮らしていました。\n'
+            + 'ある山奥に一人の魔術師見習い「メイナ」が暮らしていました。\n'
             + '\n'
-            + '見習いの名前は「メイナ」\n'
             + '物心付いた頃から家具付きの家に住んでおり、キッチンも寝室も別々でした。\n'
             + '謎の鶏に育てられ、基本的な生活習慣は身についており、最近は魚料理を夢見ています。\n'
             + '山奥ですからね。\n'
