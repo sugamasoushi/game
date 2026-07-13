@@ -187,7 +187,7 @@ export class SceneController extends Scene {
         this.scene.stop('Event');
         this.scene.stop('Battle');
         this.scene.stop('UI');
-        
+
         this.scene.stop('SceneController');
         this.scene.start('Boot');
 
@@ -206,7 +206,7 @@ export class SceneController extends Scene {
         const gameHeight = Number(this.game.config.height)
 
         //ブラウザ版スマホの場合は注記を表示
-        if (executionEnvironment.isBowserSmartPhone()) {
+        if (!executionEnvironment.isPWA() || !executionEnvironment.isElectron() || !executionEnvironment.isBowserPC()) {
             const gameStartAlert = this.add.image(gameWidth / 2, gameHeight / 2, 'GameStartAlert');
 
             const tapStart = this.add.text(
