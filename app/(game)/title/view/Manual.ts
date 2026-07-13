@@ -13,26 +13,7 @@ export class Manual {
     async onManual(onComplete?: () => void) {
         const gameHeight = this.titleScene.game.config.height as number;
         const depth = gameHeight + 12000;
-
-        //画像
-        const loadImage = (videoKey: string, url: string) => new Promise<void>((resolve) => {
-            if (this.titleScene.cache.video.exists(videoKey)) {
-                resolve();
-                return;
-            }
-
-            this.titleScene.load.once(Phaser.Loader.Events.COMPLETE, () => {
-                resolve();
-            }, this);
-            this.titleScene.load.image(videoKey, url);
-            this.titleScene.load.start();
-        });
-
         const eventImage: Phaser.GameObjects.Image[] = [];
-
-        await loadImage('manual1', 'img/manual/manual1.png');
-        await loadImage('manual2', 'img/manual/manual2.png');
-        await loadImage('manual3', 'img/manual/manual3.png');
 
         //位置座標
         const screenWidth = Number(this.titleScene.game.config.width);

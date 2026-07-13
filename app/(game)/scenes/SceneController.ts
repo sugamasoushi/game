@@ -29,6 +29,10 @@ export class SceneController extends Scene {
         this.load.image('lamyOpImageHome', 'assets/img/background/battle_forest mansion.png');
         this.load.image('manualIcon', 'assets/img/manual/manualIcon.png');
 
+        this.load.image('manual1', 'assets/img/manual/manual1.png');
+        this.load.image('manual2', 'assets/img/manual/manual2.png');
+        this.load.image('manual3', 'assets/img/manual/manual3.png');
+
         this.load.image('spark', 'assets/img/effect/elec3.png');
     }
 

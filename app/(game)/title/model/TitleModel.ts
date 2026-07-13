@@ -77,7 +77,7 @@ export class TitleModel {
         }
 
         //仮想パッド
-        if (this.saveDataManager.loadHighDrawFlg() !== undefined || null) {
+        if (this.saveDataManager.loadVirtualPadFlg() !== undefined || null) {
             this.updateVirtualPad(this.saveDataManager.loadHighDrawFlg());
         } else if (env.isBowserSmartPhone() || env.isPWA()) {
             this.updateVirtualPad(true);
