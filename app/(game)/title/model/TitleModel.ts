@@ -65,14 +65,20 @@ export class TitleModel {
             sv.textSpeed
         );
 
+        const env = new ExecutionEnvironment();
+
         //描画モード
         if (this.titleScene.cache.json.get('savedata').HighDraw !== undefined || null) {
             const highDraw = this.titleScene.cache.json.get('savedata').HighDraw as boolean;
             this.updateHighDraw(highDraw);
+        } else if (env.isBowserSmartPhone() || env.isPWA()) {
+            this.updateHighDraw(false);
+
+        } else {
+            this.updateHighDraw(true);
         }
 
         //仮想パッド
-        const env = new ExecutionEnvironment();
         if (this.titleScene.cache.json.get('savedata').VirtualPad !== undefined || null) {
             const virtualPad = this.titleScene.cache.json.get('savedata').VirtualPad as boolean;
             this.updateVirtualPad(virtualPad);
