@@ -206,7 +206,7 @@ export class SceneController extends Scene {
         const gameHeight = Number(this.game.config.height)
 
         //ブラウザ版スマホの場合は注記を表示
-        if (!executionEnvironment.isPWA() || !executionEnvironment.isElectron() || !executionEnvironment.isBowserPC()) {
+        if (executionEnvironment.isBowserSmartPhone() && !executionEnvironment.isPWA()) {
             const gameStartAlert = this.add.image(gameWidth / 2, gameHeight / 2, 'GameStartAlert');
 
             const tapStart = this.add.text(
