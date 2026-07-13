@@ -68,21 +68,17 @@ export class TitleModel {
         const env = new ExecutionEnvironment();
 
         //描画モード
-        if (this.titleScene.cache.json.get('savedata').HighDraw !== undefined || null) {
-            const highDraw = this.titleScene.cache.json.get('savedata').HighDraw as boolean;
-            this.updateHighDraw(highDraw);
+        if (this.saveDataManager.loadHighDrawFlg() !== undefined || null) {
+            this.updateHighDraw(this.saveDataManager.loadHighDrawFlg());
         } else if (env.isBowserSmartPhone() || env.isPWA()) {
             this.updateHighDraw(false);
-
         } else {
             this.updateHighDraw(true);
         }
 
         //仮想パッド
-        if (this.titleScene.cache.json.get('savedata').VirtualPad !== undefined || null) {
-            const virtualPad = this.titleScene.cache.json.get('savedata').VirtualPad as boolean;
-            this.updateVirtualPad(virtualPad);
-
+        if (this.saveDataManager.loadHighDrawFlg() !== undefined || null) {
+            this.updateVirtualPad(this.saveDataManager.loadHighDrawFlg());
         } else if (env.isBowserSmartPhone() || env.isPWA()) {
             this.updateVirtualPad(true);
 

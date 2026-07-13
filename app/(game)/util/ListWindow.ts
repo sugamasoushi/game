@@ -106,6 +106,8 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
     }
 
     preUpdate(time: number, delta: number) {
+        void time;
+        void delta;
         // InputManagerによる購読モデルに移行したため、ポーリングは不要
         // this.updateNowChoiceNoKeyboard();
     }

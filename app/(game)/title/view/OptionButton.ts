@@ -19,7 +19,10 @@ export class OptionButton {
             this.OptionStart.setOrigin(0.5, 0.5).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
             this.OptionStart.setDepth(gameHeight);
             this.OptionStart.setInteractive({ useHandCursor: true });
-            this.OptionStart.on('pointerdown', () => this.onOption());
+            this.OptionStart.on('pointerdown', () => {
+                this.onOption();
+                this.titleScene.input.setDefaultCursor('default');//ポインターをデフォルトに設定
+            });
 
             resolve();
         });

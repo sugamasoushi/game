@@ -55,6 +55,59 @@ export class SaveDataManager {
         return result;
     }
 
+    public loadHighDrawFlg() {
+
+        let savedata;
+        if (window.electronAPI) {
+            savedata = window.electronAPI.loadData();
+            if (typeof savedata === 'string') {
+                try {
+                    savedata = JSON.parse(savedata);
+                } catch (e) {
+                    console.error("Failed to parse savedata from Electron:", e);
+                }
+            }
+        } else {
+            const localData = localStorage.getItem('savedata');
+            if (localData) {
+                savedata = JSON.parse(localData);
+            }
+        }
+
+        //データの存在状態を返す
+        if (savedata.HighDraw === undefined || null) {
+            return undefined
+        } else {
+            return savedata.HighDraw
+        }
+    }
+
+    public loadVirtualPadFlg() {
+
+        let savedata;
+        if (window.electronAPI) {
+            savedata = window.electronAPI.loadData();
+            if (typeof savedata === 'string') {
+                try {
+                    savedata = JSON.parse(savedata);
+                } catch (e) {
+                    console.error("Failed to parse savedata from Electron:", e);
+                }
+            }
+        } else {
+            const localData = localStorage.getItem('savedata');
+            if (localData) {
+                savedata = JSON.parse(localData);
+            }
+        }
+
+        //データの存在状態を返す
+        if (savedata.VirtualPad === undefined || null) {
+            return undefined
+        } else {
+            return savedata.VirtualPad
+        }
+    }
 
     /**
      * アイテムリストのチェック

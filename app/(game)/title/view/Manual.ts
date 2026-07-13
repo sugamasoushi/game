@@ -10,10 +10,9 @@ export class Manual {
         this.soundScene = this.titleScene.scene.get('Sound') as Sound;
     }
 
-    async onManual() {
+    async onManual(onComplete?: () => void) {
         const gameHeight = this.titleScene.game.config.height as number;
         const depth = gameHeight + 12000;
-
 
         //画像
         const loadImage = (videoKey: string, url: string) => new Promise<void>((resolve) => {
@@ -83,6 +82,7 @@ export class Manual {
                         })
                         leftArrow.destroy();
                         rightArrow.destroy();
+                        onComplete?.();
                         resolve();
                     }
 

@@ -19,7 +19,10 @@ export class OmakeButton {
             this.OmakeButton.setOrigin(0.5, 0.5).setStroke('#2d2d2d', 16).setShadow(4, 4, '#000000', 8, false, true);
             this.OmakeButton.setDepth(gameHeight);
             this.OmakeButton.setInteractive({ useHandCursor: true });
-            this.OmakeButton.on('pointerdown', () => this.onOmake());
+            this.OmakeButton.on('pointerdown', () => {
+                this.onOmake();
+                this.titleScene.input.setDefaultCursor('default');//ポインターをデフォルトに設定
+            });
 
             resolve();
         });
