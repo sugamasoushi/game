@@ -11,7 +11,7 @@ export class CacheDataUpdate {
         this.saveDataManager = new SaveDataManager();
     }
 
-    public phaserCacheDataUpdate() {
+    public async phaserCacheDataUpdate(): Promise<void> {
         const manager = GameStateManager.getInstance();
         const savedata = this.scene.cache.json.get('savedata');
 

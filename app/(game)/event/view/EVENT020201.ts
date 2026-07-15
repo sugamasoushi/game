@@ -11,6 +11,7 @@ import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../core/GameStateManager";
 import { InputManager } from "../../core/input/InputManager";
 import { SaveDataManager } from './../../core/SaveDataManager';
+import { CacheDataUpdate } from './../../core/CacheDataUpdate';
 
 export class EVENT020201 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -263,6 +264,10 @@ export class EVENT020201 extends BaseEvent {
             });
         })
 
+        //キャッシュデータ更新
+        const cacheDataUpdate = new CacheDataUpdate(this.eventScene);
+        await cacheDataUpdate.phaserCacheDataUpdate();
+
         //セーブ処理
         const saveDataManager = new SaveDataManager();
         await saveDataManager.writeSaveData(this.eventScene);
@@ -286,7 +291,7 @@ export class EVENT020201 extends BaseEvent {
 
                             //現在のBGM状態を更新
                             //manager.setBgmState(BgmState.NOSTATE);
-                            manager.updateState({ bgmState: BgmState.NOSTATE }, 'sound');
+                            // manager.updateState({ bgmState: BgmState.NOSTATE }, 'sound');
 
                             endTween.destroy();
                             resolve();
