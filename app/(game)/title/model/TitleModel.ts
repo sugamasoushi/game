@@ -32,7 +32,7 @@ export class TitleModel {
     }
 
     public async loadSaveData(): Promise<void> {
-        this.hasContinueData = await this.saveDataManager.loadSaveData(this.titleScene);
+        this.hasContinueData = await this.saveDataManager.loadSaveDataToChache(this.titleScene);
 
         //セーブデータが存在する場合
         if (this.hasContinueData) {
@@ -69,21 +69,32 @@ export class TitleModel {
 
         //描画モード
         if (this.saveDataManager.loadHighDrawFlg() !== undefined || null) {
+            //セーブデータが存在する場合
             this.updateHighDraw(this.saveDataManager.loadHighDrawFlg());
         } else if (env.isBowserSmartPhone() || env.isPWA()) {
             this.updateHighDraw(false);
+            this.saveDataManager.writeSaveData(this.titleScene);
         } else {
             this.updateHighDraw(true);
+            this.saveDataManager.writeSaveData(this.titleScene);
         }
 
         //仮想パッド
         if (this.saveDataManager.loadVirtualPadFlg() !== undefined || null) {
+            //セーブデータが存在する場合
             this.updateVirtualPad(this.saveDataManager.loadHighDrawFlg());
         } else if (env.isBowserSmartPhone() || env.isPWA()) {
             this.updateVirtualPad(true);
-
+            this.saveDataManager.writeSaveData(this.titleScene);
         } else {
             this.updateVirtualPad(false);
+            this.saveDataManager.writeSaveData(this.titleScene);
+        }
+
+        //デバッグモード
+        if (env.isDebug()) {
+            this.updateHighDraw(true);
+            this.updateVirtualPad(true);
         }
     }
 

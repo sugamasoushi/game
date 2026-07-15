@@ -104,7 +104,7 @@ export class EVENT010201 extends BaseEvent {
         //キャラ画像を配置
         await Promise.all([
             this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
-            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'grandpa', grandpaImageKey, 200, 0.9, 200),
+            this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'grandpa', grandpaImageKey, 200, 0.9, 200, true),
         ]);
 
         /*会話---------------------------------------------------------------------------------*/

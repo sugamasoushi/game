@@ -1,12 +1,12 @@
 {
     "infomation": "初期セーブデータ",
     "playerData": {
-        "PlayerMapKey": "0001",
+        "PlayerMapKey": "0101",
         "PlayerPosition": {
-            "x": 1504,
-            "y": 320
+            "x": 495,
+            "y": 337
         },
-        "initStandKey": "stand_down",
+        "initStandKey": "stand_right",
         "status": {
             "Lv": 1,
             "HP": 50,

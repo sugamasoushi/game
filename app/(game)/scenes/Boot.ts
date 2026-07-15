@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import { GameStateManager } from '../core/GameStateManager';
 import { InputManager } from '../core/input/InputManager';
+import { isDebug } from '../main';
 
 export class Boot extends Scene {
     constructor() { super('Boot'); }
@@ -13,6 +14,10 @@ export class Boot extends Scene {
 
         // 入力管理を実行
         InputManager.getInstance(this).execute();
+
+        // デバッグモード判定
+        const gameStateManager = GameStateManager.getInstance();
+        gameStateManager.updateState({ debugMode: isDebug }, 'system');
 
         //キャッシュクリア
         if (this.cache.json.exists('savedata')) {

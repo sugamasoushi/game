@@ -210,7 +210,7 @@ export class SaveWindow extends Phaser.GameObjects.Container {
 
             //セーブ処理
             const saveDataManager = new SaveDataManager();
-            await saveDataManager.setSaveData(this.scene);
+            await saveDataManager.writeSaveData(this.scene);
 
             //セーブ完了
             this.soundScene.playSe('SE_jajaann');

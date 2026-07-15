@@ -50,9 +50,6 @@ export class SceneController extends Scene {
         //状態管理クラス
         const manager = GameStateManager.getInstance();
 
-        //開発モードの設定
-        if (this.game.config.physics.arcade?.debug) { manager.updateState({ debugMode: true }, 'system'); }
-
         //実行環境の情報を更新
         const executionEnvironment = new ExecutionEnvironment();
         executionEnvironment.updateHighDraw();

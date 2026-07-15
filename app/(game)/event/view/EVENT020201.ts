@@ -265,7 +265,7 @@ export class EVENT020201 extends BaseEvent {
 
         //セーブ処理
         const saveDataManager = new SaveDataManager();
-        await saveDataManager.setSaveData(this.eventScene);
+        await saveDataManager.writeSaveData(this.eventScene);
 
         // //会話シーン終了のチェック
         await new Promise<void>(resolve => {

@@ -23,7 +23,7 @@ const baseWidth = 1280;
 const baseHeight = 720;
 
 // 開発環境 (npm run dev) の時だけ true になる
-const isDebug = process.env.NODE_ENV === 'development';
+export const isDebug = process.env.NODE_ENV === 'development';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,

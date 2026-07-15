@@ -1,4 +1,3 @@
-import { Npc } from "../../field/view/character/Npc";
 import { FieldScene } from "../../lib/types";
 
 export class CharacterGameObject {
@@ -27,10 +26,13 @@ export class CharacterGameObject {
     }
 
     //キャラクターの立ち絵を取得しスクロール
-    public setCharacterImage(scene: Phaser.Scene, initX: number, initY: number, characterKey: string, characterImageKey: string, moveToX: number, scale: number, duration: number) {
+    public setCharacterImage(scene: Phaser.Scene, initX: number, initY: number, characterKey: string, characterImageKey: string, moveToX: number, scale: number, duration: number, fripX?: boolean) {
         return new Promise<void>(resolve => {
             //setTintでグレーに設定、Phaser.Display.Color.GetColor()でRGB指定が可能
             const characterimage = scene.add.image(initX, initY, characterImageKey).setScale(scale);
+            if (fripX) {
+                characterimage.setFlipX(fripX);
+            }
             characterimage.setTint(Phaser.Display.Color.GetColor(128, 128, 128));
             this.characterImageMap.set(characterKey, characterimage);
 

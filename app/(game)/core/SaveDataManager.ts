@@ -7,7 +7,7 @@ export class SaveDataManager {
     constructor() { }
 
     //セーブデータをローカルストレージまたはElectronに書き込み
-    public async setSaveData(scene: Phaser.Scene) {
+    public async writeSaveData(scene: Phaser.Scene) {
         const savedata = scene.cache.json.get('savedata');
         //console.log(savedata);
         if (window.electronAPI) {
@@ -19,8 +19,8 @@ export class SaveDataManager {
         }
     }
 
-    //セーブデータをローカルストレージまたはElectronから読み込み
-    public async loadSaveData(scene: Phaser.Scene): Promise<boolean> {
+    //セーブデータをローカルストレージまたはElectronから読み込み、キャッシュに書き込む
+    public async loadSaveDataToChache(scene: Phaser.Scene): Promise<boolean> {
         let result = false;
 
         let savedata;
@@ -75,7 +75,8 @@ export class SaveDataManager {
         }
 
         //データの存在状態を返す
-        if (savedata.HighDraw === undefined || null) {
+        if (!savedata) return undefined;
+        if (savedata.HighDraw !== undefined || null) {
             return undefined
         } else {
             return savedata.HighDraw
@@ -102,7 +103,8 @@ export class SaveDataManager {
         }
 
         //データの存在状態を返す
-        if (savedata.VirtualPad === undefined || null) {
+        if (!savedata) return undefined;
+        if (savedata.VirtualPad !== undefined || null) {
             return undefined
         } else {
             return savedata.VirtualPad
