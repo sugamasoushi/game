@@ -34,6 +34,11 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
             const settingTextData = this.scene.cache.json.get('savedata').GameSetting.BubbleWindow;
             this.fontSize = settingTextData.fontSize;
         }
+
+        // シーン終了時にイベントを破棄
+        this.scene.events.once('shutdown', () => {
+            this.destroy();
+        });
     }
 
     //テキストに関係しないウィンドウを作成
@@ -280,7 +285,7 @@ export class MessageWindow extends Phaser.GameObjects.Graphics {
         // 左上の角
         this.lineTo(cx - hs, cy - f + r);
         this.arc(cx - hs + r, cy - f + r, r, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(270), false);
-        
+
         this.closePath();
         this.fillPath();
         this.strokePath();

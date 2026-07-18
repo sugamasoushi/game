@@ -21,6 +21,8 @@ export class cave extends Phaser.GameObjects.Container {
     private rightTimerEventObj: Phaser.Time.TimerEvent;
     private rightLightFlg: boolean = false;
 
+    private shader: Phaser.GameObjects.Shader | null = null;
+
     constructor(battleScene: BattleScene) {
         super(battleScene);
         this.name = cave.name;
@@ -137,8 +139,8 @@ export class cave extends Phaser.GameObjects.Container {
             const width = this.scene.game.canvas.width;
             const height = this.scene.game.canvas.height;
 
-            const shader = this.scene.add.shader('nightsky', width / 2, height / 2, width, height);
-            shader.setUniform('alpha', 0.3);
+            this.shader = this.scene.add.shader('nightsky', width / 2, height / 2, width, height);
+            this.shader.setUniform('alpha', 0.3);
 
             // 1. まずシェーダーを作る（コードは最初にお渡ししたものでOKです）
             this.maskShader = this.scene.add.shader('circleMask', width / 2, height / 2, width, height);
@@ -151,7 +153,7 @@ export class cave extends Phaser.GameObjects.Container {
 
             // 3. くり抜きたい対象にマスクを適用する
             // これにより、対象のオブジェクトは「円の内側」だけが表示されるようになります！
-            shader.setMask(bitmapMask);
+            this.shader.setMask(bitmapMask);
 
         } else {
             // モバイル端末など性能が低い環境では、シェーダーを使用しない
@@ -166,7 +168,7 @@ export class cave extends Phaser.GameObjects.Container {
         this.centerTimerEventObj.destroy();
         this.leftTimerEventObj.destroy();
         this.rightTimerEventObj.destroy();
-
+        this.shader?.destroy();
         this.backGroundImage.destroy();
 
         super.destroy();

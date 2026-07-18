@@ -20,6 +20,8 @@ export class EnergyGauge extends Phaser.GameObjects.Graphics {
     }
 
     preUpdate(time: number, delta: number) {
+        void time;
+        void delta;
         this.gauge();
     }
 
@@ -33,6 +35,11 @@ export class EnergyGauge extends Phaser.GameObjects.Graphics {
         } catch (error) {
             console.log(error); //try chatchやりたかった
         }
+
+        // シーン終了時にイベントを破棄
+        this.scene.events.once('shutdown', () => {
+            this.destroy();
+        });
     }
 
     private gauge() {

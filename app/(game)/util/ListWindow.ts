@@ -85,6 +85,11 @@ export class ListWindow extends Phaser.GameObjects.Graphics {
         );
 
         this.setupInput();
+
+        // シーン終了時にイベントを破棄
+        this.scene.events.once('shutdown', () => {
+            this.destroy();
+        });
     }
 
     private setupInput() {

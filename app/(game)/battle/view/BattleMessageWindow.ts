@@ -75,4 +75,8 @@ export class BattleMessageWindow extends Phaser.GameObjects.Container {
 
         })
     }
+
+    public destroy() {
+        super.destroy();
+    }
 }

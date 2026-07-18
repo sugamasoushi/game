@@ -77,14 +77,12 @@ export class MenuPresenter {
             const cacheDataUpdate = new CacheDataUpdate(this.fieldScene);
             cacheDataUpdate.phaserCacheDataUpdate();
 
-            this.fieldScene.resumeScene();
-
             //状態管理クラス
             const gameStateManager = GameStateManager.getInstance();
 
             //状態更新
+            gameStateManager.updateState({ state: State.FIELD_RESUME }, 'from Event');
             gameStateManager.updateState({ state: State.NOSTATE }, 'MenuClose');
-
 
             // イベントリスナーの解除
             this.scene.events.off('GAME_INPUT_TRUE');

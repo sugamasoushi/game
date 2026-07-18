@@ -57,6 +57,11 @@ export class MessageObject {
         textObject.setLineSpacing(this.lineSpaceValue);
         textObject.setData('textLine', this.textLine);
 
+        // シーン終了時にイベントを破棄
+        this.scene.events.once('shutdown', () => {
+            textObject.destroy();
+        });
+
         return textObject;
     }
 

@@ -87,17 +87,16 @@ export class hill extends Phaser.GameObjects.Container {
             `;
 
             // 画面全体に引き伸ばして配置
-            const fadeShader = this.scene.add.shader(
+            this.shader = this.scene.add.shader(
                 new Phaser.Display.BaseShader('linearFade', linearFadeFrag),
                 width / 2, height / 2,
                 width, height
             );
-            fadeShader.setDepth(1);
+            this.shader.setDepth(1);
         }
     }
 
     public destroy() {
-
         this.battle_hill_parts_01.destroy();
         this.battle_hill_parts_02.destroy();
         this.battle_hill_parts_03.destroy();

@@ -4,9 +4,6 @@ import { Fog } from "../Effect/Fog";
 export class forest extends Phaser.GameObjects.Container {
 
     private battle_forest: Phaser.GameObjects.Image;
-
-
-    private shader: Phaser.GameObjects.Shader | null = null;
     private fog: Fog;
 
     constructor(battleScene: BattleScene) {
@@ -35,11 +32,8 @@ export class forest extends Phaser.GameObjects.Container {
     }
 
     public destroy() {
-
+        this.fog.fogDestroy();
         this.battle_forest.destroy();
-
-        this.shader?.destroy();
-
         super.destroy();
     }
 }

@@ -386,6 +386,8 @@ export class FieldScenePresenter {
             this.fieldScene.events.off('BATTLE');
             this.fieldScene.events.off('FREE_MESSAGE_WINDOW');
             this.fieldScene.events.off('FADE_IN_START');
+            this.fieldScene.events.off('CAMERA_NORMAL_EFFECT');
+            this.fieldScene.events.off('CAMERA_BLUR');
             this.subs.unsubscribe();
         });
     }

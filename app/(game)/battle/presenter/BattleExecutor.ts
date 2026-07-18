@@ -14,7 +14,6 @@ import { Sound } from "../../scenes/Sound";
 
 // 攻撃・防御・回避の実行と勝敗判定を担う
 export class BattleExecutor {
-    private endEvents: Phaser.Events.EventEmitter;
 
     // オート戦闘フラグ（攻撃対象を自動選択するかどうか）
     private autoFlg: boolean = false;
