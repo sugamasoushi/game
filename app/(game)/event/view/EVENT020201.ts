@@ -251,6 +251,10 @@ export class EVENT020201 extends BaseEvent {
         const gameStateManager = GameStateManager.getInstance();
         gameStateManager.updateState({ gameClearFlg: true }, 'system');
 
+        //キャッシュデータ更新
+        const cacheDataUpdate = new CacheDataUpdate(this.eventScene);
+        await cacheDataUpdate.phaserCacheDataUpdate();
+
         //フェード
         await new Promise<void>(resolve => {
             this.eventScene.tweens.add({
@@ -264,10 +268,6 @@ export class EVENT020201 extends BaseEvent {
             });
         })
 
-        //キャッシュデータ更新
-        const cacheDataUpdate = new CacheDataUpdate(this.eventScene);
-        await cacheDataUpdate.phaserCacheDataUpdate();
-
         //セーブ処理
         const saveDataManager = new SaveDataManager();
         await saveDataManager.writeSaveData(this.eventScene);
@@ -275,9 +275,13 @@ export class EVENT020201 extends BaseEvent {
         // //会話シーン終了のチェック
         await new Promise<void>(resolve => {
 
+            //イベント終了時の処理
+            this.eventEnd();
+
+            //一定時間「Thank you for playing!!」を表示
             this.eventScene.time.delayedCall(2000, () => {
                 const pixelated = this.eventScene.cameras.main.postFX.addPixelate(-1);
-                const endTween = this.eventScene.add.tween({
+                this.eventScene.add.tween({
                     targets: pixelated,
                     duration: 700,
                     amount: 40,
@@ -288,12 +292,9 @@ export class EVENT020201 extends BaseEvent {
                             const manager = GameStateManager.getInstance();
                             manager.updateState({ state: State.GAME_RESTART }, 'Event');
 
-
                             //現在のBGM状態を更新
-                            //manager.setBgmState(BgmState.NOSTATE);
-                            // manager.updateState({ bgmState: BgmState.NOSTATE }, 'sound');
+                            manager.updateState({ bgmState: BgmState.NOSTATE }, 'sound');
 
-                            endTween.destroy();
                             resolve();
                         });
 
@@ -302,18 +303,11 @@ export class EVENT020201 extends BaseEvent {
                 });
             }, [], this.eventScene);
         })
-
-        //イベント終了時の処理
-        await this.eventEnd();
     }
 
-    override async eventEnd() {
-        return new Promise<void>(resolve => {
+    override eventEnd() {
 
-            //設定を戻す
-            this.fieldScene.events.emit('EVENT_END')
-
-            resolve();
-        })
+        //設定を戻す
+        this.fieldScene.events.emit('EVENT_END', true)
     }
 }

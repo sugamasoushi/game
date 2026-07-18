@@ -43,7 +43,6 @@ export class TitlePresenter {
     public update(time: number, delta: number) {
         void time;
         void delta;
-        // this.option.update(time, delta);
     }
 
     public async execute() {

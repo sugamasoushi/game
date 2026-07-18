@@ -37,7 +37,7 @@ export class BaseEvent implements Eventer {
         EventFlagData.updateFlag(this.eventScene, eventName, flg);
     }
 
-    //イベントオブジェクト検索
+    //イベントオブジェクトの切替
     protected switchingEventObjFlg(name: string, state: boolean) {
         const gameScene = this.eventScene.scene.get('Field');
 

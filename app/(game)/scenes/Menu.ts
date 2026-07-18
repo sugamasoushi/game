@@ -43,6 +43,8 @@ export class Menu extends Phaser.Scene {
             gameStateManager.updateState({ state: State.GAMEOVER }, 'system');
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
+
+        console.log(this.fieldScene.cache.json.get('savedata'))
     }
 
     public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {

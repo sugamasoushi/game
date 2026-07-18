@@ -6,7 +6,7 @@
             "x": 495,
             "y": 337
         },
-        "initStandKey": "stand_right",
+        "initStandKey": "stand_left",
         "status": {
             "Lv": 1,
             "HP": 50,

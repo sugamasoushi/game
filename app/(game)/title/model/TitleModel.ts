@@ -40,7 +40,8 @@ export class TitleModel {
 
             //クリアフラグ
             if (this.titleScene.cache.json.get('savedata').GameClearFlg as boolean) {
-                this.gameClearFlg = this.titleScene.cache.json.get('savedata').GameClearFlg as boolean;
+                const flg = this.titleScene.cache.json.get('savedata').GameClearFlg as boolean
+                this.gameStateManager.updateState({ gameClearFlg: flg }, 'system')
             }
         }
     }
@@ -67,29 +68,25 @@ export class TitleModel {
 
         const env = new ExecutionEnvironment();
 
-        //描画モード
+        //描画モード、仮想パッド
         if (this.saveDataManager.loadHighDrawFlg() !== undefined || null) {
+
             //セーブデータが存在する場合
             this.updateHighDraw(this.saveDataManager.loadHighDrawFlg());
+            this.updateVirtualPad(this.saveDataManager.loadHighDrawFlg());
+
         } else if (env.isBowserSmartPhone() || env.isPWA()) {
+            console.log('スマホ版')
             this.updateHighDraw(false);
-            this.saveDataManager.writeSaveData(this.titleScene);
+            this.updateVirtualPad(true);
+
         } else {
+            console.log('PC版')
             this.updateHighDraw(true);
-            this.saveDataManager.writeSaveData(this.titleScene);
+            this.updateVirtualPad(false);
         }
 
-        //仮想パッド
-        if (this.saveDataManager.loadVirtualPadFlg() !== undefined || null) {
-            //セーブデータが存在する場合
-            this.updateVirtualPad(this.saveDataManager.loadHighDrawFlg());
-        } else if (env.isBowserSmartPhone() || env.isPWA()) {
-            this.updateVirtualPad(true);
-            this.saveDataManager.writeSaveData(this.titleScene);
-        } else {
-            this.updateVirtualPad(false);
-            this.saveDataManager.writeSaveData(this.titleScene);
-        }
+        // this.saveDataManager.writeSaveData(this.titleScene);
 
         //デバッグモード
         if (env.isDebug()) {

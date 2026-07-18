@@ -19,9 +19,7 @@ export class Load extends Scene {
     }
 
     init(data: { sceneKey: string }) {
-        if (data.sceneKey === 'New Game') {
-            this.newGameFlg = true;
-        }
+        this.newGameFlg = data.sceneKey === 'New Game';
     }
 
     // create()はpreload内のアセットのロードが完了したら実行される
@@ -37,7 +35,6 @@ export class Load extends Scene {
             }
             this.load.json('savedata', 'assets/data/savedata.json');
         }
-
 
         //プログレスバー
         //読み込みが完了するたびに更新されるvalueを使って表現する
@@ -283,29 +280,26 @@ export class Load extends Scene {
         // アセットのロード完了後、次のシーンに遷移
         this.load.on('complete', () => {
 
-            //サウンドシーンを並行して実行
-            //this.scene.launch('Sound');
-
             //状態更新
             manager.updateState({ state: State.FIELD }, data.sceneKey)
-            if (data.sceneKey === 'New Game') return;
 
-            // 再表示する（起こす）
-            this.scene.wake('UI');
+            // New Game以外の場合は仮想パッドを表示
+            // ※最初のイベント時はUI表示せず、イベント側で表示処理する
+            if (data.sceneKey !== 'New Game') {
+                this.scene.wake('UI');
+            };
 
             //仮想パッド設定
             if (!manager.isVirtualPad) {
                 this.game.events.emit('UI_VISIBLE_FALSE');
             }
-        });
 
-        this.scene.scene.time.delayedCall(10, () => {
-            //待機
-        }, [], this.scene);
+            console.log('load complete')
+
+            this.scene.stop();
+        });
 
         // アセットのロードを開始（preload外でロードを行う場合はこのメソッドを呼ぶ必要がある）
         this.load.start();
-
-        this.scene.stop();
     }
 }

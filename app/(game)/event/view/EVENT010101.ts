@@ -123,7 +123,10 @@ export class EVENT010101 extends BaseEvent {
         this.fieldScene.events.emit('EVENT_END', true)
 
         // 再表示する（起こす）
-        this.eventScene.scene.get('UI') as Phaser.Scene;
-        this.eventScene.scene.wake('UI');
+        if (manager.isVirtualPad) {
+            this.eventScene.scene.get('UI') as Phaser.Scene;
+            this.eventScene.scene.wake('UI');
+        }
+
     }
 }
