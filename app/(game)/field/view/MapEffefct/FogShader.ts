@@ -4,14 +4,11 @@ import { TileMap } from "@/app/(game)/field/view/TileMap";
 import { GameStateManager } from '@/app/(game)/core/GameStateManager';
 
 export class FogShader {
-    private debugFlg: boolean | undefined;
     private fogMaskList: Array<Phaser.GameObjects.Graphics> = [];
     private fogList: Array<Phaser.GameObjects.TileSprite> = [];
     private fogShaderList: Array<Phaser.GameObjects.Shader> = [];
 
-    constructor(private fieldScene: FieldScene, private tileMap: TileMap) {
-        this.debugFlg = fieldScene.game.config.physics.arcade?.debug;
-    }
+    constructor(private fieldScene: FieldScene, private tileMap: TileMap) { }
 
     public async execute() {
 

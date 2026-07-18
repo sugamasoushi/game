@@ -37,14 +37,15 @@ export class Menu extends Phaser.Scene {
     create() {
         this.menuPresenter.create();
 
+        // MenuView 内の通常クラスが持つ購読を、どの停止経路でも確実に解除する。
+        this.events.once('shutdown', () => this.menuView.destroy());
+
         // ゲームオーバーの監視
         const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
             //gameStateManager.triggerGameOver();
             gameStateManager.updateState({ state: State.GAMEOVER }, 'system');
         });
         this.events.once('shutdown', () => gameOverSub.unsubscribe());
-
-        console.log(this.fieldScene.cache.json.get('savedata'))
     }
 
     public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {

@@ -23,7 +23,7 @@ export class TestButton {
         const gameConfigHeight: number = Number(this.gameScene.game.config.height);
 
         const flameX = gameConfigWidth - 100;
-        const flameY = gameConfigHeight - 250;
+        const flameY = 50;
 
         const tapText = this.gameScene.add.text(
             flameX, flameY,

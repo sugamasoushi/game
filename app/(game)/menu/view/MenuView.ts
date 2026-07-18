@@ -67,4 +67,9 @@ export class MenuView {
     public executeEndAnimation(onComplete: () => void) {
         this.mainColumnWindow.executeEndAnimation(onComplete);
     }
+
+    /** MenuScene の停止経路（タイトルへ戻る、ゲーム再起動など）用の後始末。 */
+    public destroy() {
+        this.mainColumnWindow.destroy();
+    }
 }

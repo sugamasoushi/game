@@ -87,8 +87,11 @@ export class SceneController extends Scene {
         this.scene.bringToTop('UI');
         this.scene.sleep('UI');// 非表示にする（眠らせる）
 
-        //サウンドシーンを並行して実行
-        this.scene.launch('Sound');
+        // サウンドはゲーム全体で維持する。実行中の Scene を launch すると
+        // Phaser は shutdown → start するため、二重初期化を避ける。
+        if (!this.scene.isActive('Sound')) {
+            this.scene.launch('Sound');
+        }
     }
 
     private handleStateChange(state: State, sceneKey: string) {
@@ -197,6 +200,10 @@ export class SceneController extends Scene {
          * Titleにも記載したが、購読の定義と解除を間違えると操作不能状態が発生するため注意。
          * 各シーンではstop()によるshutdownイベントをトリガーに購読解除等を行っているため、stop()を呼ぶ際は各シーンのshutdownイベントと購読の定義を確認する事。
          */
+
+        // 以下はリロードによってリスタートする処理
+        // //this.scene.start('Boot');
+        // window.location.reload();
     }
 
     async alert() {

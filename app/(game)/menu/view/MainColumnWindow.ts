@@ -60,6 +60,17 @@ export class MainColumnWindow {
         this.createMainWindow();
     }
 
+    /**
+     * MainColumnWindow は Phaser の GameObject ではないため、Scene 停止時に
+     * 自動では RxJS 購読が解除されない。MenuView から明示的に呼び出す。
+     */
+    public destroy() {
+        this.subs.unsubscribe();
+        this.scaleTween?.stop();
+        this.scaleTween = null;
+        this.containerArray = [];
+    }
+
     // 各Windowのコンテナを受け取るためのメソッド
     public setContainers(containers: Phaser.GameObjects.Container[]) {
         this.containerArray = containers;
@@ -386,8 +397,7 @@ export class MainColumnWindow {
                 this.containerArray = [];
                 this.nowMainColumnNo = MenuTab.Condition;
                 this.isItemSelectMode = false;
-                this.subs.unsubscribe(); // サブスクリプションを解除
-                this.subs = new Subscription(); // 新しく作り直しておく（次回起動時のため）
+                this.destroy();
                 onComplete();
             }
         });

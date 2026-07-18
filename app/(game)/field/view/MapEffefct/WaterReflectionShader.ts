@@ -4,13 +4,10 @@ import { TileMap } from "../TileMap";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class WaterReflectionShader {
-    private debugFlg: boolean | undefined;
     private waterShaderList: Array<Phaser.GameObjects.Shader> = [];
     private waterCropRectMaskList: Array<Phaser.GameObjects.Graphics> = [];
 
-    constructor(private fieldScene: FieldScene, private tileMap: TileMap) {
-        this.debugFlg = fieldScene.game.config.physics.arcade?.debug;
-    }
+    constructor(private fieldScene: FieldScene, private tileMap: TileMap) { }
 
     public async execute() {
         this.createWaterReflectionShader();

@@ -2,8 +2,6 @@ import { BattleScene } from "@/app/(game)/lib/types";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class cave extends Phaser.GameObjects.Container {
-    private debugFlg: boolean | undefined;
-
     private backGroundImage: Phaser.GameObjects.Image;
 
     private maskShader: Phaser.GameObjects.Shader | null = null;
@@ -28,7 +26,6 @@ export class cave extends Phaser.GameObjects.Container {
         this.name = cave.name;
         this.addToDisplayList();
         this.addToUpdateList();
-        this.debugFlg = battleScene.game.config.physics.arcade?.debug;
     }
 
     public execute() {

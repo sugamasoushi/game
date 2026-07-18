@@ -5,7 +5,6 @@ import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { TiledLightObjectEntity } from "../Entity/TiledLightObjectEntity";
 
 export class Light2D {
-    private debugFlg: boolean | undefined;
 
     private fieldScene: FieldScene;
     private TileMap: TileMap;
@@ -27,7 +26,6 @@ export class Light2D {
 
     constructor(scene: FieldScene) {
         this.fieldScene = scene;
-        this.debugFlg = scene.game.config.physics.arcade?.debug;
     }
 
     public async execute(tileMap: TileMap) {

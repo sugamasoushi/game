@@ -2,7 +2,6 @@ import { BattleScene } from "@/app/(game)/lib/types";
 import { Fog } from "../Effect/Fog";
 
 export class forest extends Phaser.GameObjects.Container {
-    private debugFlg: boolean | undefined;
 
     private battle_forest: Phaser.GameObjects.Image;
 
@@ -16,7 +15,6 @@ export class forest extends Phaser.GameObjects.Container {
         this.addToDisplayList();
         this.addToUpdateList();
         this.fog = new Fog(battleScene);
-        this.debugFlg = battleScene.game.config.physics.arcade?.debug;
     }
 
     public execute() {

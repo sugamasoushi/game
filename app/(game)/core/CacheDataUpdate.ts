@@ -14,7 +14,6 @@ export class CacheDataUpdate {
     public async phaserCacheDataUpdate(): Promise<void> {
         const manager = GameStateManager.getInstance();
         const savedata = this.scene.cache.json.get('savedata');
-        console.log(savedata)
 
         //オプションデータの同期
         const savedataOption = this.scene.cache.json.get('savedata').OptionData as OptionData;

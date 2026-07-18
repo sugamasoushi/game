@@ -3,7 +3,6 @@ import { Fog } from "../Effect/Fog";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 
 export class hill extends Phaser.GameObjects.Container {
-    private debugFlg: boolean | undefined;
 
     private battle_hill_parts_01: Phaser.GameObjects.Image;
     private battle_hill_parts_02: Phaser.GameObjects.Image;
@@ -18,7 +17,6 @@ export class hill extends Phaser.GameObjects.Container {
         this.addToDisplayList();
         this.addToUpdateList();
         this.fog = new Fog(battleScene);
-        this.debugFlg = battleScene.game.config.physics.arcade?.debug;
     }
 
     public execute() {

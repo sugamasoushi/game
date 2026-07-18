@@ -6,7 +6,6 @@ import { GameStateManager, gameStateManager } from "@/app/(game)/core/GameStateM
 import { InputManager } from "@/app/(game)/core/input/InputManager";
 
 export class Player extends BaseSprite {
-    private debugFlg: boolean | undefined;
 
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     private inputManager: InputManager;
@@ -31,8 +30,6 @@ export class Player extends BaseSprite {
         super(scene, x, y, 'tex_' + spriteSheetKey, initStandKey);
         this.fieldScene = scene;
         this.name = spriteSheetKey;
-
-        this.debugFlg = scene.game.config.physics.arcade?.debug;
 
         //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
         this.fieldScene.physics.add.existing(this);
@@ -402,8 +399,10 @@ export class Player extends BaseSprite {
         //初回作成時
         if (!this.cropRectMask) { this.cropRectMask = this.scene.add.graphics(); };
 
-        //デバッグ用、trueの場合は非表示
-        if (!this.debugFlg) {
+        const gameStateManager = GameStateManager.getInstance();
+
+        //本番の場合は非表示
+        if (!gameStateManager.isDebugMode) {
             this.cropRectMask.setVisible(false);
         }
         this.cropRectMask.setDepth(5000);

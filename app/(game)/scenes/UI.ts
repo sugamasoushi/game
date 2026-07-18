@@ -17,6 +17,20 @@ export class UI extends Scene {
     private leftButton: LeftButton;
     private rightButton: RightButton;
 
+    private onUiClose = () => {
+        //this.menuButton.fadeIn();
+    };
+
+    private onUiForceOff = () => {
+        this.leftButton.setDisable();
+        this.rightButton.setDisable();
+    };
+
+    private onUiVisibleFalse = () => {
+        this.leftButton.setVisibleFalse();
+        this.rightButton.setVisibleFalse();
+    };
+
     constructor() { super('UI'); }
 
     init() {
@@ -41,24 +55,15 @@ export class UI extends Scene {
 
         //イベントを設定（Phaserのトップレベルのイベント）
         //this.uiScene.game.events.on('UI_OPEN', () => { });//MenuButton.tsで直接処理するため不要
-        this.game.events.on('UI_CLOSE', () => {
-            //this.menuButton.fadeIn();
-        });
+        this.game.events.on('UI_CLOSE', this.onUiClose);
+        this.game.events.on('UI_FORCE_OFF', this.onUiForceOff);
+        this.game.events.on('UI_VISIBLE_FALSE', this.onUiVisibleFalse);
 
-        this.game.events.on('UI_FORCE_OFF', () => {
-            this.leftButton.setDisable();
-            this.rightButton.setDisable();
-        });
-
-        this.game.events.on('UI_VISIBLE_FALSE', () => {
-            this.leftButton.setVisibleFalse();
-            this.rightButton.setVisibleFalse();
-        });
-
-        //イベントの解除
-        this.game.events.once('shutdown', () => {
-            //this.game.events.off('UI_OPEN');
-            this.game.events.off('UI_CLOSE');
+        // UI シーンの停止時に、Game 全体へ登録したイベントも解除する。
+        this.events.once('shutdown', () => {
+            this.game.events.off('UI_CLOSE', this.onUiClose);
+            this.game.events.off('UI_FORCE_OFF', this.onUiForceOff);
+            this.game.events.off('UI_VISIBLE_FALSE', this.onUiVisibleFalse);
         });
     }
 }

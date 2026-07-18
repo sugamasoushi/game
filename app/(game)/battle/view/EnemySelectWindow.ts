@@ -35,8 +35,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         this.name = EnemySelectWindow.name;
         this.scene.add.existing(this);
         this.addToDisplayList();
-        this.scene.events.on(Phaser.Scenes.Events.UPDATE, this.update, this);
-        this.debugFlg = battleScene.game.config.physics.arcade?.debug;
+        //this.scene.events.on(Phaser.Scenes.Events.UPDATE, this.update, this);
     }
 
     public init(enemyPartyList: Phaser.GameObjects.Image[]) {
@@ -80,7 +79,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         const battleField = serchInstance.searchEventClass(this.scene as BattleScene, battleFieldKey);
         battleField!.execute();
 
-        if (this.debugFlg) {
+        if (manager.isDebugMode) {
             this.cursorLight = this.scene.lights.addLight(0, 0, 200)
             this.scene.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
                 this.cursorLight.x = pointer.x;
@@ -153,7 +152,7 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
     }
 
     private createMessage() {
-        const tilesize = 32;
+        //const tilesize = 32;
 
         //テキスト作成
         const messageObjectInstance = new MessageObject();
@@ -197,12 +196,12 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         this.backButtonWindow.setVisible(false);
     }
 
-    private updateView() {
-        for (const enemy of this.enemyPartyList) {
-            enemy.getData('backGaugeHP').update();
-            enemy.getData('gaugeHP').update();
-        }
-    }
+    // private updateView() {
+    //     for (const enemy of this.enemyPartyList) {
+    //         enemy.getData('backGaugeHP').update();
+    //         enemy.getData('gaugeHP').update();
+    //     }
+    // }
 
     show(playerSprite: Phaser.GameObjects.Sprite, playerCharacterIcon: Phaser.GameObjects.Image) {
         this.nowSelectCharacter = playerSprite;

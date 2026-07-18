@@ -98,7 +98,7 @@ export class BattlePresenter {
         this.viewCoordinator.initWindows();
     }
 
-    public async create(events: Phaser.Events.EventEmitter, views: ViewsContainer) {
+    public async create(views: ViewsContainer) {
 
         // 履歴を使った画面遷移を管理するステートマシン
         this.stateMachine = new StateMachine(views);
@@ -115,7 +115,6 @@ export class BattlePresenter {
             this.battleMessageWindow,
             this.playerPartyWindow
         );
-        this.executor.setEndEvents(events);
 
         // コマンド選択順・ターン進行のイベント連携
         this.flowController = new BattleFlowController(

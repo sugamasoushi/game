@@ -4,7 +4,6 @@ import { GameStateManager } from '../core/GameStateManager';
 import { Subscription } from 'rxjs';
 
 export class Sound extends Scene {
-    private debugFlg: boolean | undefined;
     private subs = new Subscription();
 
     // 💡 音量設定（0.0 〜 1.0）
@@ -27,9 +26,7 @@ export class Sound extends Scene {
     battleBgm: Phaser.Sound.HTML5AudioSound;
 
     constructor() { super('Sound'); }
-    init() {
-        this.debugFlg = this.game.config.physics.arcade?.debug;
-    }
+    init() { }
     preload() { }
 
     create() {
@@ -92,8 +89,8 @@ export class Sound extends Scene {
 
         this.setSubscription();
         this.events.once('shutdown', () => {
-            //購読解除しない
-            //this.subs.unsubscribe()
+            this.subs.unsubscribe();
+            this.subs = new Subscription();
         });
     }
 
@@ -118,7 +115,7 @@ export class Sound extends Scene {
                         this.updateBgm(mapKey);
                         break;
                     case BgmState.BATTLE:
-                        if (this.debugFlg) return
+                        if (gameStateManager.isDebugMode) return
                         console.log('battla bgm')
                         this.playBgm('bgm_aruges', 0.15);
                         if (this.currentBgs) this.currentBgs.stop();
@@ -157,7 +154,8 @@ export class Sound extends Scene {
     }
 
     private updateBgm(mapKey: string) {
-        if (this.debugFlg) return;
+        const gameStateManager = GameStateManager.getInstance();
+        if (gameStateManager.isDebugMode) return;
 
         switch (mapKey) {
             case '0102':

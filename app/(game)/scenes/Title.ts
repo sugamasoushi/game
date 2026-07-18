@@ -12,7 +12,6 @@ import { TitlePresenter } from '../title/presenter/TitlePresenter';
 import { ManualButton } from '../title/view/ManualButton';
 
 export class Title extends Scene {
-    private debugFlg: boolean | undefined;
     game: Phaser.Game;
 
     public isTransitioning: boolean = false;
@@ -24,7 +23,6 @@ export class Title extends Scene {
 
     init() {
         console.log("Title scene initial launch");
-        this.debugFlg = this.game.config.physics.arcade?.debug;
         this.isTransitioning = false;
     }
 

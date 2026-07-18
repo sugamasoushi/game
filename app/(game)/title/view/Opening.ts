@@ -17,8 +17,7 @@ export class Opening {
     }
 
     public async playOpening(): Promise<void> {
-        const debugFlg = this.scene.game.config.physics.arcade?.debug;
-        if (debugFlg) return;
+        if (gameStateManager.isDebugMode) return;
 
         //現在のBGM状態を更新
         //gameStateManager.setBgmState(BgmState.TITLE);

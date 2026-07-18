@@ -110,25 +110,29 @@ export class Battle extends Phaser.Scene implements BattleScene {
         // gameStateManager.setBgmState(BgmState.BATTLE);
         gameStateManager.updateState({ bgmState: BgmState.BATTLE }, 'Sound');
 
-        //Phaserのイベントエミッター
-        this.events.on('BattleEnd', () => {
-            this.endScene();
-        }, this);
+        //Phaserのイベントエミッター  ※未使用。インターフェース経由で参照している
+        // this.events.on('BattleEnd', () => {
+        //     this.endScene();
+        // }, this);
 
-        this.battlePresenter.create(
-            this.events,
-            {
-                battleSelect: this.battleSelectWindow,
-                playerPartyWindow: this.playerPartyWindow,
-                attackSelect: this.attackSelectWindow,
-                enemySelectWindow: this.enemySelectWindow,
-                specialSkillSelect: this.specialSkillSelectWindow,
-                magicSkillSelect: this.magicSkillSelectWindow,
-                itemSelectWindow: this.itemSelectWindow
-            });
+        // // シーン終了時の破棄
+        // this.events.once('shutdown', () => {
+        //     this.events.off('BattleEnd')
+        // });
+
+        this.battlePresenter.create({
+            battleSelect: this.battleSelectWindow,
+            playerPartyWindow: this.playerPartyWindow,
+            attackSelect: this.attackSelectWindow,
+            enemySelectWindow: this.enemySelectWindow,
+            specialSkillSelect: this.specialSkillSelectWindow,
+            magicSkillSelect: this.magicSkillSelectWindow,
+            itemSelectWindow: this.itemSelectWindow
+        });
     }
 
     public endScene() {
+        console.log('endScene()')
 
         // FX
         const pixelated = this.cameras.main.postFX.addPixelate(-1);
@@ -152,8 +156,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
 
                 //状態更新
                 manager.updateState({ state: State.NOSTATE }, 'Sound');
-
-                this.events.emit('shutdown');
 
                 //バトルシーンを停止
                 this.scene.stop();

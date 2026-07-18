@@ -28,11 +28,6 @@ export class BattleExecutor {
         private playerPartyWindow: PlayerPartyWindow
     ) { }
 
-    // 戦闘終了通知用のイベントエミッターを登録
-    public setEndEvents(events: Phaser.Events.EventEmitter) {
-        this.endEvents = events;
-    }
-
     // オート戦闘フラグを設定
     public setAutoFlg(autoFlg: boolean) {
         this.autoFlg = autoFlg;
@@ -115,7 +110,7 @@ export class BattleExecutor {
             // HPが0以下のメンバーは1にする（現状、戦闘終了後は必ず１残す）
             this.battleModel.checkPlayerPartyHP();
 
-            this.endEvents.emit('BattleEnd');
+            this.battleScene.endScene();
 
         } else if (winner === 'enemy') {
 

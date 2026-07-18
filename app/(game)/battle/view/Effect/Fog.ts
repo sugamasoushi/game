@@ -42,6 +42,10 @@ export class Fog {
             fog2.tilePositionY += 0.4;
         });
 
+        this.battleScene.events.once('shutdown', () => {
+            this.battleScene.events.off('update')
+        });
+
         if (depth) {
             fog.setDepth(depth);
             fog2.setDepth(depth);
