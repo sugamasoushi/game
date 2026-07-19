@@ -6,7 +6,6 @@ import { Npc } from "../../field/view/character/Npc";
 import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
-import { SpriteType_3x4 } from "../../field/view/character/SpriteType_3x4";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
@@ -184,7 +183,6 @@ export class EVENT010301 extends BaseEvent {
                 this.lamyNPC.setBubbleTalkKey('bubbleTalk0001.talk002');
                 this.lamyNPC.bubbleTalkSetting();
                 this.lamyNPC.setInputManager(InputManager.getInstance(this.fieldScene));
-                (this.lamyNPC as SpriteType_3x4).setBubble();
                 this.lamyNPC.setData('ImageKey', '20240908');
                 this.lamyNPC.state = CharacterState.normal;
 

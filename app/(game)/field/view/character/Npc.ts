@@ -8,6 +8,7 @@ import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from 'rxjs';
 import { SearchEnemyData } from '@/app/(game)/Data/SearchEnemyData';
 import { Player } from './Player';
+import { Bubble } from "@/app/(game)/util/Effect/Bubble";
 
 export class Npc extends BaseSprite {
     private npcType: string;
@@ -152,7 +153,13 @@ export class Npc extends BaseSprite {
 
         //tiledでtalkデータを設定する事
         if (this.bubbleTalkKey) {
+
+            //クリック時の動作設定
             this.on('pointerdown', () => { this.execNpcTalk(); });
+
+            //吹き出しを設定
+            const bubbleSprite = new Bubble(this.fieldScene, this);
+            bubbleSprite.execute();
         }
     }
 

@@ -3756,6 +3756,11 @@
                          "value":"enemy02"
                         }, 
                         {
+                         "name":"spritesheetKeyOrder",
+                         "type":"string",
+                         "value":"up,right,down,left"
+                        }, 
+                        {
                          "name":"standkey",
                          "type":"string",
                          "value":"stand_down"
@@ -3817,6 +3822,11 @@
                          "name":"spritesheetKey",
                          "type":"string",
                          "value":"enemy02"
+                        }, 
+                        {
+                         "name":"spritesheetKeyOrder",
+                         "type":"string",
+                         "value":"up,right,down,left"
                         }, 
                         {
                          "name":"standkey",

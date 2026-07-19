@@ -158,7 +158,7 @@ export class Load extends Scene {
         });
 
         this.load.spritesheet({
-            key: 'bubble',
+            key: 'tex_bubble',
             url: "/assets/img/spritesheet/bubble.png",
             frameConfig: {
                 frameWidth: 32,  //横幅

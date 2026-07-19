@@ -85,22 +85,21 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
     protected createDirectionalWalkAnimation(
         spriteSheetKey: string,
         direction: 'left' | 'right' | 'up' | 'down',
-        order: readonly string[],
+        order: readonly Direction[],
         framesPerDirection: number,
         frameRate: number,
-        options?: { repeat?: number; yoyo?: boolean }
+        options?: DirectionalWalkOptions
     ) {
-        const rowIndex = order.indexOf(direction);
-        const start = rowIndex * framesPerDirection;
-        const end = start + framesPerDirection - 1;
-
-        this.anims.create({
-            key: this.getWalkKey(direction),
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start, end }),
+        createDirectionalWalkAnimation(
+            this.anims,
+            spriteSheetKey,
+            this.getWalkKey(direction),
+            direction,
+            order,
+            framesPerDirection,
             frameRate,
-            repeat: options?.repeat,
-            yoyo: options?.yoyo
-        });
+            options
+        );
     }
 
     // 方向ごとの待機アニメを生成する。
@@ -113,15 +112,17 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
         frameRate: number,
         options?: DirectionalStandOptions
     ) {
-        const rowIndex = order.indexOf(direction);
-        const frame = rowIndex * framesPerDirection + standFrameOffset;
-
-        this.anims.create({
-            key: this.getStandKey(direction),
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: frame, end: frame }),
+        createDirectionalStandAnimation(
+            this.anims,
+            spriteSheetKey,
+            this.getStandKey(direction),
+            direction,
+            order,
+            framesPerDirection,
+            standFrameOffset,
             frameRate,
-            repeat: options?.repeat
-        });
+            options
+        );
     }
 
     protected setupDirectionalAnimations(
