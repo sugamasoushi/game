@@ -60,11 +60,11 @@ export class BubbleTalk {
     public async execTalk(): Promise<void> {
 
         //状態管理クラス
-        const manager = GameStateManager.getInstance();
+        //const manager = GameStateManager.getInstance();
         //状態更新
-        manager.updateState({
-            state: State.BUBBLE_TALK
-        }, 'BubbleTalk');
+        // manager.updateState({
+        //     state: State.BUBBLE_TALK
+        // }, 'BubbleTalk');
 
         //実行
         await this.talk();
@@ -184,7 +184,7 @@ export class BubbleTalk {
             } else {
                 textX = playerSprite.x;
             }
-            console.log(textX)
+
             //アイコン含め、テキストが画面外左にはみ出た場合
             if (textX - 100 < 0) {
                 textX = 0 + 100 + 32;
@@ -414,10 +414,10 @@ export class BubbleTalk {
         this.cropRectMask.destroy();
 
         //状態管理クラス
-        const manager = GameStateManager.getInstance();
-        manager.updateState({
-            state: State.NOSTATE
-        }, 'NoState');
+        // const manager = GameStateManager.getInstance();
+        // manager.updateState({
+        //     state: State.NOSTATE
+        // }, 'NoState');
 
         (this.fieldScene as FieldScene).input.setDefaultCursor('default');
     }

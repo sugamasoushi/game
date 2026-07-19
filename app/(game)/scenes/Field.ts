@@ -93,6 +93,11 @@ export class Field extends Scene implements FieldScene {
     public getMainCamera(): Phaser.Cameras.Scene2D.Camera {
         return this.mainCamera;
     }
+
+    public getMakeTilemap(): Phaser.Tilemaps.Tilemap {
+        const makeTilemapData = this.fieldSceneModel.getMakeTilemap()
+        return makeTilemapData;
+    }
 }
 
 

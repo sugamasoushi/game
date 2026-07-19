@@ -2,6 +2,7 @@
 export interface FieldScene extends Phaser.Scene {
   getMainCamera(): Phaser.Cameras.Scene2D.Camera;
   resumeScene(): void;
+  getMakeTilemap(): Phaser.Tilemaps.Tilemap;
 }
 
 export interface EventScene extends Phaser.Scene {

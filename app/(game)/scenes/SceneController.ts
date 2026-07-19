@@ -107,7 +107,7 @@ export class SceneController extends Scene {
             [State.BATTLE]: () => this.transitionToBattle(sceneKey),
             [State.MENU]: () => this.transitionToMenu(sceneKey),
             [State.EVENT]: () => this.transitionToEvent(sceneKey),
-            [State.BUBBLE_TALK]: () => this.transitionToBubbleTalk(),
+            [State.BUBBLE_TALK]: () => this.transitionToBubbleTalk(sceneKey),
             [State.GAMEOVER]: () => this.transitionToGameOver(),
             [State.GAME_RESTART]: () => this.transitionToGameRestart(sceneKey)
         };
@@ -168,9 +168,9 @@ export class SceneController extends Scene {
         this.scene.launch('Event', { sceneKey });
     }
 
-    private transitionToBubbleTalk() {
+    private transitionToBubbleTalk(sceneKey: string) {
         console.log('BubbleTalk')
-        this.scene.launch('BubbleTalk');
+        this.scene.launch('BubbleTalk', { sceneKey });
     }
 
     private transitionToGameOver() {

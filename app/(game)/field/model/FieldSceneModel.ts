@@ -58,7 +58,7 @@ export class FieldSceneModel {
         }
     }
 
-    public getMakeTilemapData(): Phaser.Tilemaps.Tilemap { return this.makeTilemapData; }
+    public getMakeTilemap(): Phaser.Tilemaps.Tilemap { return this.makeTilemapData; }
 
     get eventObjectFlg() { return this.checkEventObjectFlg; }
     get clickEventObjectFlg() { return this.checkClickEventObjectFlg; }

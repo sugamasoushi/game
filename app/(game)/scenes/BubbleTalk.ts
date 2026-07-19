@@ -1,55 +1,35 @@
-import { EventScene } from '../lib/SceneTypes';
-import { SerchEvent } from "../event/SearchEvent";
-import { GameStateManager, gameStateManager } from "../core/GameStateManager";
-import { State } from '../lib/types';
+import { FieldScene } from "../lib/SceneTypes";
+import { GameStateManager } from "../core/GameStateManager";
 
-export class BubbleTalk extends Phaser.Scene implements EventScene {
-
-    private cursorsKeys: Phaser.Types.Input.Keyboard.CursorKeys;//キーボード設定
-    private mainCamera: Phaser.Cameras.Scene2D.Camera;
-
-    private serchEventInstance: SerchEvent;
+export class BubbleTalk extends Phaser.Scene {
 
     constructor() { super('BubbleTalk'); }
 
-    init() {
-        this.mainCamera = this.cameras.main;
-        this.serchEventInstance = new SerchEvent();
-    }
+    // init(data: { sceneKey: string }) {
+    //     console.log(data.sceneKey)
+    // }
 
     create() {
 
-        // //状態管理クラスから現在のイベント用データを取得
-        // const manager = GameStateManager.getInstance();
-        // const eventObj = manager.currentEventObj;
+        //フィールドシーン
+        const fieldScene = this.scene.get('Field') as FieldScene;
 
-        // //キーボード設定
-        // this.cursorsKeys = this.input.keyboard!.createCursorKeys();//キーボード設定
+        //マップ全体のサイズ
+        console.log(fieldScene.getMakeTilemap().widthInPixels, fieldScene.getMakeTilemap().heightInPixels)
 
-        // //イベントクラスを取得、実行
-        // const eventClass = this.serchEventInstance.searchEventClass(this, eventObj);
-        // if (eventClass) {
-        //     eventClass.init();
-        //     eventClass.execEvent();
-        // }
+        const gameStateManager = GameStateManager.getInstance();
+        const sprite = gameStateManager.currentPlayerPartyList[0];
 
-        // // ゲームオーバーの監視
-        // const gameOverSub = gameStateManager.onGameOver$.subscribe(() => {
-        //     //gameStateManager.triggerGameOver();
-        //     gameStateManager.updateState({ state: State.GAMEOVER }, 'system');
-        // });
-        // this.events.once('shutdown', () => {
-        //     gameOverSub.unsubscribe();
-        //     if (eventClass) {
-        //         eventClass.destroy();
-        //     }
-        // });
-    }
-    public getCursorsKeys(): Phaser.Types.Input.Keyboard.CursorKeys {
-        return this.cursorsKeys;
+        //フィールドシーンのカメラを取得
+        const fieldSceneCamera = fieldScene.cameras.main;
+        console.log(fieldSceneCamera.scrollX, fieldSceneCamera.scrollY)
+
+        const screenX = sprite.x - fieldSceneCamera.scrollX;
+        const screenY = sprite.y - fieldSceneCamera.scrollY;
+
+        //座標を変換
+        console.log(screenX, screenY);
+
     }
 
-    public getMainCamera(): Phaser.Cameras.Scene2D.Camera {
-        return this.mainCamera;
-    }
 }

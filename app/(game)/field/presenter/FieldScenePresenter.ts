@@ -134,7 +134,7 @@ export class FieldScenePresenter {
 
         //view-------------------------------------------------
         //console.log("タイルセットのロードを開始します...");
-        this.tileMap = new TileMap(this.fieldScene, this.fieldSceneModel.getMakeTilemapData());
+        this.tileMap = new TileMap(this.fieldScene, this.fieldSceneModel.getMakeTilemap());
         await this.tileMap.loadTileSetFile(gameStateManager.currentFieldData);
         await this.tileMap.execute();
 
