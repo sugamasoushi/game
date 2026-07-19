@@ -20,7 +20,7 @@ export class NpcView {
     ) {
     }
 
-    public update(time: number, delta: number) { 
+    public update(time: number, delta: number) {
         void time;
         void delta;
     }
@@ -52,7 +52,7 @@ export class NpcView {
 
                                 //吹き出し会話の設定
                                 let bubbleTalkKey = entity.bubbleTalkDefaultKey;
-                                if(entity.bubbleJugeEventKey){
+                                if (entity.bubbleJugeEventKey) {
                                     //イベントが完了していた場合のセリフを設定
                                     if (!EventFlagData.getFlag(this.fieldScene, entity.bubbleJugeEventKey)) {
                                         bubbleTalkKey = entity.bubbleTalkKeyEventOff;
@@ -66,6 +66,7 @@ export class NpcView {
                                     npcObj.x!,
                                     npcObj.y!,
                                     entity.spritesheetKey, //spriteSheetKey : タイル画像のキー
+                                    entity.spritesheetKeyOrder,//spritesheetKeyOrder : タイル画像の方向を示す順序
                                     entity.name, //name : ゲーム内変数としてのキャラ名、画像などで使用
                                     entity.standkey, //指定されていなければ下向き配置
                                     entity.imageKey, //imageKey : 立ち絵のキー、アイコンにも使用
@@ -118,9 +119,26 @@ export class NpcView {
         });
     }
 
-    public createSprite(npcType: string, spritetype: string, gameScene: FieldScene, x: number, y: number, spriteSheetKey: string, name: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
-        if (spritetype === '0404') { return new SpriteType_4x4(gameScene, x, y, npcType, spriteSheetKey, name, initStandKey, imageKey, bubbleTalkKey); }
-        if (spritetype === '0304') { return new SpriteType_3x4(gameScene, x, y, npcType, spriteSheetKey, name, initStandKey, imageKey, bubbleTalkKey); }
+    public createSprite(
+        npcType: string,
+        spritetype: string,
+        gameScene: FieldScene,
+        x: number,
+        y: number,
+        spriteSheetKey: string,
+        spritesheetKeyOrder: string,
+        name: string,
+        initStandKey: string,
+        imageKey: string,
+        bubbleTalkKey: string) {
+
+        if (spritetype === '0404') {
+            return new SpriteType_4x4(gameScene, x, y, npcType, spriteSheetKey, spritesheetKeyOrder, name, initStandKey, imageKey, bubbleTalkKey);
+        }
+
+        if (spritetype === '0304') {
+            return new SpriteType_3x4(gameScene, x, y, npcType, spriteSheetKey, spritesheetKeyOrder, name, initStandKey, imageKey, bubbleTalkKey);
+        }
     }
 
 }

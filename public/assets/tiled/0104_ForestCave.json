@@ -896,6 +896,11 @@
                          "value":"bat"
                         }, 
                         {
+                         "name":"spritesheetKeyOrder",
+                         "type":"string",
+                         "value":"up,left,down,right"
+                        }, 
+                        {
                          "name":"standkey",
                          "type":"string",
                          "value":"stand_down"

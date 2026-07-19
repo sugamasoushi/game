@@ -95,4 +95,9 @@ export class TiledObjectEntity {
         const value = this.dataMap.get("createJudgeEventKey");
         return typeof value === "string" ? value : "";
     }
+
+    get spritesheetKeyOrder(): string {
+        const value = this.dataMap.get("spritesheetKeyOrder");
+        return typeof value === "string" ? value : "";
+    }
 }

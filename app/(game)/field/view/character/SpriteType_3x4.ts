@@ -1,74 +1,32 @@
 import { FieldScene } from "@/app/(game)/lib/types";
 import { Npc } from "./Npc";
-// import { Shadow } from "./part/Shadow";
 import { bubble } from "./part/bubble";
 
 export class SpriteType_3x4 extends Npc {
     frameRate = 10;
     shadowFlag = true;
 
-    constructor(fieldScene: FieldScene, x: number, y: number, npcType: string, spriteSheetKey: string, characterName: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
+    constructor(fieldScene: FieldScene, x: number, y: number, npcType: string, spriteSheetKey: string, spritesheetKeyOrder: string, characterName: string, initStandKey: string, imageKey: string, bubbleTalkKey: string) {
         super(fieldScene, x, y, npcType, spriteSheetKey, characterName, initStandKey, imageKey, bubbleTalkKey);
-        this._animationSetting(spriteSheetKey);
-        //this._setShadow(initStandKey);
+        this._animationSetting(spriteSheetKey, spritesheetKeyOrder);
         this.setBubble();
     }
 
-    //アニメーション設定
-    //charKeyはアニメーションテクスチャ名およびキャラ名に使用する
-    _animationSetting(spriteSheetKey: string) {
-        this.anims.create({
-            key: this.walkLeft,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 3, end: 5 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.walkRight,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 6, end: 8 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.walkUp,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 9, end: 11 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.walkDown,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 0, end: 2 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.standLeft,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 4, end: 4 }),
-            frameRate: this.frameRate,
-        });
-        this.anims.create({
-            key: this.standRight,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 7, end: 7 }),
-            frameRate: this.frameRate,
-        });
-        this.anims.create({
-            key: this.standUp,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 10, end: 10 }),
-            frameRate: this.frameRate,
-        });
-        this.anims.create({
-            key: this.standDown,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 1, end: 1 }),
-            frameRate: this.frameRate,
-        });
-    }
+    // アニメーションを生成するエントリ。
+    // spritesheetKeyOrder を解析して向き順を決め、歩行／待機アニメを作成する。
+    _animationSetting(spriteSheetKey: string, spritesheetKeyOrder: string) {
+        const order = this.parseSpritesheetKeyOrder(spritesheetKeyOrder);
 
-    // _setShadow(initStandKey: string) {
-    //     if (this.shadowFlag) {
-    //         const shadowSprite = new Shadow(this, this.fieldScene, this.x, this.y, 'chicken_shadow', initStandKey);
-    //         this.spriteObjList.push(shadowSprite);
-    //     }
-    // }
+        this.createDirectionalWalkAnimation(spriteSheetKey, 'left', order, 3, this.frameRate, { yoyo: true });
+        this.createDirectionalWalkAnimation(spriteSheetKey, 'right', order, 3, this.frameRate, { yoyo: true });
+        this.createDirectionalWalkAnimation(spriteSheetKey, 'up', order, 3, this.frameRate, { yoyo: true });
+        this.createDirectionalWalkAnimation(spriteSheetKey, 'down', order, 3, this.frameRate, { yoyo: true });
+
+        this.createDirectionalStandAnimation(spriteSheetKey, 'left', order, 3, 1, this.frameRate);
+        this.createDirectionalStandAnimation(spriteSheetKey, 'right', order, 3, 1, this.frameRate);
+        this.createDirectionalStandAnimation(spriteSheetKey, 'up', order, 3, 1, this.frameRate);
+        this.createDirectionalStandAnimation(spriteSheetKey, 'down', order, 3, 1, this.frameRate);
+    }
 
     public setBubble() {
         //吹き出しテキストがある場合に設定

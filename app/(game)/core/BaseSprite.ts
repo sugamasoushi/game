@@ -68,6 +68,89 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
         this.standframe = spriteSheetKey + '-' + direction;
     }
 
+    // spritesheetKeyOrder を正規化して方向配列に変換する。
+    protected parseSpritesheetKeyOrder(order: string): readonly string[] {
+        const defaultOrder = ['down', 'left', 'right', 'up'] as const;
+        if (!order) return defaultOrder;
+
+        const values = order
+            .split(',')
+            .map(item => item.trim().toLowerCase())
+            .filter(Boolean);
+
+        const validDirections = new Set(['down', 'left', 'right', 'up']);
+        const uniqueValues = Array.from(new Set(values));
+
+        if (uniqueValues.length !== 4 || uniqueValues.some(direction => !validDirections.has(direction))) {
+            return defaultOrder;
+        }
+
+        return uniqueValues;
+    }
+
+    // 方向ごとの歩行アニメを生成する。
+    protected createDirectionalWalkAnimation(
+        spriteSheetKey: string,
+        direction: 'left' | 'right' | 'up' | 'down',
+        order: readonly string[],
+        framesPerDirection: number,
+        frameRate: number,
+        options?: { repeat?: number; yoyo?: boolean }
+    ) {
+        const rowIndex = order.indexOf(direction);
+        const start = rowIndex * framesPerDirection;
+        const end = start + framesPerDirection - 1;
+
+        this.anims.create({
+            key: this.getWalkKey(direction),
+            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start, end }),
+            frameRate,
+            repeat: options?.repeat,
+            yoyo: options?.yoyo
+        });
+    }
+
+    // 方向ごとの待機アニメを生成する。
+    protected createDirectionalStandAnimation(
+        spriteSheetKey: string,
+        direction: 'left' | 'right' | 'up' | 'down',
+        order: readonly string[],
+        framesPerDirection: number,
+        standFrameOffset: number,
+        frameRate: number,
+        options?: { repeat?: number }
+    ) {
+        const rowIndex = order.indexOf(direction);
+        const frame = rowIndex * framesPerDirection + standFrameOffset;
+
+        this.anims.create({
+            key: this.getStandKey(direction),
+            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: frame, end: frame }),
+            frameRate,
+            repeat: options?.repeat
+        });
+    }
+
+    // 方向に対応する歩行キーを返す。
+    protected getWalkKey(direction: 'left' | 'right' | 'up' | 'down') {
+        switch (direction) {
+            case 'left': return this.walkLeft;
+            case 'right': return this.walkRight;
+            case 'up': return this.walkUp;
+            case 'down': return this.walkDown;
+        }
+    }
+
+    // 方向に対応する待機キーを返す。
+    protected getStandKey(direction: 'left' | 'right' | 'up' | 'down') {
+        switch (direction) {
+            case 'left': return this.standLeft;
+            case 'right': return this.standRight;
+            case 'up': return this.standUp;
+            case 'down': return this.standDown;
+        }
+    }
+
     //共通
     private updateAnimation() {
         if (this.moveDirection === this.walkLeft) {

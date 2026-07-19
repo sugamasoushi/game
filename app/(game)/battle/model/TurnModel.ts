@@ -4,7 +4,22 @@ export class TurnModel extends Phaser.Events.EventEmitter {
 
     // 戦闘開始時に素早さ順などでキューを作成
     setupTurnOrder(characters: Phaser.GameObjects.GameObject[]) {
-        this.actionQueue = [...characters].sort((a, b) => b.getData('Speed') - a.getData('Speed'));
+
+        //avoidとguardの場合は先頭とする。同じ設定値を持つ場合はspeed順とする。
+        this.actionQueue = [...characters].sort((a, b) => {
+            const aType = a.getData('UseSkill')?.type;
+            const bType = b.getData('UseSkill')?.type;
+            const aIsPriority = aType === 'avoid' || aType === 'guard';
+            const bIsPriority = bType === 'avoid' || bType === 'guard';
+
+            if (aIsPriority && !bIsPriority) {
+                return -1;
+            } else if (!aIsPriority && bIsPriority) {
+                return 1;
+            } else {
+                return b.getData('Speed') - a.getData('Speed');
+            }
+        });
         this.currentCharacterIndex = 0;
 
         // console.log(this.actionQueue)

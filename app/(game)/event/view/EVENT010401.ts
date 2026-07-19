@@ -67,6 +67,7 @@ export class EVENT010401 extends BaseEvent {
             496,
             'normal', //npcのタイプ
             'tex_lamy', //タイル画像のキー
+            'down,left,right,up',
             'lamyNPC',//キャラ名
             'stand_up',//向き
             '20240908', //立ち絵のキー、アイコンにも使用
