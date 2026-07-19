@@ -3,7 +3,6 @@ import { ClickEventObjectModel } from "../model/ClickEventObjectModel";
 import { ClickEventObjectView } from "../view/ClickEventObjectView";
 import { FieldScene } from "../../lib/types";
 import { GameStateManager } from "../../core/GameStateManager";
-import { BubbleTalk } from "../view/character/Action/BubbleTalk";
 import { FieldObjectCheck } from "../../util/FieldObjectCheck";
 
 import { Subscription } from "rxjs";
@@ -64,15 +63,14 @@ export class ClickEventObjectPresenter {
         if (gameStateManager.currentState !== State.NOSTATE) return;
 
         //吹き出し会話を設定
-        const bubbleTalk = new BubbleTalk(this.fieldScene, obj, obj.getData('bubbleTalkDefaultKey'), this.makeTileMap);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
-        bubbleTalk.init();
+        const bubbleTalkKey = obj.getData('bubbleTalkDefaultKey');
 
         //プレイヤーとオブジェクトのチェック
         const fieldPlayerChk = new FieldObjectCheck(player, obj as Phaser.Physics.Arcade.Sprite);
 
         //キャラ向きとオブジェクト位置からイベント発生可否をチェック
         if (fieldPlayerChk.checkPlayerClickEvent()) {
-            bubbleTalk!.execTalk();
+            gameStateManager.updateState({ state: State.BUBBLE_TALK, eventObj: obj }, bubbleTalkKey);
         }
     }
 

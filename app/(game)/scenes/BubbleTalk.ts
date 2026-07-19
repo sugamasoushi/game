@@ -1,35 +1,28 @@
-import { FieldScene } from "../lib/SceneTypes";
-import { GameStateManager } from "../core/GameStateManager";
+import { BubbleTalkModel } from "../BubbleTalk/model/BubbleTalkModel";
+import { BubbleTalkView } from "../BubbleTalk/view/BubbleTalkView";
+import { BubbleTalkPresenter } from "../BubbleTalk/presenter/BubbleTalkPresenter";
+import { GameStateManager } from './../core/GameStateManager';
+import { State } from "../lib/StateTypes";
 
 export class BubbleTalk extends Phaser.Scene {
+    private bubbleTalkPresenter: BubbleTalkPresenter;
+    private bubbleTalkKey: string;
 
     constructor() { super('BubbleTalk'); }
 
-    // init(data: { sceneKey: string }) {
-    //     console.log(data.sceneKey)
-    // }
-
-    create() {
-
-        //フィールドシーン
-        const fieldScene = this.scene.get('Field') as FieldScene;
-
-        //マップ全体のサイズ
-        console.log(fieldScene.getMakeTilemap().widthInPixels, fieldScene.getMakeTilemap().heightInPixels)
-
-        const gameStateManager = GameStateManager.getInstance();
-        const sprite = gameStateManager.currentPlayerPartyList[0];
-
-        //フィールドシーンのカメラを取得
-        const fieldSceneCamera = fieldScene.cameras.main;
-        console.log(fieldSceneCamera.scrollX, fieldSceneCamera.scrollY)
-
-        const screenX = sprite.x - fieldSceneCamera.scrollX;
-        const screenY = sprite.y - fieldSceneCamera.scrollY;
-
-        //座標を変換
-        console.log(screenX, screenY);
-
+    init(data: { sceneKey: string }) {
+        this.bubbleTalkKey = data.sceneKey;
     }
 
+    async create() {
+
+        const model = new BubbleTalkModel(this.bubbleTalkKey);
+        const view = new BubbleTalkView(this);
+
+        this.bubbleTalkPresenter = new BubbleTalkPresenter(this, model, view);
+        await this.bubbleTalkPresenter.execute();
+
+        const manager = GameStateManager.getInstance();
+        manager.updateState({ state: State.NOSTATE }, 'npc');
+    }
 }

@@ -2,7 +2,6 @@ import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { BaseSprite } from "@/app/(game)/core/BaseSprite";
 import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
-import { BubbleTalk } from './Action/BubbleTalk';
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from '@/app/(game)/lib/StateTypes';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
@@ -14,7 +13,6 @@ export class Npc extends BaseSprite {
     private npcType: string;
     private inputManager: InputManager;
     protected bubbleTalkKey;
-    protected currentBubbleTalk: BubbleTalk | null = null;
     private subs = new Subscription();
 
     protected spriteObjList: Phaser.Physics.Arcade.Sprite[] = [];
@@ -148,32 +146,21 @@ export class Npc extends BaseSprite {
         }
     }
 
-    public setBubbleTalkKey(bubbleTalkKey: string) {
-        this.bubbleTalkKey = bubbleTalkKey;
-    }
+    public setBubbleTalkKey(bubbleTalkKey: string) { this.bubbleTalkKey = bubbleTalkKey; }
 
     public bubbleTalkSetting() {
 
         //tiledでtalkデータを設定する事
         if (this.bubbleTalkKey) {
-            this.currentBubbleTalk = new BubbleTalk(this.fieldScene, this, this.bubbleTalkKey, this.makeTilemapData);
-            this.currentBubbleTalk.init();
-
-            const manager = GameStateManager.getInstance();
-
-            this.on('pointerdown', () => {
-                this.execNpcTalk(manager, this.currentBubbleTalk!);
-            });
+            this.on('pointerdown', () => { this.execNpcTalk(); });
         }
     }
 
-    // 以前の_checkVirtualPadTalkは廃止
-
-    private execNpcTalk(manager: GameStateManager, bubbleTalk: BubbleTalk) {
+    private execNpcTalk() {
         if (this.state === CharacterState.talking) return;
 
-        this.state = CharacterState.talking;
-        manager.updateState({ state: State.BUBBLE_TALK }, 'npc');
+        const manager = GameStateManager.getInstance();
+        manager.updateState({ state: State.BUBBLE_TALK, eventObj: this }, this.bubbleTalkKey);
 
         //キャラの向きをチェック
         const player = manager.currentPlayerPartyList[0] as Player;
@@ -194,24 +181,13 @@ export class Npc extends BaseSprite {
             player.setStandFrame(player.getAnimationKey().standDown);
             this.turnAround();
         }
-
-        (async () => {
-            //吹き出し会話
-            await bubbleTalk.execTalk();
-
-            //会話終了後、設定を戻す
-            this.state = CharacterState.normal;
-            manager.updateState({ state: State.NOSTATE }, 'npc');
-        })();
     }
-
-
 
     public setInputManager(inputManager: InputManager) {
         this.inputManager = inputManager;
 
         // decideButtonの購読を追加
-        if (this.currentBubbleTalk) {
+        if (this.bubbleTalkKey) {
             this.subs.add(this.inputManager.decideButton$.subscribe(() => {
                 const manager = GameStateManager.getInstance();
                 if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
@@ -222,7 +198,7 @@ export class Npc extends BaseSprite {
                     if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), player.getBounds()) &&
                         this.state === CharacterState.normal) {
 
-                        this.execNpcTalk(manager, this.currentBubbleTalk!);
+                        this.execNpcTalk();
                     }
                 }
             }));

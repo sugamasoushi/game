@@ -1,4 +1,3 @@
-import { FieldScene, EventScene } from '../lib/types';
 import { Sound } from '../scenes/Sound';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from "rxjs";
@@ -8,7 +7,7 @@ import { GameStateManager } from '../core/GameStateManager';
 import { Player } from '../field/view/character/Player';
 
 export class MessageOperation {
-    private eventScene: FieldScene | EventScene;
+    private eventScene: Phaser.Scene;
     private usePatern: string;
     private messageWidth: number;//メッセージの範囲
     private textLine: number;
@@ -25,7 +24,7 @@ export class MessageOperation {
     private textObject: Phaser.GameObjects.Text;
     private subs = new Subscription();
 
-    constructor(eventScene: FieldScene | EventScene, usePatern: string, textLine: number, lineSpaceValue: number) {
+    constructor(eventScene: Phaser.Scene, usePatern: string, textLine: number, lineSpaceValue: number) {
         this.eventScene = eventScene;
         this.usePatern = usePatern;
         this.textLine = textLine;
@@ -218,15 +217,27 @@ export class MessageOperation {
         })
     }
 
+    private deleteTargetX?: number;
+    private deleteTargetY?: number;
+
+    public setDeleteTarget(x: number, y: number) {
+        this.deleteTargetX = x;
+        this.deleteTargetY = y;
+    }
+
     _deleteTween(scene: Phaser.Scene, deleteMessageObject: Phaser.GameObjects.GameObject[]) {//tweenはタイマー、リピート等の使い方をしなければGCで自動削除される。
         const gameStateManager = GameStateManager.getInstance();
         const player = gameStateManager.currentPlayerPartyList[0] as Player;
+        
+        const targetX = this.deleteTargetX !== undefined ? this.deleteTargetX : player.x;
+        const targetY = this.deleteTargetY !== undefined ? this.deleteTargetY : player.y;
+
         return new Promise<void>(resolve => {
             scene.tweens.add({
                 targets: deleteMessageObject,//テキスト及び吹き出しオブジェクトを画面から削除
                 scale: 0,
-                x: player.x,
-                y: player.y,
+                x: targetX,
+                y: targetY,
                 ease: 'sine.inout',
                 duration: 200,
                 onComplete: () => {

@@ -1,7 +1,6 @@
 import { ChestModel } from "../model/ChestModel";
 import { ChestView } from "../view/ChestView";
 import { InputManager } from "../../core/input/InputManager";
-import { BubbleTalk } from "../view/character/Action/BubbleTalk";
 import { Player } from "../../field/view/character/Player";
 
 import { BaseSprite } from "../../core/BaseSprite";
@@ -88,14 +87,7 @@ export class ChestPresenter {
 
             const getItemName = obj.getData('item');
             const getItemNum = obj.getData('num');
-            const bubbleTalkKey = obj.getData('bubbleTalkKey');
-
-            //吹き出し会話を設定
-            let bubbleTalk: BubbleTalk;
-            if (bubbleTalkKey) {
-                bubbleTalk = new BubbleTalk(this.fieldScene, undefined, bubbleTalkKey, this.makeTileMap);//obj.name : 会話データのキー。例：bubbleTalk0000.talk000
-                bubbleTalk.init();
-            }
+            const bubbleTalkKey = obj.getData('bubbleTalkDefaultKey');
 
             //プレイヤーとオブジェクトのチェック
             const fieldPlayerChk = new FieldObjectCheck(player, obj as BaseSprite);
@@ -114,7 +106,9 @@ export class ChestPresenter {
                     this.fieldScene.time.delayedCall(time, () => {
 
                         //待機時間後、吹き出しメッセージがある場合は開始
-                        if (bubbleTalk) { bubbleTalk.execTalk(); }
+                        if (bubbleTalkKey) {
+                            gameStateManager.updateState({ state: State.BUBBLE_TALK, eventObj: obj }, bubbleTalkKey);
+                        }
 
                         this.fieldScene.events.emit('GAME_INPUT_TRUE');
 
