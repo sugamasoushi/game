@@ -8,7 +8,6 @@ import { FieldSceneModel } from '../field/model/FieldSceneModel';
 import { gameStateManager } from '../core/GameStateManager';
 import { InputManager } from '../core/input/InputManager';
 import { CameraManager } from '../field/view/CameraManager';
-import { FieldMessageWindow } from '../field/view/FieldMessageWindow';
 import { State } from '../lib/types';
 
 export class Field extends Scene implements FieldScene {
@@ -20,8 +19,6 @@ export class Field extends Scene implements FieldScene {
     private cameraManager: CameraManager;
     private mainCamera: Phaser.Cameras.Scene2D.Camera;
 
-    private fieldMessageWindow: FieldMessageWindow;
-
     constructor() { super('Field'); }
 
     init() {//initはscene開始時にpreloadやcreateより先に実行される。
@@ -30,15 +27,13 @@ export class Field extends Scene implements FieldScene {
 
         this.inputManager = InputManager.getInstance(this);
         this.cameraManager = new CameraManager(this);
-        this.fieldMessageWindow = new FieldMessageWindow(this);
 
         // Presenterに依存関係を注入 (DI)
         this.fieldScenePresenter = new FieldScenePresenter(
             this,
             this.fieldSceneModel,
             this.cameraManager,
-            this.inputManager,
-            this.fieldMessageWindow
+            this.inputManager
         );
     }
 

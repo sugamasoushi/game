@@ -485,7 +485,7 @@
                  "name":"chest",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
+                         "name":"bubbleTalkDefaultKey",
                          "type":"string",
                          "value":"bubbleTalk0102.talk003"
                         }, 

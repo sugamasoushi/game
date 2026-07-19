@@ -117,7 +117,8 @@ export class ChestPresenter {
 
                     }, [], this.fieldScene);
                     this.fieldScene.events.emit('GAME_INPUT_FALSE');
-                    this.fieldScene.events.emit('FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
+                    const uiScene = this.fieldScene.scene.get('UI');
+                    uiScene.events.emit('UI_FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
                 });
 
                 obj.play('chest_open');

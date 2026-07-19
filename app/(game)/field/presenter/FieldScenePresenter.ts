@@ -11,7 +11,6 @@ import { GameStateManager } from "../../core/GameStateManager";
 import { Subscription } from "rxjs";
 import { InputManager } from "../../core/input/InputManager";
 import { CameraManager } from "../view/CameraManager";
-import { FieldMessageWindow } from "../view/FieldMessageWindow";
 
 import { PlayerModel } from "../model/PlayerModel";
 import { PlayerView } from "../view/PlayerView";
@@ -85,8 +84,7 @@ export class FieldScenePresenter {
         private fieldScene: FieldScene,
         private fieldSceneModel: FieldSceneModel,
         private cameraManager: CameraManager,
-        private inputManager: InputManager,
-        private fieldMessageWindow: FieldMessageWindow
+        private inputManager: InputManager
     ) {
         this.fieldScene = fieldScene;
         this.fieldSceneModel = fieldSceneModel;
@@ -95,7 +93,6 @@ export class FieldScenePresenter {
 
         this.cameraManager = cameraManager;
         this.inputManager = inputManager;
-        this.fieldMessageWindow = fieldMessageWindow;
 
         this.uiScene = this.fieldScene.scene.get('UI') as Phaser.Scene;
     }
@@ -219,12 +216,7 @@ export class FieldScenePresenter {
         this.mapEffect = new MapEffect(this.fieldScene, this.tileMap, this.tileMap.getTileMapPropatiesEntity());
         await this.mapEffect.execute();
 
-        this.fieldMessageWindow.init();
-
         //view-------------------------------------------------
-
-
-
 
         //各種設定
         this.cameraManager.execute(this.tileMap.getMakeTilemap());
@@ -271,11 +263,6 @@ export class FieldScenePresenter {
 
             //uiにフェードアウト開始を通知
             this.uiScene.events.emit('UI_FADEOUT_START');
-        });
-
-        //自由メッセージ
-        this.fieldScene.events.on('FREE_MESSAGE_WINDOW', (message: string, time: number) => {
-            this.fieldMessageWindow.messageOutput(message, time);
         });
 
         //フィールドの入力はオブジェクト毎に制御したいため、scene.input.enabledは使用せず、オブジェクト毎のフラグ管理としている
@@ -384,7 +371,6 @@ export class FieldScenePresenter {
             this.fieldScene.events.off('EVENT');
             this.fieldScene.events.off('EVENT_END');
             this.fieldScene.events.off('BATTLE');
-            this.fieldScene.events.off('FREE_MESSAGE_WINDOW');
             this.fieldScene.events.off('FADE_IN_START');
             this.fieldScene.events.off('CAMERA_NORMAL_EFFECT');
             this.fieldScene.events.off('CAMERA_BLUR');

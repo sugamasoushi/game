@@ -1,7 +1,7 @@
 import { MessageWindow } from "../../util/MessageWindow";
 import { MessageObject } from "../../util/MessageObject";
 
-export class FieldMessageWindow extends Phaser.GameObjects.Container {
+export class FreeMessageView extends Phaser.GameObjects.Container {
     private messageObject: Phaser.GameObjects.Text;
     private messageWindow: Phaser.GameObjects.Graphics;
     private textX: number;//テキスト座標、吹き出しやアイコン等の基準座標
@@ -9,9 +9,8 @@ export class FieldMessageWindow extends Phaser.GameObjects.Container {
 
     constructor(scene: Phaser.Scene) {
         super(scene, 0, 0);
-        this.name = FieldMessageWindow.name;
+        this.name = FreeMessageView.name;
         this.scene.add.existing(this);
-        this.addToUpdateList();
     }
 
     init() {
@@ -43,7 +42,7 @@ export class FieldMessageWindow extends Phaser.GameObjects.Container {
 
         //非表示
         this.setVisible(false);
-        this.setScrollFactor(0)
+        this.setScrollFactor(0);
         this.setDepth(9999999);
     }
 
@@ -57,7 +56,12 @@ export class FieldMessageWindow extends Phaser.GameObjects.Container {
                 this.setVisible(false);
                 resolve();
             }, [], this.scene);
-
         })
+    }
+
+    destroy() {
+        this.messageObject.destroy();
+        this.messageWindow.destroy();
+        super.destroy();
     }
 }

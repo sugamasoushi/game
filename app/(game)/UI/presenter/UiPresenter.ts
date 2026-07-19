@@ -2,6 +2,7 @@ import { UiModel } from "../model/UiModel";
 import { MenuButton } from "../view/MenuButton";
 import { LeftButton } from "../view/LeftButton";
 import { RightButton } from "../view/RightButton";
+import { FreeMessageView } from "../view/FreeMessageView";
 import { GameStateManager } from "../../core/GameStateManager";
 import { State } from "../../lib/StateTypes";
 import { Subscription } from "rxjs";
@@ -15,6 +16,7 @@ export class UiPresenter {
     private menuButton: MenuButton;
     private leftButton: LeftButton;
     private rightButton: RightButton;
+    private freeMessageView: FreeMessageView;
     private subs = new Subscription();
 
     constructor(
@@ -22,13 +24,15 @@ export class UiPresenter {
         uiModel: UiModel,
         menuButton: MenuButton,
         leftButton: LeftButton,
-        rightButton: RightButton
+        rightButton: RightButton,
+        freeMessageView: FreeMessageView
     ) {
         this.uiScene = uiScene;
         this.uiModel = uiModel;
         this.menuButton = menuButton;
         this.leftButton = leftButton;
         this.rightButton = rightButton;
+        this.freeMessageView = freeMessageView;
 
         this.gameScene = this.uiScene.scene.get('Field') as Phaser.Scene;
     }
@@ -42,11 +46,14 @@ export class UiPresenter {
 
         // 全てフェードイン
         this.uiScene.events.on('UI_FADEIN_START', () => {
+
+            if (!gameStateManager.isVirtualPad) return;
+
             const state = gameStateManager.currentState;
             if (state === State.TITLE || state === State.LOAD || state === State.EVENT || state === State.FIELD) {
                 return;
             }
-            console.log("UI_FADEIN_START");
+
             //this.menuButton.fadeIn();
             this.leftButton.fadeIn();
             this.rightButton.fadeIn();
@@ -57,6 +64,11 @@ export class UiPresenter {
             //this.menuButton.fadeOut();
             this.leftButton.fadeOut();
             this.rightButton.fadeOut();
+        });
+
+        // フリーメッセージ
+        this.uiScene.events.on('UI_FREE_MESSAGE_WINDOW', (message: string, time: number) => {
+            this.freeMessageView.messageOutput(message, time);
         });
 
         // ゲーム状態の監視
@@ -76,6 +88,8 @@ export class UiPresenter {
             this.subs.unsubscribe();
             this.uiScene.events.off('UI_FADEIN_START');
             this.uiScene.events.off('UI_FADEOUT_START');
+            this.uiScene.events.off('UI_FREE_MESSAGE_WINDOW');
+            this.freeMessageView.destroy();
         });
     }
 

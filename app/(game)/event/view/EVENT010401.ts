@@ -279,7 +279,8 @@ export class EVENT010401 extends BaseEvent {
         await new Promise<void>(resolve => {
             const time = 1500
             this.fieldScene.time.delayedCall(time, () => { resolve(); }, [], this.eventScene);
-            this.fieldScene.events.emit('FREE_MESSAGE_WINDOW', 'ラミィが仲間になった！！', time);
+            const uiScene = this.eventScene.scene.get('UI');
+            uiScene.events.emit('UI_FREE_MESSAGE_WINDOW', 'ラミィが仲間になった！！', time);
         });
 
         await Promise.all([

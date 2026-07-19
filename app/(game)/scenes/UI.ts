@@ -5,6 +5,7 @@ import { UiModel } from '../UI/model/UiModel';
 import { MenuButton } from '../UI/view/MenuButton';
 import { LeftButton } from '../UI/view/LeftButton';
 import { RightButton } from '../UI/view/RightButton';
+import { FreeMessageView } from '../UI/view/FreeMessageView';
 
 export class UI extends Scene {
 
@@ -16,6 +17,7 @@ export class UI extends Scene {
     private menuButton: MenuButton;
     private leftButton: LeftButton;
     private rightButton: RightButton;
+    private freeMessageView: FreeMessageView;
 
     private onUiClose = () => {
         //this.menuButton.fadeIn();
@@ -40,13 +42,17 @@ export class UI extends Scene {
         this.menuButton = new MenuButton(this);
         this.leftButton = new LeftButton(this);
         this.rightButton = new RightButton(this);
+        
+        this.freeMessageView = new FreeMessageView(this);
+        this.freeMessageView.init();
 
         this.uiPresenter = new UiPresenter(
             this,
             this.uiModel,
             this.menuButton,
             this.leftButton,
-            this.rightButton
+            this.rightButton,
+            this.freeMessageView
         );
     }
 
