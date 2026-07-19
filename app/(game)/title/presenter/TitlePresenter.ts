@@ -231,6 +231,8 @@ export class TitlePresenter {
 
         this.disableInteractiveAll();
 
+        this.manager.updateState({ gameClearFlg: false }, 'system')
+
         /**
          * 初期データはLoadシーンで読み込むため、ここでは状態の更新のみ行う
          */
