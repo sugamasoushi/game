@@ -330,52 +330,19 @@ export class Player extends BaseSprite {
         }
     }
 
-    //共通化出来る
+    // 共通の4方向アニメーション設定を適用する。
     _animationSetting(spriteSheetKey: string) {
-        this.anims.create({
-            key: this.walkLeft,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 3, end: 5 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.walkRight,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 6, end: 8 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.walkUp,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 9, end: 11 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.walkDown,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 0, end: 2 }),
-            frameRate: this.frameRate,
-            yoyo: true
-        });
-        this.anims.create({
-            key: this.standLeft,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 4, end: 4 }),
-            frameRate: this.frameRate,
-        });
-        this.anims.create({
-            key: this.standRight,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 7, end: 7 }),
-            frameRate: this.frameRate,
-        });
-        this.anims.create({
-            key: this.standUp,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 10, end: 10 }),
-            frameRate: this.frameRate,
-        });
-        this.anims.create({
-            key: this.standDown,
-            frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: 1, end: 1 }),
-            frameRate: this.frameRate,
-        });
+        const walkOptions = { repeat: -1, yoyo: true };
+
+        this.setupDirectionalAnimations(
+            spriteSheetKey,
+            'down,left,right,up',
+            3,
+            this.frameRate,
+            walkOptions,
+            undefined,
+            1
+        );
     }
 
     //キャラの一部を非表示にするマスク

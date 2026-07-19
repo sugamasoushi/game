@@ -14,17 +14,15 @@ export class SpriteType_4x4 extends Npc {
     //アニメーション設定
     //charKeyはアニメーションテクスチャ名およびキャラ名に使用する
     _animationSetting(spriteSheetKey: string, spritesheetKeyOrder: string) {
-        const order = this.parseSpritesheetKeyOrder(spritesheetKeyOrder);
-
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'left', order, 4, 10, { repeat: -1 });
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'right', order, 4, 10, { repeat: -1 });
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'up', order, 4, 10, { repeat: -1 });
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'down', order, 4, 10, { repeat: -1 });
-
-        this.createDirectionalStandAnimation(spriteSheetKey, 'left', order, 4, 0, 10, { repeat: -1 });
-        this.createDirectionalStandAnimation(spriteSheetKey, 'right', order, 4, 0, 10, { repeat: -1 });
-        this.createDirectionalStandAnimation(spriteSheetKey, 'up', order, 4, 0, 10, { repeat: -1 });
-        this.createDirectionalStandAnimation(spriteSheetKey, 'down', order, 4, 0, 10, { repeat: -1 });
+        this.setupDirectionalAnimations(
+            spriteSheetKey,
+            spritesheetKeyOrder,
+            4,
+            10,
+            { repeat: -1 },
+            { repeat: -1 },
+            0
+        );
     }
 
     _setBubble() {

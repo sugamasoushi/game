@@ -132,7 +132,6 @@ export class Battle extends Phaser.Scene implements BattleScene {
     }
 
     public endScene() {
-        console.log('endScene()')
 
         // FX
         const pixelated = this.cameras.main.postFX.addPixelate(-1);

@@ -15,17 +15,15 @@ export class SpriteType_3x4 extends Npc {
     // アニメーションを生成するエントリ。
     // spritesheetKeyOrder を解析して向き順を決め、歩行／待機アニメを作成する。
     _animationSetting(spriteSheetKey: string, spritesheetKeyOrder: string) {
-        const order = this.parseSpritesheetKeyOrder(spritesheetKeyOrder);
-
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'left', order, 3, this.frameRate, { yoyo: true });
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'right', order, 3, this.frameRate, { yoyo: true });
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'up', order, 3, this.frameRate, { yoyo: true });
-        this.createDirectionalWalkAnimation(spriteSheetKey, 'down', order, 3, this.frameRate, { yoyo: true });
-
-        this.createDirectionalStandAnimation(spriteSheetKey, 'left', order, 3, 1, this.frameRate);
-        this.createDirectionalStandAnimation(spriteSheetKey, 'right', order, 3, 1, this.frameRate);
-        this.createDirectionalStandAnimation(spriteSheetKey, 'up', order, 3, 1, this.frameRate);
-        this.createDirectionalStandAnimation(spriteSheetKey, 'down', order, 3, 1, this.frameRate);
+        this.setupDirectionalAnimations(
+            spriteSheetKey,
+            spritesheetKeyOrder,
+            3,
+            this.frameRate,
+            { yoyo: true },
+            undefined,
+            1
+        );
     }
 
     public setBubble() {

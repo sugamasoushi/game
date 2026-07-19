@@ -1,5 +1,13 @@
 import { animationKey, CharacterState } from '../lib/FieldTypes';
 import { FieldScene } from '../lib/SceneTypes';
+import {
+    parseSpritesheetKeyOrder,
+    createDirectionalWalkAnimation,
+    createDirectionalStandAnimation,
+    Direction,
+    DirectionalWalkOptions,
+    DirectionalStandOptions
+} from './AnimationHelper';
 
 /**
  * キャラクタースプライトの共通クラス
@@ -68,24 +76,9 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
         this.standframe = spriteSheetKey + '-' + direction;
     }
 
-    // spritesheetKeyOrder を正規化して方向配列に変換する。
-    protected parseSpritesheetKeyOrder(order: string): readonly string[] {
-        const defaultOrder = ['down', 'left', 'right', 'up'] as const;
-        if (!order) return defaultOrder;
-
-        const values = order
-            .split(',')
-            .map(item => item.trim().toLowerCase())
-            .filter(Boolean);
-
-        const validDirections = new Set(['down', 'left', 'right', 'up']);
-        const uniqueValues = Array.from(new Set(values));
-
-        if (uniqueValues.length !== 4 || uniqueValues.some(direction => !validDirections.has(direction))) {
-            return defaultOrder;
-        }
-
-        return uniqueValues;
+    // spritesheetKeyOrder を正規化して Direction 配列に変換する。
+    protected parseSpritesheetKeyOrder(order: string): readonly Direction[] {
+        return parseSpritesheetKeyOrder(order);
     }
 
     // 方向ごとの歩行アニメを生成する。
@@ -114,11 +107,11 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
     protected createDirectionalStandAnimation(
         spriteSheetKey: string,
         direction: 'left' | 'right' | 'up' | 'down',
-        order: readonly string[],
+        order: readonly Direction[],
         framesPerDirection: number,
         standFrameOffset: number,
         frameRate: number,
-        options?: { repeat?: number }
+        options?: DirectionalStandOptions
     ) {
         const rowIndex = order.indexOf(direction);
         const frame = rowIndex * framesPerDirection + standFrameOffset;
@@ -128,6 +121,24 @@ export class BaseSprite extends Phaser.Physics.Arcade.Sprite {
             frames: this.anims.generateFrameNumbers(spriteSheetKey, { start: frame, end: frame }),
             frameRate,
             repeat: options?.repeat
+        });
+    }
+
+    protected setupDirectionalAnimations(
+        spriteSheetKey: string,
+        spritesheetKeyOrder: string = 'down,left,right,up',
+        framesPerDirection: number,
+        frameRate: number,
+        walkOptions?: DirectionalWalkOptions,
+        standOptions?: DirectionalStandOptions,
+        standFrameOffset: number = 1
+    ) {
+        const order = this.parseSpritesheetKeyOrder(spritesheetKeyOrder);
+        const directions: Direction[] = ['left', 'right', 'up', 'down'];
+
+        directions.forEach(direction => {
+            this.createDirectionalWalkAnimation(spriteSheetKey, direction, order, framesPerDirection, frameRate, walkOptions);
+            this.createDirectionalStandAnimation(spriteSheetKey, direction, order, framesPerDirection, standFrameOffset, frameRate, standOptions);
         });
     }
 
