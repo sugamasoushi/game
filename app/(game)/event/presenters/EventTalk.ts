@@ -181,7 +181,7 @@ export class EventTalk {
         const whiteColor = Phaser.Display.Color.HexStringToColor('#ffffff').color;
 
         const width = Number(this.eventScene.game.config.width);
-        const height = Number(this.eventScene.game.config.height) - 468;
+        // const height = Number(this.eventScene.game.config.height) - 468;
 
         //メッセージ表示範囲のマスク作成
         this.cropRectMask = this.eventScene.add.graphics();

@@ -10,7 +10,7 @@ import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
 import { Sound } from "../../scenes/Sound";
-import { CharacterSelectWindow } from "../../util/CharacterSelectWindow";
+import { GeneralListSelectWindow } from "../../util/GeneralListSelectWindow";
 
 export class ItemWindow extends Phaser.GameObjects.Container {
     private mainWindowDepth: number = 500;
@@ -18,7 +18,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
     private itemNameList: Phaser.GameObjects.Text[] = [];
 
 
-    private characterSelectWindow: CharacterSelectWindow | null;
+    private characterSelectWindow: GeneralListSelectWindow | null;
 
     private itemValueList: Phaser.GameObjects.Text[] = [];
     private isItemSelectMode: boolean = false;
@@ -204,7 +204,7 @@ export class ItemWindow extends Phaser.GameObjects.Container {
             }
 
             if (!this.characterSelectWindow) {
-                this.characterSelectWindow = new CharacterSelectWindow(this.scene);
+                this.characterSelectWindow = new GeneralListSelectWindow(this.scene);
                 // 深度を調整（必要に応じて）
                 this.characterSelectWindow.setDepth(this.mainWindowDepth + 100);
             }

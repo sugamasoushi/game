@@ -1,12 +1,12 @@
-import { MessageObject } from "../util/MessageObject";
-import { MessageWindow } from "../util/MessageWindow";
-import { SelectAllow } from "../util/SelectAllow";
+import { MessageObject } from "./MessageObject";
+import { MessageWindow } from "./MessageWindow";
+import { SelectAllow } from "./SelectAllow";
 import { GameSettingData } from "../Data/GameSettingData";
 import { SearchCharacterData } from "../Data/SearchCharacterData";
 import { InputManager } from "../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
 
-export class CharacterSelectWindow extends Phaser.GameObjects.Container {
+export class GeneralListSelectWindow extends Phaser.GameObjects.Container {
     private options: Phaser.GameObjects.Text[] = [];
     private messageWindow: MessageWindow;
     private selectAllow: SelectAllow;
@@ -24,7 +24,7 @@ export class CharacterSelectWindow extends Phaser.GameObjects.Container {
     constructor(scene: Phaser.Scene) {
         super(scene);
         this.scene.add.existing(this);
-        this.name = CharacterSelectWindow.name;
+        this.name = GeneralListSelectWindow.name;
         this.setVisible(false);
         this.setActive(false);
         this.setupInput();

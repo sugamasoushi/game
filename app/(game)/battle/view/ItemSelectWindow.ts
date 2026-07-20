@@ -6,7 +6,7 @@ import { SelectAllow } from "../../util/SelectAllow";
 import { SaveDataManager } from "../../core/SaveDataManager";
 import { GameSettingData } from "../../Data/GameSettingData";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
-import { CharacterSelectWindow } from "../../util/CharacterSelectWindow";
+import { GeneralListSelectWindow } from "../../util/GeneralListSelectWindow";
 import { Sound } from "../../scenes/Sound";
 import { InputManager } from "../../core/input/InputManager";
 import { Subscription, throttleTime } from "rxjs";
@@ -20,7 +20,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
 
     private selectList: Phaser.GameObjects.Text[] = [];
     private countList: Phaser.GameObjects.Text[] = [];
-    private selectListWindow: CharacterSelectWindow;
+    private selectListWindow: GeneralListSelectWindow;
 
     private nowSelectNo = 0;
     private maxColumns = 2;
@@ -123,7 +123,7 @@ export class ItemSelectWindow extends Phaser.GameObjects.Container {
                             partyname.push(charcterName);
                         }
 
-                        this.selectListWindow = new CharacterSelectWindow(this.scene);
+                        this.selectListWindow = new GeneralListSelectWindow(this.scene);
                         // ウィンドウの位置を中央付近に設定
 
                         this.selectListWindow.create(partyname);
