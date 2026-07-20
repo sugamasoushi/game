@@ -1,7 +1,7 @@
 import { Sound } from "../../scenes/Sound";
 import { SkillDetail } from "../../lib/SkillDataTypes";
 import { BattleMessageWindow } from "../view/BattleMessageWindow";
-import { NormalAttack } from "../view/Effect/NormalAttack";
+import { NormalAttack } from "../../util/Sprite/NormalAttack";
 import { SearchMagicEffect } from "./SearchMagicEffect";
 
 export default class PlayerAttack {
@@ -48,13 +48,13 @@ export default class PlayerAttack {
                                     const searchMagicEffect = new SearchMagicEffect(skillDetail, this.battleScene, targetX, targetY);
                                     const effect = searchMagicEffect.searchMagicEffect();
                                     this.attacker.data.values.MP -= skillDetail.mpCost;
-                                    return effect!.attackAnimation();
+                                    return effect!.attackAnimationBattle();
                                 default:
                                     return Promise.resolve();
                             }
                         } else {
                             const effect = new NormalAttack(this.battleScene, targetX, targetY);
-                            return effect.attackAnimation();
+                            return effect.attackAnimationBattle();
                         }
                     })(),
 

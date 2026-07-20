@@ -1,6 +1,6 @@
 import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
-import { BaseSprite } from "@/app/(game)/core/BaseSprite";
+import { BaseCharacterSprite } from "@/app/(game)/core/BaseCharacterSprite";
 import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from '@/app/(game)/lib/StateTypes';
@@ -10,7 +10,7 @@ import { SearchEnemyData } from '@/app/(game)/Data/SearchEnemyData';
 import { Player } from './Player';
 import { Bubble } from "@/app/(game)/util/Sprite/Bubble";
 
-export class Npc extends BaseSprite {
+export class Npc extends BaseCharacterSprite {
     private npcType: string;
     private inputManager: InputManager;
     protected bubbleTalkKey;

@@ -3,7 +3,7 @@ import { ChestView } from "../view/ChestView";
 import { InputManager } from "../../core/input/InputManager";
 import { Player } from "../../field/view/character/Player";
 
-import { BaseSprite } from "../../core/BaseSprite";
+import { BaseCharacterSprite } from "../../core/BaseCharacterSprite";
 import { CharacterState } from "../../lib/FieldTypes";
 import { State } from "../../lib/types";
 import { FieldObjectCheck } from "../../util/FieldObjectCheck";
@@ -90,7 +90,7 @@ export class ChestPresenter {
             const bubbleTalkKey = obj.getData('bubbleTalkDefaultKey');
 
             //プレイヤーとオブジェクトのチェック
-            const fieldPlayerChk = new FieldObjectCheck(player, obj as BaseSprite);
+            const fieldPlayerChk = new FieldObjectCheck(player, obj as BaseCharacterSprite);
 
             //キャラ向きとオブジェクト位置からイベント発生可否をチェック
             if (fieldPlayerChk.checkPlayerClickEvent()) {

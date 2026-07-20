@@ -53,7 +53,6 @@ export class EVENT010401 extends BaseEvent {
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
         this.grandpa = (this.characterGameObject.getSprite(this.fieldScene, 'grandpa') as Npc);
-        this.grandpa.state = CharacterState.event;
         this.grandpa.initMoveToPosition();
     }
 
@@ -172,6 +171,11 @@ export class EVENT010401 extends BaseEvent {
 
         //キャラの画像キーを取得
         const grandpaImageKey = this.searchCharacterData.getCharacterData('grandpa').normal;
+
+        //スプライト状態を設定
+        this.grandpa.state = CharacterState.event;
+        this.grandpa.stopAnimation();
+        this.grandpa.setAnimDirection('stand_up');
 
         //キャラ画像を配置
         await Promise.all([

@@ -1,4 +1,4 @@
-import { MagicFrame } from "@/app/(game)/util/Effect/MagicFrame";
+import { MagicFrame } from "@/app/(game)/util/Sprite/MagicFrame";
 import { Player } from "../Player";
 import { FieldScene } from "@/app/(game)/lib/types";
 import { Npc } from "../Npc";

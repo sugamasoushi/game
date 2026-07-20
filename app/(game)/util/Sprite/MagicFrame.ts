@@ -1,20 +1,31 @@
-import { EffectCommon } from "./EffectCommon";
-import { Sound } from "../../../scenes/Sound";
+import { BaseSprite } from "../../core/BaseSprite";
 
-export class MagicFrame extends EffectCommon {
-    private soundScene: Sound;
+export class MagicFrame extends BaseSprite {
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y, 'flames32');
+    constructor(scene: Phaser.Scene, x: number, y: number, attackDuration?: number, sprite?: Phaser.GameObjects.Sprite | undefined) {
+        super(scene, x, y, 'flames32', attackDuration, sprite);
         this.name = 'MagicFrame';
-        this.attackDuration = 250;
-        this.soundScene = this.scene.scene.get('Sound') as Sound;
+        this.attackDuration = attackDuration || 250;
+
+        //フィールドとマップで使い分ける
+        if (sprite !== undefined) {
+            (this.body as Phaser.Physics.Arcade.Body).onOverlap = true;
+            this.bodySetting((this.body as Phaser.Physics.Arcade.Body));
+        }
+    }
+
+    //フィールドアタック用
+    private bodySetting(body: Phaser.Physics.Arcade.Body) {
+        const newWidth = 20;
+        const newHeight = 20;
+        body.offset.x = (body.width - newWidth) / 2;
+        body.offset.y = (body.height - newHeight) / 2;
+        body.setSize(newWidth, newHeight);
     }
 
     //アニメーション設定
     override animationSetting(texture: string) {
-        this.frameRateValue = 10
-
+        this.frameRateValue = 10;
         this.anims.create({
             key: this.startAnimKey,//発射時
             frames: this.anims.generateFrameNumbers(texture, { start: 0, end: 7 }),
@@ -29,7 +40,7 @@ export class MagicFrame extends EffectCommon {
         });
     }
 
-    //特殊効果
+    //バトル用特殊効果
     override async specialEffect() {
         this.soundScene.playSe('SE_fire', 0.3, true);
         return new Promise<void>(resolve => {
@@ -49,11 +60,9 @@ export class MagicFrame extends EffectCommon {
         })
     }
 
-    //オーバーライド
+    //バトル用終了アニメーション
     override async finishAnimation(): Promise<void> {
         return new Promise<void>(resolve => {
-
-            //指定秒後に発生
             this.scene.time.delayedCall(this.attackDuration, () => {
                 this.anims.play(this.finishAnimKey, true);
                 resolve();

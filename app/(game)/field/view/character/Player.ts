@@ -1,11 +1,11 @@
-import { BaseSprite } from "@/app/(game)/core/BaseSprite";
+import { BaseCharacterSprite } from "@/app/(game)/core/BaseCharacterSprite";
 import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { State } from "@/app/(game)/lib/StateTypes";
 import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { GameStateManager, gameStateManager } from "@/app/(game)/core/GameStateManager";
 import { InputManager } from "@/app/(game)/core/input/InputManager";
 
-export class Player extends BaseSprite {
+export class Player extends BaseCharacterSprite {
 
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     private inputManager: InputManager;

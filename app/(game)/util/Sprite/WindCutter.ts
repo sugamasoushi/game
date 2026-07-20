@@ -1,17 +1,16 @@
-import { EffectCommon } from "./EffectCommon";
+import { BaseSprite } from "../../core/BaseSprite";
 
-export class WindCutter extends EffectCommon {
+export class WindCutter extends BaseSprite {
 
-    constructor(scene: Phaser.Scene, x: number, y: number, attackDuration: number, sprite: Phaser.GameObjects.Sprite | undefined) {
+    constructor(scene: Phaser.Scene, x: number, y: number, attackDuration?: number, sprite?: Phaser.GameObjects.Sprite | undefined) {
         super(scene, x, y, 'tex_WindCutter', attackDuration, sprite);
+        this.name = 'WindCutter';
+        this.attackDuration = attackDuration || 400;
 
         //フィールドとバトルで使い分ける
         if (sprite !== undefined) {
-            this.name = 'WindCutter';
             (this.body as Phaser.Physics.Arcade.Body).onOverlap = true;
             this.bodySetting((this.body as Phaser.Physics.Arcade.Body));
-        } else {
-            this.name = 'WindCutter';
         }
     }
 
@@ -26,6 +25,7 @@ export class WindCutter extends EffectCommon {
 
     //アニメーション設定
     override animationSetting(texture: string) {
+        this.frameRateValue = 30;
         this.anims.create({
             key: this.startAnimKey,//発射時
             frames: this.anims.generateFrameNumbers(texture, { start: 0, end: 9 }),
@@ -38,5 +38,15 @@ export class WindCutter extends EffectCommon {
             frameRate: this.frameRateValue,
             repeat: -1
         });
+    }
+
+    //バトル用特殊効果
+    override async specialEffect() {
+        this.soundScene.playSe('SE_windCutter');
+        return new Promise<void>(resolve => {
+            this.scene.time.delayedCall(this.attackDuration, () => {
+                resolve();
+            }, undefined, this.scene);
+        })
     }
 }

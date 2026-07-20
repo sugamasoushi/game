@@ -3,8 +3,8 @@ import { GameStateManager } from "../../core/GameStateManager";
 
 export class Bubble extends Phaser.GameObjects.Sprite {
     private sprite: Phaser.GameObjects.Sprite;
-    private spriteSheetKey :string;
-    private animationKey :string;
+    private spriteSheetKey: string;
+    private animationKey: string;
 
     constructor(scene: Phaser.Scene, sprite: Phaser.GameObjects.Sprite) {
         super(scene, sprite.x, sprite.y - 32, 'tex_bubble');
@@ -45,7 +45,12 @@ export class Bubble extends Phaser.GameObjects.Sprite {
     }
 
     private display() {
-        if (this.sprite.state !== CharacterState.normal) return;
+
+        //親スプライトの状態がノーマル以外の場合は非表示
+        if (this.sprite.state !== CharacterState.normal) {
+            this.setVisible(false);
+            return
+        };
 
         const gameStateManager = GameStateManager.getInstance();
         const player = gameStateManager.currentPlayerPartyList[0];
