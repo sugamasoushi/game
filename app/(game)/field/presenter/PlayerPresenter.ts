@@ -27,11 +27,13 @@ export class PlayerPresenter {
         this.playerView = new PlayerView(this.fieldScene, this.tileMap);
     }
 
+    // 毎フレームの更新処理
     public update(time: number, delta: number) {
         void time;
         void delta;
     }
 
+    // プレイヤーの初期化と入力設定を行う
     public async execute() {
         await this.playerModel.execute();
         await this.playerView.execute();
@@ -69,6 +71,7 @@ export class PlayerPresenter {
         this.player.setData('ImageKey', imageKey);
     }
 
+    // クリック移動の処理を設定
     private execClickMove() {
         this.inputManager.phaserInput.on(Phaser.Input.Events.POINTER_UP, (pointer: Phaser.Input.Pointer) => {//pointerdownでもいい
 
@@ -118,6 +121,7 @@ export class PlayerPresenter {
         });
     }
 
+    // フィールド上のクリックイベント（攻撃・メニュー）を設定
     private execFieldClick() {
 
         //Pキー押下（Phasereによる設定）→使用しない
@@ -180,6 +184,7 @@ export class PlayerPresenter {
         })
     }
 
+    // キーボード移動の処理（現在は未使用）
     private execKeyMove() {
         /**
          * Player()内で_updateKeyWalk()で実装。

@@ -101,8 +101,6 @@ export class BattleModel {
         this.enemyPartyList = [];
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
 
-        //console.log(this.fieldHitEnemy)
-
         //イベントから呼び出された場合、とりあえず一体のみ
         const enemy = this.battleScene.add.image(0, 0, this.fieldHitEnemy.getData('ImageKey'));
         enemy.setData('ImageKey', this.fieldHitEnemy.getData('ImageKey'));

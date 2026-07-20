@@ -9,7 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-sw.js
+/public/sw.js
 
 # testing
 /coverage

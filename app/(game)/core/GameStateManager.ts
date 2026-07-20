@@ -129,6 +129,7 @@ export class GameStateManager {
 
     constructor() { }
 
+    // シングルトンパターンでインスタンスを取得
     public static getInstance() {
         if (!this.instance) {
             console.log('new GameStateManager()');
@@ -137,7 +138,7 @@ export class GameStateManager {
         return this.instance;
     }
 
-    // 状態更新用メソッド
+    // ゲーム状態を部分更新する
     public updateState(next: Partial<GameState>, sceneKey: string) {
         const currentState = this.gameState$.value;
 
@@ -150,6 +151,7 @@ export class GameStateManager {
         this.gameState$.next(nextState);
     }
 
+    // プレイヤーパーティリストを設定
     public setPlayerPartyList(playerPartyMemberList: Phaser.GameObjects.Sprite[]) {
         const currentState = this.gameState$.value;
         this.gameState$.next({
@@ -158,6 +160,7 @@ export class GameStateManager {
         });
     }
 
+    // フィールドのNPCリストを設定
     public setFieldNpcList(npcList: Phaser.GameObjects.Sprite[]) {
         const currentState = this.gameState$.value;
         this.gameState$.next({
@@ -166,6 +169,7 @@ export class GameStateManager {
         });
     }
 
+    // フィールドの敵リストを設定
     public setFieldEnemyList(enemyList: Phaser.GameObjects.Sprite[]) {
         const currentState = this.gameState$.value;
         this.gameState$.next({
@@ -174,6 +178,7 @@ export class GameStateManager {
         });
     }
 
+    // オプションデータ（音量・テキスト速度）を設定
     public setOptionData(master: number, bgm: number, bgs: number, se: number, textSpeed: number = 50): void {
         const currentState = this.gameState$.value;
         this.gameState$.next({
@@ -188,7 +193,7 @@ export class GameStateManager {
         });
     }
 
-    //状態のリセットは必ず意識する事
+    // ゲーム状態を初期状態にリセット
     public reset(): void { this.gameState$.next(INITIAL_STATE); }
 
 

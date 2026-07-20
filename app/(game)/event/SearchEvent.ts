@@ -13,6 +13,7 @@ export class SerchEvent {
 
     constructor() { }
 
+    // イベント名に対応するイベントクラスを検索して返す
     public searchEventClass(eventScene: Event, eventObj: Phaser.Physics.Arcade.Sprite) {
         if (eventObj.name === 'EVENT010101') { return new EVENT010101(eventScene, eventObj); }
         if (eventObj.name === 'EVENT010201') { return new EVENT010201(eventScene, eventObj); }

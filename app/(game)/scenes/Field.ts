@@ -21,6 +21,7 @@ export class Field extends Scene implements FieldScene {
 
     constructor() { super('Field'); }
 
+    // シーン初期化時に実行（preload/createより先）
     init() {//initはscene開始時にpreloadやcreateより先に実行される。
 
         this.fieldSceneModel = new FieldSceneModel(this);
@@ -37,12 +38,15 @@ export class Field extends Scene implements FieldScene {
         );
     }
 
+    // アセットのプリロードを行う
     async preload() { }
 
+    // 毎フレーム実行される更新処理
     update(time: number, delta: number) {
         this.fieldScenePresenter.update(time, delta);
     }
 
+    // シーンのオブジェクト生成と初期設定を行う
     async create(data: { sceneKey: string }) {
 
         //各種設定
@@ -77,18 +81,19 @@ export class Field extends Scene implements FieldScene {
         EventBus.emit('current-scene-ready', this);
     }
 
-    //未使用。画面更新を再開。このメソッドは別シーンから参照される。
+    // シーン再開時の処理（別シーンから参照）
     public resumeScene() {
         this.events.emit('CAMERA_NORMAL_EFFECT');
 
         this.scene.resume(); // これにより上の 'resume' イベントが発火する
     }
 
-    //未使用。
+    // メインカメラを取得
     public getMainCamera(): Phaser.Cameras.Scene2D.Camera {
         return this.mainCamera;
     }
 
+    // 生成されたタイルマップを取得
     public getMakeTilemap(): Phaser.Tilemaps.Tilemap {
         const makeTilemapData = this.fieldSceneModel.getMakeTilemap()
         return makeTilemapData;

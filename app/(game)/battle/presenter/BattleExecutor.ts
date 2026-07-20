@@ -35,6 +35,7 @@ export class BattleExecutor {
     // 現在ターンのキャラクターの行動を実行し、勝敗を判定する
     public async battle(battler: Phaser.GameObjects.GameObject) {
         let winner = '';
+        console.log('戦闘開始:', battler.getData('name'));
 
         // 攻撃：対象の敵が設定されているかつ攻撃者のHPが0以上の場合のみ攻撃
         if (battler.getData('NpcType') !== 'enemy' && battler.data.values.HP > 0) {
