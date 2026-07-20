@@ -6,6 +6,9 @@ import { MenuButton } from '../UI/view/MenuButton';
 import { LeftButton } from '../UI/view/LeftButton';
 import { RightButton } from '../UI/view/RightButton';
 import { FreeMessageView } from '../UI/view/FreeMessageView';
+import { StatusView } from '../UI/view/Debug/StatusView';
+import { EventTestButton } from './../UI/view/Debug/EventTestButton';
+import { BattleTestButton } from '../UI/view/Debug/BattleTestButton';
 
 export class UI extends Scene {
 
@@ -18,6 +21,10 @@ export class UI extends Scene {
     private leftButton: LeftButton;
     private rightButton: RightButton;
     private freeMessageView: FreeMessageView;
+
+    private statusView: StatusView;
+    private eventTestButton: EventTestButton;
+    private battleTestButton: BattleTestButton;
 
     private onUiClose = () => {
         //this.menuButton.fadeIn();
@@ -42,7 +49,11 @@ export class UI extends Scene {
         this.menuButton = new MenuButton(this);
         this.leftButton = new LeftButton(this);
         this.rightButton = new RightButton(this);
-        
+
+        this.statusView = new StatusView(this);
+        this.eventTestButton = new EventTestButton(this);
+        this.battleTestButton = new BattleTestButton(this);
+
         this.freeMessageView = new FreeMessageView(this);
         this.freeMessageView.init();
 
@@ -52,7 +63,10 @@ export class UI extends Scene {
             this.menuButton,
             this.leftButton,
             this.rightButton,
-            this.freeMessageView
+            this.freeMessageView,
+            this.statusView,
+            this.eventTestButton,
+            this.battleTestButton
         );
     }
 
@@ -71,5 +85,10 @@ export class UI extends Scene {
             this.game.events.off('UI_FORCE_OFF', this.onUiForceOff);
             this.game.events.off('UI_VISIBLE_FALSE', this.onUiVisibleFalse);
         });
+    }
+
+    public update(time: number, delta: number) {
+        if (this.uiPresenter) { this.uiPresenter.update(time, delta); }
+
     }
 }

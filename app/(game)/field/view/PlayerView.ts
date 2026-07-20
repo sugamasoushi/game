@@ -17,7 +17,8 @@ export class PlayerView {
     ) { }
 
     public update(time: number, delta: number) {
-
+        void time;
+        void delta;
     }
 
     public execute() {

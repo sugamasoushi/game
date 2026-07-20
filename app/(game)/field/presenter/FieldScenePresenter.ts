@@ -42,8 +42,6 @@ import { CollisionObjectPresenter } from "./CollisionObjectPresenter";
 import { CollisionObjectView } from "../view/CollisionObjectView";
 import { CollisionObjectModel } from "../model/CollisionObjectModel";
 
-import { TestButton } from "../view/TestButton";
-
 export class FieldScenePresenter {
     private subs = new Subscription(); // 購読をまとめる箱
     private uiScene: Phaser.Scene;
@@ -119,11 +117,6 @@ export class FieldScenePresenter {
         // );
 
         const gameStateManager = GameStateManager.getInstance();
-
-        if (gameStateManager.isDebugMode) {
-            const testbutton = new TestButton(this.fieldScene);
-            testbutton.execute();
-        }
 
         //現在のBGM状態を更新
         // gameStateManager.setBgmState(BgmState.FIELD);

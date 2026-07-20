@@ -3,9 +3,14 @@ import { MenuButton } from "../view/MenuButton";
 import { LeftButton } from "../view/LeftButton";
 import { RightButton } from "../view/RightButton";
 import { FreeMessageView } from "../view/FreeMessageView";
+
 import { GameStateManager } from "../../core/GameStateManager";
 import { State } from "../../lib/StateTypes";
 import { Subscription } from "rxjs";
+
+import { StatusView } from "../view/Debug/StatusView";
+import { EventTestButton } from './../view/Debug/EventTestButton';
+import { BattleTestButton } from "../view/Debug/BattleTestButton";
 
 export class UiPresenter {
 
@@ -17,6 +22,12 @@ export class UiPresenter {
     private leftButton: LeftButton;
     private rightButton: RightButton;
     private freeMessageView: FreeMessageView;
+
+    private debugmode = false;
+    private statusView: StatusView;
+    private eventTestButton: EventTestButton;
+    private battleTestButton: BattleTestButton;
+
     private subs = new Subscription();
 
     constructor(
@@ -25,7 +36,10 @@ export class UiPresenter {
         menuButton: MenuButton,
         leftButton: LeftButton,
         rightButton: RightButton,
-        freeMessageView: FreeMessageView
+        freeMessageView: FreeMessageView,
+        statusView: StatusView,
+        eventTestButton: EventTestButton,
+        battleTestButton: BattleTestButton
     ) {
         this.uiScene = uiScene;
         this.uiModel = uiModel;
@@ -34,11 +48,31 @@ export class UiPresenter {
         this.rightButton = rightButton;
         this.freeMessageView = freeMessageView;
 
+        this.statusView = statusView;
+        this.eventTestButton = eventTestButton;
+        this.battleTestButton = battleTestButton;
+
         this.gameScene = this.uiScene.scene.get('Field') as Phaser.Scene;
+
+        const gameStateManager = GameStateManager.getInstance();
+        this.debugmode = gameStateManager.isDebugMode;
+    }
+
+    public update(time: number, delta: number) {
+
+        if (this.debugmode) {
+            if (this.statusView) { this.statusView.update(time, delta); }
+        }
     }
 
     public async execute() {
         const gameStateManager = GameStateManager.getInstance();
+
+        if (this.debugmode) {
+            this.statusView.execute();
+            this.eventTestButton.execute();
+            this.battleTestButton.execute();
+        }
 
         //this.menuButton.execute();
         this.leftButton.execute();
