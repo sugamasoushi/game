@@ -24,6 +24,7 @@ export class Bubble extends Phaser.GameObjects.Sprite {
         });
     }
 
+    //移動
     preUpdate(time: number, delta: number) {
         super.preUpdate(time, delta);
         this.setDepth(this.sprite.depth);

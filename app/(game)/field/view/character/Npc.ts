@@ -8,7 +8,7 @@ import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from 'rxjs';
 import { SearchEnemyData } from '@/app/(game)/Data/SearchEnemyData';
 import { Player } from './Player';
-import { Bubble } from "@/app/(game)/util/Effect/Bubble";
+import { Bubble } from "@/app/(game)/util/Sprite/Bubble";
 
 export class Npc extends BaseSprite {
     private npcType: string;
