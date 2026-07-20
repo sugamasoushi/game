@@ -98,7 +98,7 @@ export class EVENT020101 extends BaseEvent {
         const bossEnemyData = searchEnemyData.getEnemyData(this.bossNPC.getData('ImageKey'));
         if (bossEnemyData) {
             this.bossNPC.setData({
-                level: bossEnemyData.level,
+                level: bossEnemyData.Level,
                 HP: bossEnemyData.HP,
                 MP: bossEnemyData.MP,
                 MaxHP: bossEnemyData.MaxHP,
@@ -108,7 +108,7 @@ export class EVENT020101 extends BaseEvent {
                 Speed: bossEnemyData.Speed,
                 gold: bossEnemyData.gold
             });
-            this.bossNPC.setData('name', bossEnemyData.name);
+            this.bossNPC.setData('name', bossEnemyData.Name);
         }
 
         //イベントバトル開始

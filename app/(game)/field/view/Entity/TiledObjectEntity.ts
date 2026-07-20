@@ -100,4 +100,10 @@ export class TiledObjectEntity {
         const value = this.dataMap.get("spritesheetKeyOrder");
         return typeof value === "string" ? value : "";
     }
+
+    get enemyData(): string {
+        const value = this.dataMap.get("EnemyData");
+        return typeof value === "string" ? value : "";
+    }
+
 }

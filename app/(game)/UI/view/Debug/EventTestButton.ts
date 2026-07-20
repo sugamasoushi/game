@@ -21,19 +21,19 @@ export class EventTestButton {
     }
 
     public execute() {
-        const leftButton = this.uiScene.add.text(20, 120, '◀', {
+        const leftButton = this.uiScene.add.text(20, 170, '◀', {
             fontSize: '24px',
             color: '#ffffff'
         });
         leftButton.setDepth(101).setInteractive({ useHandCursor: true });
 
-        const testButton = this.uiScene.add.text(50, 120, eventKeys[this.currentIndex], {
+        const testButton = this.uiScene.add.text(50, 170, eventKeys[this.currentIndex], {
             fontSize: '24px',
             color: '#ffffff'
         });
         testButton.setDepth(101).setInteractive({ useHandCursor: true });
 
-        const rightButton = this.uiScene.add.text(230, 120, '▶', {
+        const rightButton = this.uiScene.add.text(230, 170, '▶', {
             fontSize: '24px',
             color: '#ffffff'
         });

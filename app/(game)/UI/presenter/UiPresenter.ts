@@ -11,6 +11,8 @@ import { Subscription } from "rxjs";
 import { StatusView } from "../view/Debug/StatusView";
 import { EventTestButton } from './../view/Debug/EventTestButton';
 import { BattleTestButton } from "../view/Debug/BattleTestButton";
+import { MapTestButton } from "../view/Debug/MapTestButton";
+import { StatusTestButton } from './../view/Debug/StatusTestButton';
 
 export class UiPresenter {
 
@@ -27,6 +29,8 @@ export class UiPresenter {
     private statusView: StatusView;
     private eventTestButton: EventTestButton;
     private battleTestButton: BattleTestButton;
+    private mapTestButton: MapTestButton;
+    private statusTestButton: StatusTestButton;
 
     private subs = new Subscription();
 
@@ -39,7 +43,9 @@ export class UiPresenter {
         freeMessageView: FreeMessageView,
         statusView: StatusView,
         eventTestButton: EventTestButton,
-        battleTestButton: BattleTestButton
+        battleTestButton: BattleTestButton,
+        mapTestButton: MapTestButton,
+        statusTestButton: StatusTestButton
     ) {
         this.uiScene = uiScene;
         this.uiModel = uiModel;
@@ -51,6 +57,8 @@ export class UiPresenter {
         this.statusView = statusView;
         this.eventTestButton = eventTestButton;
         this.battleTestButton = battleTestButton;
+        this.mapTestButton = mapTestButton;
+        this.statusTestButton = statusTestButton;
 
         this.gameScene = this.uiScene.scene.get('Field') as Phaser.Scene;
 
@@ -72,6 +80,8 @@ export class UiPresenter {
             this.statusView.execute();
             this.eventTestButton.execute();
             this.battleTestButton.execute();
+            this.mapTestButton.execute();
+            this.statusTestButton.execute();
         }
 
         //this.menuButton.execute();

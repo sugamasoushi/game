@@ -9,7 +9,7 @@ export class SaveDataManager {
     //セーブデータをローカルストレージまたはElectronに書き込み
     public async writeSaveData(scene: Phaser.Scene) {
         const savedata = scene.cache.json.get('savedata');
-        console.log(savedata);
+
         if (window.electronAPI) {
             await window.electronAPI.clearSaveData();
             await window.electronAPI.saveData(savedata);

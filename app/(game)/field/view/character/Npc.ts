@@ -132,7 +132,7 @@ export class Npc extends BaseCharacterSprite {
 
             if (enemyData) {
                 this.setData({
-                    level: enemyData.level,
+                    level: enemyData.Level,
                     HP: enemyData.HP,
                     MP: enemyData.MP,
                     MaxHP: enemyData.MaxHP,
@@ -142,7 +142,7 @@ export class Npc extends BaseCharacterSprite {
                     Speed: enemyData.Speed,
                     gold: enemyData.gold
                 });
-                this.setData('name', enemyData.name);
+                this.setData('name', enemyData.Name);
             }
         }
     }

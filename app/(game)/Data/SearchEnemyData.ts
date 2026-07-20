@@ -28,6 +28,6 @@ export class SearchEnemyData {
     // 互換用: 名前だけ欲しいケース向け
     public getEnemyName(enemyKey: string): string {
         const data = this.getEnemyData(enemyKey);
-        return data?.name ?? "Unknown";
+        return data?.Name ?? "Unknown";
     }
 }

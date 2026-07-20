@@ -1,7 +1,11 @@
 /** 敵データの全体構造 */
 export interface EnemyStatus {
-    name: string;
-    level: number;
+    SpriteType: string,
+    SpritesheetKey: string,
+    SpritesheetKeyOrder: string,
+    ImageKey: string,
+    Name: string;
+    Level: number;
     HP: number;
     MP: number;
     MaxHP: number;

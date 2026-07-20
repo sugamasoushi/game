@@ -121,7 +121,7 @@ export class EVENT010301 extends BaseEvent {
         const lamyEnemyData = searchEnemyData.getEnemyData(this.lamyNPC.getData('ImageKey'));
         if (lamyEnemyData) {
             this.lamyNPC.setData({
-                level: lamyEnemyData.level,
+                level: lamyEnemyData.Level,
                 HP: lamyEnemyData.HP,
                 MP: lamyEnemyData.MP,
                 MaxHP: lamyEnemyData.MaxHP,
@@ -131,7 +131,7 @@ export class EVENT010301 extends BaseEvent {
                 Speed: lamyEnemyData.Speed,
                 gold: lamyEnemyData.gold
             });
-            this.lamyNPC.setData('name', lamyEnemyData.name);
+            this.lamyNPC.setData('name', lamyEnemyData.Name);
         }
 
         //イベントバトル開始

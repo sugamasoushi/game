@@ -9,6 +9,8 @@ import { FreeMessageView } from '../UI/view/FreeMessageView';
 import { StatusView } from '../UI/view/Debug/StatusView';
 import { EventTestButton } from './../UI/view/Debug/EventTestButton';
 import { BattleTestButton } from '../UI/view/Debug/BattleTestButton';
+import { MapTestButton } from './../UI/view/Debug/MapTestButton';
+import { StatusTestButton } from '../UI/view/Debug/StatusTestButton';
 
 export class UI extends Scene {
 
@@ -25,6 +27,8 @@ export class UI extends Scene {
     private statusView: StatusView;
     private eventTestButton: EventTestButton;
     private battleTestButton: BattleTestButton;
+    private mapTestButton: MapTestButton;
+    private statusTestButton: StatusTestButton;
 
     private onUiClose = () => {
         //this.menuButton.fadeIn();
@@ -53,6 +57,8 @@ export class UI extends Scene {
         this.statusView = new StatusView(this);
         this.eventTestButton = new EventTestButton(this);
         this.battleTestButton = new BattleTestButton(this);
+        this.mapTestButton = new MapTestButton(this);
+        this.statusTestButton = new StatusTestButton(this);
 
         this.freeMessageView = new FreeMessageView(this);
         this.freeMessageView.init();
@@ -66,7 +72,9 @@ export class UI extends Scene {
             this.freeMessageView,
             this.statusView,
             this.eventTestButton,
-            this.battleTestButton
+            this.battleTestButton,
+            this.mapTestButton,
+            this.statusTestButton
         );
     }
 

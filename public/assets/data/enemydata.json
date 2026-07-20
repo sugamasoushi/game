@@ -2,8 +2,8 @@
     "infomation": "敵名前データ",
     "EnemyNameData": {
         "enemy00": {
-            "name": "ラミア娘",
-            "level": 1,
+            "Name": "ラミア娘",
+            "Level": 1,
             "HP": 40,
             "MP": 0,
             "MaxHP": 40,
@@ -14,8 +14,8 @@
             "gold": 2
         },
         "enemy01": {
-            "name": "ラミア",
-            "level": 2,
+            "Name": "ラミア",
+            "Level": 2,
             "HP": 50,
             "MP": 0,
             "MaxHP": 50,
@@ -25,9 +25,13 @@
             "Speed": 5,
             "gold": 2
         },
-        "enemy02":{
-            "name": "いらすとやのスライム",
-            "level": 1,
+        "enemy02": {
+            "SpriteType": "0304",
+            "SpritesheetKey": "tex_enemy02",
+            "SpritesheetKeyOrder": "up,right,down,left",
+            "ImageKey": "enemy02",
+            "Name": "いらすとやのスライム",
+            "Level": 1,
             "HP": 30,
             "MP": 0,
             "MaxHP": 30,
@@ -38,8 +42,8 @@
             "gold": 2
         },
         "enemy03": {
-            "name": "グレートベア",
-            "level": 1,
+            "Name": "グレートベア",
+            "Level": 1,
             "HP": 90,
             "MP": 0,
             "MaxHP": 90,

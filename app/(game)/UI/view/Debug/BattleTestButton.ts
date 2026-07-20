@@ -14,7 +14,7 @@ export class BattleTestButton {
 
     public execute() {
 
-        const testButton = this.uiScene.add.text(20, 80, 'Battle Start', {
+        const testButton = this.uiScene.add.text(20, 110, 'Battle Start', {
             fontSize: '24px',
             color: '#ffffff'
         });
@@ -56,7 +56,7 @@ export class BattleTestButton {
             const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
             const enemyData = searchEnemyData.getEnemyData(enemy.getData('ImageKey'));
             enemy.setData({
-                level: enemyData!.level,
+                level: enemyData!.Level,
                 HP: enemyData!.HP,
                 MP: enemyData!.MP,
                 MaxHP: enemyData!.MaxHP,
@@ -66,7 +66,7 @@ export class BattleTestButton {
                 Speed: enemyData!.Speed,
                 gold: enemyData!.gold
             });
-            enemy.setData('name', enemyData!.name);
+            enemy.setData('name', enemyData!.Name);
 
             //状態更新
             const gameStateManager = GameStateManager.getInstance();

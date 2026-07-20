@@ -77,7 +77,7 @@ export class BattleModel {
 
                 if (enemyData) {
                     enemy.setData({
-                        level: enemyData.level,
+                        level: enemyData.Level,
                         HP: enemyData.HP,
                         MP: enemyData.MP,
                         MaxHP: enemyData.MaxHP,
@@ -87,7 +87,7 @@ export class BattleModel {
                         Speed: enemyData.Speed,
                         gold: enemyData.gold
                     });
-                    enemy.setData('name', enemyData.name);
+                    enemy.setData('name', enemyData.Name);
                 } else {
                     enemy.setData('name', searchEnemyData.getEnemyName(enemyKey));
                 }
