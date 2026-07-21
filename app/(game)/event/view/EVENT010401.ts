@@ -9,8 +9,7 @@ import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 import { Npc } from "../../field/view/character/Npc";
 import { GameStateManager } from "../../core/GameStateManager";
-
-import { SpriteType_3x4 } from "../../field/view/character/SpriteType_3x4";
+import { createSprite } from './../../util/Sprite/CharacterNpc';
 
 export class EVENT010401 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -60,17 +59,15 @@ export class EVENT010401 extends BaseEvent {
     async execEvent() {
 
         //キャラクタースプライトを作成
-        this.lamyNpc = new SpriteType_3x4(
+        this.lamyNpc = createSprite(
+            '0304',
+            'tex_lamy',
+            'down,left,right,up',
             this.fieldScene,
             816,
             496,
-            'normal', //npcのタイプ
-            'tex_lamy', //タイル画像のキー
-            'down,left,right,up',
-            'lamyNPC',//キャラ名
-            'stand_up',//向き
-            '20240908', //立ち絵のキー、アイコンにも使用
-            ''//指定されていれば吹き出し会話を設定する
+            'normal',
+            '20240908'
         )!;
 
         this.lamyNpc.state = CharacterState.event;

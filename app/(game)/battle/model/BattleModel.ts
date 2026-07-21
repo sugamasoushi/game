@@ -46,7 +46,7 @@ export class BattleModel {
             //シンボルエンカウントした1体のみデータを引き継ぐ
             if (i === 0) {
                 const data: CharacterStatus = {
-                    level: this.fieldHitEnemy.getData('level'),
+                    level: this.fieldHitEnemy.getData('Level'),
                     HP: this.fieldHitEnemy.getData('HP'),
                     MP: this.fieldHitEnemy.getData('MP'),
                     MaxHP: this.fieldHitEnemy.getData('MaxHP'),

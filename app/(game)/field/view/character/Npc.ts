@@ -6,14 +6,13 @@ import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from '@/app/(game)/lib/StateTypes';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
 import { Subscription } from 'rxjs';
-import { SearchEnemyData } from '@/app/(game)/Data/SearchEnemyData';
 import { Player } from './Player';
 import { Bubble } from "@/app/(game)/util/Sprite/Bubble";
 
 export class Npc extends BaseCharacterSprite {
     private npcType: string;
     private inputManager: InputManager;
-    protected bubbleTalkKey;
+    private bubbleTalkKey: string;
     private subs = new Subscription();
 
     protected spriteObjList: Phaser.Physics.Arcade.Sprite[] = [];
@@ -33,27 +32,15 @@ export class Npc extends BaseCharacterSprite {
     private cropRectMask: Phaser.GameObjects.Graphics;
     private GeometryMask: Phaser.Display.Masks.GeometryMask;
 
-    constructor(
-        fieldScene: FieldScene,
-        x: number,
-        y: number,
-        npcType: string,
-        spriteSheetKey: string,
-        npcNameCode: string,
-        initStandKey: string,
-        imageKey: string,
-        bubbleTalkKey: string
-    ) {
-        super(fieldScene, x, y, spriteSheetKey, initStandKey);
+    constructor(fieldScene: FieldScene, x: number, y: number, npcType: string, spriteSheetKey: string, imageKey: string) {
+        super(fieldScene, x, y, spriteSheetKey);
         this.fieldScene = fieldScene;
+        this.inputManager = InputManager.getInstance(this.fieldScene);
         this.npcType = npcType;
         this.state = CharacterState.normal;
         if (npcType === 'event') {
             this.state = CharacterState.event;
-            //this.setVisible(false);
         }
-        this.name = npcNameCode;
-        this.bubbleTalkKey = bubbleTalkKey;
 
         this.setData('NpcType', npcType)
         this.setData('ImageKey', imageKey)
@@ -63,22 +50,13 @@ export class Npc extends BaseCharacterSprite {
         super.preUpdate(time, delta);
         this.setDepth(MapLayerDepth.High + this.y);
         this.updateRandomMoveToPosition();
-        this._setInput();
+        this.updateInteractive();
         this.energyHP();
         this.delete();
 
         //キャラクターの下側を非表示にするマスク
         //this.updateCharacterShapesMask();
     }
-
-    init() {
-        this.scene.physics.add.existing(this);//物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
-        (this.body as Phaser.Physics.Arcade.Body)!.setImmovable(true);//Body の不動プロパティを設定、物理演算されなくなる。
-        //不動についてはbody.setPushable(false);というのもあるらしい
-        this._collideSetting();
-        this.statusSetting();
-        this.bubbleTalkSetting();
-    };
 
     private energyHP() {
         if (this.npcType !== 'enemy') return;
@@ -124,32 +102,8 @@ export class Npc extends BaseCharacterSprite {
         this.energyGauge.strokeRoundedRect(-1 * rectR, -1 * rectR, maxWidth, height, rectR);
     }
 
-    private statusSetting() {
-        if (this.npcType === 'enemy') {
-            const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
-            const imageKey = this.getData('ImageKey');
-            const enemyData = searchEnemyData.getEnemyData(imageKey);
-
-            if (enemyData) {
-                this.setData({
-                    level: enemyData.Level,
-                    HP: enemyData.HP,
-                    MP: enemyData.MP,
-                    MaxHP: enemyData.MaxHP,
-                    MaxMP: enemyData.MaxMP,
-                    Attack: enemyData.Attack,
-                    Guard: enemyData.Guard,
-                    Speed: enemyData.Speed,
-                    gold: enemyData.gold
-                });
-                this.setData('name', enemyData.Name);
-            }
-        }
-    }
-
-    public setBubbleTalkKey(bubbleTalkKey: string) { this.bubbleTalkKey = bubbleTalkKey; }
-
-    public bubbleTalkSetting() {
+    public bubbleTalkSetting(bubbleTalkKey: string) {
+        this.bubbleTalkKey = bubbleTalkKey;
 
         //tiledでtalkデータを設定する事
         if (this.bubbleTalkKey) {
@@ -160,10 +114,29 @@ export class Npc extends BaseCharacterSprite {
             //吹き出しを設定
             const bubbleSprite = new Bubble(this.fieldScene, this);
             bubbleSprite.execute();
+
+            //パッド設定
+            this.subs.add(this.inputManager.decideButton$.subscribe(() => {
+                const manager = GameStateManager.getInstance();
+                if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
+                    // 会話不可の状態
+                } else {
+                    // player と target の矩形が重なっているか
+                    const player = manager.currentPlayerPartyList[0] as Player;
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), player.getBounds()) &&
+                        this.state === CharacterState.normal) {
+
+                        this.execNpcTalk();
+                    }
+                }
+            }));
+
+            // オブジェクト破棄時に購読解除
+            this.once('destroy', () => { this.subs.unsubscribe(); });
         }
     }
 
-    private execNpcTalk() {
+    public execNpcTalk() {
         if (this.state === CharacterState.talking) return;
 
         const manager = GameStateManager.getInstance();
@@ -187,52 +160,6 @@ export class Npc extends BaseCharacterSprite {
         } else if (playerDirection === 'down') {
             player.setStandFrame(player.getAnimationKey().standDown);
             this.turnAround();
-        }
-    }
-
-    public setInputManager(inputManager: InputManager) {
-        this.inputManager = inputManager;
-
-        // decideButtonの購読を追加
-        if (this.bubbleTalkKey) {
-            this.subs.add(this.inputManager.decideButton$.subscribe(() => {
-                const manager = GameStateManager.getInstance();
-                if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
-                    // 会話不可の状態
-                } else {
-                    // player と target の矩形が重なっているか
-                    const player = manager.currentPlayerPartyList[0] as Player;
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), player.getBounds()) &&
-                        this.state === CharacterState.normal) {
-
-                        this.execNpcTalk();
-                    }
-                }
-            }));
-        }
-
-        // オブジェクト破棄時に購読解除
-        this.once('destroy', () => {
-            this.subs.unsubscribe();
-        });
-    }
-
-    //enemy衝突
-    _collideSetting() {
-
-        //キャラクターやマップ作成後に実行する事
-        if (this.npcType === 'enemy') {
-
-            const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
-
-            //オブジェクトに衝突した場合、戦闘を発生させる
-            this.fieldScene.physics.add.world.addCollider(this, player, () => {
-                //Presenterに通知
-                this.fieldScene.events.emit('BATTLE', { usePatern: 'normal', fieldHitEnemy: this, canNotRunaway: false });
-            }, undefined, this.fieldScene);
-
-        } else {
-            //this.fieldScene.physics.add.collider(this, this.fieldScene.getPlayer());
         }
     }
 
@@ -346,7 +273,7 @@ export class Npc extends BaseCharacterSprite {
         }
     }
 
-    _setInput() {
+    private updateInteractive() {
         //プレイヤーとの距離が100未満 かつ 吹き出し会話中では無い かつ 吹き出し会話が設定されている場合はマウスクリックを設定
         const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
         if (Phaser.Math.Difference(this.x, player.x) < 100 && Phaser.Math.Difference(this.y, player.y) < 100

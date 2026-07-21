@@ -1,42 +1,29 @@
 import { FieldScene } from "../../lib/SceneTypes";
 import { TiledObjectEntity } from "./Entity/TiledObjectEntity";
-import { InputManager } from "../../core/input/InputManager";
 import { Npc } from "./character/Npc";
-import { SpriteType_3x4 } from "./character/SpriteType_3x4";
-import { SpriteType_4x4 } from "./character/SpriteType_4x4";
 import { GameStateManager } from "../../core/GameStateManager";
-import { TileMap } from "./TileMap";
 import { EventFlagData } from "../../Data/EventFlagData";
 import { SearchEnemyData } from '@/app/(game)/Data/SearchEnemyData';
+import { createSprite } from "../../util/Sprite/CharacterNpc";
 
 export class NpcView {
-
     private npcEnemyList: Npc[] = [];
     private npcNormalList: Npc[] = [];
 
-    constructor(
-        private fieldScene: FieldScene,
-        private tileMap: TileMap,
-        private inputManager: InputManager,
-    ) {
-    }
+    constructor(private fieldScene: FieldScene) { }
 
-    public update(time: number, delta: number) {
-        void time;
-        void delta;
-    }
+    public update(time: number, delta: number) { void time; void delta; }
 
-    public async execute() {
-        this.createNPC();
-    }
+    public async execute() { this.createNPC(); }
 
     private createNPC() {
         return new Promise<void>(async (resolve) => {
             const gameStateManager = GameStateManager.getInstance();
+            const tileMap = this.fieldScene.getTileMapInstance();
 
             //NPC作成
-            if (this.tileMap.getMakeTilemap().objects) {
-                for (const makeTilemapObj of this.tileMap.getMakeTilemap().objects) {
+            if (tileMap.getMakeTilemap().objects) {
+                for (const makeTilemapObj of tileMap.getMakeTilemap().objects) {
                     if (makeTilemapObj.name === 'NPC') {
                         for (const npcObj of makeTilemapObj.objects) {
 
@@ -60,99 +47,101 @@ export class NpcView {
                                     }
                                 }
 
-                                //登録済みデータが指定されている場合
+                                //NPCパラメータの準備
+                                let npcType: string;//npcType : npcのタイプ
+                                let spritetype: string;//spritetype : spriteのタイプ
+                                let spriteSheetKey: string;//spriteSheetKey : タイル画像のキー
+                                let spritesheetKeyOrder: string;//spritesheetKeyOrder : タイル画像の方向を示す順序
+                                let name: string;//name : ゲーム内変数としてのキャラ名、画像などで使用
+                                let initStandKey: string;//指定されていなければ下向き配置
+                                let imageKey: string;//imageKey : 立ち絵のキー、アイコンにも使用
+
                                 if (entity.enemyData) {
-                                    const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json)
-                                    const enemyData = searchEnemyData.getEnemyData(entity.enemyData)
+                                    const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
+                                    const enemyData = searchEnemyData.getEnemyData(entity.enemyData);
 
-                                    const npc = this.createSprite(
-                                        'enemy', //npcType : npcのタイプ
-                                        enemyData!.SpriteType, //spritetype : spriteのタイプ
-                                        this.fieldScene,
-                                        npcObj.x!,
-                                        npcObj.y!,
-                                        enemyData!.SpritesheetKey, //spriteSheetKey : タイル画像のキー
-                                        enemyData!.SpritesheetKeyOrder,//spritesheetKeyOrder : タイル画像の方向を示す順序
-                                        'slime', //name : ゲーム内変数としてのキャラ名、画像などで使用
-                                        '', //指定されていなければ下向き配置
-                                        enemyData!.ImageKey, //imageKey : 立ち絵のキー、アイコンにも使用
-                                        bubbleTalkKey //指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
-                                    );
-
-                                    npc!.setMakeTilemapData(this.tileMap.getMakeTilemap());
-                                    npc!.setCollisionLayer(this.tileMap.getCollisionLayer());
-
-                                    npc!.init();
-
-                                    npc!.setVisible(entity.isVisible);
-
-                                    if (entity.scale) { npc!.setScale(entity.scale); }
-
-                                    if (entity.npcType === 'normal') {
-                                        this.npcNormalList.push(npc as Npc);
-                                    } else {
-                                        this.npcEnemyList.push(npc as Npc);
-                                    }
-
-                                    if (this.tileMap.getCollisionLayer()) {
-                                        this.fieldScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, this.tileMap.getCollisionLayer());
-                                    }
-
-                                    for (const player of gameStateManager.currentPlayerPartyList) {
-                                        this.fieldScene.physics.add.collider(npc!, player);
-                                    }
-
-                                    npc!.setInputManager(this.inputManager);
-
-                                    this.fieldScene.events.on('shutdown', () => {
-                                        npc!.destroy();
-                                    });
+                                    npcType = 'enemy';
+                                    spritetype = enemyData!.SpriteType;
+                                    spriteSheetKey = enemyData!.SpritesheetKey;
+                                    spritesheetKeyOrder = enemyData!.SpritesheetKeyOrder;
+                                    name = enemyData!.Name;
+                                    initStandKey = 'stand_down';
+                                    imageKey = enemyData!.ImageKey;
 
                                 } else {
-
-                                    const npc = this.createSprite(
-                                        entity.npcType, //npcType : npcのタイプ
-                                        entity.spriteType, //spritetype : spriteのタイプ
-                                        this.fieldScene,
-                                        npcObj.x!,
-                                        npcObj.y!,
-                                        entity.spritesheetKey, //spriteSheetKey : タイル画像のキー
-                                        entity.spritesheetKeyOrder,//spritesheetKeyOrder : タイル画像の方向を示す順序
-                                        entity.name, //name : ゲーム内変数としてのキャラ名、画像などで使用
-                                        entity.standkey, //指定されていなければ下向き配置
-                                        entity.imageKey, //imageKey : 立ち絵のキー、アイコンにも使用
-                                        bubbleTalkKey //指定されていれば吹き出し会話を設定する。「bubbleTalk0000.talk000」
-                                    );
-
-                                    npc!.setMakeTilemapData(this.tileMap.getMakeTilemap());
-                                    npc!.setCollisionLayer(this.tileMap.getCollisionLayer());
-
-                                    npc!.init();
-
-                                    npc!.setVisible(entity.isVisible);
-
-                                    if (entity.scale) { npc!.setScale(entity.scale); }
-
-                                    if (entity.npcType === 'normal') {
-                                        this.npcNormalList.push(npc as Npc);
-                                    } else {
-                                        this.npcEnemyList.push(npc as Npc);
-                                    }
-
-                                    if (this.tileMap.getCollisionLayer()) {
-                                        this.fieldScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, this.tileMap.getCollisionLayer());
-                                    }
-
-                                    for (const player of gameStateManager.currentPlayerPartyList) {
-                                        this.fieldScene.physics.add.collider(npc!, player);
-                                    }
-
-                                    npc!.setInputManager(this.inputManager);
-
-                                    this.fieldScene.events.on('shutdown', () => {
-                                        npc!.destroy();
-                                    });
+                                    npcType = entity.npcType;
+                                    spritetype = entity.spriteType;
+                                    spriteSheetKey = entity.spritesheetKey;
+                                    spritesheetKeyOrder = entity.spritesheetKeyOrder;
+                                    name = entity.name;
+                                    initStandKey = entity.standkey;
+                                    imageKey = entity.imageKey;
                                 }
+
+                                const npc = createSprite(
+                                    spritetype,
+                                    spriteSheetKey,
+                                    spritesheetKeyOrder,
+                                    this.fieldScene,
+                                    npcObj.x!,
+                                    npcObj.y!,
+                                    npcType,
+                                    imageKey
+                                );
+
+                                if (!npc) continue;
+
+                                if (bubbleTalkKey) { npc.bubbleTalkSetting(bubbleTalkKey) }
+
+                                if (entity.enemyData) {
+                                    const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
+                                    const imageKey = npc.getData('ImageKey');
+                                    const enemyData = searchEnemyData.getEnemyData(imageKey);
+
+                                    if (enemyData) {
+                                        npc.setData({
+                                            level: enemyData.Level,
+                                            HP: enemyData.HP,
+                                            MP: enemyData.MP,
+                                            MaxHP: enemyData.MaxHP,
+                                            MaxMP: enemyData.MaxMP,
+                                            Attack: enemyData.Attack,
+                                            Guard: enemyData.Guard,
+                                            Speed: enemyData.Speed,
+                                            gold: enemyData.gold
+                                        });
+                                        npc.setData('name', enemyData.Name);
+                                    }
+
+                                    const player = GameStateManager.getInstance().currentPlayerPartyList[0];
+
+                                    //オブジェクトに衝突した場合、戦闘を発生させる
+                                    this.fieldScene.physics.add.world.addCollider(npc, player, () => {
+                                        //Presenterに通知
+                                        this.fieldScene.events.emit('BATTLE', { usePatern: 'normal', fieldHitEnemy: npc, canNotRunaway: false });
+                                    }, undefined, this.fieldScene);
+                                }
+
+                                npc.setMakeTilemapData(tileMap.getMakeTilemap());
+                                npc.setCollisionLayer(tileMap.getCollisionLayer());
+
+                                this.fieldScene.physics.add.existing(npc);//物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
+                                (npc.body as Phaser.Physics.Arcade.Body)!.setImmovable(true);//Body の不動プロパティを設定、物理演算されなくなる。
+
+                                npc.setVisible(entity.isVisible);
+                                if (name) { npc.name = name };
+                                if (entity.scale) { npc.setScale(entity.scale); }
+
+                                if (entity.npcType === 'normal') {
+                                    this.npcNormalList.push(npc as Npc);
+                                } else {
+                                    this.npcEnemyList.push(npc as Npc);
+                                }
+
+                                if (tileMap.getCollisionLayer()) { this.fieldScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, tileMap.getCollisionLayer()); }
+                                for (const player of gameStateManager.currentPlayerPartyList) { this.fieldScene.physics.add.collider(npc, player); }
+
+                                this.fieldScene.events.on('shutdown', () => { npc.destroy(); });
 
                             } catch (e) {
                                 console.log('NPC作成エラー')
@@ -170,27 +159,4 @@ export class NpcView {
             resolve();
         });
     }
-
-    public createSprite(
-        npcType: string,
-        spritetype: string,
-        gameScene: FieldScene,
-        x: number,
-        y: number,
-        spriteSheetKey: string,
-        spritesheetKeyOrder: string,
-        name: string,
-        initStandKey: string,
-        imageKey: string,
-        bubbleTalkKey: string) {
-
-        if (spritetype === '0404') {
-            return new SpriteType_4x4(gameScene, x, y, npcType, spriteSheetKey, spritesheetKeyOrder, name, initStandKey, imageKey, bubbleTalkKey);
-        }
-
-        if (spritetype === '0304') {
-            return new SpriteType_3x4(gameScene, x, y, npcType, spriteSheetKey, spritesheetKeyOrder, name, initStandKey, imageKey, bubbleTalkKey);
-        }
-    }
-
 }

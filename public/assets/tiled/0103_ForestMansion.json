@@ -3797,54 +3797,9 @@
                  "name":"slime",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"filepath",
-                         "type":"file",
-                         "value":"..\/img\/spritesheet\/enemy02.png"
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"int",
-                         "value":4
-                        }, 
-                        {
-                         "name":"imageKey",
+                         "name":"EnemyData",
                          "type":"string",
                          "value":"enemy02"
-                        }, 
-                        {
-                         "name":"name",
-                         "type":"string",
-                         "value":"slime"
-                        }, 
-                        {
-                         "name":"npcType",
-                         "type":"string",
-                         "value":"enemy"
-                        }, 
-                        {
-                         "name":"spriteType",
-                         "type":"string",
-                         "value":"0304"
-                        }, 
-                        {
-                         "name":"spritesheetKey",
-                         "type":"string",
-                         "value":"enemy02"
-                        }, 
-                        {
-                         "name":"spritesheetKeyOrder",
-                         "type":"string",
-                         "value":"up,right,down,left"
-                        }, 
-                        {
-                         "name":"standkey",
-                         "type":"string",
-                         "value":"stand_down"
                         }, 
                         {
                          "name":"visible",
@@ -3865,54 +3820,9 @@
                  "name":"slime",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"filepath",
-                         "type":"file",
-                         "value":"..\/img\/spritesheet\/enemy02.png"
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"int",
-                         "value":4
-                        }, 
-                        {
-                         "name":"imageKey",
+                         "name":"EnemyData",
                          "type":"string",
                          "value":"enemy02"
-                        }, 
-                        {
-                         "name":"name",
-                         "type":"string",
-                         "value":"slime"
-                        }, 
-                        {
-                         "name":"npcType",
-                         "type":"string",
-                         "value":"enemy"
-                        }, 
-                        {
-                         "name":"spriteType",
-                         "type":"string",
-                         "value":"0304"
-                        }, 
-                        {
-                         "name":"spritesheetKey",
-                         "type":"string",
-                         "value":"enemy02"
-                        }, 
-                        {
-                         "name":"spritesheetKeyOrder",
-                         "type":"string",
-                         "value":"up,right,down,left"
-                        }, 
-                        {
-                         "name":"standkey",
-                         "type":"string",
-                         "value":"stand_down"
                         }, 
                         {
                          "name":"visible",
@@ -4416,7 +4326,7 @@
          "y":0
         }],
  "nextlayerid":111,
- "nextobjectid":117,
+ "nextobjectid":118,
  "orientation":"orthogonal",
  "properties":[
         {

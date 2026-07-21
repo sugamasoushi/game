@@ -2,6 +2,7 @@ import { PlayerData } from "../lib/PlayerDataTypes";
 import { OptionData } from "../lib/FieldTypes";
 import { GameStateManager } from "../core/GameStateManager";
 import { SaveDataManager } from "./SaveDataManager";
+import { Player } from "../field/view/character/Player";
 
 export class CacheDataUpdate {
     private saveDataManager: SaveDataManager;
@@ -53,7 +54,7 @@ export class CacheDataUpdate {
         savedata.playerData.PlayerMapKey = manager.currentFieldData.mapKey;
         savedata.playerData.PlayerPosition.x = mainPlayer.x;
         savedata.playerData.PlayerPosition.y = mainPlayer.y;
-        //savedata.playerData.initStandKey = player.getAnimationKey().standframe;
+        savedata.playerData.initStandKey = (mainPlayer as Player).getAnimationKey().standframe;
 
         // 1人目のデータ同期
         this.syncPlayerData(mainPlayer, savedata.playerData, true);

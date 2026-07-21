@@ -106,16 +106,6 @@ export class FieldScenePresenter {
     public async execute(sceneKey: string) {
         console.log("FieldPresenter")
 
-        //this.cameraManager.getMainCamera().setZoom(1.2);
-        // this.cameraManager.getMainCamera().postFX.addTiltShift(
-        //     0.5,//radius: ボケ効果の半径。デフォルト値は 0.5。
-        //     0.5,//amount: ボケ効果の量。デフォルト値は 1。 
-        //     0.1,//contrast: ボケ効果の色のコントラスト。デフォルト値は 0.2
-        //     0.5,//blurX水平方向のぼかしの量。 
-        //     0.5,//blurY垂直方向のぼかしの量。 
-        //     0.5//strengthぼかしの強さ。 
-        // );
-
         const gameStateManager = GameStateManager.getInstance();
 
         //現在のBGM状態を更新
@@ -132,16 +122,13 @@ export class FieldScenePresenter {
             this.fieldScene,
             this.playermodel,
             this.playerView,
-            this.tileMap,
-            this.inputManager);
+            this.tileMap);
         await this.playerPresenter.execute();
 
         this.npcPresenter = new NpcPresenter(
             this.fieldScene,
             this.npcModel,
-            this.npcView,
-            this.tileMap,
-            this.inputManager);
+            this.npcView);
         await this.npcPresenter.execute();
 
         //マップ移動オブジェクトが存在する場合はMVPを生成
@@ -369,5 +356,9 @@ export class FieldScenePresenter {
             this.fieldScene.events.off('CAMERA_BLUR');
             this.subs.unsubscribe();
         });
+    }
+
+    public getTileMapInstance(){
+        return this.tileMap;
     }
 }

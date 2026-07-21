@@ -31,8 +31,13 @@ export class PlayerView {
             const initStandKey = fieldData.initStandKey;
 
             //プレイヤー作成
-            const player: Player = new Player(this.gameScene, playerX, playerY, 'meina', initStandKey, this.tileMap.getMakeTilemap())
+            const player: Player = new Player(this.gameScene, playerX, playerY, 'meina', this.tileMap.getMakeTilemap())
             player.state = CharacterState.normal;
+
+            if (initStandKey === 'stand_right') { player.setStandFrame(player.getAnimationKey().standRight); }
+            else if (initStandKey === 'stand_left') { player.setStandFrame(player.getAnimationKey().standLeft); }
+            else if (initStandKey === 'stand_up') { player.setStandFrame(player.getAnimationKey().standUp); }
+            else if (initStandKey === 'stand_down') { player.setStandFrame(player.getAnimationKey().standDown); }
 
             const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
             player.setData('name', searchCharacterData.getCharacterData(player.name).name)
@@ -60,7 +65,7 @@ export class PlayerView {
                 const playerX2 = fieldData.x2 > 0 ? fieldData.x2 : playerX;
                 const playerY2 = fieldData.y2 > 0 ? fieldData.y2 : playerY;
 
-                const player2: Player = new Player(this.gameScene, playerX2, playerY2, 'lamy', initStandKey, this.tileMap.getMakeTilemap())
+                const player2: Player = new Player(this.gameScene, playerX2, playerY2, 'lamy', this.tileMap.getMakeTilemap())
                 player2.state = CharacterState.normal;
                 player2.setData('name', searchCharacterData.getCharacterData(player2.name).name)
 
@@ -82,7 +87,7 @@ export class PlayerView {
             //プレイヤー3作成
             if (this.gameScene.cache.json.get('savedata').playerData3.PartyMemberFlg) {
 
-                const player3: Player = new Player(this.gameScene, playerX, playerY, 'lamy', initStandKey, this.tileMap.getMakeTilemap())
+                const player3: Player = new Player(this.gameScene, playerX, playerY, 'lamy', this.tileMap.getMakeTilemap())
                 player3.state = CharacterState.normal;
                 player3.setData('name', searchCharacterData.getCharacterData(player3.name).name)
 

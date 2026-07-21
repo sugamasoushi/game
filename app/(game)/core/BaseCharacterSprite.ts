@@ -39,10 +39,10 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
     protected moveDefaultTime: number = 1000;//速度
     protected moveStopCount: number = 0;
 
-    constructor(fieldScene: FieldScene, x: number, y: number, spriteSheetKey: string, initStandKey: string) {
+    constructor(fieldScene: FieldScene, x: number, y: number, spriteSheetKey: string) {
         super(fieldScene, x, y, spriteSheetKey);
         this.fieldScene = fieldScene;
-        this.animationKeySetting(spriteSheetKey, initStandKey);
+        this.animationKeySetting(spriteSheetKey);
         this.addToUpdateList();
         this.addToDisplayList();
     }
@@ -58,7 +58,7 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
     /**
      * アニメーションのキーを作成
      */
-    private animationKeySetting(spriteSheetKey: string, direction: string) {
+    private animationKeySetting(spriteSheetKey: string) {
         //各アニメーションキーを設定
         this.spriteSheetKey = spriteSheetKey;
         this.walkLeft = spriteSheetKey + '-' + this.walkLeft;
@@ -73,7 +73,8 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
 
         //初期状態を設定
         this.moveDirection = spriteSheetKey + '-' + 'walk_stop';
-        this.standframe = spriteSheetKey + '-' + direction;
+        //this.standframe = spriteSheetKey + '-' + direction;
+        this.setStandFrame(this.getAnimationKey().standDown);
     }
 
     // spritesheetKeyOrder を正規化して Direction 配列に変換する。
@@ -125,7 +126,7 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
         );
     }
 
-    protected setupDirectionalAnimations(
+    public setupDirectionalAnimations(
         spriteSheetKey: string,
         spritesheetKeyOrder: string = 'down,left,right,up',
         framesPerDirection: number,

@@ -438,49 +438,9 @@
                  "name":"slime",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"imageKey",
+                         "name":"EnemyData",
                          "type":"string",
                          "value":"enemy02"
-                        }, 
-                        {
-                         "name":"name",
-                         "type":"string",
-                         "value":"slime"
-                        }, 
-                        {
-                         "name":"npcType",
-                         "type":"string",
-                         "value":"enemy"
-                        }, 
-                        {
-                         "name":"spriteType",
-                         "type":"string",
-                         "value":"0304"
-                        }, 
-                        {
-                         "name":"spritesheetKey",
-                         "type":"string",
-                         "value":"enemy02"
-                        }, 
-                        {
-                         "name":"spritesheetKeyOrder",
-                         "type":"string",
-                         "value":"up,right,down,left"
-                        }, 
-                        {
-                         "name":"standkey",
-                         "type":"string",
-                         "value":"stand_down"
                         }, 
                         {
                          "name":"visible",
@@ -582,8 +542,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":521.333333333333,
-                 "y":458.666666666667
+                 "x":608,
+                 "y":608
                 }],
          "opacity":1,
          "type":"objectgroup",

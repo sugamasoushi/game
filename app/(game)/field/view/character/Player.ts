@@ -26,8 +26,8 @@ export class Player extends BaseCharacterSprite {
     private leader: Player | null = null;
     public lastHistoryUpdateTime: number = 0;
 
-    constructor(scene: FieldScene, x: number, y: number, spriteSheetKey: string, initStandKey: string, private makeTilemapData: Phaser.Tilemaps.Tilemap) {
-        super(scene, x, y, 'tex_' + spriteSheetKey, initStandKey);
+    constructor(scene: FieldScene, x: number, y: number, spriteSheetKey: string, private makeTilemapData: Phaser.Tilemaps.Tilemap) {
+        super(scene, x, y, 'tex_' + spriteSheetKey);
         this.fieldScene = scene;
         this.name = spriteSheetKey;
 

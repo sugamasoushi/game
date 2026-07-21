@@ -7,7 +7,6 @@ import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { Sound } from "../../scenes/Sound";
-import { InputManager } from "../../core/input/InputManager";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
 import { GameStateManager } from "../../core/GameStateManager";
 
@@ -180,9 +179,8 @@ export class EVENT010301 extends BaseEvent {
                 this.player.state = CharacterState.normal;
 
                 //イベント後のキャラに吹き出し会話を設定
-                this.lamyNPC.setBubbleTalkKey('bubbleTalk0001.talk002');
-                this.lamyNPC.bubbleTalkSetting();
-                this.lamyNPC.setInputManager(InputManager.getInstance(this.fieldScene));
+                this.lamyNPC.bubbleTalkSetting('bubbleTalk0001.talk002');
+                // this.lamyNPC.setInputManager(InputManager.getInstance(this.fieldScene));
                 this.lamyNPC.setData('ImageKey', '20240908');
                 this.lamyNPC.state = CharacterState.normal;
 

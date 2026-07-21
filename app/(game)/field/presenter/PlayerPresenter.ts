@@ -11,6 +11,7 @@ import { TileMap } from "../view/TileMap";
 
 export class PlayerPresenter {
     private player: Player;
+    private inputManager: InputManager;
     private subs = new Subscription();
 
     //移動時のタップ連打防止
@@ -20,11 +21,11 @@ export class PlayerPresenter {
         private fieldScene: FieldScene,
         private playerModel: PlayerModel,
         private playerView: PlayerView,
-        private tileMap: TileMap,
-        private inputManager: InputManager
+        private tileMap: TileMap
     ) {
         this.playerModel = new PlayerModel(fieldScene);
         this.playerView = new PlayerView(this.fieldScene, this.tileMap);
+        this.inputManager = InputManager.getInstance(this.fieldScene);
     }
 
     // 毎フレームの更新処理

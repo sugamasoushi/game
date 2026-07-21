@@ -813,49 +813,9 @@
                  "name":"slime",
                  "properties":[
                         {
-                         "name":"bubbleTalkKey",
-                         "type":"string",
-                         "value":""
-                        }, 
-                        {
-                         "name":"id",
-                         "type":"int",
-                         "value":0
-                        }, 
-                        {
-                         "name":"imageKey",
+                         "name":"EnemyData",
                          "type":"string",
                          "value":"enemy02"
-                        }, 
-                        {
-                         "name":"name",
-                         "type":"string",
-                         "value":"slime"
-                        }, 
-                        {
-                         "name":"npcType",
-                         "type":"string",
-                         "value":"enemy"
-                        }, 
-                        {
-                         "name":"spriteType",
-                         "type":"string",
-                         "value":"0304"
-                        }, 
-                        {
-                         "name":"spritesheetKey",
-                         "type":"string",
-                         "value":"enemy02"
-                        }, 
-                        {
-                         "name":"spritesheetKeyOrder",
-                         "type":"string",
-                         "value":"up,right,down,left"
-                        }, 
-                        {
-                         "name":"standkey",
-                         "type":"string",
-                         "value":"stand_down"
                         }, 
                         {
                          "name":"visible",
@@ -940,7 +900,7 @@
          "y":0
         }],
  "nextlayerid":25,
- "nextobjectid":14,
+ "nextobjectid":15,
  "orientation":"orthogonal",
  "properties":[
         {

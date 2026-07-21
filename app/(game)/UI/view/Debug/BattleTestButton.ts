@@ -1,9 +1,9 @@
 import { FieldScene } from "../../../lib/SceneTypes";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from "@/app/(game)/lib/StateTypes";
-import { SpriteType_3x4 } from "@/app/(game)/field/view/character/SpriteType_3x4";
 import { SearchEnemyData } from './../../../Data/SearchEnemyData';
 import { CharacterState } from '@/app/(game)/lib/FieldTypes';
+import { createSprite } from './../../../util/Sprite/CharacterNpc';
 
 export class BattleTestButton {
     private fieldScene: FieldScene;
@@ -37,20 +37,16 @@ export class BattleTestButton {
             /**
              * バトル時の敵生成は本体を改良すべき
              */
-
-            //キャラクタースプライトを作成
-            const enemy = new SpriteType_3x4(
+            const enemy = createSprite(
+                '0304',
+                'tex_enemy02',
+                'up,right,down,left',
                 this.fieldScene,
                 0,
                 0,
-                'enemy', //npcのタイプ
-                'tex_enemy02', //タイル画像のキー
-                'up,right,down,left',
-                'slime',//キャラ名
-                'stand_up',//向き
-                'enemy02', //立ち絵のキー、アイコンにも使用
-                ''//指定されていれば吹き出し会話を設定する
-            );
+                'enemy',
+                'enemy02'
+            )!;
             enemy.state = CharacterState.event;
 
             const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);

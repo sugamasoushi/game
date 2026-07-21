@@ -9,6 +9,7 @@ import { gameStateManager } from '../core/GameStateManager';
 import { InputManager } from '../core/input/InputManager';
 import { CameraManager } from '../field/view/CameraManager';
 import { State } from '../lib/types';
+import { TileMap } from '../field/view/TileMap';
 
 export class Field extends Scene implements FieldScene {
 
@@ -97,6 +98,12 @@ export class Field extends Scene implements FieldScene {
     public getMakeTilemap(): Phaser.Tilemaps.Tilemap {
         const makeTilemapData = this.fieldSceneModel.getMakeTilemap()
         return makeTilemapData;
+    }
+
+    // 生成されたタイルマップを取得
+    public getTileMapInstance(): TileMap {
+        const tilemapInstance = this.fieldScenePresenter.getTileMapInstance();
+        return tilemapInstance;
     }
 }
 
