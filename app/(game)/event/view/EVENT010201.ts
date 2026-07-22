@@ -94,7 +94,7 @@ export class EVENT010201 extends BaseEvent {
             this.grandpa.setVisible(true),
             //this.characterMovingDOWN(this.grandpa, 1450, 100, true),
             this.characterMoving(this.grandpa, this.player.x, 1450, 'walk_down'),
-            this.player.setStandFrame(this.player.getAnimationKey().standUp),
+            this.player.setStandFrame(this.player.getStandKey('up')),
         ]);
 
         //キャラの画像キーを取得

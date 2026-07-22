@@ -612,29 +612,6 @@ export class TileMap extends Phaser.GameObjects.Container {
         }
     }
 
-    // private settilmapDepth() {
-    //     if (this.mapLowestLayerList) {
-    //         for (const tilemapLayer of this.mapLowestLayerList) {
-    //             tilemapLayer.setDepth(MapLayerDepth.Lowest + tilemapLayer.depth);
-    //         }
-    //     }
-    //     if (this.mapLowLayerList) {
-    //         for (const tilemapLayer of this.mapLowLayerList) {
-    //             tilemapLayer.setDepth(MapLayerDepth.Low + tilemapLayer.depth);
-    //         }
-    //     }
-    //     if (this.mapHighLayerList) {
-    //         for (const tilemapLayer of this.mapHighLayerList) {
-    //             tilemapLayer.setDepth(MapLayerDepth.High + tilemapLayer.depth);
-    //         }
-    //     }
-    //     if (this.mapHighestLayerList) {
-    //         for (const tilemapLayer of this.mapHighestLayerList) {
-    //             tilemapLayer.setDepth(MapLayerDepth.Highest + tilemapLayer.depth);
-    //         }
-    //     }
-    // }
-
     public getMapLowestLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.mapLowestLayerList; }
     public getMapLowLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.mapLowLayerList; }
     public getMapHighLayerList(): Array<Phaser.Tilemaps.TilemapLayer> { return this.mapHighLayerList; }

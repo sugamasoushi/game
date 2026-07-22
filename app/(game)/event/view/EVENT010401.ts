@@ -102,7 +102,7 @@ export class EVENT010401 extends BaseEvent {
         await Promise.all([
             this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200),
             this.characterGameObject.setCharacterImage(this.eventScene, -100, 450, 'lamyNPC', lamyImageKey, 200, 1, 200),
-            this.player.setStandFrame(this.player.getAnimationKey().standDown)
+            this.player.setStandFrame(this.player.getStandKey('down'))
         ]);
 
         await this.eventTalk.execTalk([
@@ -130,11 +130,11 @@ export class EVENT010401 extends BaseEvent {
 
             //キャラ配置
             this.lamyNpc.setPosition(495, 337);
-            this.lamyNpc.setStandFrame(this.lamyNpc.getAnimationKey().standLeft);
+            this.lamyNpc.setStandFrame(this.lamyNpc.getStandKey('left'));
             this.lamyNpc.setAnimDirection('walk_left');
 
             this.player.setPosition(400, 336);
-            this.player.setStandFrame(this.player.getAnimationKey().standRight);
+            this.player.setStandFrame(this.player.getStandKey('right'));
             resolve();
         })
         await this.execFadeIn();
@@ -160,7 +160,7 @@ export class EVENT010401 extends BaseEvent {
 
             //じいちゃん配置
             this.grandpa.setPosition(448, 416);
-            this.grandpa.setStandFrame(this.grandpa.getAnimationKey().standUp);
+            this.grandpa.setStandFrame(this.grandpa.getStandKey('up'));
 
             resolve();
         })

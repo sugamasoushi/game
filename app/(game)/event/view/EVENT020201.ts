@@ -67,8 +67,8 @@ export class EVENT020201 extends BaseEvent {
         await new Promise<void>(resolve => {
             this.meina.setPosition(495, 336)
             this.lamy.setPosition(400, 336)
-            this.meina.setStandFrame(this.meina.getAnimationKey().standLeft)
-            this.lamy.setStandFrame(this.lamy.getAnimationKey().standRight)
+            this.meina.setStandFrame(this.meina.getStandKey('left'))
+            this.lamy.setStandFrame(this.lamy.getStandKey('right'))
             resolve();
         });
         await this.execFadeIn();

@@ -67,8 +67,8 @@ export class EVENT020101 extends BaseEvent {
         await new Promise<void>(resolve => {
             this.meina.setPosition(608, 448)
             this.lamy.setPosition(512, 448)
-            this.meina.setStandFrame(this.meina.getAnimationKey().standUp)
-            this.lamy.setStandFrame(this.lamy.getAnimationKey().standUp)
+            this.meina.setStandFrame(this.meina.getStandKey('up'))
+            this.lamy.setStandFrame(this.lamy.getStandKey('up'))
             resolve()
         })
         await this.execFadeIn();
@@ -133,8 +133,8 @@ export class EVENT020101 extends BaseEvent {
             { lamy: ['ら、楽勝だったわぁ・・・。\n'] }
         ], this.characterGameObject);
 
-        this.meina.setStandFrame(this.meina.getAnimationKey().standLeft)
-        this.lamy.setStandFrame(this.lamy.getAnimationKey().standRight)
+        this.meina.setStandFrame(this.meina.getStandKey('left'))
+        this.lamy.setStandFrame(this.lamy.getStandKey('right'))
 
         //怒りのジャンプ
         this.eventScene.tweens.add({
@@ -163,7 +163,7 @@ export class EVENT020101 extends BaseEvent {
 
         await Promise.all([
             new Promise<void>(resolve => {
-                this.meina.setStandFrame(this.meina.getAnimationKey().standRight);
+                this.meina.setStandFrame(this.meina.getStandKey('right'));
                 this.meina.stopAnimation();
                 resolve();
             }),

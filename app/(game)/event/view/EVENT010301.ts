@@ -75,7 +75,7 @@ export class EVENT010301 extends BaseEvent {
             //キャラ移動・配置
             this.lamyNPC.setVisible(true),
             this.characterMovingDOWN(this.player, 64, 300, false),
-            this.lamyNPC.setStandFrame(this.lamyNPC.getAnimationKey().standDown),
+            this.lamyNPC.setStandFrame(this.lamyNPC.getStandKey('down')),
             this.lamyNPC.setPosition(this.player.x, 902)
         ]);
 

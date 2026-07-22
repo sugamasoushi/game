@@ -96,16 +96,16 @@ export class FieldObjectCheck {
         // standDown
 
         //クリックイベントオブジェクトの下で向きが上
-        if (this.object1Direction === 'up' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standUp) return true;
+        if (this.object1Direction === 'up' && this.object1.getAnimationKey().standframe === this.object1.getStandKey('up')) return true;
 
         //クリックイベントオブジェクトの上で向きが下
-        if (this.object1Direction === 'down' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standDown) return true;
+        if (this.object1Direction === 'down' && this.object1.getAnimationKey().standframe === this.object1.getStandKey('down')) return true;
 
         //クリックイベントオブジェクトの左で向きが右
-        if (this.object1Direction === 'right' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standRight) return true;
+        if (this.object1Direction === 'right' && this.object1.getAnimationKey().standframe === this.object1.getStandKey('right')) return true;
 
         //クリックイベントオブジェクトの右で向きが左
-        if (this.object1Direction === 'left' && this.object1.getAnimationKey().standframe === this.object1.getAnimationKey().standLeft) return true;
+        if (this.object1Direction === 'left' && this.object1.getAnimationKey().standframe === this.object1.getStandKey('left')) return true;
 
         return false;
     }

@@ -54,7 +54,7 @@ export class CacheDataUpdate {
         savedata.playerData.PlayerMapKey = manager.currentFieldData.mapKey;
         savedata.playerData.PlayerPosition.x = mainPlayer.x;
         savedata.playerData.PlayerPosition.y = mainPlayer.y;
-        savedata.playerData.initStandKey = (mainPlayer as Player).getAnimationKey().standframe;
+        savedata.playerData.initStandKey = (mainPlayer as Player).getCurrentStandFrame();
 
         // 1人目のデータ同期
         this.syncPlayerData(mainPlayer, savedata.playerData, true);

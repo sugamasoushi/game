@@ -142,16 +142,16 @@ export class Npc extends BaseCharacterSprite {
 
         //キャラの向きを設定
         if (playerDirection === 'left') {
-            player.setStandFrame(player.getAnimationKey().standLeft);
+            player.setStandFrame(player.getStandKey('left'));
             this.turnAround();
         } else if (playerDirection === 'right') {
-            player.setStandFrame(player.getAnimationKey().standRight);
+            player.setStandFrame(player.getStandKey('right'));
             this.turnAround();
         } else if (playerDirection === 'up') {
-            player.setStandFrame(player.getAnimationKey().standUp);
+            player.setStandFrame(player.getStandKey('up'));
             this.turnAround();
         } else if (playerDirection === 'down') {
-            player.setStandFrame(player.getAnimationKey().standDown);
+            player.setStandFrame(player.getStandKey('down'));
             this.turnAround();
         }
     }
@@ -281,13 +281,13 @@ export class Npc extends BaseCharacterSprite {
     //プレイヤーのいる方向にキャラクター向きを変更する
     private turnAround() {
         const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
-        if (player.getAnimationKey().standframe === player.getAnimationKey().standLeft) {
+        if (player.getAnimationKey().standframe === player.getStandKey('left')) {
             this.standframe = this.standRight;
-        } else if (player.getAnimationKey().standframe === player.getAnimationKey().standRight) {
+        } else if (player.getAnimationKey().standframe === player.getStandKey('right')) {
             this.standframe = this.standLeft;
-        } else if (player.getAnimationKey().standframe === player.getAnimationKey().standUp) {
+        } else if (player.getAnimationKey().standframe === player.getStandKey('up')) {
             this.standframe = this.standDown;
-        } else if (player.getAnimationKey().standframe === player.getAnimationKey().standDown) {
+        } else if (player.getAnimationKey().standframe === player.getStandKey('down')) {
             this.standframe = this.standUp;
         }
     }

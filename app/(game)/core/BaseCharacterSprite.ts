@@ -82,6 +82,24 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
         return parseSpritesheetKeyOrder(order);
     }
 
+    public setupDirectionalAnimations(
+        spriteSheetKey: string,
+        spritesheetKeyOrder: string = 'down,left,right,up',
+        framesPerDirection: number,
+        frameRate: number,
+        walkOptions?: DirectionalWalkOptions,
+        standOptions?: DirectionalStandOptions,
+        standFrameOffset: number = 1
+    ) {
+        const order = this.parseSpritesheetKeyOrder(spritesheetKeyOrder);
+        const directions: Direction[] = ['left', 'right', 'up', 'down'];
+
+        directions.forEach(direction => {
+            this.createDirectionalWalkAnimation(spriteSheetKey, direction, order, framesPerDirection, frameRate, walkOptions);
+            this.createDirectionalStandAnimation(spriteSheetKey, direction, order, framesPerDirection, standFrameOffset, frameRate, standOptions);
+        });
+    }
+
     // 方向ごとの歩行アニメを生成する。
     protected createDirectionalWalkAnimation(
         spriteSheetKey: string,
@@ -126,26 +144,8 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
         );
     }
 
-    public setupDirectionalAnimations(
-        spriteSheetKey: string,
-        spritesheetKeyOrder: string = 'down,left,right,up',
-        framesPerDirection: number,
-        frameRate: number,
-        walkOptions?: DirectionalWalkOptions,
-        standOptions?: DirectionalStandOptions,
-        standFrameOffset: number = 1
-    ) {
-        const order = this.parseSpritesheetKeyOrder(spritesheetKeyOrder);
-        const directions: Direction[] = ['left', 'right', 'up', 'down'];
-
-        directions.forEach(direction => {
-            this.createDirectionalWalkAnimation(spriteSheetKey, direction, order, framesPerDirection, frameRate, walkOptions);
-            this.createDirectionalStandAnimation(spriteSheetKey, direction, order, framesPerDirection, standFrameOffset, frameRate, standOptions);
-        });
-    }
-
     // 方向に対応する歩行キーを返す。
-    protected getWalkKey(direction: 'left' | 'right' | 'up' | 'down') {
+    public getWalkKey(direction: 'left' | 'right' | 'up' | 'down') {
         switch (direction) {
             case 'left': return this.walkLeft;
             case 'right': return this.walkRight;
@@ -155,7 +155,7 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
     }
 
     // 方向に対応する待機キーを返す。
-    protected getStandKey(direction: 'left' | 'right' | 'up' | 'down') {
+    public getStandKey(direction: 'left' | 'right' | 'up' | 'down') {
         switch (direction) {
             case 'left': return this.standLeft;
             case 'right': return this.standRight;
@@ -348,6 +348,10 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
         };
 
         return animKey;
+    }
+
+    public getCurrentStandFrame(): string {
+        return this.standframe;
     }
 
     //外部操作による指定座標位置まで移動した後の停止処理
