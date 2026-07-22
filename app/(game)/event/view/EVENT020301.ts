@@ -239,7 +239,7 @@ export class EVENT020301 extends BaseEvent {
                     x: this.meina.x,
                     y: this.meina.y,
                     mapKey: '0201',
-                    initStandKey: 'stand_left'
+                    initStandKey: 'left'
                 }, 'EventEndRestart');
 
                 resolve();

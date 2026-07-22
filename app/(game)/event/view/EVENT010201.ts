@@ -92,8 +92,7 @@ export class EVENT010201 extends BaseEvent {
             }),
             //キャラ移動
             this.grandpa.setVisible(true),
-            //this.characterMovingDOWN(this.grandpa, 1450, 100, true),
-            this.characterMoving(this.grandpa, this.player.x, 1450, 'walk_down'),
+            this.characterMovingDOWN(this.grandpa, 106, 100, true),
             this.player.setStandFrame(this.player.getStandKey('up')),
         ]);
 
@@ -164,7 +163,7 @@ export class EVENT010201 extends BaseEvent {
                     x: this.player.x,
                     y: this.player.y,
                     mapKey: '0102',
-                    initStandKey: 'stand_down'
+                    initStandKey: 'down'
                 }, 'EventEndRestart');
 
                 resolve();

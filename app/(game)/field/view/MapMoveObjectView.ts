@@ -52,7 +52,7 @@ export class MapMoveObjectView {
                 obj.body!.setSize(tileSize, obj.body!.height);
 
                 //右向き
-                initStandKey = 'stand_right';
+                initStandKey = 'right';
 
             } else if (direction === "L") {
                 moveMapX += -(moveCorrection);
@@ -61,7 +61,7 @@ export class MapMoveObjectView {
                 obj.body!.setSize(tileSize, obj.body!.height);
 
                 //左向き
-                initStandKey = 'stand_left'
+                initStandKey = 'left'
 
             } else if (direction === "U") {
                 moveMapY += -(moveCorrection);
@@ -70,7 +70,7 @@ export class MapMoveObjectView {
                 obj.body!.setSize(obj.body!.width, tileSize);
 
                 //上向き
-                initStandKey = 'stand_up'
+                initStandKey = 'up'
 
             } else if (direction === "D") {
                 moveMapY += moveCorrection;
@@ -79,7 +79,7 @@ export class MapMoveObjectView {
                 obj.body!.setSize(obj.body!.width, tileSize);
 
                 //右向き
-                initStandKey = 'stand_down';
+                initStandKey = 'down';
             }
 
             //オブジェクトに衝突したらマップを変更する

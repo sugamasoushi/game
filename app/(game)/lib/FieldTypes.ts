@@ -49,20 +49,20 @@ export enum EventObjState {
   nowEvent = 2
 }
 
-export interface animationKey {
-  spriteSheetKey: string,
-  walkLeft: string,
-  walkRight: string,
-  walkUp: string,
-  walkDown: string,
-  walkStop: string,
-  standLeft: string,
-  standRight: string,
-  standUp: string,
-  standDown: string,
-  moveDirection: string,
-  standframe: string,
-}
+// export interface animationKey {
+//   spriteSheetKey: string,
+//   walkLeft: string,
+//   walkRight: string,
+//   walkUp: string,
+//   walkDown: string,
+//   walkStop: string,
+//   standLeft: string,
+//   standRight: string,
+//   standUp: string,
+//   standDown: string,
+//   moveDirection: string,
+//   standframe: string,
+// }
 
 export interface OptionData {
   masterVolume: number,

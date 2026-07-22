@@ -73,7 +73,7 @@ export class MapTestButton {
     private defaultMapSetup(mapKey: MapKey) {
 
         this.fieldScene.events.emit('FIELD_RESTART', {
-            gameMode: 'DebugMode', x: 495, y: 337, mapKey: mapKey, initStandKey: 'stand_down'
+            gameMode: 'DebugMode', x: 495, y: 337, mapKey: mapKey, initStandKey: 'down'
         }, 'FieldMove');
     }
 
@@ -81,11 +81,11 @@ export class MapTestButton {
         '0001': (key) => this.defaultMapSetup(key),
         '0002': (key) => this.defaultMapSetup(key),
         '0101': (key) => this.defaultMapSetup(key),
-        '0102': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 688, y: 1232, mapKey: key, initStandKey: 'stand_down' }, 'FieldMove'); },
+        '0102': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 688, y: 1232, mapKey: key, initStandKey: 'down' }, 'FieldMove'); },
         '0103': (key) => this.defaultMapSetup(key),
-        '0104': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 1088, y: 352, mapKey: key, initStandKey: 'stand_down' }, 'FieldMove'); },
-        '0105': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 608, y: 608, mapKey: key, initStandKey: 'stand_down' }, 'FieldMove'); },
-        '0106': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 1216, y: 416, mapKey: key, initStandKey: 'stand_down' }, 'FieldMove'); },
-        '0201': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 896, y: 512, mapKey: key, initStandKey: 'stand_down' }, 'FieldMove'); },
+        '0104': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 1088, y: 352, mapKey: key, initStandKey: 'down' }, 'FieldMove'); },
+        '0105': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 608, y: 608, mapKey: key, initStandKey: 'down' }, 'FieldMove'); },
+        '0106': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 1216, y: 416, mapKey: key, initStandKey: 'down' }, 'FieldMove'); },
+        '0201': (key) => { this.fieldScene.events.emit('FIELD_RESTART', { gameMode: 'DebugMode', x: 896, y: 512, mapKey: key, initStandKey: 'down' }, 'FieldMove'); },
     };
 }

@@ -250,7 +250,7 @@ export class TitlePresenter {
                 y: 337,
                 x2: 0,
                 y2: 0,
-                initStandKey: 'stand_left',
+                initStandKey: 'left',
             }
         }, 'New Game');
 

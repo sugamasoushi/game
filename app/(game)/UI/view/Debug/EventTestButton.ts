@@ -132,7 +132,7 @@ export class EventTestButton {
                 mapKey: '0101',
                 x: 832,
                 y: 464,
-                initStandKey: 'stand_left'
+                initStandKey: 'left'
             });
         },
         'EVENT020301': (key) => this.defaultEventSetup(key),

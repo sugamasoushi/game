@@ -143,16 +143,16 @@ export class Npc extends BaseCharacterSprite {
         //キャラの向きを設定
         if (playerDirection === 'left') {
             player.setStandFrame(player.getStandKey('left'));
-            this.turnAround();
+            this.turnAroundToPlayer();
         } else if (playerDirection === 'right') {
             player.setStandFrame(player.getStandKey('right'));
-            this.turnAround();
+            this.turnAroundToPlayer();
         } else if (playerDirection === 'up') {
             player.setStandFrame(player.getStandKey('up'));
-            this.turnAround();
+            this.turnAroundToPlayer();
         } else if (playerDirection === 'down') {
             player.setStandFrame(player.getStandKey('down'));
-            this.turnAround();
+            this.turnAroundToPlayer();
         }
     }
 
@@ -279,15 +279,15 @@ export class Npc extends BaseCharacterSprite {
     }
 
     //プレイヤーのいる方向にキャラクター向きを変更する
-    private turnAround() {
+    private turnAroundToPlayer() {
         const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
-        if (player.getAnimationKey().standframe === player.getStandKey('left')) {
+        if (player.getCurrentStandFrame() === player.getStandKey('left')) {
             this.standframe = this.standRight;
-        } else if (player.getAnimationKey().standframe === player.getStandKey('right')) {
+        } else if (player.getCurrentStandFrame() === player.getStandKey('right')) {
             this.standframe = this.standLeft;
-        } else if (player.getAnimationKey().standframe === player.getStandKey('up')) {
+        } else if (player.getCurrentStandFrame() === player.getStandKey('up')) {
             this.standframe = this.standDown;
-        } else if (player.getAnimationKey().standframe === player.getStandKey('down')) {
+        } else if (player.getCurrentStandFrame() === player.getStandKey('down')) {
             this.standframe = this.standUp;
         }
     }

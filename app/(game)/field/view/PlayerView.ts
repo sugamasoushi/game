@@ -32,10 +32,10 @@ export class PlayerView {
             const player: Player = new Player(this.gameScene, playerX, playerY, 'meina', this.tileMap.getMakeTilemap())
             player.state = CharacterState.normal;
 
-            if (initStandKey === 'stand_right') { player.setStandFrame(player.getStandKey('right')); }
-            else if (initStandKey === 'stand_left') { player.setStandFrame(player.getStandKey('left')); }
-            else if (initStandKey === 'stand_up') { player.setStandFrame(player.getStandKey('up')); }
-            else if (initStandKey === 'stand_down') { player.setStandFrame(player.getStandKey('down')); }
+            if (initStandKey === 'right') { player.setStandFrame(player.getStandKey('right')); }
+            else if (initStandKey === 'left') { player.setStandFrame(player.getStandKey('left')); }
+            else if (initStandKey === 'up') { player.setStandFrame(player.getStandKey('up')); }
+            else if (initStandKey === 'down') { player.setStandFrame(player.getStandKey('down')); }
 
             const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
             player.setData('name', searchCharacterData.getCharacterData(player.name).name)

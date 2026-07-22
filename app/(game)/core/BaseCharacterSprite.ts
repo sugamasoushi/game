@@ -1,4 +1,4 @@
-import { animationKey, CharacterState } from '../lib/FieldTypes';
+import { CharacterState } from '../lib/FieldTypes';
 import { FieldScene } from '../lib/SceneTypes';
 import {
     parseSpritesheetKeyOrder,
@@ -73,13 +73,7 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
 
         //初期状態を設定
         this.moveDirection = spriteSheetKey + '-' + 'walk_stop';
-        //this.standframe = spriteSheetKey + '-' + direction;
-        this.setStandFrame(this.getAnimationKey().standDown);
-    }
-
-    // spritesheetKeyOrder を正規化して Direction 配列に変換する。
-    protected parseSpritesheetKeyOrder(order: string): readonly Direction[] {
-        return parseSpritesheetKeyOrder(order);
+        this.setStandFrame(this.getStandKey('down'));
     }
 
     public setupDirectionalAnimations(
@@ -98,6 +92,11 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
             this.createDirectionalWalkAnimation(spriteSheetKey, direction, order, framesPerDirection, frameRate, walkOptions);
             this.createDirectionalStandAnimation(spriteSheetKey, direction, order, framesPerDirection, standFrameOffset, frameRate, standOptions);
         });
+    }
+
+    // spritesheetKeyOrder を正規化して Direction 配列に変換する。
+    protected parseSpritesheetKeyOrder(order: string): readonly Direction[] {
+        return parseSpritesheetKeyOrder(order);
     }
 
     // 方向ごとの歩行アニメを生成する。
@@ -310,48 +309,28 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
 
     //アニメーションを設定する（移動しない）
     //update()の更新処理を前提としているため、キャラが停止していると使えない
-    public setAnimDirection(direction: string) {
-        // 以下キーワードを引数に設定
-        // 'stand_left'
-        // 'stand_right'
-        // 'stand_up'
-        // 'stand_down'
-        this.moveDirection = this.spriteSheetKey + '-' + direction;
+    public setAnimDirection(WalkKey: string) {
+        // getWalkKey()を使用する事
+        this.moveDirection = WalkKey;
     }
 
-    public setStandFrame(standframe: string) {
-        //使い方this.player.setStandFrame(this.player.getAnimationKey().standDown),
-
-        // スプライトで定義している以下の変数を指定して設定する
-        // this.standLeft;
-        // this.standRight;
-        // this.standUp;
-        // this.standDown;
-        // this.anims.play(standframe, true);
-        this.standframe = standframe;
+    public setStandFrame(standkey: string) {
+        //getStandKey()を使用する事
+        this.standframe = standkey;
     }
 
-    public getAnimationKey(): animationKey {
-        const animKey: animationKey = {
-            spriteSheetKey: this.spriteSheetKey,
-            walkLeft: this.walkLeft,
-            walkRight: this.walkRight,
-            walkUp: this.walkUp,
-            walkDown: this.walkDown,
-            walkStop: this.walkStop,
-            standLeft: this.standLeft,
-            standRight: this.standRight,
-            standUp: this.standUp,
-            standDown: this.standDown,
-            moveDirection: this.moveDirection,
-            standframe: this.standframe
-        };
+    public getCurrentStandFrame(): string { return this.standframe; }
 
-        return animKey;
-    }
-
-    public getCurrentStandFrame(): string {
-        return this.standframe;
+    public getInitDirection() {
+        if (this.getCurrentStandFrame() === this.standLeft) {
+            return 'left';
+        } else if (this.getCurrentStandFrame() === this.standRight) {
+            return 'right';
+        } else if (this.getCurrentStandFrame() === this.standUp) {
+            return 'up';
+        } else if (this.getCurrentStandFrame() === this.standDown) {
+            return 'down';
+        }
     }
 
     //外部操作による指定座標位置まで移動した後の停止処理

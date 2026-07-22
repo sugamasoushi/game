@@ -73,6 +73,7 @@ export class EVENT010401 extends BaseEvent {
         this.lamyNpc.state = CharacterState.event;
         this.lamyNpc.initMoveToPosition();
         this.lamyNpc.stopAnimation();
+        this.lamyNpc.setStandFrame(this.lamyNpc.getStandKey('up'));
 
         /*イベント---------------------------------------------------------------------------------*/
         //同時処理、全ての処理完了まで待機
@@ -131,7 +132,7 @@ export class EVENT010401 extends BaseEvent {
             //キャラ配置
             this.lamyNpc.setPosition(495, 337);
             this.lamyNpc.setStandFrame(this.lamyNpc.getStandKey('left'));
-            this.lamyNpc.setAnimDirection('walk_left');
+            this.lamyNpc.setAnimDirection(this.lamyNpc.getWalkKey('left'));
 
             this.player.setPosition(400, 336);
             this.player.setStandFrame(this.player.getStandKey('right'));
@@ -172,7 +173,7 @@ export class EVENT010401 extends BaseEvent {
         //スプライト状態を設定
         this.grandpa.state = CharacterState.event;
         this.grandpa.stopAnimation();
-        this.grandpa.setAnimDirection('stand_up');
+        this.grandpa.setAnimDirection(this.grandpa.getStandKey('up'));
 
         //キャラ画像を配置
         await Promise.all([
@@ -337,7 +338,7 @@ export class EVENT010401 extends BaseEvent {
                     x2: 495,
                     y2: 337,
                     mapKey: gameStateManager.currentFieldData.mapKey,
-                    initStandKey: 'stand_down'
+                    initStandKey: 'down'
                 }, 'EventEndRestart');
 
                 resolve();

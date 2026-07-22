@@ -67,7 +67,7 @@ export class NpcView {
                                     spriteSheetKey = enemyData!.SpritesheetKey;
                                     spritesheetKeyOrder = enemyData!.SpritesheetKeyOrder;
                                     name = enemyData!.Name;
-                                    initStandKey = 'stand_down';
+                                    initStandKey = 'down';
                                     imageKey = enemyData!.ImageKey;
 
                                 } else {
@@ -102,6 +102,10 @@ export class NpcView {
                                 if (name) { npc.name = name };
                                 if (entity.scale) { npc.setScale(entity.scale); }
                                 if (bubbleTalkKey) { npc.setBubbleTalk(bubbleTalkKey) }
+                                if (initStandKey === 'right') { npc.setStandFrame(npc.getStandKey('right')); }
+                                else if (initStandKey === 'left') { npc.setStandFrame(npc.getStandKey('left')); }
+                                else if (initStandKey === 'up') { npc.setStandFrame(npc.getStandKey('up')); }
+                                else if (initStandKey === 'down') { npc.setStandFrame(npc.getStandKey('down')); }
 
                                 //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
                                 this.fieldScene.physics.add.existing(npc);
@@ -109,10 +113,8 @@ export class NpcView {
                                 //Body の不動プロパティを設定、物理演算されなくなる。
                                 (npc.body as Phaser.Physics.Arcade.Body)!.setImmovable(true);
 
-
-
                                 //敵キャラクターの場合はステータスを設定
-                                if (entity.enemyData) {
+                                if (entity.enemyData || entity.npcType === 'enemy') {
                                     const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
                                     const imageKey = npc.getData('ImageKey');
                                     const enemyData = searchEnemyData.getEnemyData(imageKey);

@@ -93,7 +93,7 @@ export class EVENT010202 extends BaseEvent {
                     x: this.player.x,
                     y: this.player.y,
                     mapKey: '0102',
-                    initStandKey: 'stand_down'
+                    initStandKey: 'down'
                 }, 'EventEndRestart');
 
                 resolve();

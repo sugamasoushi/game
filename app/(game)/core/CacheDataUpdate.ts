@@ -54,20 +54,16 @@ export class CacheDataUpdate {
         savedata.playerData.PlayerMapKey = manager.currentFieldData.mapKey;
         savedata.playerData.PlayerPosition.x = mainPlayer.x;
         savedata.playerData.PlayerPosition.y = mainPlayer.y;
-        savedata.playerData.initStandKey = (mainPlayer as Player).getCurrentStandFrame();
+        savedata.playerData.initStandKey = (mainPlayer as Player).getInitDirection();
 
         // 1人目のデータ同期
         this.syncPlayerData(mainPlayer, savedata.playerData, true);
 
         // 2人目のデータ同期
-        if (partyList.length > 1) {
-            this.syncPlayerData(partyList[1], savedata.playerData2, false);
-        }
+        if (partyList.length > 1) { this.syncPlayerData(partyList[1], savedata.playerData2, false); }
 
         // 3人目のデータ同期
-        if (partyList.length > 2) {
-            this.syncPlayerData(partyList[2], savedata.playerData3, false);
-        }
+        if (partyList.length > 2) { this.syncPlayerData(partyList[2], savedata.playerData3, false); }
     }
 
     private syncPlayerData(player: Phaser.GameObjects.Sprite, targetData: PlayerData, isMainPlayer: boolean) {

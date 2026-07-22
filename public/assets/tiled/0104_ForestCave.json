@@ -868,7 +868,7 @@
                         {
                          "name":"standkey",
                          "type":"string",
-                         "value":"stand_down"
+                         "value":"down"
                         }, 
                         {
                          "name":"visible",

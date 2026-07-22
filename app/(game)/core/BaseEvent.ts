@@ -94,7 +94,7 @@ export class BaseEvent implements Eventer {
                 duration: duration,
                 ease: 'Linear', // 等速移動
                 onStart: () => {
-                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_up'); }
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection(sprite.getWalkKey('up')); }
                 },
                 onComplete: () => {
                     sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
@@ -124,7 +124,7 @@ export class BaseEvent implements Eventer {
                 duration: duration,
                 ease: 'Linear', // これで完全等速になる
                 onStart: () => {
-                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_down'); }
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection(sprite.getWalkKey('down')); }
                 },
                 onComplete: () => {
                     sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
@@ -154,7 +154,7 @@ export class BaseEvent implements Eventer {
                 duration: duration,
                 ease: 'Linear', // これで完全等速になる
                 onStart: () => {
-                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_left'); }
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection(sprite.getWalkKey('left')); }
                 },
                 onComplete: () => {
                     sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
@@ -184,7 +184,7 @@ export class BaseEvent implements Eventer {
                 duration: duration,
                 ease: 'Linear', // これで完全等速になる
                 onStart: () => {
-                    if (defaultAnimationFlg === true) { sprite.setAnimDirection('walk_right'); }
+                    if (defaultAnimationFlg === true) { sprite.setAnimDirection(sprite.getWalkKey('right')); }
                 },
                 onComplete: () => {
                     sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
@@ -194,42 +194,6 @@ export class BaseEvent implements Eventer {
             });
         });
     }
-
-    //キャラクターを目標座標まで移動する
-    protected characterMoving(sprite: Player | Npc, targetX: number, targetY: number, animationKey: string, speed?: number | undefined) {
-        // walk_up
-        // walk_down
-        // walk_left
-        // walk_right
-
-        // 移動スピード（1秒間に動くピクセル数）
-        const moveSpeed = speed ? speed : 100;
-
-        // 現在地から目的地までの距離を計算
-        const distance = Phaser.Math.Distance.Between(sprite.x, sprite.y, targetX, targetY);
-
-        // 距離をスピードで割って、必要な時間（ミリ秒）を算出
-        const duration = (distance / moveSpeed) * 1000;
-
-        return new Promise<void>(resolve => {
-            this.eventScene.tweens.add({
-                targets: sprite,
-                x: targetX,
-                y: targetY,
-                duration: duration,
-                ease: 'Linear', // これで完全等速になる
-                onStart: () => {
-                    sprite.setAnimDirection(animationKey); // アニメーション開始
-                },
-                onComplete: () => {
-                    sprite.setVelocity(0, 0); // 物理体がある場合は速度をリセット
-                    sprite.stopAnimation();   // アニメーション停止
-                    resolve();                // 移動完了を通知
-                }
-            });
-        });
-    }
-
 
     protected stopAnyTime(duration: number) {
         return new Promise<void>(resolve => {

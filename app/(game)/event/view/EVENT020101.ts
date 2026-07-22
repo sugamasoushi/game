@@ -163,12 +163,12 @@ export class EVENT020101 extends BaseEvent {
 
         await Promise.all([
             new Promise<void>(resolve => {
-                this.meina.setStandFrame(this.meina.getStandKey('right'));
                 this.meina.stopAnimation();
+                this.meina.setStandFrame(this.meina.getStandKey('left'));
                 resolve();
             }),
             this.stopAnyTime(500),
-            this.meina.setAnimDirection('walk_up')
+            this.meina.setAnimDirection(this.meina.getWalkKey('up'))
         ]);
 
         await Promise.all([
@@ -220,7 +220,7 @@ export class EVENT020101 extends BaseEvent {
                     x: 816,
                     y: 490,
                     mapKey: '0101',
-                    initStandKey: 'stand_up'
+                    initStandKey: 'up'
                 }, 'EventEndRestart');
 
                 resolve();
