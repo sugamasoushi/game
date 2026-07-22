@@ -350,11 +350,6 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
         return animKey;
     }
 
-    public setMapPosition(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
     //外部操作による指定座標位置まで移動した後の停止処理
     private stopCheck() {
         if (this.state === CharacterState.event) {

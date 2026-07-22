@@ -4,7 +4,7 @@ import { Npc } from "./character/Npc";
 import { GameStateManager } from "../../core/GameStateManager";
 import { EventFlagData } from "../../Data/EventFlagData";
 import { SearchEnemyData } from '@/app/(game)/Data/SearchEnemyData';
-import { createSprite } from "../../util/Sprite/CharacterNpc";
+import { createNPC } from "../../util/CreateNPC";
 
 export class NpcView {
     private npcEnemyList: Npc[] = [];
@@ -38,8 +38,10 @@ export class NpcView {
                                     }
                                 }
 
-                                //吹き出し会話の設定
+                                //吹き出し会話（初期値）の設定
                                 let bubbleTalkKey = entity.bubbleTalkDefaultKey;
+
+                                //吹き出し会話（指定イベント後）を設定
                                 if (entity.bubbleJugeEventKey) {
                                     //イベントが完了していた場合のセリフを設定
                                     if (!EventFlagData.getFlag(this.fieldScene, entity.bubbleJugeEventKey)) {
@@ -78,7 +80,7 @@ export class NpcView {
                                     imageKey = entity.imageKey;
                                 }
 
-                                const npc = createSprite(
+                                const npc = createNPC(
                                     spritetype,
                                     spriteSheetKey,
                                     spritesheetKeyOrder,
@@ -89,10 +91,27 @@ export class NpcView {
                                     imageKey
                                 );
 
+                                //存在チェック
                                 if (!npc) continue;
 
-                                if (bubbleTalkKey) { npc.bubbleTalkSetting(bubbleTalkKey) }
+                                /**
+                                 * NPC設定
+                                 */
 
+                                npc.setVisible(entity.isVisible);
+                                if (name) { npc.name = name };
+                                if (entity.scale) { npc.setScale(entity.scale); }
+                                if (bubbleTalkKey) { npc.setBubbleTalk(bubbleTalkKey) }
+
+                                //物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
+                                this.fieldScene.physics.add.existing(npc);
+
+                                //Body の不動プロパティを設定、物理演算されなくなる。
+                                (npc.body as Phaser.Physics.Arcade.Body)!.setImmovable(true);
+
+
+
+                                //敵キャラクターの場合はステータスを設定
                                 if (entity.enemyData) {
                                     const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
                                     const imageKey = npc.getData('ImageKey');
@@ -122,26 +141,16 @@ export class NpcView {
                                     }, undefined, this.fieldScene);
                                 }
 
-                                npc.setMakeTilemapData(tileMap.getMakeTilemap());
-                                npc.setCollisionLayer(tileMap.getCollisionLayer());
-
-                                this.fieldScene.physics.add.existing(npc);//物理属性を有効、このゲームオブジェクトにArcade Physics bodyが設定される。
-                                (npc.body as Phaser.Physics.Arcade.Body)!.setImmovable(true);//Body の不動プロパティを設定、物理演算されなくなる。
-
-                                npc.setVisible(entity.isVisible);
-                                if (name) { npc.name = name };
-                                if (entity.scale) { npc.setScale(entity.scale); }
+                                //衝突判定の設定
+                                if (tileMap.getCollisionLayer()) { this.fieldScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, tileMap.getCollisionLayer()); }
+                                for (const player of gameStateManager.currentPlayerPartyList) { this.fieldScene.physics.add.collider(npc, player); }
 
                                 if (entity.npcType === 'normal') {
                                     this.npcNormalList.push(npc as Npc);
                                 } else {
                                     this.npcEnemyList.push(npc as Npc);
                                 }
-
-                                if (tileMap.getCollisionLayer()) { this.fieldScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, tileMap.getCollisionLayer()); }
-                                for (const player of gameStateManager.currentPlayerPartyList) { this.fieldScene.physics.add.collider(npc, player); }
-
-                                this.fieldScene.events.on('shutdown', () => { npc.destroy(); });
+                                this.fieldScene.events.once('shutdown', () => { npc.destroy(); });
 
                             } catch (e) {
                                 console.log('NPC作成エラー')
@@ -158,5 +167,9 @@ export class NpcView {
 
             resolve();
         });
+    }
+
+    private setupNpc() {
+
     }
 }

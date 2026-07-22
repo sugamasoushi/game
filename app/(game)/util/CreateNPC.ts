@@ -1,7 +1,7 @@
-import { FieldScene } from "../../lib/SceneTypes";
-import { Npc } from "../../field/view/character/Npc";
+import { FieldScene } from "../lib/SceneTypes";
+import { Npc } from "../field/view/character/Npc";
 
-export function createSprite(
+export function createNPC(
     spritetype: string,
     spriteSheetKey: string,
     spritesheetKeyOrder: string,

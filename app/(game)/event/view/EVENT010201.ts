@@ -71,7 +71,7 @@ export class EVENT010201 extends BaseEvent {
         this.grandpa = (this.characterGameObject.getSprite(this.fieldScene, 'grandpa') as Npc);
         this.grandpa.state = CharacterState.event;
         this.grandpa.initMoveToPosition();
-        this.grandpa.setMapPosition(this.player.x, 1344);
+        this.grandpa.setPosition(this.player.x, 1344);
     }
 
     //イベント定義
@@ -150,7 +150,7 @@ export class EVENT010201 extends BaseEvent {
                 this.player.state = CharacterState.normal;
 
                 //NPC削除
-                this.grandpa.deleteCharacter();
+                this.grandpa.destroy();
 
                 //キャラ画像を削除
                 this.characterGameObject.imageObjectsDestroy();

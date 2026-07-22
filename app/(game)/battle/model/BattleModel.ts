@@ -65,8 +65,6 @@ export class BattleModel {
 
                 this.enemyPartyList.push(npcImageObject);
 
-                this.fieldHitEnemy.deleteCharacter();
-
             } else {
                 //2体目以降はenemydata(enemy01)からステータスを作成
                 const enemyKey = 'enemy01';

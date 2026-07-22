@@ -7,13 +7,11 @@ import { GameStateManager } from "../../core/GameStateManager";
 
 export class PlayerView {
 
-    private player: Player;
     private playerPartyList: Player[] = [];
 
     constructor(
         private gameScene: FieldScene,
         private tileMap: TileMap
-
     ) { }
 
     public update(time: number, delta: number) {
@@ -55,7 +53,6 @@ export class PlayerView {
                 this.gameScene.physics.add.collider(player, this.tileMap.getCollisionLayer());
             }
 
-            this.player = player;
             this.playerPartyList.push(player);
 
             //プレイヤー2作成

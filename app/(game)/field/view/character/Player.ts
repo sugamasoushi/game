@@ -94,7 +94,7 @@ export class Player extends BaseCharacterSprite {
 
         //クリック操作による移動でプレイヤーから一定距離以上離れたら強制的にプレイヤーの位置に更新する
         if (this.name !== 'meina' && !this.leader && Phaser.Math.Distance.BetweenPoints(this, this) > 500 && this.state === CharacterState.normal) {
-            this.setMapPosition(this.x, this.y);
+            this.setPosition(this.x, this.y);
         }
     }
 

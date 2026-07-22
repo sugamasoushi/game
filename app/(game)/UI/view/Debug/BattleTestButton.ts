@@ -3,7 +3,7 @@ import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from "@/app/(game)/lib/StateTypes";
 import { SearchEnemyData } from './../../../Data/SearchEnemyData';
 import { CharacterState } from '@/app/(game)/lib/FieldTypes';
-import { createSprite } from './../../../util/Sprite/CharacterNpc';
+import { createNPC } from '../../../util/CreateNPC';
 
 export class BattleTestButton {
     private fieldScene: FieldScene;
@@ -37,7 +37,7 @@ export class BattleTestButton {
             /**
              * バトル時の敵生成は本体を改良すべき
              */
-            const enemy = createSprite(
+            const enemy = createNPC(
                 '0304',
                 'tex_enemy02',
                 'up,right,down,left',

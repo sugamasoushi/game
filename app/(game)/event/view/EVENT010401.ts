@@ -9,7 +9,7 @@ import { MessageObject } from "../../util/MessageObject";
 import { Sound } from "../../scenes/Sound";
 import { Npc } from "../../field/view/character/Npc";
 import { GameStateManager } from "../../core/GameStateManager";
-import { createSprite } from './../../util/Sprite/CharacterNpc';
+import { createNPC } from '../../util/CreateNPC';
 
 export class EVENT010401 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -59,7 +59,7 @@ export class EVENT010401 extends BaseEvent {
     async execEvent() {
 
         //キャラクタースプライトを作成
-        this.lamyNpc = createSprite(
+        this.lamyNpc = createNPC(
             '0304',
             'tex_lamy',
             'down,left,right,up',
@@ -129,11 +129,11 @@ export class EVENT010401 extends BaseEvent {
             eventImage.destroy();
 
             //キャラ配置
-            this.lamyNpc.setMapPosition(495, 337);
+            this.lamyNpc.setPosition(495, 337);
             this.lamyNpc.setStandFrame(this.lamyNpc.getAnimationKey().standLeft);
             this.lamyNpc.setAnimDirection('walk_left');
 
-            this.player.setMapPosition(400, 336);
+            this.player.setPosition(400, 336);
             this.player.setStandFrame(this.player.getAnimationKey().standRight);
             resolve();
         })
@@ -159,7 +159,7 @@ export class EVENT010401 extends BaseEvent {
             this.lamyNpc.stopAnimation();
 
             //じいちゃん配置
-            this.grandpa.setMapPosition(448, 416);
+            this.grandpa.setPosition(448, 416);
             this.grandpa.setStandFrame(this.grandpa.getAnimationKey().standUp);
 
             resolve();
@@ -198,7 +198,7 @@ export class EVENT010401 extends BaseEvent {
             this.lamyNpc.stopAnimation();
 
             //じいちゃんを戻す
-            this.grandpa.setMapPosition(623, 378);
+            this.grandpa.setPosition(623, 378);
             this.grandpa.state = CharacterState.normal;
 
             resolve();
@@ -318,7 +318,7 @@ export class EVENT010401 extends BaseEvent {
                 this.player.state = CharacterState.normal;
 
                 //NPC削除
-                this.lamyNpc.deleteCharacter();
+                this.lamyNpc.destroy();
 
                 //キャラ画像を削除
                 this.characterGameObject.imageObjectsDestroy();

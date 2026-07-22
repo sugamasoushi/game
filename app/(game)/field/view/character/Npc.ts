@@ -10,37 +10,24 @@ import { Player } from './Player';
 import { Bubble } from "@/app/(game)/util/Sprite/Bubble";
 
 export class Npc extends BaseCharacterSprite {
-    private npcType: string;
+    public body: Phaser.Physics.Arcade.Body
+    private delay: number;
     private inputManager: InputManager;
     private bubbleTalkKey: string;
     private subs = new Subscription();
 
-    protected spriteObjList: Phaser.Physics.Arcade.Sprite[] = [];
-    private graphicsObjList: Phaser.GameObjects.Graphics[] = [];
     private energyGauge: Phaser.GameObjects.Graphics;
     private energyGaugeBack: Phaser.GameObjects.Graphics;
-
-    private delay: number;
-
-    private deleteDelay = 30;
-
-    public body: Phaser.Physics.Arcade.Body
-
-    private makeTilemapData: Phaser.Tilemaps.Tilemap
-    private collisionLayer: Phaser.Tilemaps.TilemapLayer
 
     private cropRectMask: Phaser.GameObjects.Graphics;
     private GeometryMask: Phaser.Display.Masks.GeometryMask;
 
-    constructor(fieldScene: FieldScene, x: number, y: number, npcType: string, spriteSheetKey: string, imageKey: string) {
+    constructor(fieldScene: FieldScene, x: number, y: number, private npcType: string, spriteSheetKey: string, imageKey: string) {
         super(fieldScene, x, y, spriteSheetKey);
         this.fieldScene = fieldScene;
         this.inputManager = InputManager.getInstance(this.fieldScene);
-        this.npcType = npcType;
         this.state = CharacterState.normal;
-        if (npcType === 'event') {
-            this.state = CharacterState.event;
-        }
+        if (npcType === 'event') { this.state = CharacterState.event; }
 
         this.setData('NpcType', npcType)
         this.setData('ImageKey', imageKey)
@@ -52,7 +39,11 @@ export class Npc extends BaseCharacterSprite {
         this.updateRandomMoveToPosition();
         this.updateInteractive();
         this.energyHP();
-        this.delete();
+
+        if (this.npcType === 'enemy' && this.data.values.HP <= 0) {
+            this.data.values.HP = 0;
+            this.destroy();
+        }
 
         //キャラクターの下側を非表示にするマスク
         //this.updateCharacterShapesMask();
@@ -67,8 +58,11 @@ export class Npc extends BaseCharacterSprite {
             this.energyGauge.name = 'energyGauge';
             this.energyGaugeBack = this.fieldScene.add.graphics();
             this.energyGaugeBack.name = 'energyGaugeBack'
-            this.graphicsObjList.push(this.energyGauge);
-            this.graphicsObjList.push(this.energyGaugeBack);
+
+            this.once(Phaser.GameObjects.Events.DESTROY, () => {
+                this.energyGauge.destroy();
+                this.energyGaugeBack.destroy();
+            })
         };
         this.energyGauge.setDepth(this.depth);
         this.energyGauge.clear();//再描画のためクリア
@@ -102,38 +96,37 @@ export class Npc extends BaseCharacterSprite {
         this.energyGauge.strokeRoundedRect(-1 * rectR, -1 * rectR, maxWidth, height, rectR);
     }
 
-    public bubbleTalkSetting(bubbleTalkKey: string) {
+    public setBubbleTalk(bubbleTalkKey: string) {
         this.bubbleTalkKey = bubbleTalkKey;
 
-        //tiledでtalkデータを設定する事
-        if (this.bubbleTalkKey) {
+        //クリック時の動作設定
+        this.on('pointerdown', () => { this.execNpcTalk(); });
 
-            //クリック時の動作設定
-            this.on('pointerdown', () => { this.execNpcTalk(); });
+        //吹き出しを設定
+        const bubbleSprite = new Bubble(this.fieldScene, this);
+        bubbleSprite.execute();
 
-            //吹き出しを設定
-            const bubbleSprite = new Bubble(this.fieldScene, this);
-            bubbleSprite.execute();
+        //パッド設定
+        this.subs.add(this.inputManager.decideButton$.subscribe(() => {
+            const manager = GameStateManager.getInstance();
+            if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
+                // 会話不可の状態
+            } else {
+                // player と target の矩形が重なっているか
+                const player = manager.currentPlayerPartyList[0] as Player;
+                if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), player.getBounds()) &&
+                    this.state === CharacterState.normal) {
 
-            //パッド設定
-            this.subs.add(this.inputManager.decideButton$.subscribe(() => {
-                const manager = GameStateManager.getInstance();
-                if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
-                    // 会話不可の状態
-                } else {
-                    // player と target の矩形が重なっているか
-                    const player = manager.currentPlayerPartyList[0] as Player;
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), player.getBounds()) &&
-                        this.state === CharacterState.normal) {
-
-                        this.execNpcTalk();
-                    }
+                    this.execNpcTalk();
                 }
-            }));
+            }
+        }));
 
-            // オブジェクト破棄時に購読解除
-            this.once('destroy', () => { this.subs.unsubscribe(); });
-        }
+        // オブジェクト破棄時に購読解除
+        this.once('destroy', () => {
+            this.off('pointerdown');
+            this.subs.unsubscribe();
+        });
     }
 
     public execNpcTalk() {
@@ -182,8 +175,8 @@ export class Npc extends BaseCharacterSprite {
         //値が設定されている場合は移動中のため処理しない
         if (this.moveToPositionX && this.moveToPositionY) return;
 
-        const makeTileMap: Phaser.Tilemaps.Tilemap = this.makeTilemapData;
-        const collisionLayer: Phaser.Tilemaps.TilemapLayer = this.collisionLayer;
+        const makeTileMap: Phaser.Tilemaps.Tilemap = this.fieldScene.getTileMapInstance().getMakeTilemap();
+        const collisionLayer: Phaser.Tilemaps.TilemapLayer = this.fieldScene.getTileMapInstance().getCollisionLayer();
         const move = new Phaser.Math.RandomDataGenerator().between(-20, 20);//指定範囲の間でランダムな整数を返す
         this.delay = new Phaser.Math.RandomDataGenerator().between(100, 200);//停止時間をランダムで設定
 
@@ -285,8 +278,8 @@ export class Npc extends BaseCharacterSprite {
         }
     }
 
-    //キャラクターを逆向きに変更する
-    public turnAround() {
+    //プレイヤーのいる方向にキャラクター向きを変更する
+    private turnAround() {
         const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
         if (player.getAnimationKey().standframe === player.getAnimationKey().standLeft) {
             this.standframe = this.standRight;
@@ -299,47 +292,10 @@ export class Npc extends BaseCharacterSprite {
         }
     }
 
-    private delete() {
-        if (this.data) {
-            if (this.npcType === 'enemy') {
-                if (this.data.values.HP <= 0) {
-                    this.data.values.HP = 0;
-                    this.fieldScene.time.delayedCall(this.deleteDelay, () => {
-                        this.graphicsObjList.forEach(obj => {
-                            obj.destroy();
-                        })
-                        this.destroy();
-                    }, undefined, this.fieldScene);
-                }
-            }
-        }
-    }
-
-    //このスプライトを削除
-    public deleteCharacter() {
-        this.fieldScene.time.delayedCall(this.deleteDelay, () => {
-
-            //スプライト部品を削除（影や吹き出し等）
-            this.spriteObjList.forEach(obj => {
-                obj.destroy();
-            })
-
-            //このスプライトが持つオブジェクトを全て削除
-            this.graphicsObjList.forEach(obj => {
-                obj.destroy();
-            })
-            //このスプライトを削除
-            this.destroy();
-        }, undefined, this.fieldScene);
-    }
-
-    public setMakeTilemapData(makeTilemapData: Phaser.Tilemaps.Tilemap) { this.makeTilemapData = makeTilemapData; }
-    public setCollisionLayer(collisionLayer: Phaser.Tilemaps.TilemapLayer) { this.collisionLayer = collisionLayer; }
-
     //キャラの一部を非表示にするマスク
     private updateCharacterShapesMask() {
 
-        const makeTilemap: Phaser.Tilemaps.Tilemap = this.makeTilemapData;
+        const makeTilemap: Phaser.Tilemaps.Tilemap = this.fieldScene.getTileMapInstance().getMakeTilemap();;
 
         //以下のチェックはGraphicsの処理を減らすため、対象タイルマップの存在有無チェックを行っていたが、一つのGraphicsに複数描画する分には殆ど処理は重くならないため不要とする
         // if (!makeTilemap.getTileAtWorldXY(this.x + this.tileSize / 2 * this.scale, this.y - this.tileSize / 2 * this.scale, false, undefined, mapName) &&

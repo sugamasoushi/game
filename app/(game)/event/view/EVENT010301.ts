@@ -76,7 +76,7 @@ export class EVENT010301 extends BaseEvent {
             this.lamyNPC.setVisible(true),
             this.characterMovingDOWN(this.player, 64, 300, false),
             this.lamyNPC.setStandFrame(this.lamyNPC.getAnimationKey().standDown),
-            this.lamyNPC.setMapPosition(this.player.x, 902)
+            this.lamyNPC.setPosition(this.player.x, 902)
         ]);
 
         /*会話---------------------------------------------------------------------------------*/
@@ -179,7 +179,7 @@ export class EVENT010301 extends BaseEvent {
                 this.player.state = CharacterState.normal;
 
                 //イベント後のキャラに吹き出し会話を設定
-                this.lamyNPC.bubbleTalkSetting('bubbleTalk0001.talk002');
+                this.lamyNPC.setBubbleTalk('bubbleTalk0001.talk002');
                 // this.lamyNPC.setInputManager(InputManager.getInstance(this.fieldScene));
                 this.lamyNPC.setData('ImageKey', '20240908');
                 this.lamyNPC.state = CharacterState.normal;

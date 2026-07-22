@@ -7,14 +7,12 @@ import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 export class FieldAttack {
     private fieldScene: FieldScene;
     private effect: MagicFrame;
-    private sprite: Player;
     private x: number;
     private y: number;
     private attackDuration = 300;
 
-    constructor(sprite: Player, x: number, y: number) {
+    constructor(private sprite: Player, x: number, y: number) {
         this.fieldScene = sprite.scene as FieldScene;
-        this.sprite = sprite;
         this.x = x;
         this.y = y;
     }
@@ -61,6 +59,8 @@ export class FieldAttack {
             ease: 'sine.inout',
             duration: this.attackDuration,
             onComplete: () => {
+                
+                //sprite側で削除する
                 //this.effect.destroy();
             }
         });
@@ -82,9 +82,9 @@ export class FieldAttack {
                 },
                 callbackScope: this.fieldScene,
                 repeat: 3,
-            });
+            }
+        );
     }
-
 }
 
 /**

@@ -99,7 +99,7 @@ export class BattleExecutor {
 
             // フィールドの敵を消去
             if (this.battleModel.getUsePatern() === 'normal') {
-                this.battleModel.getFieldHitEnemy().deleteCharacter();
+                this.battleModel.getFieldHitEnemy().destroy();
             }
 
             await this.battleMessageWindow.messageOutput('勝利！', 2000);
@@ -116,7 +116,7 @@ export class BattleExecutor {
 
             // フィールドの敵を消去
             if (this.battleModel.getUsePatern() === 'normal') {
-                this.battleModel.getFieldHitEnemy().deleteCharacter();
+                this.battleModel.getFieldHitEnemy().destroy();
             }
 
             // ゲームオーバー

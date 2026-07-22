@@ -65,8 +65,8 @@ export class EVENT020101 extends BaseEvent {
 
         await this.execFadeOut();
         await new Promise<void>(resolve => {
-            this.meina.setMapPosition(608, 448)
-            this.lamy.setMapPosition(512, 448)
+            this.meina.setPosition(608, 448)
+            this.lamy.setPosition(512, 448)
             this.meina.setStandFrame(this.meina.getAnimationKey().standUp)
             this.lamy.setStandFrame(this.lamy.getAnimationKey().standUp)
             resolve()

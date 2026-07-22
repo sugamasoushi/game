@@ -2,14 +2,12 @@ import { CharacterState } from "../../lib/FieldTypes";
 import { GameStateManager } from "../../core/GameStateManager";
 
 export class Bubble extends Phaser.GameObjects.Sprite {
-    private sprite: Phaser.GameObjects.Sprite;
     private spriteSheetKey: string;
     private animationKey: string;
 
-    constructor(scene: Phaser.Scene, sprite: Phaser.GameObjects.Sprite) {
+    constructor(scene: Phaser.Scene, private sprite: Phaser.GameObjects.Sprite) {
         super(scene, sprite.x, sprite.y - 32, 'tex_bubble');
         this.name = sprite.name + '_Bubble';
-        this.sprite = sprite;
         this.spriteSheetKey = 'tex_bubble';
         this.animationKey = 'bubbleAnimation'
         this.addToDisplayList();
@@ -19,9 +17,9 @@ export class Bubble extends Phaser.GameObjects.Sprite {
         this.animationSetting();
         this.anims.play(this.animationKey);
 
-        this.scene.events.on('shutdown', () => {
-            this.destroy();
-        });
+        //削除処理の登録
+        this.scene.events.once('shutdown', () => { this.destroy(); });
+        this.sprite.once(Phaser.GameObjects.Events.DESTROY, () => { this.destroy(); })
     }
 
     //移動
