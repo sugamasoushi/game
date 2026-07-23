@@ -11,7 +11,7 @@ export class SearchEnemyData {
 
     // imageKey(enemy00等)から敵データを取得
     public getEnemyData(enemyKey: string): EnemyStatus | null {
-        if (!enemyKey) return null;
+        if (!enemyKey) return this.enemyData?.EnemyNameData?.enemy02 ?? null;
         const query = enemyKey.toLowerCase();
 
         const enemyNameData = this.enemyData?.EnemyNameData;
@@ -22,7 +22,8 @@ export class SearchEnemyData {
                 return enemyNameData[key];
             }
         }
-        return null;
+        // 検索結果が無い場合はデフォルトでenemy02を返す
+        return enemyNameData.enemy02 ?? null;
     }
 
     // 互換用: 名前だけ欲しいケース向け

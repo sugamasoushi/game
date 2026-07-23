@@ -31,7 +31,9 @@ export class TitleLogo {
     constructor(private titleScene: Title, private titleModel: TitleModel) { }
 
     public update(time: number, delta: number): void {
-        // const titleScene = this.titleScene;
+        void time;
+        void delta;
+
         if (this.titleModel.isOptionActive || (this.optionGroup && this.optionGroup.active)) {
             if (this.pendingMasterVolume !== this.lastSentMasterVolume) {
                 this.lastSentMasterVolume = this.pendingMasterVolume;
@@ -66,6 +68,19 @@ export class TitleLogo {
                 duration: 1000,
                 ease: 'Power1',
                 onComplete: () => {
+
+                    //ゲームクリア状態の場合、クリック可能にする
+                    const manager = GameStateManager.getInstance();
+                    if (manager.isGameClearFlg) {
+                        this.titleText.setInteractive({ useHandCursor: true });
+                        this.titleText.on('pointerdown', () => {
+                            this.titleScene.SE_syakiin.play();
+
+                            //デバッグモード
+                            manager.updateState({ debugMode: true }, 'system')
+                        });
+                    }
+
                     resolve();
                 }
             });

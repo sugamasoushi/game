@@ -116,8 +116,7 @@ export class NpcView {
                                 //敵キャラクターの場合はステータスを設定
                                 if (entity.enemyData || entity.npcType === 'enemy') {
                                     const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
-                                    const imageKey = npc.getData('ImageKey');
-                                    const enemyData = searchEnemyData.getEnemyData(imageKey);
+                                    const enemyData = searchEnemyData.getEnemyData(entity.enemyData);
 
                                     if (enemyData) {
                                         npc.setData({
@@ -169,9 +168,5 @@ export class NpcView {
 
             resolve();
         });
-    }
-
-    private setupNpc() {
-
     }
 }
