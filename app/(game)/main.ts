@@ -22,8 +22,11 @@ let phaserGame: Phaser.Game | null = null;
 const baseWidth = 1280;
 const baseHeight = 720;
 
+export let isDebug = false;
+
 // 開発環境 (npm run dev) の時だけ true になる
-export const isDebug = process.env.NODE_ENV === 'development';
+export const isDev = process.env.NODE_ENV === 'development';
+isDebug = isDev;
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,

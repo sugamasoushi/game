@@ -165,5 +165,15 @@ export class RightButton {
         });
         this.menuWindow.setVisible(false);
     }
+
+    public destroy() {
+        for (const button of this.buttons) {
+            button.destroy();
+        }
+        this.buttons = [];
+
+        this.hitZone.destroy();
+        this.menuWindow.destroy();
+    }
 }
 

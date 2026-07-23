@@ -92,6 +92,7 @@ export class UI extends Scene {
             this.game.events.off('UI_CLOSE', this.onUiClose);
             this.game.events.off('UI_FORCE_OFF', this.onUiForceOff);
             this.game.events.off('UI_VISIBLE_FALSE', this.onUiVisibleFalse);
+        
         });
     }
 

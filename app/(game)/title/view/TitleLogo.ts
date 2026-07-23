@@ -74,10 +74,11 @@ export class TitleLogo {
                     if (manager.isGameClearFlg) {
                         this.titleText.setInteractive({ useHandCursor: true });
                         this.titleText.on('pointerdown', () => {
-                            this.titleScene.SE_syakiin.play();
 
                             //デバッグモード
-                            manager.updateState({ debugMode: true }, 'system')
+                            manager.updateState({ debugMode: true }, 'system');
+
+                            this.titleScene.scene.get('UI').scene.restart();
                         });
                     }
 

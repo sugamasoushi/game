@@ -182,4 +182,19 @@ export class LeftButton {
         }
         this.menuWindow.setVisible(false);
     }
+
+    public destroy() {
+        for (const text of this.buttonTexts) {
+            text.destroy();
+        }
+        this.buttonTexts = [];
+
+        for (const zone of this.buttonZones) {
+            zone.destroy();
+        }
+        this.buttonZones = [];
+
+        this.hitZone.destroy();
+        this.menuWindow.destroy();
+    }
 }

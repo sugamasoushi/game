@@ -133,6 +133,10 @@ export class UiPresenter {
             this.uiScene.events.off('UI_FADEIN_START');
             this.uiScene.events.off('UI_FADEOUT_START');
             this.uiScene.events.off('UI_FREE_MESSAGE_WINDOW');
+
+            // UIオブジェクトを破棄
+            this.leftButton.destroy();
+            this.rightButton.destroy();
             this.freeMessageView.destroy();
         });
     }

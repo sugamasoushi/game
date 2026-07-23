@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import { BgmState } from '../lib/StateTypes';
 import { GameStateManager } from '../core/GameStateManager';
 import { Subscription } from 'rxjs';
+import { isDev } from '../main';
 
 export class Sound extends Scene {
     private subs = new Subscription();
@@ -115,7 +116,7 @@ export class Sound extends Scene {
                         this.updateBgm(mapKey);
                         break;
                     case BgmState.BATTLE:
-                        if (gameStateManager.isDebugMode) return
+                        if (isDev) return
                         console.log('battla bgm')
                         this.playBgm('bgm_aruges', 0.15);
                         if (this.currentBgs) this.currentBgs.stop();
@@ -154,8 +155,7 @@ export class Sound extends Scene {
     }
 
     private updateBgm(mapKey: string) {
-        const gameStateManager = GameStateManager.getInstance();
-        if (gameStateManager.isDebugMode) return;
+        if (isDev) return;
 
         switch (mapKey) {
             case '0102':
