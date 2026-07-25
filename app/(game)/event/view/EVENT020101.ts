@@ -8,7 +8,6 @@ import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../core/GameStateManager";
 import { Npc } from "../../field/view/character/Npc";
-import { SearchEnemyData } from "../../Data/SearchEnemyData";
 
 export class EVENT020101 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -94,25 +93,8 @@ export class EVENT020101 extends BaseEvent {
             { lamy: ['任せときなって！\n', 'まずあたしが軽くジャブ打ってぇ！\n', 'それからぁ！\n'] }
         ], this.characterGameObject);
 
-        const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
-        const bossEnemyData = searchEnemyData.getEnemyData(this.bossNPC.getData('ImageKey'));
-        if (bossEnemyData) {
-            this.bossNPC.setData({
-                level: bossEnemyData.Level,
-                HP: bossEnemyData.HP,
-                MP: bossEnemyData.MP,
-                MaxHP: bossEnemyData.MaxHP,
-                MaxMP: bossEnemyData.MaxMP,
-                Attack: bossEnemyData.Attack,
-                Guard: bossEnemyData.Guard,
-                Speed: bossEnemyData.Speed,
-                gold: bossEnemyData.gold
-            });
-            this.bossNPC.setData('name', bossEnemyData.Name);
-        }
-
         //イベントバトル開始
-        this.fieldScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.bossNPC, canNotRunaway: true });
+        this.fieldScene.events.emit('BATTLE', { enemyDataList: ['enemy03'], fieldHitEnemy:undefined, canNotRunaway: true }, 'event020101');
 
         //戦闘終了後、イベントを途中から開始
         const battleScene = this.eventScene.scene.get('Battle');

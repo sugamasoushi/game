@@ -212,7 +212,7 @@ export class FieldScenePresenter {
             this.cameraManager.execFadeIn();
         }
 
-        this.fieldScene.game.events.emit('FIELD_LOADED_COMPLETE');
+        // this.fieldScene.game.events.emit('FIELD_LOADED_COMPLETE');
     }
 
     private setGameEvent() {
@@ -314,7 +314,7 @@ export class FieldScenePresenter {
             this.cameraManager.execFadeIn();
         });
 
-        this.fieldScene.events.on('BATTLE', (battleData: { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }) => {
+        this.fieldScene.events.on('BATTLE', (battleData: { enemyDataList: string[], fieldHitEnemy: Npc, canNotRunaway: boolean }, sceneKey: string) => {
 
             //戦闘開始時に停止
             for (const sprite of gameStateManager.currentPlayerPartyList) {
@@ -326,8 +326,8 @@ export class FieldScenePresenter {
             //状態更新
             gameStateManager.updateState({
                 state: State.BATTLE,
-                battleData: { usePatern: battleData.usePatern, fieldHitEnemy: battleData.fieldHitEnemy, canNotRunaway: battleData.canNotRunaway }
-            }, battleData.usePatern);
+                battleData: { enemyDataList: battleData.enemyDataList, fieldHitEnemy: battleData.fieldHitEnemy, canNotRunaway: battleData.canNotRunaway }
+            }, sceneKey);
 
         });
 
@@ -358,7 +358,7 @@ export class FieldScenePresenter {
         });
     }
 
-    public getTileMapInstance(){
+    public getTileMapInstance() {
         return this.tileMap;
     }
 }

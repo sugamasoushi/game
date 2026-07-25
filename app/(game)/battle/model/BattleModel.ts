@@ -1,40 +1,57 @@
 import { BattleScene, FieldScene, CharacterStatus } from "../../lib/types";
 import { Npc } from "../../field/view/character/Npc";
 import { SearchEnemyData } from "../../Data/SearchEnemyData";
+import { SearchTileMapData } from "../../Data/SearchTileMapData";
 import { gameStateManager } from "../../core/GameStateManager";
 
 export class BattleModel {
     private battleScene: BattleScene;
     private gameScene: FieldScene;
-    private usePatern: string;
     private canNotRunaway: boolean = false;
     private enemyList: string[] = [];//イベント戦闘の敵名称等
     public enemyPartyList: Phaser.GameObjects.Image[] = [];
 
-    private fieldHitEnemy: Npc;
+    private fieldHitEnemy: Npc | null | undefined;
 
     constructor(
         battleScene: BattleScene,
-        data: { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean }
+        data: {
+            enemyDataList: string[] | null | undefined,
+            fieldHitEnemy: Npc | null | undefined,
+            canNotRunaway: boolean
+        }
     ) {
         this.battleScene = battleScene;
         this.gameScene = (this.battleScene.scene.get('Field') as FieldScene);
-        this.usePatern = data.usePatern;
         this.canNotRunaway = data.canNotRunaway;
         this.fieldHitEnemy = data.fieldHitEnemy;
 
-        //敵味方パーティを作成
-        if (this.usePatern === 'normal') {
-            this.createBattleEnemyData();
-        } else {
-            this.createEventBattleEnemyData();
+        this.enemyPartyList = [];
+
+        //敵パーティを作成
+        if (data.fieldHitEnemy) {
+            this.createEnemyDataFieldHit(data.fieldHitEnemy);
+
+            // フィールドの敵を消去
+            data.fieldHitEnemy.destroy();
+        }
+
+        if (data.enemyDataList) {
+            this.createEnemyDataFromList(data.enemyDataList);
+        }
+
+        //いずれの指定が無い場合
+        if ((data.fieldHitEnemy === undefined || data.fieldHitEnemy === null) &&
+            (data.enemyDataList === undefined || data.enemyDataList === null)
+        ) {
+            this.createEnemyDataAuto();
         }
     }
 
     //通常戦闘の敵データを作成
-    public createBattleEnemyData() {
-        this.enemyPartyList = [];
+    public createEnemyDataFieldHit(fieldHitEnemy: Npc) {
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
+        const searchTileMapData = new SearchTileMapData(this.gameScene.cache.json);
 
         //敵数をランダムで作成
         const enemyValue = new Phaser.Math.RandomDataGenerator().between(1, 2);
@@ -46,87 +63,159 @@ export class BattleModel {
             //シンボルエンカウントした1体のみデータを引き継ぐ
             if (i === 0) {
                 const data: CharacterStatus = {
-                    level: this.fieldHitEnemy.getData('Level'),
-                    HP: this.fieldHitEnemy.getData('HP'),
-                    MP: this.fieldHitEnemy.getData('MP'),
-                    MaxHP: this.fieldHitEnemy.getData('MaxHP'),
-                    MaxMP: this.fieldHitEnemy.getData('MaxMP'),
-                    Attack: this.fieldHitEnemy.getData('Attack'),
-                    Guard: this.fieldHitEnemy.getData('Guard'),
-                    Speed: this.fieldHitEnemy.getData('Speed'),
-                    gold: this.fieldHitEnemy.getData('gold')
+                    level: fieldHitEnemy.getData('Level'),
+                    HP: fieldHitEnemy.getData('HP'),
+                    MP: fieldHitEnemy.getData('MP'),
+                    MaxHP: fieldHitEnemy.getData('MaxHP'),
+                    MaxMP: fieldHitEnemy.getData('MaxMP'),
+                    Attack: fieldHitEnemy.getData('Attack'),
+                    Guard: fieldHitEnemy.getData('Guard'),
+                    Speed: fieldHitEnemy.getData('Speed'),
+                    gold: fieldHitEnemy.getData('gold')
                 }
 
                 //敵オブジェクトは画像オブジェクトのdataを利用する
-                const npcImageObject = this.battleScene.add.image(0, 0, this.fieldHitEnemy.getData('ImageKey'));
+                const npcImageObject = this.battleScene.add.image(0, 0, fieldHitEnemy.getData('ImageKey'));
                 npcImageObject.setData(data);
                 npcImageObject.setData('NpcType', 'enemy');
-                npcImageObject.setData('name', searchEnemyData.getEnemyName(this.fieldHitEnemy.getData('ImageKey')));
+                npcImageObject.setData('name', searchEnemyData.getEnemyName(fieldHitEnemy.getData('ImageKey')));
 
                 this.enemyPartyList.push(npcImageObject);
 
             } else {
-                //2体目以降はenemydata(enemy01)からステータスを作成
-                const enemyKey = 'enemy01';
+                const mapkey = gameStateManager.currentFieldData.mapKey
+                const mapEnemyList = searchTileMapData.getMapEnemyList(mapkey)
+
+                let enemyDataKey;
+
+                // リストからランダムに1つ選ぶ
+                const randomIndex = Math.floor(Math.random() * mapEnemyList!.EnemyList.length);
+                enemyDataKey = mapEnemyList!.EnemyList[randomIndex];
+
+                // 50%出現の敵キャラクターが設定されている場合
+                if (mapEnemyList?.Appearance50) {
+                    if (Math.random() < 0.5) {
+
+                        //敵キャラクターを上書き
+                        enemyDataKey = mapEnemyList?.Appearance50;
+                    }
+                }
+
+                //2体目以降はenemydataからステータスを作成
+                const enemyKey = enemyDataKey!;
                 const enemyData = searchEnemyData.getEnemyData(enemyKey);
                 const enemy = this.battleScene.add.image(0, 0, enemyKey);
                 enemy.setData('ImageKey', enemyKey);
                 enemy.setData('NpcType', 'enemy');
 
-                if (enemyData) {
-                    enemy.setData({
-                        level: enemyData.Level,
-                        HP: enemyData.HP,
-                        MP: enemyData.MP,
-                        MaxHP: enemyData.MaxHP,
-                        MaxMP: enemyData.MaxMP,
-                        Attack: enemyData.Attack,
-                        Guard: enemyData.Guard,
-                        Speed: enemyData.Speed,
-                        gold: enemyData.gold
-                    });
-                    enemy.setData('name', enemyData.Name);
-                } else {
-                    enemy.setData('name', searchEnemyData.getEnemyName(enemyKey));
-                }
+                enemy.setData({
+                    level: enemyData!.Level,
+                    HP: enemyData!.HP,
+                    MP: enemyData!.MP,
+                    MaxHP: enemyData!.MaxHP,
+                    MaxMP: enemyData!.MaxMP,
+                    Attack: enemyData!.Attack,
+                    Guard: enemyData!.Guard,
+                    Speed: enemyData!.Speed,
+                    gold: enemyData!.gold
+                });
+                enemy.setData('name', enemyData!.Name);
+
                 this.enemyPartyList.push(enemy);
             }
         }
     }
 
-    //イベント戦闘の敵データを作成
-    public createEventBattleEnemyData() {
-        this.enemyPartyList = [];
+    //データ指定で作成
+    public createEnemyDataFromList(enemyDataList: string[]) {
         const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
 
-        //イベントから呼び出された場合、とりあえず一体のみ
-        const enemy = this.battleScene.add.image(0, 0, this.fieldHitEnemy.getData('ImageKey'));
-        enemy.setData('ImageKey', this.fieldHitEnemy.getData('ImageKey'));
-        const data: CharacterStatus = {
-            level: this.fieldHitEnemy.getData('level'),
-            HP: this.fieldHitEnemy.getData('HP'),
-            MP: this.fieldHitEnemy.getData('MP'),
-            MaxHP: this.fieldHitEnemy.getData('MaxHP'),
-            MaxMP: this.fieldHitEnemy.getData('MaxMP'),
-            Attack: this.fieldHitEnemy.getData('Attack'),
-            Guard: this.fieldHitEnemy.getData('Guard'),
-            Speed: this.fieldHitEnemy.getData('Speed'),
-            gold: this.fieldHitEnemy.getData('gold')
+        //敵キャラクター指定
+        for (const enemyKey of enemyDataList) {
+
+            const ImageKey = searchEnemyData.getEnemyData(enemyKey)!.ImageKey;
+            const enemy = this.battleScene.add.image(0, 0, ImageKey);
+            enemy.setData('ImageKey', ImageKey);
+
+            const enemyData = searchEnemyData.getEnemyData(enemyKey);
+            const data: CharacterStatus = {
+                level: enemyData!.Level,
+                HP: enemyData!.HP,
+                MP: enemyData!.MP,
+                MaxHP: enemyData!.MaxHP,
+                MaxMP: enemyData!.MaxMP,
+                Attack: enemyData!.Attack,
+                Guard: enemyData!.Guard,
+                Speed: enemyData!.Speed,
+                gold: enemyData!.gold
+            }
+
+            enemy.setData(data);
+            enemy.setData('NpcType', 'enemy');
+
+            //名前の検索と設定
+            enemy.setData('name', ImageKey);
+            this.enemyPartyList.push(enemy);
         }
+    }
 
-        enemy.setData(data);
-        enemy.setData('NpcType', 'enemy');
+    //マップごとに登録したデータから作成
+    public createEnemyDataAuto() {
+        const searchEnemyData = new SearchEnemyData(this.gameScene.cache.json);
+        const searchTileMapData = new SearchTileMapData(this.gameScene.cache.json);
 
-        //名前の検索と設定
-        enemy.setData('name', searchEnemyData.getEnemyName(enemy.getData('ImageKey')));
-        this.enemyPartyList.push(enemy);
+        const mapkey = gameStateManager.currentFieldData.mapKey
+        const mapEnemyList = searchTileMapData.getMapEnemyList(mapkey)
+
+        //敵数をランダムで作成
+        const enemyMaxNum = new Phaser.Math.RandomDataGenerator().between(1, 2);
+
+        for (let i = 0; i < enemyMaxNum; i++) {
+
+            let enemyDataKey;
+
+            // リストからランダムに1つ選ぶ
+            const randomIndex = Math.floor(Math.random() * mapEnemyList!.EnemyList.length);
+            enemyDataKey = mapEnemyList!.EnemyList[randomIndex];
+
+            // 50%出現の敵キャラクターが設定されている場合
+            if (mapEnemyList?.Appearance50) {
+                if (Math.random() < 0.5) {
+
+                    //敵キャラクターを上書き
+                    enemyDataKey = mapEnemyList?.Appearance50;
+                }
+            }
+
+            //enemydataからステータスを作成
+            const enemyKey = enemyDataKey!;
+            const enemyData = searchEnemyData.getEnemyData(enemyKey);
+            const enemy = this.battleScene.add.image(0, 0, enemyKey);
+            enemy.setData('ImageKey', enemyKey);
+            enemy.setData('NpcType', 'enemy');
+
+            if (enemyData) {
+                enemy.setData({
+                    level: enemyData.Level,
+                    HP: enemyData.HP,
+                    MP: enemyData.MP,
+                    MaxHP: enemyData.MaxHP,
+                    MaxMP: enemyData.MaxMP,
+                    Attack: enemyData.Attack,
+                    Guard: enemyData.Guard,
+                    Speed: enemyData.Speed,
+                    gold: enemyData.gold
+                });
+                enemy.setData('name', enemyData.Name);
+            }
+            this.enemyPartyList.push(enemy);
+        }
     }
 
     public getPlayerPartyList(): Phaser.GameObjects.Sprite[] { return gameStateManager.currentPlayerPartyList; }
     public getEnemyList(): string[] { return this.enemyList; }
     public getCanNotRunaway(): boolean { return this.canNotRunaway; }
     public getEnemyPartyList(): Phaser.GameObjects.Image[] { return this.enemyPartyList; }
-    public getFieldHitEnemy(): Npc { return this.fieldHitEnemy }
 
     public getBattlerList() {
 
@@ -221,10 +310,6 @@ export class BattleModel {
             enemy.destroy();
         }
         this.enemyPartyList = [];
-    }
-
-    public getUsePatern() {
-        return this.usePatern;
     }
 
     public resetBattleStatus() {

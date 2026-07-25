@@ -97,11 +97,6 @@ export class BattleExecutor {
             gameStateManager.updateState({ money: gameStateManager.currentMoney + 100 }, 'system');
             this.soundScene.playSe('SE_victory');
 
-            // フィールドの敵を消去
-            if (this.battleModel.getUsePatern() === 'normal') {
-                this.battleModel.getFieldHitEnemy().destroy();
-            }
-
             await this.battleMessageWindow.messageOutput('勝利！', 2000);
 
             // 敵キャラを削除
@@ -113,11 +108,6 @@ export class BattleExecutor {
             this.battleScene.endScene();
 
         } else if (winner === 'enemy') {
-
-            // フィールドの敵を消去
-            if (this.battleModel.getUsePatern() === 'normal') {
-                this.battleModel.getFieldHitEnemy().destroy();
-            }
 
             // ゲームオーバー
             //gameStateManager.triggerGameOver();

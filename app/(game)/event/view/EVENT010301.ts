@@ -134,7 +134,7 @@ export class EVENT010301 extends BaseEvent {
         }
 
         //イベントバトル開始
-        this.fieldScene.events.emit('BATTLE', { usePatern: 'event', fieldHitEnemy: this.lamyNPC, canNotRunaway: true });
+        this.fieldScene.events.emit('BATTLE', { enemyDataList: undefined, fieldHitEnemy: this.lamyNPC, canNotRunaway: true }, 'event010301');
 
         //戦闘終了後、イベントを途中から開始
         const battleScene = this.eventScene.scene.get('Battle');

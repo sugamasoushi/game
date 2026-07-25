@@ -138,7 +138,7 @@ export class NpcView {
                                     //オブジェクトに衝突した場合、戦闘を発生させる
                                     this.fieldScene.physics.add.world.addCollider(npc, player, () => {
                                         //Presenterに通知
-                                        this.fieldScene.events.emit('BATTLE', { usePatern: 'normal', fieldHitEnemy: npc, canNotRunaway: false });
+                                        this.fieldScene.events.emit('BATTLE', { enemyDataList: undefined, fieldHitEnemy: npc, canNotRunaway: false }, 'normal');
                                     }, undefined, this.fieldScene);
                                 }
 
@@ -146,10 +146,10 @@ export class NpcView {
                                 if (tileMap.getCollisionLayer()) { this.fieldScene.physics.add.collider(npc as Phaser.Physics.Arcade.Sprite, tileMap.getCollisionLayer()); }
                                 for (const player of gameStateManager.currentPlayerPartyList) { this.fieldScene.physics.add.collider(npc, player); }
 
-                                if (entity.npcType === 'normal') {
-                                    this.npcNormalList.push(npc as Npc);
-                                } else {
+                                if (npcType === 'enemy') {
                                     this.npcEnemyList.push(npc as Npc);
+                                } else {
+                                    this.npcNormalList.push(npc as Npc);
                                 }
                                 this.fieldScene.events.once('shutdown', () => { npc.destroy(); });
 

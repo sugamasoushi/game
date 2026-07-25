@@ -41,7 +41,7 @@ export interface GameState {
   fieldNpcList: Phaser.GameObjects.Sprite[];
   fieldEnemyList: Phaser.GameObjects.Sprite[];
   fieldData: FieldData;
-  battleData: { usePatern: string, fieldHitEnemy?: Npc, canNotRunaway: boolean };
+  battleData: { enemyDataList: string[] | null | undefined, fieldHitEnemy: Npc | null | undefined, canNotRunaway: boolean };
   battleFieldKey: string;
   eventObj?: Phaser.Physics.Arcade.Sprite;
   bgmState: BgmState;

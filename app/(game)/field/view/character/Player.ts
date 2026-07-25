@@ -25,6 +25,9 @@ export class Player extends BaseCharacterSprite {
     private positionHistory: { x: number, y: number }[] = [];
     private leader: Player | null = null;
     public lastHistoryUpdateTime: number = 0;
+    private lastFollowDeltaX: number = 0;
+    private lastFollowDeltaY: number = 0;
+    private straightMoveCorrectionApplied: boolean = false;
 
     constructor(scene: FieldScene, x: number, y: number, spriteSheetKey: string, private makeTilemapData: Phaser.Tilemaps.Tilemap) {
         super(scene, x, y, 'tex_' + spriteSheetKey);
@@ -73,13 +76,13 @@ export class Player extends BaseCharacterSprite {
             this.lastHistoryUpdateTime = time;
         }
 
-        //移動制御
+        //移動制御。追従対象が設定されている場合はパーティメンバーとする。
         if (this.leader) {
             this.updateKeyWalkMember(time);
         } else {
             this.updateKeyWalkLeader();
         }
-        this._updateStopWalk();
+        this.updateStopWalk();
 
         //depthの設定
         this.depthValue = this.y + (32 / 2) * this.scale
@@ -109,59 +112,80 @@ export class Player extends BaseCharacterSprite {
 
         if (!this.body) return;
         if (!this.cursors) return;
-        if (this.state !== CharacterState.normal) return;
+        if (this.state === CharacterState.event) return;
+        if (this.state === CharacterState.normal || this.state === CharacterState.stop) {
 
-        //状態管理クラス
-        const manager = GameStateManager.getInstance();
-        if (manager.currentState === State.BUBBLE_TALK ||
-            manager.currentState === State.EVENT ||
-            manager.currentState === State.MENU ||
-            manager.currentState === State.BATTLE
-        ) { return; }
+            //状態管理クラス
+            const manager = GameStateManager.getInstance();
+            if (manager.currentState === State.BUBBLE_TALK ||
+                manager.currentState === State.EVENT ||
+                manager.currentState === State.MENU ||
+                manager.currentState === State.BATTLE
+            ) { return; }
 
-        //十字キーを取得
-        const cursorsKeys = this.cursors;
-        const vPadDir = this.inputManager?.virtualPadDirection;
+            //十字キーを取得
+            const cursorsKeys = this.cursors;
+            const vPadDir = this.inputManager?.virtualPadDirection;
 
-        //値が設定されている場合はクリックによる移動中のため処理しない
-        if (this.moveToPositionX && this.moveToPositionY) return;
-        this.setVelocity(0);
+            //値が設定されている場合はクリックによる移動中のため処理しない
+            if (this.inputClickFlg) return;
 
-        if (cursorsKeys.left.isDown || this.inputManager.phaserGameKeys['A']?.isDown || vPadDir === 'left' || vPadDir === 'up-left' || vPadDir === 'down-left') {
-            this.moveDirection = this.walkLeft;
-            this.standframe = this.standLeft;
-            this.setVelocityX(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.right.isDown || this.inputManager.phaserGameKeys['D']?.isDown || vPadDir === 'right' || vPadDir === 'up-right' || vPadDir === 'down-right') {
-            this.moveDirection = this.walkRight;
-            this.standframe = this.standRight;
-            this.setVelocityX(this.playerDefaultVelocity);
-        }
-        if (cursorsKeys.up.isDown || this.inputManager.phaserGameKeys['W']?.isDown || vPadDir === 'up' || vPadDir === 'up-left' || vPadDir === 'up-right') {
-            this.moveDirection = this.walkUp;
-            this.standframe = this.standUp;
-            this.setVelocityY(-1 * this.playerDefaultVelocity);
-        } else if (cursorsKeys.down.isDown || this.inputManager.phaserGameKeys['S']?.isDown || vPadDir === 'down' || vPadDir === 'down-left' || vPadDir === 'down-right') {
-            this.moveDirection = this.walkDown;
-            this.standframe = this.standDown;
-            this.setVelocityY(this.playerDefaultVelocity);
-        }
-
-        //停止
-        if (!this.moveToPositionX
-            && !this.moveToPositionY
-            && !this.inputManager.phaserGameKeys['A']?.isDown
-            && !this.inputManager.phaserGameKeys['D']?.isDown
-            && !this.inputManager.phaserGameKeys['W']?.isDown
-            && !this.inputManager.phaserGameKeys['S']?.isDown
-            && !cursorsKeys.left.isDown
-            && !cursorsKeys.right.isDown
-            && !cursorsKeys.up.isDown
-            && !cursorsKeys.down.isDown
-            && !vPadDir
-            && this.moveDirection !== this.walkStop) {
             this.setVelocity(0);
-            this.stopAnimation();
-            this.moveDirection = this.walkStop;
+
+            /**
+             * 現状、Phaserのキーマップを使用しているためupdate()の度に呼ばれている
+             * subscription化した方が良い
+             */
+            if (cursorsKeys.left.isDown || this.inputManager.phaserGameKeys['A']?.isDown || vPadDir === 'left' || vPadDir === 'up-left' || vPadDir === 'down-left') {
+                this.moveDirection = this.walkLeft;
+                this.standframe = this.standLeft;
+                this.setVelocityX(-1 * this.playerDefaultVelocity);
+                // アニメーションがまだ再生されていない場合のみ再生
+                if (this.anims.currentAnim?.key !== this.moveDirection) {
+                    this.anims.play(this.moveDirection, true);
+                }
+            } else if (cursorsKeys.right.isDown || this.inputManager.phaserGameKeys['D']?.isDown || vPadDir === 'right' || vPadDir === 'up-right' || vPadDir === 'down-right') {
+                this.moveDirection = this.walkRight;
+                this.standframe = this.standRight;
+                this.setVelocityX(this.playerDefaultVelocity);
+                // アニメーションがまだ再生されていない場合のみ再生
+                if (this.anims.currentAnim?.key !== this.moveDirection) {
+                    this.anims.play(this.moveDirection, true);
+                }
+            }
+            if (cursorsKeys.up.isDown || this.inputManager.phaserGameKeys['W']?.isDown || vPadDir === 'up' || vPadDir === 'up-left' || vPadDir === 'up-right') {
+                this.moveDirection = this.walkUp;
+                this.standframe = this.standUp;
+                this.setVelocityY(-1 * this.playerDefaultVelocity);
+                // アニメーションがまだ再生されていない場合のみ再生
+                if (this.anims.currentAnim?.key !== this.moveDirection) {
+                    this.anims.play(this.moveDirection, true);
+                }
+            } else if (cursorsKeys.down.isDown || this.inputManager.phaserGameKeys['S']?.isDown || vPadDir === 'down' || vPadDir === 'down-left' || vPadDir === 'down-right') {
+                this.moveDirection = this.walkDown;
+                this.standframe = this.standDown;
+                this.setVelocityY(this.playerDefaultVelocity);
+                // アニメーションがまだ再生されていない場合のみ再生
+                if (this.anims.currentAnim?.key !== this.moveDirection) {
+                    this.anims.play(this.moveDirection, true);
+                }
+            }
+
+            //停止
+            if (!this.inputManager.phaserGameKeys['A']?.isDown
+                && !this.inputManager.phaserGameKeys['D']?.isDown
+                && !this.inputManager.phaserGameKeys['W']?.isDown
+                && !this.inputManager.phaserGameKeys['S']?.isDown
+                && !cursorsKeys.left.isDown
+                && !cursorsKeys.right.isDown
+                && !cursorsKeys.up.isDown
+                && !cursorsKeys.down.isDown
+                && !vPadDir
+                && this.moveDirection !== this.walkStop) {
+                this.setVelocity(0);
+                this.stopAnimation();
+                this.moveDirection = this.walkStop;
+            }
         }
 
     }
@@ -171,162 +195,200 @@ export class Player extends BaseCharacterSprite {
 
         if (!this.body) return;
         if (!this.cursors) return;
-        if (this.state !== CharacterState.normal) return;
-        if (this.leader?.state === CharacterState.stop) { this.setVelocity(0); return; }
-        if (this.leader?.body.touching.left || this.leader?.body.touching.right || this.leader?.body.touching.up || this.leader?.body.touching.down) return
+        if (this.state === CharacterState.event) return;
+        if (this.state === CharacterState.normal || this.state === CharacterState.stop) {
 
-        //状態管理クラス
-        const manager = GameStateManager.getInstance();
-        if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) { return; }
+            //状態管理クラス
+            const manager = GameStateManager.getInstance();
+            if (manager.currentState === State.BUBBLE_TALK ||
+                manager.currentState === State.EVENT ||
+                manager.currentState === State.MENU ||
+                manager.currentState === State.BATTLE
+            ) { return; }
 
-        //十字キーを取得
-        const cursorsKeys = this.cursors;
-        const vPadDir = this.inputManager?.virtualPadDirection;
+            //先頭キャラがマウスクリック状態の場合は未処理
+            if (this.leader?.currentInputClickFlg) return
 
-        // 仮想パッドの右側ボタン（決定・キャンセル等のfaceボタン）の場合は移動処理をしない
-        if (vPadDir?.startsWith('face')) return;
-
-        //値が設定されている場合はクリックによる移動中のため処理しない
-        if (this.moveToPositionX && this.moveToPositionY) return;
-        this.setVelocity(0);
-
-        // リーダーの履歴を取得
-        const history = this.leader!.getPositionHistory();
-        const followDelay = 8; // 追従ディレイ
-
-        let targetposition: { x: number, y: number } = { x: 0, y: 0 };
-        let beforeTargetposition: { x: number, y: number } = { x: 0, y: 0 };
-
-        //履歴が足りない場合は何もしない
-        if (history.length <= followDelay) return;
-
-        //移動先履歴を取得
-        targetposition = history[history.length - followDelay];
-        beforeTargetposition = history[history.length - followDelay - 1];
-
-        // leaderが前フレームで壁に衝突していた場合は追従しない
-        // body.blocked は物理エンジンが実行済みの前フレームの衝突状態を保持しており
-        // preUpdate（物理実行前）の時点で正しく参照できる
-        // const leaderBody = this.leader!.body as Phaser.Physics.Arcade.Body;
-        // if (!leaderBody.blocked.none) { this.setVelocity(0); return; }
-
-        // リーダーの履歴が一定時間（例：100ms）更新されていなければ停止とみなす
-        // 滑り移動中であっても、4px動いて履歴が更新されない限りはここに入る
-        if (time - this.leader!.lastHistoryUpdateTime > 20) {
             this.setVelocity(0);
-            this.stopAnimation();
-            return;
-        }
 
-        /**
-         * キーボードまたはパッド入力が発生した場合のみポジションをリセット
-         * 状態を明確にするためクリック移動とキーボード移動をフラグ管理している
-         */
-        if (!this.inputKeyboardOrPadFlg &&
-            this.inputClickFlg && (
-                this.inputManager.phaserGameKeys['A']?.isDown ||
-                this.inputManager.phaserGameKeys['D']?.isDown ||
-                this.inputManager.phaserGameKeys['W']?.isDown ||
-                this.inputManager.phaserGameKeys['S']?.isDown ||
-                cursorsKeys.left.isDown ||
-                cursorsKeys.right.isDown ||
-                cursorsKeys.up.isDown ||
-                cursorsKeys.down.isDown ||
-                vPadDir)) {
-            this.setPosition(this.leader!.x, this.leader!.y)
-            this.leader!.clearPositionHistory();
-            this.inputKeyboardOrPadFlg = true;
-            this.inputClickFlg = false;
-        }
+            //十字キーを取得
+            // const cursorsKeys = this.cursors;
+            // const vPadDir = this.inputManager?.virtualPadDirection;
 
-        //リーダーとの距離が一定以上離れた場合は強制的にターゲットポジションに移動させる
-        if (Phaser.Math.Distance.Between(this.leader!.x, this.leader!.y, this.x, this.y) > 48) {
-            this.setPosition(targetposition.x, targetposition.y);
-        }
+            // リーダーの履歴を取得
+            const history = this.leader!.getPositionHistory();
+            const followDelay = 8; // 追従ディレイ
 
-        //クリック移動ではない場合に処理する
-        if (!this.inputClickFlg) {
+            //初期化
+            let targetposition: { x: number, y: number } = { x: 0, y: 0 };
+            let beforeTargetposition: { x: number, y: number } = { x: 0, y: 0 };
 
-            if (beforeTargetposition.x - targetposition.x < 0) {
-                this.moveDirection = this.walkRight;
-                this.standframe = this.standRight;
-                this.setVelocityX(this.playerDefaultVelocity);
+            //履歴が足りない場合は何もしない
+            if (history.length <= followDelay) return;
+
+            //移動先履歴を取得
+            targetposition = history[history.length - followDelay];
+            beforeTargetposition = history[history.length - followDelay - 1];
+
+            // leaderが前フレームで壁に衝突していた場合は追従しない
+            // body.blocked は物理エンジンが実行済みの前フレームの衝突状態を保持しており
+            // preUpdate（物理実行前）の時点で正しく参照できる
+            // const leaderBody = this.leader!.body as Phaser.Physics.Arcade.Body;
+            // if (!leaderBody.blocked.none) { this.setVelocity(0); return; }
+
+            // リーダーの履歴が一定時間（例：100ms）更新されていなければ停止とみなす
+            // 滑り移動中であっても、4px動いて履歴が更新されない限りはここに入る
+            if (time - this.leader!.lastHistoryUpdateTime > 20) {
+                this.setVelocity(0);
+                this.stopAnimation();
+                return;
             }
-            else if (beforeTargetposition.x - targetposition.x > 0) {
-                this.moveDirection = this.walkLeft;
-                this.standframe = this.standLeft;
-                this.setVelocityX(-1 * this.playerDefaultVelocity);
-            }
-            if (beforeTargetposition.y - targetposition.y < 0) {
-                this.moveDirection = this.walkDown;
-                this.standframe = this.standDown;
-                this.setVelocityY(this.playerDefaultVelocity);
-            }
-            else if (beforeTargetposition.y - targetposition.y > 0) {
-                this.moveDirection = this.walkUp;
-                this.standframe = this.standUp;
-                this.setVelocityY(-1 * this.playerDefaultVelocity);
-            }
-        }
 
-        //停止
-        if (!this.moveToPositionX && !this.moveToPositionY &&
-            !this.inputManager.phaserGameKeys['A']?.isDown &&
-            !this.inputManager.phaserGameKeys['D']?.isDown &&
-            !this.inputManager.phaserGameKeys['W']?.isDown &&
-            !this.inputManager.phaserGameKeys['S']?.isDown &&
-            !cursorsKeys.left.isDown &&
-            !cursorsKeys.right.isDown &&
-            !cursorsKeys.up.isDown &&
-            !cursorsKeys.down.isDown &&
-            !vPadDir &&
-            this.moveDirection !== this.walkStop) {
-            this.setVelocity(0);
-            this.stopAnimation();
-            this.moveDirection = this.walkStop;
-            this.inputKeyboardOrPadFlg = false;
-            //※クリックフラグ更新はPlayerPresenterで処理
+            /**
+             * キーボードまたはパッド入力が発生した場合のみポジションをリセット
+             * 状態を明確にするためクリック移動とキーボード移動をフラグ管理している
+             */
+            // if (!this.inputKeyboardOrPadFlg &&
+            //     this.inputClickFlg && (
+            //         this.inputManager.phaserGameKeys['A']?.isDown ||
+            //         this.inputManager.phaserGameKeys['D']?.isDown ||
+            //         this.inputManager.phaserGameKeys['W']?.isDown ||
+            //         this.inputManager.phaserGameKeys['S']?.isDown ||
+            //         cursorsKeys.left.isDown ||
+            //         cursorsKeys.right.isDown ||
+            //         cursorsKeys.up.isDown ||
+            //         cursorsKeys.down.isDown ||
+            //         vPadDir)) {
+            //     this.setPosition(this.leader!.x, this.leader!.y)
+            //     this.leader!.clearPositionHistory();
+            //     this.inputKeyboardOrPadFlg = true;
+            //     this.inputClickFlg = false;
+            // }
+
+            //リーダーとの距離が一定以上離れた場合は強制的にターゲットポジションに移動させる
+            if (Phaser.Math.Distance.Between(this.leader!.x, this.leader!.y, this.x, this.y) > 48) {
+                this.setPosition(targetposition.x, targetposition.y);
+            }
+
+            //クリック移動ではない場合に処理する
+            if (!this.inputClickFlg) {
+
+                //左方向
+                if (beforeTargetposition.x - targetposition.x < 0) {
+                    this.moveDirection = this.walkRight;
+                    this.standframe = this.standRight;
+                    this.setVelocityX(this.playerDefaultVelocity);
+                    // アニメーションがまだ再生されていない場合のみ再生
+                    if (this.anims.currentAnim?.key !== this.moveDirection) {
+                        this.anims.play(this.moveDirection, true);
+                    }
+                } else if (beforeTargetposition.x - targetposition.x > 0) {
+                    this.moveDirection = this.walkLeft;
+                    this.standframe = this.standLeft;
+                    this.setVelocityX(-1 * this.playerDefaultVelocity);
+                    // アニメーションがまだ再生されていない場合のみ再生
+                    if (this.anims.currentAnim?.key !== this.moveDirection) {
+                        this.anims.play(this.moveDirection, true);
+                    }
+                }
+
+                //右方向
+                if (beforeTargetposition.y - targetposition.y < 0) {
+                    this.moveDirection = this.walkDown;
+                    this.standframe = this.standDown;
+                    this.setVelocityY(this.playerDefaultVelocity);
+                    // アニメーションがまだ再生されていない場合のみ再生
+                    if (this.anims.currentAnim?.key !== this.moveDirection) {
+                        this.anims.play(this.moveDirection, true);
+                    }
+                } else if (beforeTargetposition.y - targetposition.y > 0) {
+                    this.moveDirection = this.walkUp;
+                    this.standframe = this.standUp;
+                    this.setVelocityY(-1 * this.playerDefaultVelocity);
+                    // アニメーションがまだ再生されていない場合のみ再生
+                    if (this.anims.currentAnim?.key !== this.moveDirection) {
+                        this.anims.play(this.moveDirection, true);
+                    }
+                }
+
+                //直線移動時の座標位置補正
+                const deltaX = targetposition.x - beforeTargetposition.x;
+                const deltaY = targetposition.y - beforeTargetposition.y;
+                const movedStraight = (deltaX !== 0 && deltaY === 0) || (deltaX === 0 && deltaY !== 0);
+                const previousMovedDiagonally = this.lastFollowDeltaX !== 0 && this.lastFollowDeltaY !== 0;
+
+                if (previousMovedDiagonally && movedStraight && !this.straightMoveCorrectionApplied) {
+                    if (deltaX !== 0 && deltaY === 0) {
+                        this.setPosition(targetposition.x, this.leader!.y);
+                    } else if (deltaY !== 0 && deltaX === 0) {
+                        this.setPosition(this.leader!.x, targetposition.y);
+                    }
+                    this.straightMoveCorrectionApplied = true;
+                }
+
+                if (!movedStraight) {
+                    this.straightMoveCorrectionApplied = false;
+                }
+
+                this.lastFollowDeltaX = deltaX;
+                this.lastFollowDeltaY = deltaY;
+            }
+
+            //先頭キャラが停止していたら停止
+            if (this.leader!.body.velocity.x === 0 && this.leader!.body.velocity.y === 0) {
+                this.setVelocity(0);
+                this.stopAnimation();
+                this.moveDirection = this.walkStop;
+                this.inputKeyboardOrPadFlg = false;
+                //※クリックフラグ更新はPlayerPresenterで処理
+            }
         }
     }
 
     //移動不能チェック
     //※停止についてはsprite自身で判定
-    _updateStopWalk() {
+    override updateStopWalk() {
         if (!this.body) return;
-        if (this.state !== CharacterState.normal) return;
-        if (this.leader?.state === CharacterState.stop) { this.setVelocity(0); return; }
-
-        //値が設定されていない場合は処理しない
-        if (!this.moveToPositionX && !this.moveToPositionY) return;
-
-        //移動先座標との差が1未満の場合は停止
-        if (Phaser.Math.Difference(this.moveToPositionX!, this.x) < 1 && Phaser.Math.Difference(this.moveToPositionY!, this.y) < 1) {
-            this.body.setVelocity(0, 0);
-            this.moveDirection = this.walkStop;
-            this.moveToPositionX = null;//移動先の値をnullに設定
-            this.moveToPositionY = null;
+        if (this.leader?.state === CharacterState.stop) {
+            this.setVelocity(0); return;
         }
 
-        //壁に当たってこれ以上移動できない状態の場合は移動を停止する
-        //x方向またはy方向の速度が0の場合、移動不能状態と判定する
-        if (this.body.velocity.x === 0 || this.body.velocity.y === 0) {
+        //移動中の場合、停止判定処理
+        if (this.state === CharacterState.walking) {
 
-            //移動不能状態の時間をカウント
-            this.moveStopCount++;
+            //値が設定されていない場合は処理しない
+            // if (!this.moveToPositionX && !this.moveToPositionY) return;
 
-            //壁を滑って移動可能になった場合を考慮し、再度移動先を設定する。1000ミリ秒内に目標に到達するように調整される。
-            this.scene.physics.moveTo(this, this.moveToPositionX!, this.moveToPositionY!, this.moveVelocity, this.moveDefaultTime / 2);
-
-            //移動不能状態が一定時間続いた場合は停止
-            if (this.moveStopCount > 50) {
-                this.moveStopCount = 0;
+            //移動先座標との差が1未満の場合は停止
+            if (Phaser.Math.Difference(this.moveToPositionX!, this.x) < 1 && Phaser.Math.Difference(this.moveToPositionY!, this.y) < 1) {
+                this.moveDirection = this.walkStop;
                 this.initMoveToPosition();
+                this.inputClickFlg = false;
             }
-        }
 
-        //他スプライトのbodyと衝突した場合は停止
-        if (!this.body.touching.none) {
-            this.initMoveToPosition();
+            //壁に当たってこれ以上移動できない状態の場合は移動を停止する
+            //x方向またはy方向の速度が0の場合、移動不能状態と判定する
+            if (this.body.velocity.x === 0 || this.body.velocity.y === 0) {
+
+                //移動不能状態の時間をカウント
+                this.moveStopCount++;
+
+                //壁を滑って移動可能になった場合を考慮し、再度移動先を設定する。1000ミリ秒内に目標に到達するように調整される。
+                this.scene.physics.moveTo(this, this.moveToPositionX!, this.moveToPositionY!, this.moveVelocity, this.moveDefaultTime / 2);
+
+                //移動不能状態が一定時間続いた場合は停止
+                if (this.moveStopCount > 50) {
+                    this.moveStopCount = 0;
+                    this.initMoveToPosition();
+                    this.inputClickFlg = false;
+                }
+            }
+
+            //他スプライトのbodyと衝突した場合は停止
+            if (!this.body.touching.none) {
+                this.initMoveToPosition();
+                this.inputClickFlg = false;
+            }
         }
     }
 
@@ -444,6 +506,8 @@ export class Player extends BaseCharacterSprite {
     public setInputManager(inputManager: InputManager) {
         this.inputManager = inputManager;
     }
+
+    public get currentInputClickFlg(): boolean { return this.inputClickFlg; }
 }
 
 

@@ -9,5 +9,33 @@
         "city_inside",
         "tree_glass",
         "terrain"
-    ]
+    ],
+    "MapEnemyList": {
+        "0102": {
+            "EnemyList": [
+                "enemy02"
+            ],
+            "Appearance50": "enemy01"
+        },
+        "0103": {
+            "EnemyList": [
+                "enemy02"
+            ],
+            "Appearance50": "enemy01"
+        },
+        "0104": {
+            "EnemyList": [
+                "enemy01",
+                "enemy02"
+            ],
+            "Appearance50": ""
+        },
+        "0105": {
+            "EnemyList": [
+                "enemy01",
+                "enemy02"
+            ],
+            "Appearance50": ""
+        }
+    }
 }

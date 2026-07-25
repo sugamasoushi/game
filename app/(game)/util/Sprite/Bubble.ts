@@ -45,7 +45,7 @@ export class Bubble extends Phaser.GameObjects.Sprite {
     private display() {
 
         //親スプライトの状態がノーマル以外の場合は非表示
-        if (this.sprite.state !== CharacterState.normal) {
+        if (this.sprite.state === CharacterState.event) {
             this.setVisible(false);
             return
         };

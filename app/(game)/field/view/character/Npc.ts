@@ -11,7 +11,7 @@ import { Bubble } from "@/app/(game)/util/Sprite/Bubble";
 
 export class Npc extends BaseCharacterSprite {
     public body: Phaser.Physics.Arcade.Body
-    private delay: number;
+    private delay: number = 0;
     private inputManager: InputManager;
     private bubbleTalkKey: string;
     private subs = new Subscription();
@@ -173,12 +173,14 @@ export class Npc extends BaseCharacterSprite {
         if (Phaser.Math.Difference(this.x, player.x) < 40 && Phaser.Math.Difference(this.y, player.y) < 40) return;
 
         //値が設定されている場合は移動中のため処理しない
-        if (this.moveToPositionX && this.moveToPositionY) return;
+        // if (this.moveToPositionX && this.moveToPositionY) return;
+        if (this.state === CharacterState.walking) return;
+
+        if (this.state === CharacterState.stop) return;
 
         const makeTileMap: Phaser.Tilemaps.Tilemap = this.fieldScene.getTileMapInstance().getMakeTilemap();
         const collisionLayer: Phaser.Tilemaps.TilemapLayer = this.fieldScene.getTileMapInstance().getCollisionLayer();
         const move = new Phaser.Math.RandomDataGenerator().between(-20, 20);//指定範囲の間でランダムな整数を返す
-        this.delay = new Phaser.Math.RandomDataGenerator().between(100, 200);//停止時間をランダムで設定
 
         //値が0の場合は処理しない
         if (move === 0) return;
@@ -186,6 +188,7 @@ export class Npc extends BaseCharacterSprite {
         let checkX = null;
         let checkY = null;
 
+        // 移動先座標をチェックし、移動不可の場合は処理を終了する
         if (move < 0 && move % 2 === 0) {//値が負かつ偶数の場合、左方向
             checkX = this.x + (move);//移動先座標を設定
             checkY = this.y;
@@ -232,46 +235,77 @@ export class Npc extends BaseCharacterSprite {
             }
         }
         //console.log("NPC" + checkX, checkY)
+
+        //移動可能な場合
         this.setMoveToPosition(checkX!, checkY!, 300, true, 2000);
     }
 
-    //オーバーライド
+    //移動先座標に近づいたら停止
     override updateStopWalk() {
 
-        if (this.moveToPositionX === null || this.moveToPositionY === null) return;
+        //イベント中の場合は処理しない
+        if (this.state === CharacterState.event) return;
 
+        //移動先がnullの場合は未処理
+        // if (this.moveToPositionX === null || this.moveToPositionY === null) return;
 
-        //this.delay = this.random.between(0, 2);//デバッグ用
+        if (this.state === CharacterState.walking) {
 
-        //移動先座標との差が1未満の場合は停止
-        if (Phaser.Math.Difference(this.moveToPositionX, this.x) < 1 && Phaser.Math.Difference(this.moveToPositionY, this.y) < 1) {
-            this.body!.setVelocity(0, 0);
-            this.moveDirection = this.walkStop;
-            this.delay--;
-            if (this.delay <= 0) {
-                this.moveToPositionX = null;//移動先の値をnullに設定
-                this.moveToPositionY = null;
+            //移動先座標との差が1未満の場合は停止
+            if (Phaser.Math.Difference(this.moveToPositionX!, this.x) < 1 && Phaser.Math.Difference(this.moveToPositionY!, this.y) < 1) {
+                this.body!.setVelocity(0, 0);
+                this.moveDirection = this.walkStop;
+                this.state = CharacterState.stop;
+
+                // アニメーションがまだ再生されていない場合のみ再生
+                if (this.anims.currentAnim?.key !== this.standframe) {
+                    this.anims.play(this.standframe, true);
+                }
+            }
+
+            //プレイヤーとの距離が40未満の場合は停止
+            const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
+            if (Phaser.Math.Difference(this.x, player.x) < 40 && Phaser.Math.Difference(this.y, player.y) < 40) {
+                this.body.setVelocity(0, 0);
+                this.moveDirection = this.walkStop;
+                this.state = CharacterState.stop;
+
+                // アニメーションがまだ再生されていない場合のみ再生
+                if (this.anims.currentAnim?.key !== this.standframe) {
+                    this.anims.play(this.standframe, true);
+                }
             }
         }
-        const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
-        //プレイヤーとの距離が40未満の場合は停止
-        if (Phaser.Math.Difference(this.x, player.x) < 40 && Phaser.Math.Difference(this.y, player.y) < 40) {
-            this.body.setVelocity(0, 0);
-            this.moveDirection = this.walkStop;
+
+        //停止状態
+        if (this.state === CharacterState.stop) {
+
             this.delay--;
+
+            //停止時間終了
             if (this.delay <= 0) {
-                this.moveToPositionX = null;//移動先の値をnullに設定
-                this.moveToPositionY = null;
+
+                //停止時間をランダムで設定
+                this.delay = new Phaser.Math.RandomDataGenerator().between(100, 200);
+
+                //移動先の値をnullに設定
+                // this.moveToPositionX = null;
+                // this.moveToPositionY = null;
+
+                //状態を戻す
+                this.state = CharacterState.normal;
             }
         }
     }
 
+    //クリック状態の更新
     private updateInteractive() {
-        //プレイヤーとの距離が100未満 かつ 吹き出し会話中では無い かつ 吹き出し会話が設定されている場合はマウスクリックを設定
+
         const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
+
+        //プレイヤーとの距離が100未満 かつ 吹き出し会話中では無い かつ 吹き出し会話が設定されている場合はマウスクリックを設定
         if (Phaser.Math.Difference(this.x, player.x) < 100 && Phaser.Math.Difference(this.y, player.y) < 100
             && this.state === CharacterState.normal && this.bubbleTalkKey) {
-            //this.setInteractive();
             this.setInteractive({ useHandCursor: true });
         } else {
             this.disableInteractive();

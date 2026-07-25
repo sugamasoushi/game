@@ -48,7 +48,7 @@ export class MapMoveObjectPresenter {
             this.mapMoveObjectModel.execCacheData();
 
             //プレイヤーを停止（FIELD_RESTARTによりプレイヤーが再生成されるため、リセットされる）
-            gameStateManager.currentPlayerPartyList[0].state = CharacterState.stop;
+            gameStateManager.currentPlayerPartyList[0].state = CharacterState.normal;
             (gameStateManager.currentPlayerPartyList[0] as Phaser.Physics.Arcade.Sprite).setVelocity(0);
 
         }, undefined, this.fieldScene);

@@ -151,6 +151,10 @@ export class EVENT010401 extends BaseEvent {
             { meina: ['ふ～ん、じゃあラミィって呼ぶね。\n'] }
         ], this.characterGameObject);
 
+        //スプライト状態を設定
+        this.grandpa.stopAnimation();
+        this.grandpa.state = CharacterState.event;
+
         //場面転換
         await this.execFadeOut();
         await new Promise<void>(resolve => {
@@ -162,6 +166,7 @@ export class EVENT010401 extends BaseEvent {
             //じいちゃん配置
             this.grandpa.setPosition(448, 416);
             this.grandpa.setStandFrame(this.grandpa.getStandKey('up'));
+            this.grandpa.initMoveToPosition();
 
             resolve();
         })
@@ -169,11 +174,6 @@ export class EVENT010401 extends BaseEvent {
 
         //キャラの画像キーを取得
         const grandpaImageKey = this.searchCharacterData.getCharacterData('grandpa').normal;
-
-        //スプライト状態を設定
-        this.grandpa.state = CharacterState.event;
-        this.grandpa.stopAnimation();
-        this.grandpa.setAnimDirection(this.grandpa.getStandKey('up'));
 
         //キャラ画像を配置
         await Promise.all([

@@ -61,7 +61,7 @@ export class Battle extends Phaser.Scene implements BattleScene {
         //model
         this.battleModel = new BattleModel(
             this,
-            (battleData as { usePatern: string, fieldHitEnemy: Npc, canNotRunaway: boolean })
+            (battleData as { enemyDataList: string[] | null | undefined, fieldHitEnemy: Npc | null | undefined, canNotRunaway: boolean })
         );
         this.commandSelectModel = new CommandSelectModel();
         this.turnModel = new TurnModel();

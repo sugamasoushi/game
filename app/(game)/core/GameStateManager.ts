@@ -11,7 +11,7 @@ const INITIAL_STATE: GameState = {
     fieldNpcList: [],
     fieldEnemyList: [],
     fieldData: { gameMode: 'string', mapKey: 'init', x: 0, y: 0, x2: 0, y2: 0, initStandKey: 'string' },
-    battleData: { usePatern: 'string', fieldHitEnemy: undefined, canNotRunaway: false },
+    battleData: { enemyDataList: undefined, fieldHitEnemy: undefined, canNotRunaway: false },
     battleFieldKey: 'string',
     eventObj: undefined,
     bgmState: BgmState.NOSTATE,
@@ -202,7 +202,7 @@ export class GameStateManager {
     public get currentFieldData(): FieldData { return this.gameState$.value.fieldData!; }
     public get currentBattleData() {
         return {
-            usePatern: this.gameState$.value.battleData.usePatern,
+            enemyDataList: this.gameState$.value.battleData.enemyDataList,
             fieldHitEnemy: this.gameState$.value.battleData.fieldHitEnemy,
             canNotRunaway: this.gameState$.value.battleData.canNotRunaway,
         }

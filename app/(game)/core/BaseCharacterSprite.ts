@@ -50,14 +50,12 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
     preUpdate(time: number, delta: number) {
         super.preUpdate(time, delta);
         this.setDepth(this.y + (32 / 2) * this.scale);
-        this.updateAnimation();
         this.updateStopWalk();
         this.stopCheck();
     }
 
-    /**
-     * アニメーションのキーを作成
-     */
+
+    //アニメーションのキーを作成
     private animationKeySetting(spriteSheetKey: string) {
         //各アニメーションキーを設定
         this.spriteSheetKey = spriteSheetKey;
@@ -73,7 +71,6 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
 
         //初期状態を設定
         this.moveDirection = spriteSheetKey + '-' + 'walk_stop';
-        this.setStandFrame(this.getStandKey('down'));
     }
 
     public setupDirectionalAnimations(
@@ -163,175 +160,7 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    //共通
-    private updateAnimation() {
-        if (this.moveDirection === this.walkLeft) {
-            this.standframe = this.standLeft;
-        } else if (this.moveDirection === this.walkRight) {
-            this.standframe = this.standRight;
-        } else if (this.moveDirection === this.walkUp) {
-            this.standframe = this.standUp;
-        } else if (this.moveDirection === this.walkDown) {
-            this.standframe = this.standDown;
-        }
-
-        //anims.play()は一回だけ処理するようにすること
-        if (this.moveDirection === this.walkStop) {
-            this.anims.play(this.standframe, true);
-        } else {
-            this.anims.play(this.moveDirection, true);
-        }
-    }
-
-    //共通
-    protected updateStopWalk() {
-
-        //ボディの設定が無い場合は未処理
-        if (!this.body) return;
-
-        //値チェック
-        if (this.moveToPositionX === null) { this.moveToPositionX = 0; }
-        if (this.moveToPositionY === null) { this.moveToPositionY = 0; }
-
-        //移動先座標との差が1未満の場合は停止
-        if (Phaser.Math.Difference(this.moveToPositionX, this.x) < 1 && Phaser.Math.Difference(this.moveToPositionY, this.y) < 1) {
-            (this.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
-            this.moveDirection = this.walkStop;
-            this.moveToPositionX = null;//移動先の値をnullに設定
-            this.moveToPositionY = null;
-        }
-    }
-
-    /**
-     * 移動先座標を設定する。
-     * 他メソッドから呼び出すこと
-     */
-    public setMoveToPosition(x: number, y: number, partyNum: number, npcFlg: boolean, velocity?: number, moveDefaultTime?: number) {
-        if (this.state !== CharacterState.normal) return;
-
-        const v: number = velocity ? velocity : this.moveVelocity;//速度
-        const mt: number = moveDefaultTime ? moveDefaultTime : this.moveDefaultTime;//1000ミリ秒内に目標に到達するように調整される
-        //※プレイヤーの場合、すり抜け防止のためthis.body.setMaxVelocity();を設定すること
-
-        //移動先座標を設定
-        this.moveToPositionX = x;
-        this.moveToPositionY = y;
-
-        if (!npcFlg && partyNum > 0) {
-
-            // リーダーとの距離を計算（ピタゴラスの定理）
-            const distance = Phaser.Math.Distance.Between(this.x, this.y, x, y);
-
-            // 停止距離のしきい値（例：32px〜40px程度。キャラのサイズに合わせて調整）
-            const stopDistance = 32 * partyNum;
-
-            if (distance < stopDistance) {
-                // 十分に近い場合は移動せず、その場で停止
-                if (this.body) {
-                    (this.body as Phaser.Physics.Arcade.Body).setVelocity(0);
-                }
-                // 向きだけはリーダーの方を向かせる（必要であれば）
-                this.setMoveDirection();
-                return;
-            }
-
-            // 停止距離より遠い場合は、移動先を少しずらす
-            const angle = Phaser.Math.Angle.Between(x, y, this.x, this.y);
-            const offsetX = Math.cos(angle) * stopDistance;
-            const offsetY = Math.sin(angle) * stopDistance;
-
-            this.moveToPositionX = x + offsetX;
-            this.moveToPositionY = y + offsetY;
-        }
-
-        //方向を設定
-        this.setMoveDirection();
-
-        //移動
-        this.scene.physics.moveTo(this, this.moveToPositionX, this.moveToPositionY, v, mt);
-
-        // console.log(this.body!.velocity.x, this.body!.velocity.y)
-    }
-
-    /**
-     * 移動方向を設定する。
-     * 他メソッドから呼び出すこと。
-     *
-     * @memberof Common
-     */
-    private setMoveDirection() {
-        if (this.state !== CharacterState.normal) return;
-
-        //値チェック
-        if (this.moveToPositionX === null) { this.moveToPositionX = 0; }
-        if (this.moveToPositionY === null) { this.moveToPositionY = 0; }
-
-        const rad = Phaser.Math.Angle.Between(this.x, this.y, this.moveToPositionX, this.moveToPositionY);
-
-        //左
-        if (rad < -135 * (Math.PI / 180) || rad > 135 * (Math.PI / 180)) {
-            this.moveDirection = this.walkLeft;
-        }
-        //右
-        if (rad > -45 * (Math.PI / 180) && rad < 45 * (Math.PI / 180)) {
-            this.moveDirection = this.walkRight;
-        }
-        //上
-        if (rad < -45 * (Math.PI / 180) && rad > -135 * (Math.PI / 180)) {
-            this.moveDirection = this.walkUp;
-        }
-        //下
-        if (rad > 45 * (Math.PI / 180) && rad < 135 * (Math.PI / 180)) {
-            this.moveDirection = this.walkDown;
-        }
-
-        // console.log("右上", -45 * (Math.PI / 180))
-        // console.log("左上", -135 * (Math.PI / 180))
-        // console.log("左下", 135 * (Math.PI / 180))
-        // console.log("右下", 45 * (Math.PI / 180))
-    }
-
-    //移動先初期化。座標位置を外部から変更した場合は必ず呼び出すこと。
-    public initMoveToPosition() {
-        if (!this.body) return;
-        (this.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
-        this.moveToPositionX = null;//移動先の値をnullに設定
-        this.moveToPositionY = null;
-        //return this;//メソッドチェーンの記法。このメソッドの参照を返し、次のメソッドが実行可能となる。
-    }
-
-    //アニメーションを停止、イベント中などで使用
-    public stopAnimation() {
-        this.stop();
-        this.initMoveToPosition();
-        this.moveDirection = this.walkStop;
-    }
-
-    //アニメーションを設定する（移動しない）
-    //update()の更新処理を前提としているため、キャラが停止していると使えない
-    public setAnimDirection(WalkKey: string) {
-        // getWalkKey()を使用する事
-        this.moveDirection = WalkKey;
-    }
-
-    public setStandFrame(standkey: string) {
-        //getStandKey()を使用する事
-        this.standframe = standkey;
-    }
-
-    public getCurrentStandFrame(): string { return this.standframe; }
-
-    public getInitDirection() {
-        if (this.getCurrentStandFrame() === this.standLeft) {
-            return 'left';
-        } else if (this.getCurrentStandFrame() === this.standRight) {
-            return 'right';
-        } else if (this.getCurrentStandFrame() === this.standUp) {
-            return 'up';
-        } else if (this.getCurrentStandFrame() === this.standDown) {
-            return 'down';
-        }
-    }
+    protected updateStopWalk() { }
 
     //外部操作による指定座標位置まで移動した後の停止処理
     private stopCheck() {
@@ -355,19 +184,156 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    public getDirection() {
-        let operatorX: number = 0;
-        let operatorY: number = 0;
-        if (this.moveDirection === this.walkLeft || this.standframe === this.standLeft) {
-            operatorX = -1;
-        } else if (this.moveDirection === this.walkRight || this.standframe === this.standRight) {
-            operatorX = 1;
-        } else if (this.moveDirection === this.walkUp || this.standframe === this.standUp) {
-            operatorY = -1;
-        } else if (this.moveDirection === this.walkDown || this.standframe === this.standDown) {
-            operatorY = 1;
+    //移動先座標を設定
+    public setMoveToPosition(x: number, y: number, partyNum: number, npcFlg: boolean, velocity?: number, moveDefaultTime?: number) {
+
+        //移動可能状態の場合に処理。　※walking中の処理はプレイヤーのマウス操作に対応
+        if (this.state === CharacterState.normal || this.state === CharacterState.walking) {
+
+            const v: number = velocity ? velocity : this.moveVelocity;//速度
+            const mt: number = moveDefaultTime ? moveDefaultTime : this.moveDefaultTime;//1000ミリ秒内に目標に到達するように調整される
+            //※プレイヤーの場合、すり抜け防止のためthis.body.setMaxVelocity();を設定すること
+
+            //移動先座標を設定
+            this.moveToPositionX = x;
+            this.moveToPositionY = y;
+
+            //プレイヤー追従キャラの場合
+            if (!npcFlg && partyNum > 0) {
+
+                // リーダーとの距離を計算（ピタゴラスの定理）
+                const distance = Phaser.Math.Distance.Between(this.x, this.y, x, y);
+
+                // 停止距離のしきい値（例：32px〜40px程度。キャラのサイズに合わせて調整）
+                const stopDistance = 32 * partyNum;
+
+                if (distance < stopDistance) {
+                    // 十分に近い場合は移動せず、その場で停止
+                    if (this.body) {
+                        (this.body as Phaser.Physics.Arcade.Body).setVelocity(0);
+                    }
+                    return;
+                }
+
+                // 停止距離より遠い場合は、移動先を少しずらす
+                const angle = Phaser.Math.Angle.Between(x, y, this.x, this.y);
+                const offsetX = Math.cos(angle) * stopDistance;
+                const offsetY = Math.sin(angle) * stopDistance;
+
+                this.moveToPositionX = x + offsetX;
+                this.moveToPositionY = y + offsetY;
+            }
+
+            //方向を設定
+            this.setMoveDirection(this.moveToPositionX, this.moveToPositionY);
+
+            //移動
+            this.scene.physics.moveTo(this, this.moveToPositionX, this.moveToPositionY, v, mt);
+
+            //移動中に設定
+            this.state = CharacterState.walking;
+
+            //移動アニメーション再生
+            this.anims.play(this.moveDirection, true);
         }
-        return { operatorX: operatorX, operatorY: operatorY }
+    }
+
+    //移動方向設定
+    private setMoveDirection(moveToPositionX: number, moveToPositionY: number) {
+
+        const rad = Phaser.Math.Angle.Between(this.x, this.y, moveToPositionX, moveToPositionY);
+
+        //左
+        if (rad < -135 * (Math.PI / 180) || rad > 135 * (Math.PI / 180)) {
+            this.moveDirection = this.walkLeft;
+            this.standframe = this.standLeft;
+        }
+        //右
+        if (rad > -45 * (Math.PI / 180) && rad < 45 * (Math.PI / 180)) {
+            this.moveDirection = this.walkRight;
+            this.standframe = this.standRight;
+        }
+        //上
+        if (rad < -45 * (Math.PI / 180) && rad > -135 * (Math.PI / 180)) {
+            this.moveDirection = this.walkUp;
+            this.standframe = this.standUp;
+        }
+        //下
+        if (rad > 45 * (Math.PI / 180) && rad < 135 * (Math.PI / 180)) {
+            this.moveDirection = this.walkDown;
+            this.standframe = this.standDown;
+        }
+
+        // console.log("右上", -45 * (Math.PI / 180))
+        // console.log("左上", -135 * (Math.PI / 180))
+        // console.log("左下", 135 * (Math.PI / 180))
+        // console.log("右下", 45 * (Math.PI / 180))
+    }
+
+    //移動先初期化。座標位置を外部から変更した場合は必ず呼び出すこと。
+    public initMoveToPosition() {
+        //イベント中の場合は処理しない
+        if (this.state === CharacterState.event) return;
+
+        if (!this.body) return;
+
+        (this.body as Phaser.Physics.Arcade.Body).setVelocity(0, 0);
+        // this.moveToPositionX = null;//移動先の値をnullに設定
+        // this.moveToPositionY = null;
+        this.state = CharacterState.normal;
+
+        // アニメーションがまだ再生されていない場合のみ再生
+        if (this.anims.currentAnim?.key !== this.standframe) {
+            this.anims.play(this.standframe, true);
+        }
+        //return this;//メソッドチェーンの記法。このメソッドの参照を返し、次のメソッドが実行可能となる。
+    }
+
+    //アニメーションを停止、イベント中などで使用
+    public stopAnimation() {
+        this.stop();
+        this.initMoveToPosition();
+        this.moveDirection = this.walkStop;
+    }
+
+    //アニメーションを設定する（移動しない）
+    public setAnimDirection(WalkKey: string) {
+
+        // getWalkKey()を使用する事
+        this.moveDirection = WalkKey;
+
+        //移動アニメーション再生
+        this.anims.play(this.moveDirection, true);
+    }
+
+    public setStandFrame(standkey: string) {
+
+        //getStandKey()を使用する事
+        this.standframe = standkey;
+
+        //停止アニメーション再生
+        this.anims.play(this.standframe, true);
+    }
+
+    public getCurrentStandFrame(): string { return this.standframe; }
+
+    // public getInitDirection() {
+    //     if (this.getCurrentStandFrame() === this.standLeft) {
+    //         return 'left';
+    //     } else if (this.getCurrentStandFrame() === this.standRight) {
+    //         return 'right';
+    //     } else if (this.getCurrentStandFrame() === this.standUp) {
+    //         return 'up';
+    //     } else if (this.getCurrentStandFrame() === this.standDown) {
+    //         return 'down';
+    //     }
+    // }
+
+    public getDirection(): string {
+        if (this.moveDirection === this.walkLeft || this.standframe === this.standLeft) { return 'left'; }
+        else if (this.moveDirection === this.walkRight || this.standframe === this.standRight) { return 'right' }
+        else if (this.moveDirection === this.walkUp || this.standframe === this.standUp) { return 'up' }
+        else if (this.moveDirection === this.walkDown || this.standframe === this.standDown) { return 'down' }
+        else { return '' }
     }
 }
-

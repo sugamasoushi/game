@@ -68,7 +68,7 @@ export class BattleTestButton {
             const gameStateManager = GameStateManager.getInstance();
             gameStateManager.updateState({
                 state: State.BATTLE,
-                battleData: { usePatern: 'normal', fieldHitEnemy: enemy, canNotRunaway: false }
+                battleData: { enemyDataList: ['enemy01'], fieldHitEnemy: enemy, canNotRunaway: false }
             }, 'debug');
         })
     }

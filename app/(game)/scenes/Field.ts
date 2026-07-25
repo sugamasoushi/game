@@ -59,7 +59,7 @@ export class Field extends Scene implements FieldScene {
             await this.fieldScenePresenter.execute(data.sceneKey);
 
             // 明示的にロード完了イベントを発火（必要に応じて）
-            this.game.events.emit('FIELD_LOADED_COMPLETE');
+            // this.game.events.emit('FIELD_LOADED_COMPLETE');
         } catch (error) {
             console.error("フィールドのロード中にエラーが発生しました:", error);
             return;

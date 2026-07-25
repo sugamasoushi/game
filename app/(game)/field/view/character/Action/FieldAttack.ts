@@ -21,12 +21,23 @@ export class FieldAttack {
         this.x = x;
         this.y = y;
 
-        const operator: { operatorX: number, operatorY: number } = this.sprite.getDirection();
+        const operator: { operatorX: number, operatorY: number } = this.createDirection(this.sprite.getDirection());
         this.effect = new MagicFrame(this.fieldScene, this.x, this.y, this.attackDuration, this.sprite);
 
         this.attack();
         this.attackTween(operator.operatorX, operator.operatorY);
     }
+
+    public createDirection(direction: string) {
+        let operatorX: number = 0;
+        let operatorY: number = 0;
+        if (direction === 'left') { operatorX = -1; }
+        else if (direction === 'right') { operatorX = 1; }
+        else if (direction === 'up') { operatorY = -1; }
+        else if (direction === 'down') { operatorY = 1; }
+        return { operatorX: operatorX, operatorY: operatorY }
+    }
+
 
     private attack() {
         const gameStateManager = GameStateManager.getInstance();
@@ -36,7 +47,7 @@ export class FieldAttack {
             (fieldEnemyList as Npc[]).forEach((enemy: Npc) => {
                 const hitEvent = this.fieldScene.physics.add.overlap(this.effect, enemy,
                     () => {
-                        //console.log('overlapCallback');
+                        // console.log('overlapCallback');
                         enemy.data.values.HP -= 10;
                         this.hitAction(enemy);
                         hitEvent.destroy();//重なった状態だと常に処理され続けるため、一回目処理後にoverlapを削除する。
@@ -59,7 +70,7 @@ export class FieldAttack {
             ease: 'sine.inout',
             duration: this.attackDuration,
             onComplete: () => {
-                
+
                 //sprite側で削除する
                 //this.effect.destroy();
             }
