@@ -115,17 +115,18 @@ export class EVENT010101 extends BaseEvent {
 
         //状態管理を更新
         const manager = GameStateManager.getInstance();
-        manager.updateState({
-            state: State.NOSTATE
-        }, 'NoState');
+        manager.updateState({ state: State.NOSTATE }, 'NoState');
 
         //設定を戻す
         this.fieldScene.events.emit('EVENT_END', true)
 
         // 再表示する（起こす）
-        if (manager.isVirtualPad) {
-            this.eventScene.scene.get('UI') as Phaser.Scene;
-            this.eventScene.scene.wake('UI');
+        const uIScene = this.eventScene.scene.get('UI') as Phaser.Scene;
+        this.eventScene.scene.wake('UI');
+
+        // 仮想パッドOFF
+        if (!manager.isVirtualPad) {
+            uIScene.events.emit('UI_VISIBLE_FALSE');
         }
 
     }

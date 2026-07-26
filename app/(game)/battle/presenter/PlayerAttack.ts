@@ -36,7 +36,7 @@ export default class PlayerAttack {
 
             (async () => {
                 await Promise.all([
-                    battleMessageWindow.messageOutput(this.attacker.getData('name') + 'の攻撃！', undefined),
+                    battleMessageWindow.messageOutput(this.attacker.getData('Name') + 'の攻撃！', undefined),
 
                     (() => {
                         if (skillType) {
@@ -70,7 +70,7 @@ export default class PlayerAttack {
                 const damage = Math.max(totalAttack - guardBonus, 1);
 
                 await Promise.all([
-                    battleMessageWindow.messageOutput(this.targetEnemy.getData('name') + 'に' + damage + 'のダメージ！', undefined),
+                    battleMessageWindow.messageOutput(this.targetEnemy.getData('Name') + 'に' + damage + 'のダメージ！', undefined),
                     this.blinking(this.targetEnemy)
                 ]);
 
@@ -80,7 +80,7 @@ export default class PlayerAttack {
                 //HPチェック
                 if (this.targetEnemy.data.values.HP <= 0) {
                     this.targetEnemy.data.values.HP = 0;
-                    battleMessageWindow.messageOutput(this.targetEnemy.getData('name') + 'を倒した！', 600);
+                    battleMessageWindow.messageOutput(this.targetEnemy.getData('Name') + 'を倒した！', 600);
                     await this.deleteEnemy(this.targetEnemy);
                 }
 

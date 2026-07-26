@@ -1,6 +1,6 @@
 import { Event } from "../../scenes/Event";
 import { BaseEvent } from "../../core/BaseEvent";
-import { FieldScene, EventObjState } from "../../lib/types";
+import { FieldScene } from "../../lib/types";
 import { EventTalk } from "../presenters/EventTalk";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { Npc } from "../../field/view/character/Npc";
@@ -45,7 +45,6 @@ export class EVENT010302 extends BaseEvent {
         //NPC設定
         this.characterGameObject = new CharacterGameObject();
         this.lamyNPC = (this.characterGameObject.getSprite(this.fieldScene, 'lamyNPC') as Npc);
-        this.lamyNPC.state = EventObjState.nowEvent;
         this.lamyNPC.initMoveToPosition();
     }
 

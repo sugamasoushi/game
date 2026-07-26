@@ -1,7 +1,6 @@
 import { FieldScene } from "@/app/(game)/lib/SceneTypes";
 import { CharacterState, MapLayerDepth } from "@/app/(game)/lib/FieldTypes";
 import { BaseCharacterSprite } from "@/app/(game)/core/BaseCharacterSprite";
-import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from '@/app/(game)/lib/StateTypes';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
@@ -124,6 +123,7 @@ export class Npc extends BaseCharacterSprite {
                         this.state === CharacterState.stop ||
                         this.state === CharacterState.walking)) {
 
+                    this.turnAroundToPlayer();
                     this.execNpcTalk();
                 }
             }
@@ -144,24 +144,25 @@ export class Npc extends BaseCharacterSprite {
         manager.updateState({ state: State.BUBBLE_TALK, eventObj: this }, this.bubbleTalkKey);
 
         //キャラの向きをチェック
-        const player = manager.currentPlayerPartyList[0] as Player;
-        const fieldObjChk = new FieldObjectCheck(player, this);
-        const playerDirection = fieldObjChk.getObjectDirection().object1Direction;
+        // const player = manager.currentPlayerPartyList[0] as Player;
+        // const fieldObjChk = new FieldObjectCheck(player, this);
+        // const playerDirection = fieldObjChk.getObjectDirection().object1Direction;
 
         //キャラの向きを設定
-        if (playerDirection === 'left') {
-            player.setStandFrame(player.getStandKey('left'));
-            this.turnAroundToPlayer();
-        } else if (playerDirection === 'right') {
-            player.setStandFrame(player.getStandKey('right'));
-            this.turnAroundToPlayer();
-        } else if (playerDirection === 'up') {
-            player.setStandFrame(player.getStandKey('up'));
-            this.turnAroundToPlayer();
-        } else if (playerDirection === 'down') {
-            player.setStandFrame(player.getStandKey('down'));
-            this.turnAroundToPlayer();
-        }
+        // if (playerDirection === 'left') {
+        //     player.setStandFrame(player.getStandKey('left'));
+        //     this.turnAroundToPlayer();
+        // } else if (playerDirection === 'right') {
+        //     player.setStandFrame(player.getStandKey('right'));
+        //     this.turnAroundToPlayer();
+        // } else if (playerDirection === 'up') {
+        //     player.setStandFrame(player.getStandKey('up'));
+        //     this.turnAroundToPlayer();
+        // } else if (playerDirection === 'down') {
+        //     player.setStandFrame(player.getStandKey('down'));
+        //     this.turnAroundToPlayer();
+        // }
+
 
         this.state = CharacterState.talking;
     }
@@ -326,13 +327,13 @@ export class Npc extends BaseCharacterSprite {
     private turnAroundToPlayer() {
         const player = GameStateManager.getInstance().currentPlayerPartyList[0] as Player;
         if (player.getCurrentStandFrame() === player.getStandKey('left')) {
-            this.standframe = this.standRight;
+            this.setStandFrame(this.getStandKey('right'))
         } else if (player.getCurrentStandFrame() === player.getStandKey('right')) {
-            this.standframe = this.standLeft;
+            this.setStandFrame(this.getStandKey('left'))
         } else if (player.getCurrentStandFrame() === player.getStandKey('up')) {
-            this.standframe = this.standDown;
+            this.setStandFrame(this.getStandKey('down'))
         } else if (player.getCurrentStandFrame() === player.getStandKey('down')) {
-            this.standframe = this.standUp;
+            this.setStandFrame(this.getStandKey('up'))
         }
     }
 

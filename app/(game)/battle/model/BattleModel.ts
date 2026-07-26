@@ -78,7 +78,7 @@ export class BattleModel {
                 const npcImageObject = this.battleScene.add.image(0, 0, fieldHitEnemy.getData('ImageKey'));
                 npcImageObject.setData(data);
                 npcImageObject.setData('NpcType', 'enemy');
-                npcImageObject.setData('name', searchEnemyData.getEnemyName(fieldHitEnemy.getData('ImageKey')));
+                npcImageObject.setData('Name', searchEnemyData.getEnemyName(fieldHitEnemy.getData('ImageKey')));
 
                 this.enemyPartyList.push(npcImageObject);
 
@@ -119,7 +119,7 @@ export class BattleModel {
                     Speed: enemyData!.Speed,
                     gold: enemyData!.gold
                 });
-                enemy.setData('name', enemyData!.Name);
+                enemy.setData('Name', enemyData!.Name);
 
                 this.enemyPartyList.push(enemy);
             }
@@ -136,6 +136,7 @@ export class BattleModel {
             const ImageKey = searchEnemyData.getEnemyData(enemyKey)!.ImageKey;
             const enemy = this.battleScene.add.image(0, 0, ImageKey);
             enemy.setData('ImageKey', ImageKey);
+            enemy.setData('NpcType', 'enemy');
 
             const enemyData = searchEnemyData.getEnemyData(enemyKey);
             const data: CharacterStatus = {
@@ -149,12 +150,10 @@ export class BattleModel {
                 Speed: enemyData!.Speed,
                 gold: enemyData!.gold
             }
-
             enemy.setData(data);
-            enemy.setData('NpcType', 'enemy');
 
             //名前の検索と設定
-            enemy.setData('name', ImageKey);
+            enemy.setData('Name', enemyData!.Name);
             this.enemyPartyList.push(enemy);
         }
     }
@@ -206,7 +205,7 @@ export class BattleModel {
                     Speed: enemyData.Speed,
                     gold: enemyData.gold
                 });
-                enemy.setData('name', enemyData.Name);
+                enemy.setData('Name', enemyData.Name);
             }
             this.enemyPartyList.push(enemy);
         }

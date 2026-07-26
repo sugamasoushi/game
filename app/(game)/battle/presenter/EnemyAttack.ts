@@ -36,7 +36,7 @@ export default class EnemyAttack {
 
             (async () => {
                 await Promise.all([
-                    battleMessageWindow.messageOutput(this.attacker.getData('name') + 'の攻撃！', undefined),
+                    battleMessageWindow.messageOutput(this.attacker.getData('Name') + 'の攻撃！', undefined),
                     await this.attackTween(),
                     this.leanBack()
                 ]);
@@ -49,19 +49,19 @@ export default class EnemyAttack {
                 //回避チェック
                 if (this.target.getData('avoid')) {
                     await Promise.all([
-                        battleMessageWindow.messageOutput(this.target.getData('name') + 'は回避した！', 600),
+                        battleMessageWindow.messageOutput(this.target.getData('Name') + 'は回避した！', 600),
                         this.soundScene.playSe('SE_highSpeedMove')
                     ]);
                 } else {
 
                     await Promise.all([
-                        battleMessageWindow.messageOutput(this.target.getData('name') + 'に' + damage + 'のダメージ！', undefined),
+                        battleMessageWindow.messageOutput(this.target.getData('Name') + 'に' + damage + 'のダメージ！', undefined),
                         this.blinking(targetIcon)
                     ]);
 
                     //ガードチェック
                     if (this.target.getData('guardPoint') > 0) {
-                        await battleMessageWindow.messageOutput(this.target.getData('name') + 'は防御した！', 600);
+                        await battleMessageWindow.messageOutput(this.target.getData('Name') + 'は防御した！', 600);
                         // this.target.setData('guardPoint', 0);
                     }
 

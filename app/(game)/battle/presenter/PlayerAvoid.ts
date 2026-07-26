@@ -34,7 +34,7 @@ export default class PlayerAvoid {
 
             (async () => {
 
-                await battleMessageWindow.messageOutput(this.battler.getData('name') + 'は身構えた！', undefined)
+                await battleMessageWindow.messageOutput(this.battler.getData('Name') + 'は身構えた！', undefined)
 
                 await new Promise<void>(resolve => {
                     this.battleScene.time.delayedCall(600, () => {

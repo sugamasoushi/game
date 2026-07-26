@@ -7,7 +7,6 @@ import { Player } from "../../field/view/character/Player";
 import { EventTalk } from "../presenters/EventTalk";
 import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { Sound } from "../../scenes/Sound";
-import { SearchEnemyData } from "../../Data/SearchEnemyData";
 import { GameStateManager } from "../../core/GameStateManager";
 
 export class EVENT010301 extends BaseEvent {
@@ -115,26 +114,8 @@ export class EVENT010301 extends BaseEvent {
             { lamy: ['へぁ？\n'] }
         ], this.characterGameObject);
 
-        //キャラステータス設定（imageKeyに対応するenemydataを適用）
-        const searchEnemyData = new SearchEnemyData(this.fieldScene.cache.json);
-        const lamyEnemyData = searchEnemyData.getEnemyData(this.lamyNPC.getData('ImageKey'));
-        if (lamyEnemyData) {
-            this.lamyNPC.setData({
-                level: lamyEnemyData.Level,
-                HP: lamyEnemyData.HP,
-                MP: lamyEnemyData.MP,
-                MaxHP: lamyEnemyData.MaxHP,
-                MaxMP: lamyEnemyData.MaxMP,
-                Attack: lamyEnemyData.Attack,
-                Guard: lamyEnemyData.Guard,
-                Speed: lamyEnemyData.Speed,
-                gold: lamyEnemyData.gold
-            });
-            this.lamyNPC.setData('name', lamyEnemyData.Name);
-        }
-
         //イベントバトル開始
-        this.fieldScene.events.emit('BATTLE', { enemyDataList: undefined, fieldHitEnemy: this.lamyNPC, canNotRunaway: true }, 'event010301');
+        this.fieldScene.events.emit('BATTLE', { enemyDataList: ['enemy00'], fieldHitEnemy: undefined, canNotRunaway: true }, 'event010301');
 
         //戦闘終了後、イベントを途中から開始
         const battleScene = this.eventScene.scene.get('Battle');

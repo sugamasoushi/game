@@ -38,7 +38,7 @@ export class PlayerView {
             else if (initStandKey === 'down') { player.setStandFrame(player.getStandKey('down')); }
 
             const searchCharacterData = new SearchCharacterData(this.gameScene.cache.json);
-            player.setData('name', searchCharacterData.getCharacterData(player.name).name)
+            player.setData('Name', searchCharacterData.getCharacterData(player.name).name)
 
             //各種設定
             player.setDataEnabled();
@@ -64,7 +64,7 @@ export class PlayerView {
 
                 const player2: Player = new Player(this.gameScene, playerX2, playerY2, 'lamy', this.tileMap.getMakeTilemap())
                 player2.state = CharacterState.normal;
-                player2.setData('name', searchCharacterData.getCharacterData(player2.name).name)
+                player2.setData('Name', searchCharacterData.getCharacterData(player2.name).name)
 
                 if (initStandKey === 'right') { player.setStandFrame(player.getStandKey('right')); }
                 else if (initStandKey === 'left') { player.setStandFrame(player.getStandKey('left')); }
@@ -91,7 +91,7 @@ export class PlayerView {
 
                 const player3: Player = new Player(this.gameScene, playerX, playerY, 'lamy', this.tileMap.getMakeTilemap())
                 player3.state = CharacterState.normal;
-                player3.setData('name', searchCharacterData.getCharacterData(player3.name).name)
+                player3.setData('Name', searchCharacterData.getCharacterData(player3.name).name)
 
                 if (initStandKey === 'right') { player.setStandFrame(player.getStandKey('right')); }
                 else if (initStandKey === 'left') { player.setStandFrame(player.getStandKey('left')); }
