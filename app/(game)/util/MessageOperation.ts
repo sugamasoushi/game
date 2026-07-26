@@ -1,6 +1,6 @@
 import { Sound } from '../scenes/Sound';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
-import { Subscription } from "rxjs";
+import { Subscription, skip } from "rxjs";
 import { take } from "rxjs/operators";
 import { filter } from "rxjs/operators";
 import { GameStateManager } from '../core/GameStateManager';
@@ -82,14 +82,15 @@ export class MessageOperation {
 
             const sub = inputManager.decideButton$.pipe(
                 filter(() => scene.sys.isActive()),
+                skip(1),//最初の1回は無視、タイプライターの最初の文字が表示される前にスキップされるのを防ぐ
+                //delay(100),//0.1秒遅延させることで、タイプライターの最初の文字が表示される前にスキップされるのを防ぐ
                 take(1)
             ).subscribe(() => {
+                console.log("skipTypeWriter")
                 skipTypeWriter();
             });
 
-            if (clickZone) {
-                clickZone.once('pointerdown', skipTypeWriter);
-            }
+            if (clickZone) { clickZone.once('pointerdown', skipTypeWriter); }
 
             this.typeWriterObject = scene.time.addEvent({
                 callback: () => {
@@ -228,7 +229,7 @@ export class MessageOperation {
     _deleteTween(scene: Phaser.Scene, deleteMessageObject: Phaser.GameObjects.GameObject[]) {//tweenはタイマー、リピート等の使い方をしなければGCで自動削除される。
         const gameStateManager = GameStateManager.getInstance();
         const player = gameStateManager.currentPlayerPartyList[0] as Player;
-        
+
         const targetX = this.deleteTargetX !== undefined ? this.deleteTargetX : player.x;
         const targetY = this.deleteTargetY !== undefined ? this.deleteTargetY : player.y;
 

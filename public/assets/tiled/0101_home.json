@@ -466,6 +466,40 @@
                  "width":32,
                  "x":480,
                  "y":256
+                }, 
+                {
+                 "height":32,
+                 "id":25,
+                 "name":"lunch",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkDefaultKey",
+                         "type":"string",
+                         "value":"bubbleTalk0101.talk003"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":448,
+                 "y":320
+                }, 
+                {
+                 "height":32,
+                 "id":26,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkDefaultKey",
+                         "type":"string",
+                         "value":"bubbleTalk0101.talk004"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":832,
+                 "y":256
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -510,6 +544,44 @@
                  "width":32,
                  "x":672,
                  "y":416
+                }, 
+                {
+                 "gid":8034,
+                 "height":32,
+                 "id":24,
+                 "name":"chest",
+                 "properties":[
+                        {
+                         "name":"bubbleTalkDefaultKey",
+                         "type":"string",
+                         "value":"bubbleTalk0102.talk005"
+                        }, 
+                        {
+                         "name":"id",
+                         "type":"string",
+                         "value":"3"
+                        }, 
+                        {
+                         "name":"item",
+                         "type":"string",
+                         "value":"\u3070\u3093\u305d\u3046\u3053\u3046"
+                        }, 
+                        {
+                         "name":"num",
+                         "type":"int",
+                         "value":2
+                        }, 
+                        {
+                         "name":"visible",
+                         "type":"bool",
+                         "value":false
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":800,
+                 "y":288
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -722,7 +794,7 @@
          "y":0
         }],
  "nextlayerid":23,
- "nextobjectid":22,
+ "nextobjectid":27,
  "orientation":"orthogonal",
  "properties":[
         {

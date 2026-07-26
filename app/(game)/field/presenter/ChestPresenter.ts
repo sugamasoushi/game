@@ -82,12 +82,15 @@ export class ChestPresenter {
         const boxId = obj.getData('id');
         if (boxId != null && this.fieldScene.cache.json.get('savedata').itemboxFlg[boxId] === 0) { return; }
 
+        obj.setVisible(obj.getData('visible'))
+
         //プレイヤーとの距離が近い場合
         if (Phaser.Math.Difference(obj.x, player.x) < 40 && Phaser.Math.Difference(obj.y, player.y) < 40) {
 
             const getItemName = obj.getData('item');
             const getItemNum = obj.getData('num');
             const bubbleTalkKey = obj.getData('bubbleTalkDefaultKey');
+
 
             //プレイヤーとオブジェクトのチェック
             const fieldPlayerChk = new FieldObjectCheck(player, obj as BaseCharacterSprite);
@@ -118,7 +121,7 @@ export class ChestPresenter {
                     }, [], this.fieldScene);
                     this.fieldScene.events.emit('GAME_INPUT_FALSE');
                     const uiScene = this.fieldScene.scene.get('UI');
-                    uiScene.events.emit('UI_FREE_MESSAGE_WINDOW', getItemName + 'を' + getItemNum + '個手に入れた！', time);
+                    uiScene.events.emit('UI_FREE_MESSAGE_WINDOW', getItemName + 'を ' + getItemNum + ' 個手に入れた！', time);
                 });
 
                 obj.play('chest_open');

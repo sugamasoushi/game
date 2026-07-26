@@ -5,7 +5,7 @@ import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from '@/app/(game)/lib/StateTypes';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { Player } from './Player';
 import { Bubble } from "@/app/(game)/util/Sprite/Bubble";
 
@@ -108,18 +108,21 @@ export class Npc extends BaseCharacterSprite {
         bubbleSprite.execute();
 
         //パッド設定
-        this.subs.add(this.inputManager.decideButton$.subscribe(() => {
+        this.subs.add(this.inputManager.decideButton$.pipe(
+            take(1)
+        ).subscribe(() => {
             const manager = GameStateManager.getInstance();
             if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
                 // 会話不可の状態
 
             } else {
+
                 // player と target の矩形が重なっているか
                 const player = manager.currentPlayerPartyList[0] as Player;
                 if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), player.getBounds()) &&
                     (this.state === CharacterState.normal ||
-                    this.state === CharacterState.stop) ||
-                    this.state === CharacterState.walking) {
+                        this.state === CharacterState.stop ||
+                        this.state === CharacterState.walking)) {
 
                     this.execNpcTalk();
                 }

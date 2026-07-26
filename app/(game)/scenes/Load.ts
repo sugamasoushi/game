@@ -102,7 +102,7 @@ export class Load extends Scene {
         this.load.image('noise', 'assets/img/effect/noise/Super Noise/Super Noise 14 - 512x512.png');
         this.load.image('noise2', 'assets/img/effect/noise/Super Perlin/Super Perlin 12 - 512x512.png');
 
-        this.load.spritesheet('girl', 'assets/img/spritesheet/char_45_75.png',
+        this.load.spritesheet('tex_girl', 'assets/img/spritesheet/char_45_75.png',
             { frameWidth: 45, frameHeight: 75 }
         );
         this.load.spritesheet('tex_meina', 'assets/img/spritesheet/meina2_32_40.png',
