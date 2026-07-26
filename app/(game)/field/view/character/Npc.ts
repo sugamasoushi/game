@@ -5,7 +5,7 @@ import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { GameStateManager } from "@/app/(game)/core/GameStateManager";
 import { State } from '@/app/(game)/lib/StateTypes';
 import { InputManager } from '@/app/(game)/core/input/InputManager';
-import { Subscription, take } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Player } from './Player';
 import { Bubble } from "@/app/(game)/util/Sprite/Bubble";
 
@@ -109,7 +109,7 @@ export class Npc extends BaseCharacterSprite {
 
         //パッド設定
         this.subs.add(this.inputManager.decideButton$.pipe(
-            take(1)
+            //take(1)
         ).subscribe(() => {
             const manager = GameStateManager.getInstance();
             if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
