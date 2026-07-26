@@ -30,6 +30,7 @@ export class Npc extends BaseCharacterSprite {
 
         this.setData('NpcType', npcType)
         this.setData('ImageKey', imageKey)
+        this.name = imageKey;
     }
 
     preUpdate(time: number, delta: number) {
@@ -63,9 +64,9 @@ export class Npc extends BaseCharacterSprite {
                 this.energyGaugeBack.destroy();
             })
         };
-        this.energyGauge.setDepth(this.depth);
+        this.energyGauge.setDepth(MapLayerDepth.Highest + 9999);
         this.energyGauge.clear();//再描画のためクリア
-        this.energyGaugeBack.setDepth(this.depth - 1);
+        this.energyGaugeBack.setDepth(MapLayerDepth.Highest + 9998);
         this.energyGaugeBack.clear();//再描画のためクリア
 
         const rectR = 4;//角の丸みの半径

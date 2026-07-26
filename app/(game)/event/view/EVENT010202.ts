@@ -57,7 +57,7 @@ export class EVENT010202 extends BaseEvent {
             {
                 meina: ['ちょっと山を下りて散策しようかな\n',
                     'そういえば最近ラミア族が多いんだよね\n',
-                    'まだ勝てそうにないから気を付けよう・・・。\n']
+                    '勝てそうにないから気を付けよう・・・。\n']
             }
         ], this.characterGameObject);
 

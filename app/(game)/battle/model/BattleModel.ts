@@ -79,6 +79,7 @@ export class BattleModel {
                 npcImageObject.setData(data);
                 npcImageObject.setData('NpcType', 'enemy');
                 npcImageObject.setData('Name', searchEnemyData.getEnemyName(fieldHitEnemy.getData('ImageKey')));
+                // enemy.nameは設定済み;
 
                 this.enemyPartyList.push(npcImageObject);
 
@@ -120,6 +121,7 @@ export class BattleModel {
                     gold: enemyData!.gold
                 });
                 enemy.setData('Name', enemyData!.Name);
+                enemy.name = enemyKey;
 
                 this.enemyPartyList.push(enemy);
             }
@@ -154,6 +156,7 @@ export class BattleModel {
 
             //名前の検索と設定
             enemy.setData('Name', enemyData!.Name);
+            enemy.name = ImageKey;
             this.enemyPartyList.push(enemy);
         }
     }

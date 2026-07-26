@@ -1,16 +1,22 @@
 //NewGame選択時のイベント
 import { Event } from "../../scenes/Event";
 import { MessageObject } from "../../util/MessageObject";
-import { FieldScene, State } from "../../lib/types";
+import { FieldScene, State, CharacterState } from "../../lib/types";
 import { BaseEvent } from "../../core/BaseEvent";
 
 import { GameStateManager } from "../../core/GameStateManager";
 import { InputManager } from "../../core/input/InputManager";
 import { Player } from "../../field/view/character/Player";
+import { SearchCharacterData } from './../../Data/SearchCharacterData';
+import { CharacterGameObject } from "./CharacterGameObject";
+import { EventTalk } from "../presenters/EventTalk";
 
 //Event.tsは未使用
 export class EVENT010101 extends BaseEvent {
     private fieldScene: FieldScene;
+    private player: Player;
+    private searchCharacterData: SearchCharacterData;
+    private characterGameObject: CharacterGameObject;
 
     constructor(eventScene: Event, eventObject: Phaser.Physics.Arcade.Sprite) {
         super(eventScene, eventObject);
@@ -23,8 +29,14 @@ export class EVENT010101 extends BaseEvent {
         this.updateEventFlg('EVENT010101', false);
         this.switchingEventObjFlg('EVENT010101', false);
 
+        //プレイヤー設定
         const gameStateManager = GameStateManager.getInstance();
-        (gameStateManager.currentPlayerPartyList[0] as Player).stopAnimation();
+        this.player = gameStateManager.currentPlayerPartyList[0] as Player;
+        this.player.state = CharacterState.event;
+        this.player.stopAnimation();
+
+        //画像キーデータ取得
+        this.searchCharacterData = new SearchCharacterData(this.eventScene.cache.json);
     }
 
     //イベント実行
@@ -48,7 +60,7 @@ export class EVENT010101 extends BaseEvent {
             + '謎の鶏に育てられ、基本的な生活習慣は身についており、最近は魚料理を夢見ています。\n'
             + '山奥ですからね。\n'
             + '\n'
-            + 'グローバルスタンダードな言語を習得しているが、読書は苦手。\n'
+            + 'グローバルでスタンダードな言語を習得しているが、読書は苦手。\n'
             + '基礎学力はそこそこ高いが世間知らず。\n'
             + 'この間も食料調達に町へ出かけた際、道中で狩った熊をそのまま売りつけてしまったとか。\n'
             + '\n'
@@ -85,6 +97,7 @@ export class EVENT010101 extends BaseEvent {
                 }
             });
 
+            // マウスクリックでエピローグ終了
             this.eventScene.input.once('pointerdown', doResolve);
 
             const inputManager = InputManager.getInstance(this.eventScene);
@@ -108,14 +121,41 @@ export class EVENT010101 extends BaseEvent {
             });
         });
 
+
+        //会話用クラスのインスタンス生成
+        const eventTalk = new EventTalk(this.eventScene);
+        eventTalk.init();
+
+        //キャラの画像キーを取得
+        const playerImageKey = this.searchCharacterData.getCharacterData('meina').normal;
+
+        //キャラ画像を配置
+        this.characterGameObject = new CharacterGameObject();
+        await this.characterGameObject.setCharacterImage(this.eventScene, 2000, 700, 'meina', playerImageKey, 1000, 0.6, 200)
+
+        await eventTalk.execTalk([
+            {
+                meina: ['ごちそうさまでした。\n',
+                    'う～ん、そろそろ食料が尽きてきたし\n',
+                    '今日は狩にでも行くか\n']
+            }
+        ], this.characterGameObject);
+
+        await this.stopAnyTime(200);
+
         this.eventEnd();
     }
 
     override async eventEnd(): Promise<void> {
 
+        const playerImage = this.characterGameObject.getCharacterImage('meina');
+        this.characterGameObject.scrollOutImage(playerImage, 2000, 200)
+
         //状態管理を更新
         const manager = GameStateManager.getInstance();
         manager.updateState({ state: State.NOSTATE }, 'NoState');
+
+        this.player.state = CharacterState.normal;
 
         //設定を戻す
         this.fieldScene.events.emit('EVENT_END', true)

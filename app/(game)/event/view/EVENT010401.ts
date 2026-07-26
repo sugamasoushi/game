@@ -183,6 +183,7 @@ export class EVENT010401 extends BaseEvent {
         ]);
 
         await this.eventTalk.execTalk([
+            { grandpa: ['帰ってきたと思ったら\n', 'ラミアを連れてくるとはたまげたわい\n'] },
             { grandpa: ['それにしてもよく食べるのぉ\n', 'よほど腹減ってたんじゃな\n'] },
             { lamy: ['もぐも・・・鶏がしゃべった！？\n'] },
             { meina: ['あんたも蛇なのにしゃべってるじゃん？\n'] },
@@ -269,7 +270,7 @@ export class EVENT010401 extends BaseEvent {
             this.characterGameObject.scrollInImage(lamyImage, 200, 200)
         ]);
         await this.eventTalk.execTalk([
-            { meina: ['よし、それじゃあ狩に行こうか。\n'] },
+            { meina: ['よし、それじゃあ狩に行くよ！\n'] },
             { lamy: ['お～！腕が鳴るね！\n'] }
         ], this.characterGameObject);
         await Promise.all([

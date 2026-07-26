@@ -8,6 +8,7 @@ import { GameSettingData } from "../../Data/GameSettingData";
 import { GameStateManager } from "../../core/GameStateManager";
 import { SearchBattleField } from "./battoleField/SearchBattleField";
 import { SearchBattleFieldData } from "../../Data/SearchBattleFieldData";
+import { SearchEnemyData } from "../../Data/SearchEnemyData";
 
 export class EnemySelectWindow extends Phaser.GameObjects.Container {
     private debugFlg: boolean | undefined;
@@ -97,22 +98,29 @@ export class EnemySelectWindow extends Phaser.GameObjects.Container {
         const serchInstance = new SearchBattleFieldData(this.scene.cache.json);
         const battleField = serchInstance.getBattleFieldData(battleFieldKey);
         const lightFlag = battleField?.light;
+        const searchEnemyData = new SearchEnemyData(this.scene.cache.json)
 
         const standardPosition = Number(this.scene.game.config.height) * 0.7;
 
         //キャラ画像の配置、キャラ等身（高さ）はイラストを調整すること
         for (const enemy of this.enemyPartyList) {
+
+            const imageHeightUp = searchEnemyData.getEnemyData(enemy.name)?.ImageHeightUp ? searchEnemyData.getEnemyData(enemy.name)?.ImageHeightUp : 0;
+            const hpGageHeightUp = searchEnemyData.getEnemyData(enemy.name)?.HpGageHeightUp ? searchEnemyData.getEnemyData(enemy.name)?.HpGageHeightUp : 0;
+
             enemy.setOrigin(0);
             enemy.x = maxWidth;
-            enemy.y = standardPosition - enemy.height;
+            enemy.y = standardPosition - enemy.height - imageHeightUp!;
+
+            console.log(enemy.name, imageHeightUp!)
 
             //ゲージ作成配置
             const backGaugeHP = new EnergyGauge(this.scene, enemy, 'MaxHP');
             const gaugeHP = new EnergyGauge(this.scene, enemy, 'HP');
             const posX = maxWidth + (enemy.width * enemy.scaleX / 2 - backGaugeHP.getWidth() / 2);
 
-            backGaugeHP.setPosition(posX, enemy.y - 30);
-            gaugeHP.setPosition(posX, enemy.y - 30);
+            backGaugeHP.setPosition(posX, enemy.y - hpGageHeightUp!);
+            gaugeHP.setPosition(posX, enemy.y - hpGageHeightUp!);
 
             //コンテナに追加
             this.add([enemy, backGaugeHP, gaugeHP]);

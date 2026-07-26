@@ -4,6 +4,8 @@ export interface EnemyStatus {
     SpritesheetKey: string,
     SpritesheetKeyOrder: string,
     ImageKey: string,
+    ImageHeightUp: number,
+    HpGageHeightUp:number,
     Name: string;
     Level: number;
     HP: number;

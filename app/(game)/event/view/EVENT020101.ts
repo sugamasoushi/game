@@ -131,7 +131,7 @@ export class EVENT020101 extends BaseEvent {
         await this.eventTalk.execTalk([
             { meina: ['いきなり特攻するな馬鹿！！\n', '熊の肥やしにでもなるつもりだったの！？\n'] },
             { lamy: ['あ、あたし不味いから吐き出されたって！！\n'] },
-            { meina: ['そういう話じゃないって！！\n', 'この蛇食わして太らせるべきだったか・・・？\n'] },
+            { meina: ['そういう話じゃないって！！\n', '・・・この蛇食わして太らせるべきだったか？\n'] },
             { lamy: ['ちょっと！！そこまで言うな！！\n'] }
         ], this.characterGameObject);
 

@@ -8,6 +8,8 @@ import { SearchCharacterData } from "../../Data/SearchCharacterData";
 import { Sound } from "../../scenes/Sound";
 import { GameStateManager } from "../../core/GameStateManager";
 import { SelectAllow } from "../../util/SelectAllow";
+import { InputManager } from '@/app/(game)/core/input/InputManager';
+import { Subscription } from 'rxjs';
 
 export class EVENT020301 extends BaseEvent {
     private fieldScene: FieldScene;
@@ -75,8 +77,6 @@ export class EVENT020301 extends BaseEvent {
         });
         await this.execFadeIn();
 
-        //this.fieldScene.cameras.main.pan(this.meina.x - 50, this.meina.y, 500, 'Linear', false)
-
         /*会話---------------------------------------------------------------------------------*/
 
         //キャラの画像キーを取得
@@ -132,6 +132,9 @@ export class EVENT020301 extends BaseEvent {
         //現在の画像番号
         let currentImageIndex = -1;
 
+        const inputManager = InputManager.getInstance(this.eventScene);
+        const subs = new Subscription();
+
         await new Promise<void>(resolve => {
             const slideImage = (instructions: string) => {
 
@@ -151,6 +154,7 @@ export class EVENT020301 extends BaseEvent {
                             complete: () => {
                                 //仮想コントローラを再表示
                                 this.uiScene.scene.setVisible(true);
+                                subs.unsubscribe();
                                 leftArrow.destroy();
                                 rightArrow.destroy();
                                 resolve();
@@ -184,9 +188,13 @@ export class EVENT020301 extends BaseEvent {
 
             //左矢印押下
             leftArrow.on('pointerdown', () => { slideImage('SLIDE_LEFT'); });
+            subs.add(inputManager.cancelButton$.subscribe(() => { slideImage('SLIDE_LEFT'); }));
+            subs.add(inputManager.leftButton$.subscribe(() => { slideImage('SLIDE_LEFT'); }));
 
             //右矢印押下
             rightArrow.on('pointerdown', () => { slideImage('SLIDE_RIGHT'); });
+            subs.add(inputManager.decideButton$.subscribe(() => { slideImage('SLIDE_RIGHT'); }));
+            subs.add(inputManager.rightButton$.subscribe(() => { slideImage('SLIDE_RIGHT'); }));
 
             //最初のスライドを実行
             slideImage('SLIDE_RIGHT');

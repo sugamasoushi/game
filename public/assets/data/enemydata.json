@@ -3,6 +3,8 @@
     "EnemyNameData": {
         "enemy00": {
             "ImageKey": "enemy00",
+            "ImageHeightUp": 20,
+            "HpGageHeightUp": 30,
             "Name": "ラミア娘",
             "Level": 1,
             "HP": 40,
@@ -16,6 +18,8 @@
         },
         "enemy01": {
             "ImageKey": "enemy01",
+            "ImageHeightUp": 20,
+            "HpGageHeightUp": 30,
             "Name": "ラミア",
             "Level": 2,
             "HP": 50,
@@ -32,6 +36,8 @@
             "SpritesheetKey": "tex_enemy02",
             "SpritesheetKeyOrder": "up,right,down,left",
             "ImageKey": "enemy02",
+            "ImageHeightUp": 100,
+            "HpGageHeightUp": 30,
             "Name": "いらすとやのスライム",
             "Level": 1,
             "HP": 30,
@@ -45,6 +51,8 @@
         },
         "enemy03": {
             "ImageKey": "enemy03",
+            "ImageHeightUp": -30,
+            "HpGageHeightUp": 30,
             "Name": "グレートベア",
             "Level": 1,
             "HP": 90,

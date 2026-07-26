@@ -24,9 +24,16 @@ const baseHeight = 720;
 
 export let isDebug = false;
 
-// 開発環境 (npm run dev) の時だけ true になる
+// 開発モード「npm run dev」
 export const isDev = process.env.NODE_ENV === 'development';
-isDebug = isDev;
+if (isDev) { isDebug = isDev; }
+
+// 本番モード「npm run dev:prod」
+export const isProd = process.env.NEXT_PUBLIC_PRODUCTION === 'true';
+if (isProd) {
+    isDebug = false;
+    console.log('本番モードで起動')
+}
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
