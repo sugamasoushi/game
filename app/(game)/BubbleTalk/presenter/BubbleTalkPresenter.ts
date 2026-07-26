@@ -5,6 +5,8 @@ import { FieldObjectCheck } from "@/app/(game)/util/FieldObjectCheck";
 import { Player } from "@/app/(game)/field/view/character/Player";
 import { Npc } from "@/app/(game)/field/view/character/Npc";
 import { State } from "@/app/(game)/lib/StateTypes";
+import { CharacterState } from "../../lib/FieldTypes";
+import { InputManager } from "../../core/input/InputManager";
 
 export class BubbleTalkPresenter {
     constructor(
@@ -77,5 +79,15 @@ export class BubbleTalkPresenter {
         manager.updateState({ state: State.NOSTATE }, 'BubbleTalkEnd');
 
         this.scene.scene.stop();
+
+        // NPCの状態を元に戻す
+        const npc = manager.currentEventObj as Npc;
+        npc.state = CharacterState.normal;
+
+        //Fieldシーン取得
+        const fieldScene = this.scene.scene.get('Field');
+
+        // 入力マネージャーのターゲットをGameシーンに戻す
+        InputManager.getInstance(fieldScene);
     }
 }

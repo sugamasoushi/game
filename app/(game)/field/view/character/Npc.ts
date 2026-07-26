@@ -96,6 +96,7 @@ export class Npc extends BaseCharacterSprite {
         this.energyGauge.strokeRoundedRect(-1 * rectR, -1 * rectR, maxWidth, height, rectR);
     }
 
+    //吹き出し会話の設定
     public setBubbleTalk(bubbleTalkKey: string) {
         this.bubbleTalkKey = bubbleTalkKey;
 
@@ -111,11 +112,14 @@ export class Npc extends BaseCharacterSprite {
             const manager = GameStateManager.getInstance();
             if (manager.currentState === State.BUBBLE_TALK || manager.currentState === State.EVENT || manager.currentState === State.MENU || manager.currentState === State.BATTLE) {
                 // 会話不可の状態
+
             } else {
                 // player と target の矩形が重なっているか
                 const player = manager.currentPlayerPartyList[0] as Player;
                 if (Phaser.Geom.Intersects.RectangleToRectangle(this.getBounds(), player.getBounds()) &&
-                    this.state === CharacterState.normal) {
+                    (this.state === CharacterState.normal ||
+                    this.state === CharacterState.stop) ||
+                    this.state === CharacterState.walking) {
 
                     this.execNpcTalk();
                 }
@@ -132,6 +136,7 @@ export class Npc extends BaseCharacterSprite {
     public execNpcTalk() {
         if (this.state === CharacterState.talking) return;
 
+        //吹き出し会話はBubkeTalkシーンで実行
         const manager = GameStateManager.getInstance();
         manager.updateState({ state: State.BUBBLE_TALK, eventObj: this }, this.bubbleTalkKey);
 
@@ -154,6 +159,8 @@ export class Npc extends BaseCharacterSprite {
             player.setStandFrame(player.getStandKey('down'));
             this.turnAroundToPlayer();
         }
+
+        this.state = CharacterState.talking;
     }
 
     /**
