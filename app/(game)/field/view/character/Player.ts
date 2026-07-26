@@ -230,6 +230,31 @@ export class Player extends BaseCharacterSprite {
             targetposition = history[history.length - followDelay];
             beforeTargetposition = history[history.length - followDelay - 1];
 
+
+            //直線移動時の座標位置補正
+            const deltaX = targetposition.x - beforeTargetposition.x;
+            const deltaY = targetposition.y - beforeTargetposition.y;
+            const movedStraight = (deltaX !== 0 && deltaY === 0) || (deltaX === 0 && deltaY !== 0);
+            const previousMovedDiagonally = this.lastFollowDeltaX !== 0 && this.lastFollowDeltaY !== 0;
+
+            if (previousMovedDiagonally && movedStraight && !this.straightMoveCorrectionApplied) {
+                if (deltaX !== 0 && deltaY === 0) {
+                    this.setPosition(targetposition.x, this.leader!.y);
+                } else if (deltaY !== 0 && deltaX === 0) {
+                    this.setPosition(this.leader!.x, targetposition.y);
+                }
+                this.straightMoveCorrectionApplied = true;
+            }
+
+            if (!movedStraight) {
+                this.straightMoveCorrectionApplied = false;
+            }
+
+            this.lastFollowDeltaX = deltaX;
+            this.lastFollowDeltaY = deltaY;
+
+
+
             // leaderが前フレームで壁に衝突していた場合は追従しない
             // body.blocked は物理エンジンが実行済みの前フレームの衝突状態を保持しており
             // preUpdate（物理実行前）の時点で正しく参照できる
@@ -311,27 +336,7 @@ export class Player extends BaseCharacterSprite {
                     }
                 }
 
-                //直線移動時の座標位置補正
-                const deltaX = targetposition.x - beforeTargetposition.x;
-                const deltaY = targetposition.y - beforeTargetposition.y;
-                const movedStraight = (deltaX !== 0 && deltaY === 0) || (deltaX === 0 && deltaY !== 0);
-                const previousMovedDiagonally = this.lastFollowDeltaX !== 0 && this.lastFollowDeltaY !== 0;
 
-                if (previousMovedDiagonally && movedStraight && !this.straightMoveCorrectionApplied) {
-                    if (deltaX !== 0 && deltaY === 0) {
-                        this.setPosition(targetposition.x, this.leader!.y);
-                    } else if (deltaY !== 0 && deltaX === 0) {
-                        this.setPosition(this.leader!.x, targetposition.y);
-                    }
-                    this.straightMoveCorrectionApplied = true;
-                }
-
-                if (!movedStraight) {
-                    this.straightMoveCorrectionApplied = false;
-                }
-
-                this.lastFollowDeltaX = deltaX;
-                this.lastFollowDeltaY = deltaY;
             }
 
             //先頭キャラが停止していたら停止

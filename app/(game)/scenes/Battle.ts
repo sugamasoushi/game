@@ -22,6 +22,8 @@ import { gameStateManager } from "../core/GameStateManager";
 import { GameStateManager } from "../core/GameStateManager";
 import { CacheDataUpdate } from "../core/CacheDataUpdate";
 
+import { InputManager } from '@/app/(game)/core/input/InputManager';
+
 export class Battle extends Phaser.Scene implements BattleScene {
 
     //model
@@ -140,6 +142,12 @@ export class Battle extends Phaser.Scene implements BattleScene {
             duration: 700,
             amount: 40,
             onComplete: () => {
+
+                //Fieldシーン取得
+                const fieldScene = this.scene.get('Field');
+
+                // 入力マネージャーのターゲットをGameシーンに戻す
+                InputManager.getInstance(fieldScene);
 
                 //シーンの更新
                 const manager = GameStateManager.getInstance();

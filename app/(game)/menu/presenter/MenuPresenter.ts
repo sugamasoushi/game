@@ -5,6 +5,7 @@ import { CacheDataUpdate } from "../../core/CacheDataUpdate";
 import { GameStateManager } from '../../core/GameStateManager';
 import { State } from '../../lib/types';
 import { Sound } from '../../scenes/Sound';
+import { InputManager } from './../../core/input/InputManager';
 
 export class MenuPresenter {
 
@@ -79,6 +80,9 @@ export class MenuPresenter {
 
             //状態管理クラス
             const gameStateManager = GameStateManager.getInstance();
+
+            // 入力マネージャーのターゲットをGameシーンに戻す
+            InputManager.getInstance(this.fieldScene);
 
             //状態更新
             gameStateManager.updateState({ state: State.FIELD_RESUME }, 'from Event');

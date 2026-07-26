@@ -178,6 +178,16 @@ export class InputManager {
         this.gameKeys = {};
     }
 
+    public clearCurrentPadInputState() {
+        this.previousPadButtons = {};
+        this._virtualPadDirection = null;
+        this.inputAcceptable = false;
+
+        this.scene?.time?.delayedCall(0, () => {
+            this.inputAcceptable = true;
+        });
+    }
+
     public static getInstance(scene: Phaser.Scene) {
         if (!this.instance) {
             console.log('new InputManager()');
@@ -186,6 +196,7 @@ export class InputManager {
         // シーンが変わった場合、またはシーンが再起動されキー設定がクリアされている場合のみキーボード入力を再設定
         if (this.instance.scene !== scene || Object.keys(this.instance.gameKeys).length === 0) {
             this.instance.scene = scene;
+            this.instance.clearCurrentPadInputState();
             this.instance.setKeyboardInput();
         }
         return this.instance;

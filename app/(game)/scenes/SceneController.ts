@@ -158,6 +158,7 @@ export class SceneController extends Scene {
 
     private transitionToMenu(sceneKey: string) {
         console.log('Menu')
+
         this.scene.pause('Field');
         this.scene.launch('Menu', { sceneKey });
     }

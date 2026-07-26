@@ -281,7 +281,6 @@ export class FieldScenePresenter {
 
             //状態更新
             gameStateManager.updateState({ state: State.NOSTATE }, 'NoState');
-
         })
 
         this.fieldScene.events.on('EVENT_START', (eventObj: Phaser.Physics.Arcade.Sprite) => {
