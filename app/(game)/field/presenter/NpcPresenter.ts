@@ -9,8 +9,6 @@ export class NpcPresenter {
         private npcModel: NpcModel,
         private npcView: NpcView
     ) {
-        this.npcModel = new NpcModel(fieldScene);
-        this.npcView = new NpcView(this.fieldScene);
     }
 
     public update(time: number, delta: number) {

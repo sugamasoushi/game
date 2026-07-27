@@ -23,8 +23,6 @@ export class PlayerPresenter {
         private playerView: PlayerView,
         private tileMap: TileMap
     ) {
-        this.playerModel = new PlayerModel(fieldScene);
-        this.playerView = new PlayerView(this.fieldScene, this.tileMap);
         this.inputManager = InputManager.getInstance(this.fieldScene);
     }
 
@@ -37,7 +35,7 @@ export class PlayerPresenter {
     // プレイヤーの初期化と入力設定を行う
     public async execute() {
         await this.playerModel.execute();
-        await this.playerView.execute();
+        await this.playerView.execute(this.tileMap);
 
         this.execClickMove();
         this.execKeyMove();

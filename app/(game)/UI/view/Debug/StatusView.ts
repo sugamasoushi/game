@@ -38,7 +38,7 @@ export class StatusView {
         if (meina) {
             const x = Math.round(meina.x);
             const y = Math.round(meina.y);
-            this.statusText.setText(`X: ${x}, Y: ${y}`);
+            this.statusText.setText(`X: ${x}, Y: ${y}\ndepth: ${Math.floor(meina.depth)}`);
         } else {
             this.statusText.setText('');
         }

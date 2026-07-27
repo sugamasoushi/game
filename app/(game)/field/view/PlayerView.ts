@@ -8,10 +8,10 @@ import { GameStateManager } from "../../core/GameStateManager";
 export class PlayerView {
 
     private playerPartyList: Player[] = [];
+    private tileMap: TileMap;
 
     constructor(
-        private gameScene: FieldScene,
-        private tileMap: TileMap
+        private gameScene: FieldScene
     ) { }
 
     public update(time: number, delta: number) {
@@ -19,7 +19,8 @@ export class PlayerView {
         void delta;
     }
 
-    public execute() {
+    public execute(tileMap: TileMap) {
+        this.tileMap = tileMap;
         return new Promise<void>(async (resolve) => {
             const gameStateManager = GameStateManager.getInstance();
             const fieldData = gameStateManager.currentFieldData;

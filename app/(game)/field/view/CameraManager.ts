@@ -74,6 +74,7 @@ export class CameraManager {
 
         if (mainCamera.postFX) {
 
+            //カメラにかかっているエフェクトをクリア
             mainCamera.postFX.clear();
 
             // カラーマトリックスエフェクトをカメラに追加

@@ -84,7 +84,7 @@ export class Player extends BaseCharacterSprite {
         }
         this.updateStopWalk();
 
-        //depthの設定
+        //depthの設定。足元を基準とする。
         this.depthValue = this.y + (32 / 2) * this.scale
         if (this.name === 'meina') {
             this.setDepth(MapLayerDepth.High + this.depthValue);

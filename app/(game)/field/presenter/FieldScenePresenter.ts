@@ -42,6 +42,10 @@ import { CollisionObjectPresenter } from "./CollisionObjectPresenter";
 import { CollisionObjectView } from "../view/CollisionObjectView";
 import { CollisionObjectModel } from "../model/CollisionObjectModel";
 
+import { TreePresenter } from "./TreePresenter";
+import { TreeView } from "../view/TreeView";
+import { TreeModel } from "../model/TreeModel";
+
 export class FieldScenePresenter {
     private subs = new Subscription(); // 購読をまとめる箱
     private uiScene: Phaser.Scene;
@@ -50,7 +54,7 @@ export class FieldScenePresenter {
     private mapObject: MapObject;
     private mapEffect: MapEffect;
 
-    private playermodel: PlayerModel;
+    private playerModel: PlayerModel;
     private playerView: PlayerView;
     private playerPresenter: PlayerPresenter;
 
@@ -78,6 +82,10 @@ export class FieldScenePresenter {
     private collisionObjectView: CollisionObjectView;
     private collisionObjectModel: CollisionObjectModel;
 
+    private treeModel: TreeModel;
+    private treeView: TreeView;
+    private treePresenter: TreePresenter;
+
     constructor(
         private fieldScene: FieldScene,
         private fieldSceneModel: FieldSceneModel,
@@ -86,6 +94,21 @@ export class FieldScenePresenter {
     ) {
         this.fieldScene = fieldScene;
         this.fieldSceneModel = fieldSceneModel;
+
+        this.playerModel = new PlayerModel(fieldScene);
+        this.playerView = new PlayerView(this.fieldScene);
+        this.npcModel = new NpcModel(fieldScene);
+        this.npcView = new NpcView(this.fieldScene);
+        this.mapMoveObjectModel = new MapMoveObjectModel(this.fieldScene);
+        this.mapMoveObjectView = new MapMoveObjectView(this.fieldScene);
+        this.eventObjectModel = new EventObjectModel(this.fieldScene);
+        this.eventObjectView = new EventObjectView(this.fieldScene);
+        this.chestModel = new ChestModel(fieldScene);
+        this.chestView = new ChestView(fieldScene);
+        this.collisionObjectModel = new CollisionObjectModel(this.fieldScene);
+        this.collisionObjectView = new CollisionObjectView(this.fieldScene);
+        this.treeModel = new TreeModel(fieldScene);
+        this.treeView = new TreeView(fieldScene);
 
         this.fieldSceneModel.execute();
 
@@ -101,6 +124,8 @@ export class FieldScenePresenter {
         if (this.npcPresenter) { this.npcPresenter.update(time, delta); }
         if (this.npcView) { this.npcView.update(time, delta); }
         if (this.mapEffect) { this.mapEffect.update(time, delta); }
+        if (this.treeView) { this.treeView.update(time, delta); }
+        if (this.mapObject) { this.mapObject.update(time, delta) }
     }
 
     public async execute(sceneKey: string) {
@@ -120,7 +145,7 @@ export class FieldScenePresenter {
 
         this.playerPresenter = new PlayerPresenter(
             this.fieldScene,
-            this.playermodel,
+            this.playerModel,
             this.playerView,
             this.tileMap);
         await this.playerPresenter.execute();
@@ -188,9 +213,20 @@ export class FieldScenePresenter {
             await this.collisionObjectPresenter.execute();
         }
 
+        //宝箱が存在する場合はMVPを生成
+        if (this.fieldSceneModel.treeFlg) {
+            this.treePresenter = new TreePresenter(
+                this.fieldScene,
+                this.tileMap.getMakeTilemap(),
+                this.treeModel,
+                this.treeView
+            );
+            await this.treePresenter.execute();
+        }
+
         //mapObjectはテスト用になった
-        this.mapObject = new MapObject(this.fieldScene);
-        await this.mapObject.execute(this.tileMap);
+        this.mapObject = new MapObject(this.fieldScene, this.tileMap);
+        await this.mapObject.execute();
 
         //エフェクト作成
         this.mapEffect = new MapEffect(this.fieldScene, this.tileMap, this.tileMap.getTileMapPropatiesEntity());

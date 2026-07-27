@@ -14,7 +14,6 @@ import { Battle } from './scenes/Battle';
 import { Sound } from './scenes/Sound';
 
 import testPipline from '../../public/assets/img/effect/pipelines/SwirlPostPipeline.js';
-import PlasmaPost2FX from '../../public/assets/img/effect/pipelines/PlasmaPost2FX.js';
 
 let phaserGame: Phaser.Game | null = null;
 
@@ -77,7 +76,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Sound,
         GameOver
     ],
-    pipeline: { testPipline, PlasmaPost2FX }
+    pipeline: { testPipline }
 };
 
 const StartGame = (parent: string) => {

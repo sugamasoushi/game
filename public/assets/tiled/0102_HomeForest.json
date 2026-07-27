@@ -3364,6 +3364,12 @@
                  "height":96,
                  "id":89,
                  "name":"tree_glass",
+                 "properties":[
+                        {
+                         "name":"PartsName",
+                         "type":"string",
+                         "value":"glass"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -3376,6 +3382,12 @@
                  "height":160,
                  "id":90,
                  "name":"tree_stem",
+                 "properties":[
+                        {
+                         "name":"PartsName",
+                         "type":"string",
+                         "value":"stem"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -4130,7 +4142,7 @@
          "y":0
         }],
  "nextlayerid":61,
- "nextobjectid":100,
+ "nextobjectid":103,
  "orientation":"orthogonal",
  "properties":[
         {

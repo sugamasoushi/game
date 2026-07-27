@@ -11,8 +11,6 @@ export class CollisionObjectPresenter {
         private collisionObjectView: CollisionObjectView,
         private makeTileMap: Phaser.Tilemaps.Tilemap,
     ) {
-        this.collisionObjectModel = new CollisionObjectModel(this.fieldScene);
-        this.collisionObjectView = new CollisionObjectView(this.fieldScene);
     }
 
     public async execute() {

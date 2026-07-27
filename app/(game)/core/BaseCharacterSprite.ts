@@ -49,7 +49,7 @@ export class BaseCharacterSprite extends Phaser.Physics.Arcade.Sprite {
 
     preUpdate(time: number, delta: number) {
         super.preUpdate(time, delta);
-        this.setDepth(this.y + (32 / 2) * this.scale);
+        // this.setDepth(this.y + (32 / 2) * this.scale);
         this.updateStopWalk();
         this.stopCheck();
     }

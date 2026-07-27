@@ -12,6 +12,7 @@ export class FieldSceneModel {
     private checkMapMoveFlg: boolean = false;
     private checkChestFlg: boolean = false;
     private checkCollisionObjectFlg: boolean = false;
+    private checktreeFlg: boolean = false;
 
     constructor(private fieldScene: FieldScene) { }
 
@@ -31,39 +32,28 @@ export class FieldSceneModel {
 
     private checkTilemapData() {
 
-        if (this.makeTilemapData.getObjectLayer('EVENT')) {
-            this.checkEventObjectFlg = true;
-        }
-
-        if (this.makeTilemapData.getObjectLayer('CLICKEVENT')) {
-            this.checkClickEventObjectFlg = true;
-        }
-
-        if (this.makeTilemapData.getObjectLayer('MAPMOVE')) {
-            this.checkMapMoveFlg = true;
-        }
+        if (this.makeTilemapData.getObjectLayer('COLLISION')) { this.checkCollisionObjectFlg = true; }
+        if (this.makeTilemapData.getObjectLayer('EVENT')) { this.checkEventObjectFlg = true; }
+        if (this.makeTilemapData.getObjectLayer('CLICKEVENT')) { this.checkClickEventObjectFlg = true; }
+        if (this.makeTilemapData.getObjectLayer('MAPMOVE')) { this.checkMapMoveFlg = true; }
 
         //宝箱情報をチェック
         if (this.makeTilemapData.getObjectLayer('SPRITE')) {
 
             for (const obj of this.makeTilemapData.getObjectLayer('SPRITE')!.objects) {
-                if (obj.name === 'chest') {
-                    this.checkChestFlg = true;
-                }
+                if (obj.name === 'chest') { this.checkChestFlg = true; }
+                if (obj.name === 'tree_stem' || obj.name === 'tree_glass') { this.checktreeFlg = true; }
             }
-        }
-
-        if (this.makeTilemapData.getObjectLayer('COLLISION')) {
-            this.checkCollisionObjectFlg = true;
         }
     }
 
     public getMakeTilemap(): Phaser.Tilemaps.Tilemap { return this.makeTilemapData; }
 
+    get collisionObjectFlg() { return this.checkCollisionObjectFlg; }
     get eventObjectFlg() { return this.checkEventObjectFlg; }
     get clickEventObjectFlg() { return this.checkClickEventObjectFlg; }
     get mapMoveFlg() { return this.checkMapMoveFlg; }
     get chestFlg() { return this.checkChestFlg; }
-    get collisionObjectFlg() { return this.checkCollisionObjectFlg; }
+    get treeFlg() { return this.checktreeFlg; }
 
 }

@@ -25,9 +25,6 @@ export class ChestPresenter {
         private makeTileMap: Phaser.Tilemaps.Tilemap,
         private inputManager: InputManager
     ) {
-        this.chestModel = new ChestModel(fieldScene);
-        this.chestView = new ChestView(fieldScene);
-
         this.soundScene = this.fieldScene.scene.get('Sound') as Sound;
     }
 

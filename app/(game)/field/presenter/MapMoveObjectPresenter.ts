@@ -12,8 +12,6 @@ export class MapMoveObjectPresenter {
         private mapMoveObjectView: MapMoveObjectView,
         private makeTileMap: Phaser.Tilemaps.Tilemap,
     ) {
-        this.mapMoveObjectModel = new MapMoveObjectModel(this.fieldScene);
-        this.mapMoveObjectView = new MapMoveObjectView(this.fieldScene);
     }
 
     public async execute() {

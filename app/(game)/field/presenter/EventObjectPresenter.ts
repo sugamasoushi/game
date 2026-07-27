@@ -10,8 +10,6 @@ export class EventObjectPresenter {
         private eventObjectView: EventObjectView,
         private makeTileMap: Phaser.Tilemaps.Tilemap,
     ) {
-        this.eventObjectModel = new EventObjectModel(this.fieldScene);
-        this.eventObjectView = new EventObjectView(this.fieldScene);
     }
 
     public async execute() {
