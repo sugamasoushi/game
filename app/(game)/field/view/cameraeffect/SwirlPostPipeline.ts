@@ -3,7 +3,7 @@
  * @copyright    2022 Photon Storm Ltd.
  */
 
- const fragShader = `
+const fragShader = `
  #define SHADER_NAME SWIRL_FS
 
  precision mediump float;
@@ -32,10 +32,14 @@
  }
  `;
 
-export default class SwirlPostPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
-{
-    constructor (game)
-    {
+export default class SwirlPostPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline {
+
+    public x: number;
+    public y: number;
+    public radius: number;
+    public strength: number;
+
+    constructor(game: Phaser.Game) {
         super({
             game,
             fragShader
@@ -47,15 +51,13 @@ export default class SwirlPostPipeline extends Phaser.Renderer.WebGL.Pipelines.P
         this.strength = 1;
     }
 
-    onPreRender ()
-    {
+    onPreRender() {
         this.set2f('uCoords', this.x, this.y);
         this.set1f('uRadius', this.radius);
         this.set1f('uStrength', this.strength);
     }
 
-    onDraw (renderTarget)
-    {
+    onDraw(renderTarget: Phaser.Renderer.WebGL.RenderTarget) {
         this.set2f('uResolution', renderTarget.width, renderTarget.height);
 
         this.bindAndDraw(renderTarget);

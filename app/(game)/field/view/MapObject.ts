@@ -3,8 +3,6 @@ import { TileMap } from "./TileMap";
 import { Player } from "./character/Player";
 import { gameStateManager } from "../../core/GameStateManager";
 
-import PlasmaPost2FX from "./cameraeffect/PlasmaPost2FX";
-import testPipline from '../../../../public/assets/img/effect/pipelines/SwirlPostPipeline.js';
 import { MapLayerDepth } from '@/app/(game)/lib/FieldTypes';
 
 export class MapObject {
@@ -55,14 +53,6 @@ export class MapObject {
             this.createPlane();
         }
 
-        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
-        renderer.pipelines.addPostPipeline('PlasmaPost', PlasmaPost2FX);
-        this.fieldScene.cameras.main.setPostPipeline('PlasmaPost');
-
-        // const renderer2 = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
-        // renderer2.pipelines.addPostPipeline('testPipline1', testPipline);
-        // this.fieldScene.cameras.main.setPostPipeline('testPipline1');
-
         this.waterFallSprite = this.fieldScene.add.sprite(300, 300, 'waterfall');
         this.waterFallSprite.play('waterfall');
 
@@ -77,9 +67,7 @@ export class MapObject {
         const width = this.TileMap.getMakeTilemap().widthInPixels;
         const height = this.TileMap.getMakeTilemap().heightInPixels;
 
-        // this.fieldScene.add.shader('fireball', width / 2, height / 2, width, height).setScale(0.3).setDepth(1000);
-
-        // this.fieldScene.add.shader('sunRays', width / 2, height / 2, width, height).setDepth(999999);
+        this.fieldScene.add.shader('fireball', width / 2, height / 2, width, height).setScale(0.3).setDepth(1000);
     }
 
 

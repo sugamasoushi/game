@@ -105,6 +105,11 @@ export class Field extends Scene implements FieldScene {
         const tilemapInstance = this.fieldScenePresenter.getTileMapInstance();
         return tilemapInstance;
     }
+
+    // 生成されたタイルマップを取得
+    public getCameraManagerInstance(): CameraManager {
+        return this.cameraManager;
+    }
 }
 
 

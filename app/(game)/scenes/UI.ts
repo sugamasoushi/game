@@ -11,6 +11,7 @@ import { EventTestButton } from './../UI/view/Debug/EventTestButton';
 import { BattleTestButton } from '../UI/view/Debug/BattleTestButton';
 import { MapTestButton } from './../UI/view/Debug/MapTestButton';
 import { StatusTestButton } from '../UI/view/Debug/StatusTestButton';
+import { CameraTestButton } from '../UI/view/Debug/CameraTestButton';
 
 export class UI extends Scene {
 
@@ -29,6 +30,7 @@ export class UI extends Scene {
     private battleTestButton: BattleTestButton;
     private mapTestButton: MapTestButton;
     private statusTestButton: StatusTestButton;
+    private cameraTestButton: CameraTestButton;
 
     private onUiClose = () => {
         //this.menuButton.fadeIn();
@@ -59,6 +61,7 @@ export class UI extends Scene {
         this.battleTestButton = new BattleTestButton(this);
         this.mapTestButton = new MapTestButton(this);
         this.statusTestButton = new StatusTestButton(this);
+        this.cameraTestButton = new CameraTestButton(this);
 
         this.freeMessageView = new FreeMessageView(this);
         this.freeMessageView.init();
@@ -74,7 +77,8 @@ export class UI extends Scene {
             this.eventTestButton,
             this.battleTestButton,
             this.mapTestButton,
-            this.statusTestButton
+            this.statusTestButton,
+            this.cameraTestButton
         );
     }
 
@@ -92,7 +96,7 @@ export class UI extends Scene {
             this.game.events.off('UI_CLOSE', this.onUiClose);
             this.game.events.off('UI_FORCE_OFF', this.onUiForceOff);
             this.game.events.off('UI_VISIBLE_FALSE', this.onUiVisibleFalse);
-        
+
         });
     }
 

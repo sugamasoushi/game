@@ -16,7 +16,7 @@ export class StatusView {
         // 背景の黒塗り (透明度0.5) を左上に作成
         this.bgGraphics = this.uiScene.add.graphics();
         this.bgGraphics.fillStyle(0x000000, 0.7);
-        this.bgGraphics.fillRect(10, 10, 300, 200);
+        this.bgGraphics.fillRect(10, 10, 300, 300);
         this.bgGraphics.setDepth(100);
 
         // キャラクター座標情報を表示するテキストを作成

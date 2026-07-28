@@ -13,6 +13,7 @@ import { EventTestButton } from './../view/Debug/EventTestButton';
 import { BattleTestButton } from "../view/Debug/BattleTestButton";
 import { MapTestButton } from "../view/Debug/MapTestButton";
 import { StatusTestButton } from './../view/Debug/StatusTestButton';
+import { CameraTestButton } from "../view/Debug/CameraTestButton";
 
 export class UiPresenter {
 
@@ -31,6 +32,7 @@ export class UiPresenter {
     private battleTestButton: BattleTestButton;
     private mapTestButton: MapTestButton;
     private statusTestButton: StatusTestButton;
+    private cameraTestButton: CameraTestButton;
 
     private subs = new Subscription();
 
@@ -45,7 +47,8 @@ export class UiPresenter {
         eventTestButton: EventTestButton,
         battleTestButton: BattleTestButton,
         mapTestButton: MapTestButton,
-        statusTestButton: StatusTestButton
+        statusTestButton: StatusTestButton,
+        cameraTestButton: CameraTestButton
     ) {
         this.uiScene = uiScene;
         this.uiModel = uiModel;
@@ -59,6 +62,7 @@ export class UiPresenter {
         this.battleTestButton = battleTestButton;
         this.mapTestButton = mapTestButton;
         this.statusTestButton = statusTestButton;
+        this.cameraTestButton = cameraTestButton;
 
         this.gameScene = this.uiScene.scene.get('Field') as Phaser.Scene;
 
@@ -82,6 +86,7 @@ export class UiPresenter {
             this.battleTestButton.execute();
             this.mapTestButton.execute();
             this.statusTestButton.execute();
+            this.cameraTestButton.execute();
         }
 
         //this.menuButton.execute();

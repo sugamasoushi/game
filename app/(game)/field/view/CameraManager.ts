@@ -3,6 +3,9 @@ import { Player } from "./character/Player";
 import { GameStateManager } from "../../core/GameStateManager";
 import SunrayPostPipeline from "./cameraeffect/SunrayPostPipeline";
 import { TiledMapPropatiesEntity } from './Entity/TiledMapPropatiesEntity';
+import PlasmaPost2FX from './cameraeffect/PlasmaPost2FX';
+import SwirlPostPipeline from "./cameraeffect/SwirlPostPipeline";
+import PlasmaPostFX from "./cameraeffect/PlasmaPostFX";
 
 export class CameraManager {
     // カメラオブジェクトがシーンから切り離されている場合があるため
@@ -70,6 +73,20 @@ export class CameraManager {
 
     public execCameraEffect() {
 
+        //通常
+        this.normalEffect();
+
+        if (this.tiledMapPropatiesEntity && this.tiledMapPropatiesEntity.CameraEffect) {
+            switch (this.tiledMapPropatiesEntity.CameraEffect) {
+                case 'Sunray':
+                    this.execSunray();
+                    break;
+            }
+        }
+    }
+
+    public normalEffect() {
+
         const mainCamera = this.fieldScene.cameras.main;
 
         if (mainCamera.postFX) {
@@ -92,13 +109,6 @@ export class CameraManager {
             //cameraFilter.hue(180);
         }
 
-        if (this.tiledMapPropatiesEntity && this.tiledMapPropatiesEntity.CameraEffect) {
-            switch (this.tiledMapPropatiesEntity.CameraEffect) {
-                case 'Sunray':
-                    this.execSunray();
-                    break;
-            }
-        }
     }
 
     public cameraBlur() {
@@ -115,7 +125,7 @@ export class CameraManager {
         }
     }
 
-    private execSunray() {
+    public execSunray() {
 
         const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
 
@@ -135,6 +145,23 @@ export class CameraManager {
         // sunray.speed = 0.3;
         //sunray.rayDirection.set(-1, -1).normalize();
         sunray.rayColor.setTo(255, 245, 200);
+    }
 
+    public execPlasmaPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('PlasmaPostFX', PlasmaPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('PlasmaPostFX');
+    }
+
+    public execPlasmaPost2FX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('PlasmaPost2FX', PlasmaPost2FX);
+        this.fieldScene.cameras.main.setPostPipeline('PlasmaPost2FX');
+    }
+
+    public execSwirl() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('SwirlPostPipeline', SwirlPostPipeline);
+        this.fieldScene.cameras.main.setPostPipeline('SwirlPostPipeline');
     }
 }

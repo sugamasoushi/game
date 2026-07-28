@@ -28,10 +28,8 @@ void main()
 }
 `;
 
-export default class PlasmaPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
-{
-    constructor (game)
-    {
+export default class PlasmaPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline {
+    constructor(game: Phaser.Game) {
         super({
             game,
             name: 'PlasmaPostFX',
@@ -39,13 +37,11 @@ export default class PlasmaPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFX
         });
     }
 
-    onPreRender ()
-    {
+    onPreRender() {
         this.set1f('uTime', this.game.loop.time / 1000);
     }
 
-    onDraw (renderTarget)
-    {
+    onDraw(renderTarget: Phaser.Renderer.WebGL.RenderTarget) {
         this.set2f('uResolution', renderTarget.width, renderTarget.height);
 
         this.bindAndDraw(renderTarget);

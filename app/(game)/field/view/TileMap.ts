@@ -2,7 +2,6 @@ import { FieldScene, FieldData, PropertyItem } from "../../lib/types";
 import { tilesets, MapLayerDepth } from "../../lib/FieldTypes";
 import { GameStateManager } from "../../core/GameStateManager";
 import { SearchTileMapData } from "../../Data/SearchTileMapData";
-import PlasmaPostFX from "../../../../public/assets/img/effect/pipelines/PlasmaPostFX.js";
 import { TiledMapPropatiesEntity } from "./Entity/TiledMapPropatiesEntity";
 import { TiledMapLayerPropatiesEntity } from "./Entity/TiledMapLayerPropatiesEntity";
 
