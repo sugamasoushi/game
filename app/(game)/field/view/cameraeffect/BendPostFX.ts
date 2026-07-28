@@ -25,7 +25,10 @@ void main()
 
 export default class BendPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
 {
-    constructor (game)
+    private _bend: number;
+    private _speed: number;
+
+    constructor (game: Phaser.Game)
     {
         super({
             game,
@@ -49,22 +52,22 @@ export default class BendPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPi
         this.set1f('uBendFactor', this._bend);
     }
 
-    get bend ()
+    get bend (): number
     {
         return this._bend;
     }
 
-    set bend (value)
+    set bend (value: number)
     {
         this._bend = value;
     }
 
-    get speed ()
+    get speed (): number
     {
         return this._speed;
     }
 
-    set speed (value)
+    set speed (value: number)
     {
         this._speed = value;
     }

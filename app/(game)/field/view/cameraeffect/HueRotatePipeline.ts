@@ -1,16 +1,21 @@
 const fragShader = `
-#define SHADER_NAME HUE_ROTATE_FS
-
 precision mediump float;
 
-uniform sampler2D uMainSampler;
+uniform sampler2D uMainSampler[%count%];
 uniform float uTime;
 uniform float uSpeed;
 
 varying vec2 outTexCoord;
+varying float outTexId;
+varying vec4 outTint;
+varying vec2 fragCoord;
 
 void main()
 {
+    vec4 texture;
+
+    %forloop%
+
     float c = cos(uTime * uSpeed);
     float s = sin(uTime * uSpeed);
 
@@ -20,26 +25,39 @@ void main()
 
     mat4 hueRotation = r + g * c + b * s;
 
-    gl_FragColor = texture2D(uMainSampler, outTexCoord) * hueRotation;
+    gl_FragColor = texture * hueRotation;
 }
 `;
 
-export default class HueRotatePostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
+export default class HueRotatePipeline extends Phaser.Renderer.WebGL.Pipelines.MultiPipeline
 {
-    constructor (game)
+    private _time: number;
+    private _speed: number;
+
+    constructor (game: Phaser.Game)
     {
         super({
             game,
-            name: 'HueRotatePostFX',
             fragShader
         });
 
-        this.speed = 1;
+        this._time = 0;
+        this._speed = 0.001;
     }
 
     onPreRender ()
     {
-        this.setTime('uTime');
-        this.set1f('uSpeed', this.speed);
+        this.set1f('uTime', this.game.loop.time);
+        this.set1f('uSpeed', this._speed);
+    }
+
+    get speed (): number
+    {
+        return this._speed;
+    }
+
+    set speed (value: number)
+    {
+        this._speed = value;
     }
 }

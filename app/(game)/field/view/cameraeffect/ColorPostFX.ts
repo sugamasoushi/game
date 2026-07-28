@@ -31,11 +31,13 @@ void main()
 
 export default class ColorPostFX extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline
 {
-    constructor (game)
+    private _hueSpeed: number;
+
+    constructor (game: Phaser.Game)
     {
         super({
             game,
-            target: true,
+            renderTarget: true,
             shaders: [
                 {
                     name: 'HueRotate',
@@ -53,12 +55,12 @@ export default class ColorPostFX extends Phaser.Renderer.WebGL.Pipelines.SingleP
         this.set1f('uSpeed', this._hueSpeed);
     }
 
-    get hueSpeed ()
+    get hueSpeed (): number
     {
         return this._hueSpeed;
     }
 
-    set hueSpeed (value)
+    set hueSpeed (value: number)
     {
         this._hueSpeed = value;
     }

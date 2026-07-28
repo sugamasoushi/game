@@ -45,24 +45,35 @@ void main( void ) {
 
 export default class ScalinePostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
 {
-    constructor (game)
+    private mouseX: number;
+    private mouseY: number;
+
+    constructor (game: Phaser.Game)
     {
         super({
             game,
             renderTarget: true,
             fragShader
         });
+
+        this.mouseX = 0;
+        this.mouseY = 0;
     }
 
     onBoot ()
     {
         this.set2f('uResolution', this.renderer.width, this.renderer.height);
-        console.log(this)
     }
 
     onPreRender ()
     {
         this.set1f('uTime', this.game.loop.time / 1000);
-        this.set2f('uMouse', this.mouseX, this.mouseY)
+        this.set2f('uMouse', this.mouseX, this.mouseY);
+    }
+
+    setMousePosition(x: number, y: number): void
+    {
+        this.mouseX = x;
+        this.mouseY = y;
     }
 }

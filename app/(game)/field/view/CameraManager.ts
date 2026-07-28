@@ -6,6 +6,19 @@ import { TiledMapPropatiesEntity } from './Entity/TiledMapPropatiesEntity';
 import PlasmaPost2FX from './cameraeffect/PlasmaPost2FX';
 import SwirlPostPipeline from "./cameraeffect/SwirlPostPipeline";
 import PlasmaPostFX from "./cameraeffect/PlasmaPostFX";
+import BendPostFX from "./cameraeffect/BendPostFX";
+import BlurPostFX from "./cameraeffect/BlurPostFX";
+import HueRotatePostFX from "./cameraeffect/HueRotatePostFX";
+import LazersPostFX from "./cameraeffect/LazersPostFX";
+import MultiColorPostFX from "./cameraeffect/MultiColorPostFX";
+import PixelatedFX from "./cameraeffect/PixelatedFX";
+import ScalinePostFX from "./cameraeffect/ScalinePostFX";
+import BendPipeline from "./cameraeffect/BendPipeline";
+import BendRotationWavesPostFX from "./cameraeffect/BendRotationWavesPostFX";
+import BendWavesPostFX from "./cameraeffect/BendWavesPostFX";
+import ColorPostFX from "./cameraeffect/ColorPostFX";
+import GrayScalePipeline from "./cameraeffect/GrayScalePipeline";
+import HueRotatePipeline from "./cameraeffect/HueRotatePipeline";
 
 export class CameraManager {
     // カメラオブジェクトがシーンから切り離されている場合があるため
@@ -163,5 +176,87 @@ export class CameraManager {
         const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
         renderer.pipelines.addPostPipeline('SwirlPostPipeline', SwirlPostPipeline);
         this.fieldScene.cameras.main.setPostPipeline('SwirlPostPipeline');
+    }
+
+    public execBendPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('BendPostFX', BendPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('BendPostFX');
+    }
+
+    public execBlurPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('BlurPostFX', BlurPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('BlurPostFX');
+    }
+
+    public execHueRotatePostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('HueRotatePostFX', HueRotatePostFX);
+        this.fieldScene.cameras.main.setPostPipeline('HueRotatePostFX');
+    }
+
+    public execLazersPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('LazersPostFX', LazersPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('LazersPostFX');
+    }
+
+    public execMultiColorPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('MultiColorPostFX', MultiColorPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('MultiColorPostFX');
+    }
+
+    public execPixelatedFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('PixelatedFX', PixelatedFX);
+        this.fieldScene.cameras.main.setPostPipeline('PixelatedFX');
+    }
+
+    public execScalinePostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('ScalinePostFX', ScalinePostFX);
+        this.fieldScene.cameras.main.setPostPipeline('ScalinePostFX');
+    }
+
+    public execBendPipeline() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('BendPipeline', BendPipeline);
+        this.fieldScene.cameras.main.setPostPipeline('BendPipeline');
+    }
+
+    public execBendRotationWavesPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('BendRotationWavesPostFX', BendRotationWavesPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('BendRotationWavesPostFX');
+    }
+
+
+    /**
+     * 以下は何故か表示できない
+     */
+    public execBendWavesPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('BendWavesPostFX', BendWavesPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('BendWavesPostFX');
+    }
+
+    public execColorPostFX() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('ColorPostFX', ColorPostFX);
+        this.fieldScene.cameras.main.setPostPipeline('ColorPostFX');
+    }
+
+    public execGrayScalePipeline() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('GrayScalePipeline', GrayScalePipeline);
+        this.fieldScene.cameras.main.setPostPipeline('GrayScalePipeline');
+    }
+
+    public execHueRotatePipeline() {
+        const renderer = this.fieldScene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+        renderer.pipelines.addPostPipeline('HueRotatePipeline', HueRotatePipeline);
+        this.fieldScene.cameras.main.setPostPipeline('HueRotatePipeline');
     }
 }

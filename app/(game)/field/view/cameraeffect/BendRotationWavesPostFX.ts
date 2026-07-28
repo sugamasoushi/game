@@ -36,9 +36,11 @@ void main( void )
 }
 `;
 
-export default class BendRotationWaves extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
+export default class BendRotationWavesPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
 {
-    constructor (game)
+    private _time: number;
+
+    constructor (game: Phaser.Game)
     {
         super({
             game,

@@ -22,7 +22,9 @@ void main()
 
 export default class GrayScalePipeline extends Phaser.Renderer.WebGL.Pipelines.MultiPipeline
 {
-    constructor (game)
+    private _gray: number;
+
+    constructor (game: Phaser.Game)
     {
         super({
             game,
@@ -37,12 +39,12 @@ export default class GrayScalePipeline extends Phaser.Renderer.WebGL.Pipelines.M
         this.set1f('gray', this._gray);
     }
 
-    get gray ()
+    get gray (): number
     {
         return this._gray;
     }
 
-    set gray (value)
+    set gray (value: number)
     {
         this._gray = value;
     }

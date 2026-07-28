@@ -28,7 +28,10 @@ void main()
 
 export default class BendPipeline extends Phaser.Renderer.WebGL.Pipelines.SinglePipeline
 {
-    constructor (game)
+    private _bend: number;
+    private _speed: number;
+
+    constructor (game: Phaser.Game)
     {
         super({
             game,

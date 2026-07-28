@@ -24,7 +24,7 @@ void main()
 
 export default class LazersPostFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
 {
-    constructor (game)
+    constructor (game: Phaser.Game)
     {
         super({
             game,

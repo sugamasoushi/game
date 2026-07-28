@@ -21,7 +21,7 @@ const fragShader = `
 
 export default class PixelatedFX extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline
 {
-    constructor (game)
+    constructor (game: Phaser.Game)
     {
         super({
             game,

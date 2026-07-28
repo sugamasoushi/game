@@ -1,7 +1,11 @@
 import { FieldScene } from "../../../lib/SceneTypes";
 
 // Record で扱えるよう、MapKeys をトップレベルの定数に移動
-const cameraEffectKeys = ['DeleteEffect', 'NormalEffect', 'SunrayPost', 'PlasmaPostFX', 'PlasmaPost2FX', 'Swirl'] as const;
+const cameraEffectKeys = [
+    'DeleteEffect', 'NormalEffect', 'SunrayPost', 'PlasmaPostFX', 'PlasmaPost2FX', 'Swirl',
+    'BendPostFX', 'BlurPostFX', 'HueRotatePostFX', 'LazersPostFX', 'MultiColorPostFX', 'PixelatedFX', 'ScalinePostFX',
+    'BendRotationWavesPostFX'
+] as const;
 
 // 型定義：MapKeysの中のいずれかの文字列、という意味の型になります
 type CameraEffectKey = typeof cameraEffectKeys[number];
@@ -81,5 +85,13 @@ export class CameraTestButton {
         'PlasmaPostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execPlasmaPostFX(); },
         'PlasmaPost2FX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execPlasmaPost2FX(); },
         'Swirl': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execSwirl(); },
+        'BendPostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execBendPostFX(); },
+        'BlurPostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execBlurPostFX(); },
+        'HueRotatePostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execHueRotatePostFX(); },
+        'LazersPostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execLazersPostFX(); },
+        'MultiColorPostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execMultiColorPostFX(); },
+        'PixelatedFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execPixelatedFX(); },
+        'ScalinePostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execScalinePostFX(); },
+        'BendRotationWavesPostFX': () => { const cameraManager = this.fieldScene.getCameraManagerInstance(); cameraManager.execBendRotationWavesPostFX(); }
     };
 }
