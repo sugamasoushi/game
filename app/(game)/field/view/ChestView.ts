@@ -38,8 +38,13 @@ export class ChestView {
                 }
             }
 
-            // //深度設定
-            obj.setDepth(MapLayerDepth.Highest + obj.y);
+            // 深度設定
+            if (obj.data.list.DepthNotVisible) {
+                obj.setDepth(obj.data.list.DepthNotVisible);
+            } else {
+                obj.setDepth(MapLayerDepth.Highest + obj.y);
+            }
+
             //obj.setPipeline('Light2D');
 
             //アニメーション設定

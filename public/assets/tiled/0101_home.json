@@ -552,6 +552,11 @@
                  "name":"chest",
                  "properties":[
                         {
+                         "name":"DepthNotVisible",
+                         "type":"int",
+                         "value":-10
+                        }, 
+                        {
                          "name":"bubbleTalkDefaultKey",
                          "type":"string",
                          "value":"bubbleTalk0102.talk005"
@@ -570,11 +575,6 @@
                          "name":"num",
                          "type":"int",
                          "value":2
-                        }, 
-                        {
-                         "name":"visible",
-                         "type":"bool",
-                         "value":false
                         }],
                  "rotation":0,
                  "type":"",
