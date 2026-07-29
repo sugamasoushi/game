@@ -50,7 +50,7 @@ export class TitlePresenter {
         // セーブデータを読み込み
         await this.titleModel.loadSaveData();
 
-        // オプションデータ・描画モードを読み込み
+        // オプションデータの描画モード・仮想パッド設定を読み込み
         await this.titleModel.loadOptionData();
 
         // オープニングアニメーションとタイトルテキストの表示

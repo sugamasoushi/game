@@ -83,7 +83,10 @@ export class TitleModel {
         } else {
             console.log('PC版')
             this.updateHighDraw(true);
-            this.updateVirtualPad(false);
+
+            //一旦必ずONにする
+            // this.updateVirtualPad(false);
+            this.updateVirtualPad(true);
         }
 
         // this.saveDataManager.writeSaveData(this.titleScene);
