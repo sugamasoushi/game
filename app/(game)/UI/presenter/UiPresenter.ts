@@ -123,6 +123,8 @@ export class UiPresenter {
         // ゲーム状態の監視
         this.subs.add(gameStateManager.state$.subscribe((stateData) => {
 
+            if (!gameStateManager.isVirtualPad) return;
+
             if (stateData.state == State.NOSTATE) {
                 // 通常状態
                 // 既にfadeOutしている場合はfadeInを呼び、半透明なら解除する
