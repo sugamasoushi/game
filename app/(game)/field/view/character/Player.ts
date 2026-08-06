@@ -29,6 +29,12 @@ export class Player extends BaseCharacterSprite {
     private lastFollowDeltaY: number = 0;
     private straightMoveCorrectionApplied: boolean = false;
 
+    private keyW;
+    private keyA;
+    private keyS;
+    private keyD;
+    private keys;
+
     constructor(scene: FieldScene, x: number, y: number, spriteSheetKey: string, private makeTilemapData: Phaser.Tilemaps.Tilemap) {
         super(scene, x, y, 'tex_' + spriteSheetKey);
         this.fieldScene = scene;
@@ -59,6 +65,12 @@ export class Player extends BaseCharacterSprite {
         this.once('destroy', () => {
             stateSubscription.unsubscribe();
         });
+
+        this.keyW = this.fieldScene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.keyA = this.fieldScene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.keyS = this.fieldScene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keyD = this.fieldScene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keys = this.fieldScene.input.keyboard?.addKeys('P,H,A,S,E,R');
     }
 
     preUpdate(time: number, delta: number) {
@@ -136,7 +148,8 @@ export class Player extends BaseCharacterSprite {
              * 現状、Phaserのキーマップを使用しているためupdate()の度に呼ばれている
              * subscription化した方が良い
              */
-            if (cursorsKeys.left.isDown || this.inputManager.phaserGameKeys['A']?.isDown || vPadDir === 'left' || vPadDir === 'up-left' || vPadDir === 'down-left') {
+            // this.inputManager.phaserGameKeys['A']?.isDown
+            if (cursorsKeys.left.isDown || this.keyA?.isDown || vPadDir === 'left' || vPadDir === 'up-left' || vPadDir === 'down-left') {
                 this.moveDirection = this.walkLeft;
                 this.standframe = this.standLeft;
                 this.setVelocityX(-1 * this.playerDefaultVelocity);
@@ -144,7 +157,7 @@ export class Player extends BaseCharacterSprite {
                 if (this.anims.currentAnim?.key !== this.moveDirection) {
                     this.anims.play(this.moveDirection, true);
                 }
-            } else if (cursorsKeys.right.isDown || this.inputManager.phaserGameKeys['D']?.isDown || vPadDir === 'right' || vPadDir === 'up-right' || vPadDir === 'down-right') {
+            } else if (cursorsKeys.right.isDown || this.keyD?.isDown || vPadDir === 'right' || vPadDir === 'up-right' || vPadDir === 'down-right') {
                 this.moveDirection = this.walkRight;
                 this.standframe = this.standRight;
                 this.setVelocityX(this.playerDefaultVelocity);
@@ -153,7 +166,7 @@ export class Player extends BaseCharacterSprite {
                     this.anims.play(this.moveDirection, true);
                 }
             }
-            if (cursorsKeys.up.isDown || this.inputManager.phaserGameKeys['W']?.isDown || vPadDir === 'up' || vPadDir === 'up-left' || vPadDir === 'up-right') {
+            if (cursorsKeys.up.isDown || this.keyW?.isDown || vPadDir === 'up' || vPadDir === 'up-left' || vPadDir === 'up-right') {
                 this.moveDirection = this.walkUp;
                 this.standframe = this.standUp;
                 this.setVelocityY(-1 * this.playerDefaultVelocity);
@@ -161,7 +174,7 @@ export class Player extends BaseCharacterSprite {
                 if (this.anims.currentAnim?.key !== this.moveDirection) {
                     this.anims.play(this.moveDirection, true);
                 }
-            } else if (cursorsKeys.down.isDown || this.inputManager.phaserGameKeys['S']?.isDown || vPadDir === 'down' || vPadDir === 'down-left' || vPadDir === 'down-right') {
+            } else if (cursorsKeys.down.isDown || this.keyS?.isDown || vPadDir === 'down' || vPadDir === 'down-left' || vPadDir === 'down-right') {
                 this.moveDirection = this.walkDown;
                 this.standframe = this.standDown;
                 this.setVelocityY(this.playerDefaultVelocity);
@@ -172,10 +185,10 @@ export class Player extends BaseCharacterSprite {
             }
 
             //停止
-            if (!this.inputManager.phaserGameKeys['A']?.isDown
-                && !this.inputManager.phaserGameKeys['D']?.isDown
-                && !this.inputManager.phaserGameKeys['W']?.isDown
-                && !this.inputManager.phaserGameKeys['S']?.isDown
+            if (!this.keyA?.isDown
+                && !this.keyD?.isDown
+                && !this.keyW?.isDown
+                && !this.keyS?.isDown
                 && !cursorsKeys.left.isDown
                 && !cursorsKeys.right.isDown
                 && !cursorsKeys.up.isDown

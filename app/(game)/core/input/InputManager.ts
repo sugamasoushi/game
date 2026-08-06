@@ -159,14 +159,18 @@ export class InputManager {
             if (action === 'CURSOR_LEFT') this.leftSubject.next();
             if (action === 'CURSOR_UP') this.upSubject.next();
             if (action === 'CURSOR_DOWN') this.downSubject.next();
-            if (action === 'RIGHT') this.rightSubject.next();
-            if (action === 'LEFT') this.leftSubject.next();
-            if (action === 'UP') this.upSubject.next();
-            if (action === 'DOWN') this.downSubject.next();
+            // if (action === 'RIGHT') this.rightSubject.next();
+            // if (action === 'LEFT') this.leftSubject.next();
+            // if (action === 'UP') this.upSubject.next();
+            // if (action === 'DOWN') this.downSubject.next();
             if (action === 'SPACE') this.decideSubject.next();
             if (action === 'ESC') this.cancelSubject.next();
             if (action === 'M') this.menuSubject.next();
             if (action === 'P') this.fieldAttackSubject.next();//FieldPreseterで実装してる
+            // if (action === 'D') this.rightSubject.next();
+            // if (action === 'A') this.leftSubject.next();
+            // if (action === 'W') this.upSubject.next();
+            // if (action === 'S') this.downSubject.next();
         }));
 
         // シーン終了（再スタート含む）時にキー参照をクリアする
